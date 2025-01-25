@@ -7,7 +7,7 @@ import {
   Alert,
   StyleSheet,
 } from 'react-native';
-// import styles from './styles/Login.style'; // Import styles từ file riêng
+import styles from '@/components/LoginStyle/Login.style';
 
 function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState('');
@@ -24,7 +24,7 @@ function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Subtitle sát header */}
+      {/* Subtitle */}
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitle}>
           Vui lòng nhập số điện thoại và mật khẩu để đăng nhập
@@ -77,70 +77,6 @@ function LoginScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-  },
-  subtitleContainer: {
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  input: {
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
-  passwordContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  passwordInput: {
-    flex: 1,
-    height: 40,
-    paddingHorizontal: 10,
-  },
-  showText: {
-    padding: 10,
-    color: 'blue',
-  },
-  forgotPassword: {
-    color: 'blue',
-    marginBottom: 10,
-  },
-  faqLinkContainer: {
-    marginTop: 10,
-  },
-  faqLink: {
-    color: 'blue',
-  },
-  nextButton: {
-    width: 40,
-    height: 40,
-    backgroundColor: 'blue',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-    marginTop: 10,
-  },
-  nextButtonText: {
-    color: 'white',
-    fontSize: 20,
-  },
-});
+
 
 export default LoginScreen;
