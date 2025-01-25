@@ -1,7 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Main from "@/app/Screens/UI/Main/Main";
-import Register from "@/app/Screens/UI/Register/Register";
+import Main from "@/app/Screens/Main/Main";
+import Register from "@/app/Screens/Register/Register";
 import { StyleSheet } from "react-native";
 
 export default function RootLayout() {

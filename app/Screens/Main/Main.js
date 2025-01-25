@@ -1,7 +1,12 @@
 // filepath: /D:/Study/CongNgheMoi/ChapApp_Sophy/components/Screens/Access/Main.js
 import React, { useState, useRef } from "react";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 import images from "@/assets/objects/Main_Images";
+import contaier from "@/components/Container/ContainerStyle";
+import submitButton from "@/components/Button/ButtonStyle";
+import MainStyle from "@/components/Main/MainStyle";
+import BackgroundStyles from "@/components/Background/BackgroundStyles";
+
 import {
   Image,
   Text,
@@ -28,13 +33,12 @@ const Main = () => {
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.app_name}>Sophy</Text>
-
+    <View style={contaier.main}>
+      <Text style={MainStyle({ width }).app_name}>Sophy</Text>
       <ImageBackground
-        source={require("../../../../assets/images/bg.png")}
-        style={styles.imageBanner}
-        imageStyle={styles.imageBackgroundImage}
+        source={require("../../../assets/images/bg.png")}
+        style={MainStyle({ height }).imageBanner}
+        imageStyle={BackgroundStyles().blurred}
       >
         <FlatList
           data={images}
@@ -43,11 +47,11 @@ const Main = () => {
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <View style={styles.imageContainer}>
-              <Image source={item.source} style={styles.image} />
-              <View style={styles.textContainer}>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.description}>{item.description}</Text>
+            <View style={MainStyle({ width }).imageContainer}>
+              <Image source={item.source} style={MainStyle({width}).image} />
+              <View style={MainStyle({width}).textContainer}>
+                <Text style={MainStyle({width}).title}>{item.title}</Text>
+                <Text style={MainStyle({width}).description}>{item.description}</Text>
               </View>
             </View>
           )}
@@ -56,32 +60,32 @@ const Main = () => {
           ref={flatListRef}
         />
 
-        <View style={styles.indicatorContainer}>
+        <View style={MainStyle({width}).indicatorContainer}>
           {images.map((_, index) => (
             <View
               key={index}
               style={[
-                styles.indicator,
+                MainStyle({width}).indicator,
                 currentIndex === index
-                  ? styles.activeIndicator
-                  : styles.inactiveIndicator,
+                  ? MainStyle({width}).activeIndicator
+                  : MainStyle({width}).inactiveIndicator,
               ]}
             />
           ))}
         </View>
       </ImageBackground>
-      <View>
+      <View style={MainStyle({width}).buttonContainer}>
         <TouchableOpacity
-          style={[styles.buttonSign, styles.signIn_Button]}
+          style={[submitButton().submit, MainStyle({width}).signIn_Button]}
           // onPress={() => navigation.navigate('Login')}
         >
-          <Text style={styles.buttonText}>Đăng nhập</Text>
+          <Text style={MainStyle({width}).buttonText}>Đăng nhập</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.buttonSign, styles.signUp_Button]}
-          onPress={() => navigation.navigate('Register')}
+          style={[submitButton().submit, MainStyle({width}).signUp_Button]}
+          onPress={() => navigation.navigate("Register")}
         >
-          <Text style={styles.buttonSignUpText}>Tạo tài khoản mới</Text>
+          <Text style={MainStyle({width}).buttonSignUpText}>Tạo tài khoản mới</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -89,28 +93,9 @@ const Main = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-    backgroundImage: "linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%)",
-  },
-  app_name: {
-    fontSize: width * 0.1,
-    marginTop: width * -0.1,
-    color: "#1b6dfa",
-    fontWeight: "bold",
-  },
-  imageBanner: {
-    marginTop: width * 0.2,
-    height: height * 0.5, // 50% of screen height
-  },
-  imageBackgroundImage: {
-    opacity: 0.5, // Làm mờ hình nền
-  },
+ 
   imageContainer: {
-    width,
+    width: width,
     alignItems: "center",
   },
   image: {
@@ -148,16 +133,6 @@ const styles = StyleSheet.create({
   inactiveIndicator: {
     backgroundColor: "gray",
   },
-  buttonSign: {
-    margin: 10,
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 50,
-    width: width * 0.9,
-    height: 50,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   signIn_Button: {
     backgroundColor: "#1068fe",
   },
@@ -173,6 +148,12 @@ const styles = StyleSheet.create({
     color: "#0d0d0d",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 50,
+    width: "100%",
+    alignItems: "center",
   },
 });
 
