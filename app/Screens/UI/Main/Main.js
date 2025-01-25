@@ -1,5 +1,6 @@
+// filepath: /D:/Study/CongNgheMoi/ChapApp_Sophy/components/Screens/Access/Main.js
 import React, { useState, useRef } from "react";
-
+import { useNavigation } from '@react-navigation/native';
 import images from "@/assets/objects/Main_Images";
 import {
   Image,
@@ -8,7 +9,6 @@ import {
   StyleSheet,
   FlatList,
   Dimensions,
-  Button,
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
@@ -18,6 +18,7 @@ const { width, height } = Dimensions.get("window");
 const Main = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef(null);
+  const navigation = useNavigation();
 
   const onViewRef = useRef(({ changed }) => {
     if (changed[0].isViewable) {
@@ -31,7 +32,7 @@ const Main = () => {
       <Text style={styles.app_name}>Sophy</Text>
 
       <ImageBackground
-        source={require("../../../assets/images/bg.png")}
+        source={require("../../../../assets/images/bg.png")}
         style={styles.imageBanner}
         imageStyle={styles.imageBackgroundImage}
       >
@@ -72,15 +73,15 @@ const Main = () => {
       <View>
         <TouchableOpacity
           style={[styles.buttonSign, styles.signIn_Button]}
-          onPress={() => console.log("Get Started")}
+          // onPress={() => navigation.navigate('Login')}
         >
-          <Text style={styles.buttonText}>Get Started</Text>
+          <Text style={styles.buttonText}>Đăng nhập</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.buttonSign, styles.signUp_Button]}
-          onPress={() => console.log("Sign In")}
+          onPress={() => navigation.navigate('Register')}
         >
-          <Text style={styles.buttonSignUpText}>Sign In</Text>
+          <Text style={styles.buttonSignUpText}>Tạo tài khoản mới</Text>
         </TouchableOpacity>
       </View>
     </View>
