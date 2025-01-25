@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Access from "@/components/Screens/Access/Access";
-import Main from "@/components/Screens/Access/Main";
+import Main from "@/app/Screens/UI/Main/Main";
 import { StatusBar, StyleSheet, View } from "react-native";
 
 export default function App() {
@@ -9,7 +9,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowMain(true);
-    }, 2000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
