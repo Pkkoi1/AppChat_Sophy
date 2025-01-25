@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Access from "@/components/Screens/Access/Access";
-import Main from "@/app/Screens/UI/Main/Main";
+import Main from "@/app/Screens/Main/Main";
 import { StatusBar, StyleSheet, View } from "react-native";
 
 export default function App() {
