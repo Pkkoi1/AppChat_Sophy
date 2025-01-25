@@ -77,7 +77,7 @@ const Main = () => {
       <View style={MainStyle({width}).buttonContainer}>
         <TouchableOpacity
           style={[submitButton().submit, MainStyle({width}).signIn_Button]}
-          // onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation.navigate('Login')}
         >
           <Text style={MainStyle({width}).buttonText}>Đăng nhập</Text>
         </TouchableOpacity>

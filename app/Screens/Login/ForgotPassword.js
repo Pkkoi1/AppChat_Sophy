@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import styles from "./styles/ForgotPassword.style";
+// import styles from "./styles/ForgotPassword.style";
 function ResetPasswordScreen() {
   const [phone, setPhone] = useState("");
 
@@ -45,6 +45,43 @@ function ResetPasswordScreen() {
   );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+  },
+  subtitleContainer: {
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+  },
+  nextButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: "#0c8de8",
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  nextButtonText: {
+    color: "#fff",
+    fontSize: 20,
+  },
+});
 
 
 export default ResetPasswordScreen;
