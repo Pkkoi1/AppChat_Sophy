@@ -45,7 +45,7 @@ const Register = () => {
             uncheckedIcon="checkbox-blank-outline"
           />
           <Text>Tôi đồng ý với các </Text>
-          <TouchableOpacity onPress={() => { }}>
+          <TouchableOpacity onPress={() => navigation.navigate('TermsOfService')}>
             <Text style={RegisterStyle({ width, height }).linkText}>điều khoản sử dụng Sophy</Text>
           </TouchableOpacity>
         </View>
@@ -58,7 +58,7 @@ const Register = () => {
             uncheckedIcon="checkbox-blank-outline"
           />
           <Text>Tôi đồng ý với </Text>
-          <TouchableOpacity onPress={() => { }}>
+          <TouchableOpacity onPress={() => navigation.navigate('SocialNetworkTerms')}>
             <Text style={RegisterStyle({ width, height }).linkText}>
               điều khoản Mạng xã hội của Sophy
             </Text>
