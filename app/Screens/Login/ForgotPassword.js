@@ -8,7 +8,11 @@ import {
   Alert,
 } from "react-native";
 import styles from "@/components/LoginStyle/ForgotPassword.style";
-function ResetPasswordScreen() {
+import Icon from "react-native-vector-icons/Ionicons";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
+
+function ResetPasswordScreen({ navigation }) {
   const [phone, setPhone] = useState("");
 
   const handleResetPassword = function () {
@@ -21,14 +25,22 @@ function ResetPasswordScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Hướng dẫn */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          {/* Replace button with icon */}
+          <Icon name="arrow-back" size={26} color="#fff" />
+          
+
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Lấy lại mật khẩu</Text>
+      </View>
+
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitle}>
           Nhập số điện thoại để lấy lại mật khẩu
         </Text>
       </View>
 
-      {/* Trường nhập số điện thoại */}
       <TextInput
         style={styles.input}
         placeholder="Số điện thoại"
@@ -37,14 +49,11 @@ function ResetPasswordScreen() {
         onChangeText={setPhone}
       />
 
-      {/* Nút gửi */}
       <TouchableOpacity style={styles.nextButton} onPress={handleResetPassword}>
         <Text style={styles.nextButtonText}>→</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
-
 
 export default ResetPasswordScreen;

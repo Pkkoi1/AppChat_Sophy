@@ -14,6 +14,6 @@
     "**/*.js",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "app/Screens/Register/TermsOfService", "app/Screens/Register/SocialNetworkTerms"  ]
 }
 
