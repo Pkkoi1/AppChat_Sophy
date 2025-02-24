@@ -24,6 +24,7 @@ const RegisterStyle = (props) => {
       color: "#0c8de8",
       textDecorationLine: "none",
       fontWeight: "bold",
+      textAlign:"left",
     },
     text: {
       flexWrap: "wrap",

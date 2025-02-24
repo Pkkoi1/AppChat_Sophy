@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import contaier from "@/components/Container/ContainerStyle";
-import RegisterStyle from "@/components/Register/RegisterStyle";
+import RegisterStyle from "@/app/Screens/Register/RegisterStyle";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import PhoneNumber from "../../../components/Screens/PhoneNumber/PhoneNumber";
+import PhoneNumber from "../../../components/PhoneNumber/PhoneNumber";
 import { CheckBox } from "@rneui/themed";
 
 const { width, height } = Dimensions.get("window");
