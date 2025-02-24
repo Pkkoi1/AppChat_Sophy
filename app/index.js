@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Access from "@/components/Screens/Access/Access";
+import Access from "../components/Access/Access";
 import Main from "@/app/Screens/Main/Main";
 import { StatusBar, StyleSheet, View } from "react-native";
 

@@ -19,7 +19,9 @@ function LoginScreen({ navigation }) {
       Alert.alert('Thông báo', 'Vui lòng nhập đầy đủ thông tin!');
       return;
     }
+    
     Alert.alert('Đăng nhập thành công!', `Số điện thoại: ${phone}`);
+    navigation.navigate('Home');
   };
 
   return (

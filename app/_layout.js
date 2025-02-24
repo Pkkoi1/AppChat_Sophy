@@ -5,6 +5,8 @@ import Register from "@/app/Screens/Register/Register";
 import Login from "@/app/Screens/Login/Login";
 import ForgotPassword from "@/app/Screens/Login/ForgotPassword";
 import { StyleSheet } from "react-native";
+import Home from "./Screens/Home/Home";
+import Chat from "./Screens/Chat/Body";
 
 export default function RootLayout() {
   const Stack = createNativeStackNavigator();
@@ -18,6 +20,9 @@ export default function RootLayout() {
       <Stack.Screen name="Register" component={Register} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="Home" component={Home} />
+      <Stack.Screen name="Chat" component={Chat} />
+
     </Stack.Navigator>
   );
 }
