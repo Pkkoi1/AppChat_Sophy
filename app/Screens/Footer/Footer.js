@@ -9,7 +9,7 @@ const footerItem = [
   { name: "contacts", filledName: "contacts", title: "Danh bạ", screen: null },
   { name: "find", filledName: "find", title: "Khám phá", screen: null },
   { name: "clockcircleo", filledName: "clockcircle", title: "Nhật ký", screen: null },
-  { name: "user", filledName: "user", title: "Cá nhân", screen: "Chat" },
+  { name: "user", filledName: "user", title: "Cá nhân", screen: "Profile" },
 ];
 
 const Footer = () => {
@@ -50,6 +50,7 @@ const Footer = () => {
         useNativeDriver: true,
       }),
     ]).start();
+    
   };
 
   return (

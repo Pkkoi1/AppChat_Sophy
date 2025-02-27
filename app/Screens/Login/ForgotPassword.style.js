@@ -25,7 +25,7 @@ export default StyleSheet.create({
     header: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: '#007AFF',  // Màu giống Zalo
+      backgroundColor: '#1b96fd',  // Màu giống Zalo
       height: 60, // Chiều cao header
       paddingHorizontal: 10,
     },
