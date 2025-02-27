@@ -7,7 +7,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import styles from "@/components/LoginStyle/ForgotPassword.style";
+import styles from "./ForgotPassword.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 

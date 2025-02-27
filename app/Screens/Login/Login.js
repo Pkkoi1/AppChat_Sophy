@@ -5,9 +5,11 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  SafeAreaView, // Import SafeAreaView
   StyleSheet,
+  StatusBar,
 } from "react-native";
-import styles from "@/components/LoginStyle/Login.style";
+import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -27,61 +29,66 @@ function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Header giống Zalo */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          {/* Replace button with icon */}
-          <Icon name="arrow-back" size={26} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Đăng nhập</Text>
-      </View>
-
-      {/* Subtitle */}
-      <View style={styles.subtitleContainer}>
-        <Text style={styles.subtitle}>
-          Vui lòng nhập số điện thoại và mật khẩu để đăng nhập
-        </Text>
-      </View>
-
-      {/* Input fields */}
-      <TextInput
-        style={styles.input}
-        placeholder="Số điện thoại"
-        keyboardType="phone-pad"
-        value={phone}
-        onChangeText={setPhone}
+    <SafeAreaView style={{ flex: 1 }} backgroundColor="#007AFF">
+      <StatusBar
+        barStyle="light-content" // Chỉnh màu chữ của status bar
+        backgroundColor="#1b96fd" // Chỉnh màu nền của status bar
       />
-      <View style={styles.passwordContainer}>
+
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Icon name="arrow-back" size={32} color="#fff" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Đăng nhập</Text>
+        </View>
+
+        <View style={styles.subtitleContainer}>
+          <Text style={styles.subtitle}>
+            Vui lòng nhập số điện thoại và mật khẩu để đăng nhập
+          </Text>
+        </View>
+
         <TextInput
-          style={styles.passwordInput}
-          placeholder="Mật khẩu"
-          secureTextEntry={secureTextEntry}
-          value={password}
-          onChangeText={setPassword}
+          style={styles.input}
+          placeholder="Số điện thoại"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={setPhone}
         />
-        <TouchableOpacity onPress={() => setSecureTextEntry(!secureTextEntry)}>
-          <Text style={styles.showText}>{secureTextEntry ? "HIỆN" : "ẨN"}</Text>
+        <View style={styles.passwordContainer}>
+          <TextInput
+            style={styles.passwordInput}
+            placeholder="Mật khẩu"
+            secureTextEntry={secureTextEntry}
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            onPress={() => setSecureTextEntry(!secureTextEntry)}
+          >
+            <Text style={styles.showText}>
+              {secureTextEntry ? "HIỆN" : "ẨN"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
+          <Text style={styles.forgotPassword}>Lấy lại mật khẩu</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.faqLinkContainer}
+          onPress={() => Alert.alert("Câu hỏi thường gặp")}
+        >
+          <Text style={styles.faqLink}>Câu hỏi thường gặp ›</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.nextButton} onPress={handleLogin}>
+          <Text style={styles.nextButtonText}>→</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Forgot password */}
-      <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
-        <Text style={styles.forgotPassword}>Lấy lại mật khẩu</Text>
-      </TouchableOpacity>
-
-      {/* FAQ link */}
-      <TouchableOpacity
-        style={styles.faqLinkContainer}
-        onPress={() => Alert.alert("Câu hỏi thường gặp")}
-      >
-        <Text style={styles.faqLink}>Câu hỏi thường gặp ›</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.nextButton} onPress={handleLogin}>
-        <Text style={styles.nextButtonText}>→</Text>
-      </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

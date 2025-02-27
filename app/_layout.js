@@ -9,6 +9,7 @@ import SocialNetworkTerms from "./Screens/Register/SocialNetworkTerms";
 import TermsOfService from "./Screens/Register/TermsOfService";
 import Home from "./Screens/Home/Home";
 import Chat from "./Screens/Chat/Body";
+import Profile from "./Screens/Profile/Profile";
 
 export default function RootLayout() {
   const Stack = createNativeStackNavigator();
@@ -26,6 +27,7 @@ export default function RootLayout() {
       <Stack.Screen name="TermsOfService" component={TermsOfService} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen name="Profile" component={Profile} />
     </Stack.Navigator>
   );
 }
