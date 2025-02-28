@@ -1,23 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, TouchableOpacity, Animated } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import FooterStyle from "./FooterStyle";
 
-const footerItem = [
-  { name: "message1", filledName: "message1", title: "Tin nhắn", screen: "Home" },
+export const footerItem = [
+  {
+    name: "message1",
+    filledName: "message1",
+    title: "Tin nhắn",
+    screen: "Inbox",
+  },
   { name: "contacts", filledName: "contacts", title: "Danh bạ", screen: null },
   { name: "find", filledName: "find", title: "Khám phá", screen: null },
-  { name: "clockcircleo", filledName: "clockcircle", title: "Nhật ký", screen: null },
+  {
+    name: "clockcircleo",
+    filledName: "clockcircle",
+    title: "Nhật ký",
+    screen: null,
+  },
   { name: "user", filledName: "user", title: "Cá nhân", screen: "Profile" },
 ];
 
-const Footer = () => {
-  const navigation = useNavigation();
+const Footer = ({ setCurrentScreen }) => {
   const route = useRoute();
 
-  const [selectedIcon, setSelectedIcon] = useState(route.name);
-  const [unreadMessages, setUnreadMessages] = useState(3); // 🔹 Số lượng tin nhắn chưa đọc mặc định
+  // 🔥 Lấy màn hình đầu tiên trong danh sách footerItem
+  const initialScreen = footerItem[0].screen;
+  const [selectedIcon, setSelectedIcon] = useState(initialScreen);
+  const [unreadMessages, setUnreadMessages] = useState(3);
+
   const [animations, setAnimations] = useState(
     footerItem.reduce((acc, item) => {
       acc[item.name] = new Animated.Value(1);
@@ -26,17 +38,22 @@ const Footer = () => {
   );
 
   useEffect(() => {
-    setSelectedIcon(route.name);
+    if (route.name) {
+      setSelectedIcon(route.name);
+    } else {
+      setSelectedIcon(initialScreen); // 🔥 Nếu route không có, chọn mặc định
+    }
   }, [route.name]);
 
+  useEffect(() => {
+    setCurrentScreen(initialScreen); // 🔥 Cập nhật màn hình cha ngay từ đầu
+  }, []);
+
   const handlePress = (item) => {
-    if (!animations[item.name]) return;
+    if (!item.screen) return;
 
     setSelectedIcon(item.screen);
-
-    if (item.screen) {
-      navigation.navigate(item.screen);
-    }
+    setCurrentScreen(item.screen);
 
     Animated.sequence([
       Animated.timing(animations[item.name], {
@@ -50,7 +67,6 @@ const Footer = () => {
         useNativeDriver: true,
       }),
     ]).start();
-    
   };
 
   return (
@@ -66,13 +82,14 @@ const Footer = () => {
             >
               <View style={{ position: "relative" }}>
                 <AntDesign
-                  name={selectedIcon === item.screen ? item.filledName : item.name}
+                  name={
+                    selectedIcon === item.screen ? item.filledName : item.name
+                  }
                   size={selectedIcon === item.screen ? 28 : 24}
                   color={selectedIcon === item.screen ? "#1b96fd" : "#000"}
                 />
-                
-                {/* 🔹 Badge hiển thị số lượng tin nhắn chưa đọc */}
-                {item.screen === "Home" && unreadMessages > 0 && (
+
+                {item.screen === "Inbox" && unreadMessages > 0 && (
                   <View style={FooterStyle.badge}>
                     <Text style={FooterStyle.badgeText}>{unreadMessages}</Text>
                   </View>
