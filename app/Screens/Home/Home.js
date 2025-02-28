@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import Footer from "../Footer/Footer";
 import HomeStyle from "./HomeStyle";
 import HeadView from "../Header/Header";
@@ -11,20 +11,24 @@ import Chat from "../Chat/Body";
 
 const Home = () => {
   const [currentScreen, setCurrentScreen] = useState("Inbox");
+
   const screenComponents = {
-    Inbox: <ListInbox />,
-    Register: <Register />,
-    ForgotPassword: <ForgotPassword />,
-    Chat: <Chat />,
-    Profile: <Profile />,
+    Inbox: () => <ListInbox />,
+    Register: () => <Register />,
+    ForgotPassword: () => <ForgotPassword />,
+    Chat: () => <Chat />,
+    Profile: () => <Profile />,
   };
+
+  const CurrentScreenComponent =
+    screenComponents[currentScreen] || (() => <Text>Screen not found</Text>);
 
   return (
     <View style={HomeStyle().homeContainer}>
-      {/* <HeadView /> */}
-      <HeadView page="Inbox" /> 
-      <View style={{ flex: 1 }}>{screenComponents[currentScreen]}</View>
-
+      <HeadView page={currentScreen} />
+      <View style={{ flex: 1 }}>
+        <CurrentScreenComponent />
+      </View>
       <Footer setCurrentScreen={setCurrentScreen} />
     </View>
   );

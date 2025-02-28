@@ -13,6 +13,7 @@ const Inbox = ({ name, message, date }) => {
         flexDirection: "row",
         alignItems: "center",
         padding: 10,
+        paddingLeft: 20,
         borderBottomWidth: 1,
         borderBottomColor: "#ddd",
         backgroundColor: "white",
@@ -20,7 +21,7 @@ const Inbox = ({ name, message, date }) => {
     >
       <Image
         source={require("../../../assets/images/avt.jpg")}
-        style={{ width: 50, height: 50, borderRadius: 25, marginRight: 10 }}
+        style={{ width: 50, height: 50, borderRadius: 25, marginRight: 20 }}
       />
       <View style={{ flex: 1 }}>
         <Text style={{ fontSize: 16, fontWeight: "bold" }}>{name}</Text>
