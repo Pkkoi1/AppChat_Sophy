@@ -4,7 +4,7 @@ const HomeStyle = () => {
   return StyleSheet.create({
     homeContainer: {
       flex: 1,
-      backgroundColor: "#f8f9fa",
+      backgroundColor: "#f9f9f9",
     },
   });
 };
