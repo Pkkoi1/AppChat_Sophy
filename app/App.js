@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider as PaperProvider } from "react-native-paper";
 import { StyleSheet } from "react-native";
 
-import Main from "./Screens/main/Main";
 import Register from "./Screens/register/Register";
 import Login from "./Screens/login/Login";
 import ForgotPassword from "./Screens/login/ForgotPassword";
@@ -12,6 +11,9 @@ import TermsOfService from "./Screens/register/TermsOfService";
 import Home from "./Screens/home/Home";
 import Chat from "./Screens/chat/Body";
 import Profile from "./Screens/profile/Profile";
+import Discover from "./Screens/discover/Discover";
+import Diary from "./Screens/diary/Diary";
+import Main from "./Screens/main/Main";
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +36,8 @@ function RootLayout() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="Discover" component={Discover} />
+        <Stack.Screen name="Diary" component={Diary} />
       </Stack.Navigator>
     </PaperProvider>
   );
