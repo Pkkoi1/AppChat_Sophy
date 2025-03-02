@@ -1,0 +1,138 @@
+[
+  {
+    "officialAccountId": "oa12345",
+    "officialAccountName": "Sở Tài Nguyên & Môi Trường",
+    "officialAccountAvatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpMOfWv7xzXoOlVzxYC0TkiVrCpDM9pPXw6g&s",
+    "description": "Thông tin chính thức về môi trường và tài nguyên thiên nhiên.",
+    "followers": 10500,
+    "posts": [
+      {
+        "postId": "p1",
+        "title": "Chương trình trồng cây xanh 2025",
+        "content": "Cùng tham gia trồng cây xanh để bảo vệ môi trường.",
+        "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsT-iuj_epch3vU_9Xh_bCAuNer1Q97cV8OQ&s",
+        "timestamp": "2025-03-01T10:00:00Z",
+        "likes": 1200
+      }
+    ]
+  },
+  {
+    "officialAccountId": "oa12346",
+    "officialAccountName": "Bộ Y Tế",
+    "officialAccountAvatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsT-iuj_epch3vU_9Xh_bCAuNer1Q97cV8OQ&s",
+    "description": "Cập nhật thông tin sức khỏe và y tế.",
+    "followers": 20500,
+    "posts": [
+      {
+        "postId": "p2",
+        "title": "Cách phòng tránh cúm mùa",
+        "content": "Những biện pháp đơn giản để bảo vệ sức khỏe.",
+        "image": "https://example.com/flu-prevention.jpg",
+        "timestamp": "2025-03-02T08:30:00Z",
+        "likes": 3200
+      }
+    ]
+  },
+  {
+    "officialAccountId": "oa12347",
+    "officialAccountName": "Đại học Quốc gia",
+    "officialAccountAvatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4zB8Cp3kOlGbl3L7Zhy92EUSL4FgedQyywg&s",
+    "description": "Trang thông tin chính thức của Đại học Quốc gia.",
+    "followers": 15000,
+    "posts": [
+      {
+        "postId": "p3",
+        "title": "Lịch tuyển sinh năm 2025",
+        "content": "Thông báo chính thức về kỳ tuyển sinh sắp tới.",
+        "image": "https://example.com/admissions.jpg",
+        "timestamp": "2025-03-03T09:00:00Z",
+        "likes": 1800
+      }
+    ]
+  },
+  {
+    "officialAccountId": "oa12348",
+    "officialAccountName": "Cục Giao Thông",
+    "officialAccountAvatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSFkzEH1-i3KuL40jLzh_Nup3kxevEbJ1l2dQ&s",
+    "description": "Cập nhật tình hình giao thông và luật lệ đường bộ.",
+    "followers": 8500,
+    "posts": [
+      {
+        "postId": "p4",
+        "title": "Lưu ý khi tham gia giao thông dịp Tết",
+        "content": "Hãy tuân thủ luật giao thông để đảm bảo an toàn.",
+        "image": "https://example.com/traffic-rules.jpg",
+        "timestamp": "2025-03-04T07:45:00Z",
+        "likes": 950
+      }
+    ]
+  },
+  {
+    "officialAccountId": "oa12349",
+    "officialAccountName": "Báo Thanh Niên",
+    "officialAccountAvatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTP3dy-osQJ2VzfIVIySCHo8QBD12vve7D3BQ&s",
+    "description": "Tin tức nhanh và chính xác về đời sống và xã hội.",
+    "followers": 50200,
+    "posts": [
+      {
+        "postId": "p5",
+        "title": "Chính sách mới về thuế năm 2025",
+        "content": "Những thay đổi quan trọng trong chính sách thuế.",
+        "image": "https://example.com/tax-policy.jpg",
+        "timestamp": "2025-03-05T14:00:00Z",
+        "likes": 4100
+      }
+    ]
+  },
+  {
+    "officialAccountId": "oa12350",
+    "officialAccountName": "Cục Khí Tượng",
+    "officialAccountAvatar": "https://upload.wikimedia.org/wikipedia/vi/6/62/Logo_T%E1%BB%95ng_c%E1%BB%A5c_Kh%C3%AD_t%C6%B0%E1%BB%A3ng_Th%E1%BB%A7y_v%C4%83n.jpg",
+    "description": "Dự báo thời tiết chính xác từng ngày.",
+    "followers": 30200,
+    "posts": [
+      {
+        "postId": "p6",
+        "title": "Dự báo thời tiết tuần tới",
+        "content": "Cảnh báo mưa lớn và gió mạnh ở một số khu vực.",
+        "image": "https://example.com/weather-forecast.jpg",
+        "timestamp": "2025-03-06T06:00:00Z",
+        "likes": 2700
+      }
+    ]
+  },
+  {
+    "officialAccountId": "oa12351",
+    "officialAccountName": "Hội Chữ Thập Đỏ",
+    "officialAccountAvatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlAZhHA5jJRxFWdCf5vJykn4IUddq5ynQrpQ&s",
+    "description": "Cung cấp thông tin về hoạt động nhân đạo và cứu trợ.",
+    "followers": 17800,
+    "posts": [
+      {
+        "postId": "p7",
+        "title": "Lời kêu gọi hiến máu tình nguyện",
+        "content": "Hãy giúp đỡ những người cần máu bằng hành động ý nghĩa này.",
+        "image": "https://example.com/blood-donation.jpg",
+        "timestamp": "2025-03-07T11:30:00Z",
+        "likes": 3200
+      }
+    ]
+  },
+  {
+    "officialAccountId": "oa12352",
+    "officialAccountName": "Đài Truyền Hình Quốc Gia",
+    "officialAccountAvatar": "https://bcp.cdnchinhphu.vn/334894974524682240/2022/9/8/vtv-1662628316821532433028.jpg",
+    "description": "Cập nhật tin tức hàng ngày, nhanh chóng và chính xác.",
+    "followers": 70500,
+    "posts": [
+      {
+        "postId": "p8",
+        "title": "Tổng hợp tin tức nổi bật hôm nay",
+        "content": "Những sự kiện quan trọng diễn ra trong ngày.",
+        "image": "https://example.com/daily-news.jpg",
+        "timestamp": "2025-03-08T20:00:00Z",
+        "likes": 8700
+      }
+    ]
+  }
+]
