@@ -4,9 +4,9 @@ import Footer from "../Footer/Footer";
 import HomeStyle from "./HomeStyle";
 import HeadView from "../Header/Header";
 import ListInbox from "../Inbox/ListInbox";
-import Register from "../Register/Register";
 import Profile from "../Profile/Profile";
 import ForgotPassword from "../Login/ForgotPassword";
+import Directory from "../directory/Index.jsx";
 import Chat from "../Chat/Body";
 import Discover from "../Discover/Discover";
 
@@ -15,7 +15,7 @@ const Home = () => {
 
   const screenComponents = {
     Inbox: () => <ListInbox />,
-    Register: () => <Register />,
+    Directory: () => <Directory />,
     ForgotPassword: () => <ForgotPassword />,
     Chat: () => <Chat />,
     Discover: () => <Discover/>,

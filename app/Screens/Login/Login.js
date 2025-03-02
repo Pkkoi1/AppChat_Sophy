@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,13 +10,20 @@ import {
   StatusBar,
 } from "react-native";
 import styles from "./Login.style";
+import { FAB } from "react-native-elements";
 import Icon from "react-native-vector-icons/Ionicons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { AntDesign } from "@expo/vector-icons";
 
 function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+
+  useEffect(() => {
+    setIsButtonEnabled(phone.length > 0 && password.length > 0);
+  }, [phone, password]);
 
   const handleLogin = () => {
     if (!phone || !password) {
@@ -84,9 +91,20 @@ function LoginScreen({ navigation }) {
           <Text style={styles.faqLink}>Câu hỏi thường gặp ›</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.nextButton} onPress={handleLogin}>
-          <Text style={styles.nextButtonText}>→</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonField}>
+          <TouchableOpacity
+            style={[
+              styles.nextButton,
+              isButtonEnabled && styles.nextButtonEnabled,
+            ]}
+            onPress={handleLogin}
+            disabled={!isButtonEnabled}
+          >
+            <View style={styles.nextButtonText}>
+              <AntDesign name="arrowright" size={24} color="white" />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

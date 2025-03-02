@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "name": "Nguyễn Văn A",
+    "avatar": "avatar1.png",
+    "status": "online",
+    "lastActive": "2025-03-01T12:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "Trần Thị B",
+    "avatar": "avatar2.png",
+    "status": "offline",
+    "lastActive": "2025-03-01T10:00:00Z"
+  },
+  {
+    "id": 3,
+    "name": "Lê Văn C",
+    "avatar": "avatar3.png",
+    "status": "busy",
+    "lastActive": "2025-03-01T08:00:00Z"
+  },
+  {
+    "id": 4,
+    "name": "Phạm Thị D",
+    "avatar": "avatar4.png",
+    "status": "away",
+    "lastActive": "2025-03-01T11:30:00Z"
+  },
+  {
+    "id": 5,
+    "name": "Hoàng Văn E",
+    "avatar": "avatar5.png",
+    "status": "online",
+    "lastActive": "2025-03-01T12:00:00Z"
+  },
+  {
+    "id": 6,
+    "name": "Võ Thị F",
+    "avatar": "avatar6.png",
+    "status": "offline",
+    "lastActive": "2025-03-01T09:45:00Z"
+  },
+  {
+    "id": 7,
+    "name": "Đinh Văn G",
+    "avatar": "avatar7.png",
+    "status": "busy",
+    "lastActive": "2025-03-01T11:50:00Z"
+  },
+  {
+    "id": 8,
+    "name": "Bùi Thị H",
+    "avatar": "avatar8.png",
+    "status": "away",
+    "lastActive": "2025-03-01T11:55:00Z"
+  },
+  {
+    "id": 9,
+    "name": "Ngô Văn I",
+    "avatar": "avatar9.png",
+    "status": "online",
+    "lastActive": "2025-03-01T12:00:00Z"
+  },
+  {
+    "id": 10,
+    "name": "Tạ Thị J",
+    "avatar": "avatar10.png",
+    "status": "offline",
+    "lastActive": "2025-03-01T09:10:00Z"
+  }
+]
