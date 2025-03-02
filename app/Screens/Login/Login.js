@@ -13,6 +13,9 @@ import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 
+// Đọc dữ liệu từ file user.json
+const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
+
 function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -23,29 +26,20 @@ function LoginScreen({ navigation }) {
     setIsButtonEnabled(phone.length > 0 && password.length > 0);
   }, [phone, password]);
 
-  const handleLogin = async () => {
+  const handleLogin = () => {
     if (!phone || !password) {
       Alert.alert("Thông báo", "Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    try {
-      // Lấy danh sách người dùng từ API
-      const response = await fetch("https://67c44b10c4649b9551b32c00.mockapi.io/api/login");
-      const users = await response.json();
+    // Tìm người dùng có phone và password khớp
+    const user = users.find((u) => u.phone === phone && u.password === password);
 
-      // Kiểm tra thông tin đăng nhập
-      const user = users.find((u) => u.user === phone && u.password === password);
-
-      if (user) {
-        Alert.alert("Đăng nhập thành công!", `Số điện thoại: ${phone}`);
-        navigation.navigate("Home");
-      } else {
-        Alert.alert("Đăng nhập thất bại!", "Sai thông tin đăng nhập!");
-      }
-    } catch (error) {
-      Alert.alert("Lỗi", "Không thể kết nối đến máy chủ. Vui lòng thử lại!");
-      console.error("Error:", error);
+    if (user) {
+      Alert.alert("Đăng nhập thành công!", `Chào ${user.name}!`);
+      navigation.navigate("Home", { userId: user.id, userName: user.name }); // Truyền thông tin người dùng
+    } else {
+      Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
     }
   };
 

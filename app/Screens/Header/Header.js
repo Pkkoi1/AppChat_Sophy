@@ -55,8 +55,6 @@ const HeadView = ({ page }) => {
           <MaterialIcons name="notifications" size={24} color="white" />
         </TouchableOpacity>
 
-        
-        
         </>
       )}
 
