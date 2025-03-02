@@ -6,22 +6,27 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import FriendSubMenu from "./subMenu";
+import FriendSubMenu from "./SubMenu";
 import Friends from "./Friend";
 import friendsList from "../../../../assets/objects/user.json";
+import ListFriendStyle from "./ListFriendStyle";
 
 const ListFriends = () => {
   const renderHeader = () => (
-    <View style={styles.container}>
+    <View style={ListFriendStyle.container}>
       <FriendSubMenu />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={[styles.buttonTab, styles.buttonAll]}>
-          <View style={styles.buttonContent}>
+      <View style={ListFriendStyle.buttonContainer}>
+        <TouchableOpacity
+          style={[ListFriendStyle.buttonTab, ListFriendStyle.buttonAll]}
+        >
+          <View style={ListFriendStyle.buttonContent}>
             <Text>Tất cả</Text>
             <Text>230</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.buttonTab, styles.buttonNew]}>
+        <TouchableOpacity
+          style={[ListFriendStyle.buttonTab, ListFriendStyle.buttonNew]}
+        >
           <Text>Mới truy cập</Text>
         </TouchableOpacity>
       </View>
@@ -50,73 +55,17 @@ const ListFriends = () => {
         data={Object.keys(groupedFriends)}
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
-          <View style={styles.listFriendContainer}>
-            <Text style={styles.categoryTitle}>{item}</Text>
+          <View style={ListFriendStyle.listFriendContainer}>
+            <Text style={ListFriendStyle.categoryTitle}>{item}</Text>
             {groupedFriends[item].map((friend) => (
               <Friends key={friend.id} friend={friend} />
             ))}
           </View>
         )}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={ListFriendStyle.container}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#f9f9f9",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    marginBottom: 10,
-    marginTop: 10,
-    borderBottomColor: "#e0e0e0",
-    borderBottomWidth: 0.5,
-    padding: 10,
-    paddingVertical: 14,
-    backgroundColor: "#fff",
-  },
-  buttonTab: {
-    textAlign: "center",
-    width: 100,
-    height: 28,
-    backgroundColor: "#ddd",
-    borderRadius: 18,
-    padding: 5,
-    paddingHorizontal: 10,
-  },
-  buttonAll: {
-    marginRight: 10,
-  },
-  buttonNew: {},
-  friendList: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  buttonContent: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    textAlign: "center",
-  },
-  friendTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  listFriendContainer: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    padding: 10,
-    backgroundColor: "#ffffff",
-  },
-});
 
 export default ListFriends;
