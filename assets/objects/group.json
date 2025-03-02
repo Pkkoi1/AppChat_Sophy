@@ -1,0 +1,274 @@
+[
+  {
+    "groupId": "g12355",
+    "groupName": "Lớp Công Nghệ Thông Tin",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u1",
+        "name": "Nguyễn Văn A",
+        "avatar": "https://example.com/user1.jpg"
+      },
+      {
+        "userId": "u2",
+        "name": "Trần Thị B",
+        "avatar": "https://example.com/user2.jpg"
+      },
+      {
+        "userId": "u3",
+        "name": "Lê Văn C",
+        "avatar": "https://example.com/user3.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m1",
+        "senderId": "u1",
+        "text": "Chào mọi người!",
+        "timestamp": "2025-03-01T14:00:00Z"
+      },
+      {
+        "messageId": "m2",
+        "senderId": "u2",
+        "text": "Buổi thảo luận về AI sẽ bắt đầu lúc 15h!\nNhớ tham gia đầy đủ nhé!",
+        "timestamp": "2025-03-01T14:30:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12356",
+    "groupName": "Lớp Kinh Tế",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u4",
+        "name": "Phạm Văn D",
+        "avatar": "https://example.com/user4.jpg"
+      },
+      {
+        "userId": "u5",
+        "name": "Hoàng Thị E",
+        "avatar": "https://example.com/user5.jpg"
+      },
+      {
+        "userId": "u6",
+        "name": "Lý Văn F",
+        "avatar": "https://example.com/user6.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m3",
+        "senderId": "u5",
+        "text": "Ai có tài liệu về kinh tế vĩ mô không?",
+        "timestamp": "2025-03-01T11:45:00Z"
+      },
+      {
+        "messageId": "m3",
+        "senderId": "u5",
+        "text": "Ai có tài liệu về kinh tế vĩ mô không?",
+        "timestamp": "2025-03-02T1:45:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12357",
+    "groupName": "Lớp Marketing",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u7",
+        "name": "Ngô Văn G",
+        "avatar": "https://example.com/user7.jpg"
+      },
+      {
+        "userId": "u8",
+        "name": "Bùi Thị H",
+        "avatar": "https://example.com/user8.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m4",
+        "senderId": "u8",
+        "text": "Họp nhóm làm case study!",
+        "timestamp": "2025-02-28T16:20:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12358",
+    "groupName": "Lớp Thiết Kế Đồ Họa",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u9",
+        "name": "Trịnh Văn I",
+        "avatar": "https://example.com/user9.jpg"
+      },
+      {
+        "userId": "u10",
+        "name": "Đặng Thị J",
+        "avatar": "https://example.com/user10.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m5",
+        "senderId": "u9",
+        "text": "Có ai biết dùng Photoshop không?",
+        "timestamp": "2025-02-27T20:30:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12359",
+    "groupName": "Lớp Khoa Học Dữ Liệu",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u11",
+        "name": "Lâm Văn K",
+        "avatar": "https://example.com/user11.jpg"
+      },
+      {
+        "userId": "u12",
+        "name": "Võ Thị L",
+        "avatar": "https://example.com/user12.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m6",
+        "senderId": "u11",
+        "text": "Thảo luận về Machine Learning!",
+        "timestamp": "2025-02-26T10:10:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12360",
+    "groupName": "Lớp Kế Toán",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u13",
+        "name": "Phan Văn M",
+        "avatar": "https://example.com/user13.jpg"
+      },
+      {
+        "userId": "u14",
+        "name": "Tạ Thị N",
+        "avatar": "https://example.com/user14.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m7",
+        "senderId": "u14",
+        "text": "Học cách lập bảng cân đối kế toán!",
+        "timestamp": "2025-02-25T17:00:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12361",
+    "groupName": "Lớp Luật",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u15",
+        "name": "Đỗ Văn O",
+        "avatar": "https://example.com/user15.jpg"
+      },
+      {
+        "userId": "u16",
+        "name": "Lê Thị P",
+        "avatar": "https://example.com/user16.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m8",
+        "senderId": "u15",
+        "text": "Thảo luận về luật doanh nghiệp!",
+        "timestamp": "2025-02-24T09:35:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12362",
+    "groupName": "Lớp Y Khoa",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u17",
+        "name": "Cao Văn Q",
+        "avatar": "https://example.com/user17.jpg"
+      },
+      {
+        "userId": "u18",
+        "name": "Nguyễn Thị R",
+        "avatar": "https://example.com/user18.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m9",
+        "senderId": "u18",
+        "text": "Ai có tài liệu về giải phẫu học?",
+        "timestamp": "2025-02-23T12:15:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12363",
+    "groupName": "Lớp Dược",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u19",
+        "name": "Phùng Văn S",
+        "avatar": "https://example.com/user19.jpg"
+      },
+      {
+        "userId": "u20",
+        "name": "Lý Thị T",
+        "avatar": "https://example.com/user20.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m10",
+        "senderId": "u19",
+        "text": "Học về cơ chế tác động của thuốc!",
+        "timestamp": "2025-02-22T15:45:00Z"
+      }
+    ]
+  },
+  {
+    "groupId": "g12364",
+    "groupName": "Lớp Nông Nghiệp",
+    "groupAvatar": "https://img.hoidap247.com/picture/question/20200508/large_1588936738888.jpg",
+    "members": [
+      {
+        "userId": "u21",
+        "name": "Trần Văn U",
+        "avatar": "https://example.com/user21.jpg"
+      },
+      {
+        "userId": "u22",
+        "name": "Lê Thị V",
+        "avatar": "https://example.com/user22.jpg"
+      }
+    ],
+    "messages": [
+      {
+        "messageId": "m11",
+        "senderId": "u22",
+        "text": "Thảo luận về công nghệ sinh học!",
+        "timestamp": "2025-02-21T18:25:00Z"
+      }
+    ]
+  }
+]
