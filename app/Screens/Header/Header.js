@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AntDesign, Ionicons, Octicons } from "@expo/vector-icons";
+import { AntDesign, Ionicons, Octicons, MaterialIcons } from "@expo/vector-icons";
 import { TextInput, View, TouchableOpacity } from "react-native";
 import HeaderStyle from "./HeaderStyle";
 
@@ -20,7 +20,6 @@ const HeadView = ({ page }) => {
         onChangeText={setSearch}
       />
 
-      {/* Hiển thị QR code và plus cho trang Inbox */}
       {page === "Inbox" && (
         <>
           <TouchableOpacity>
@@ -33,7 +32,6 @@ const HeadView = ({ page }) => {
       )}
 
 
-      {/* Hiển thị QR code cho trang Khám phá */}
       {page === "Discover" && (
         <>
           <TouchableOpacity>
@@ -41,13 +39,27 @@ const HeadView = ({ page }) => {
           </TouchableOpacity>
         </>
       )}
-
-      {/* Hiển thị setting cho trang Cá nhân */}
       {page === "Profile" && (
         <TouchableOpacity>
           <AntDesign name="setting" size={24} color="white" />
         </TouchableOpacity>
       )}
+
+      {page === "Diary" && (
+        <>
+        <TouchableOpacity>
+          <MaterialIcons name="add-photo-alternate" size={24} color="white" />
+        </TouchableOpacity>
+        
+        <TouchableOpacity>
+          <MaterialIcons name="notifications" size={24} color="white" />
+        </TouchableOpacity>
+
+        
+        
+        </>
+      )}
+
       {page === "Directory" && (
         <TouchableOpacity>
           <Octicons name="person-add" size={24} color="white" />

@@ -17,7 +17,7 @@ export const footerItem = [
     name: "clockcircleo",
     filledName: "clockcircle",
     title: "Nhật ký",
-    screen: null,
+    screen: "Diary",
   },
   { name: "user", filledName: "user", title: "Cá nhân", screen: "Profile" },
 ];

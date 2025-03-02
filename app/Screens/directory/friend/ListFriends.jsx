@@ -6,7 +6,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import FriendSubMenu from "./SubMenu";
+import FriendSubMenu from "./subMenu";
 import Friends from "./Friend";
 import friendsList from "../../../../assets/objects/user.json";
 import ListFriendStyle from "./ListFriendStyle";

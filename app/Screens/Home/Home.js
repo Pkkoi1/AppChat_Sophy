@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import Footer from "../Footer/Footer";
+import Footer from "../footer/Footer";
 import HomeStyle from "./HomeStyle";
-import HeadView from "../Header/Header";
-import ListInbox from "../Inbox/ListInbox";
-import Profile from "../Profile/Profile";
-import ForgotPassword from "../Login/ForgotPassword";
+import HeadView from "../header/Header";
+import ListInbox from "../inbox/ListInbox";
+import Profile from "../profile/Profile";
+import ForgotPassword from "../login/ForgotPassword";
 import Directory from "../directory/Index.jsx";
-import Chat from "../Chat/Body";
-import Discover from "../Discover/Discover";
+import Chat from "../chat/Body";
+import Discover from "../discover/Discover";
+import Diary from "../diary/Diary";
 
 const Home = () => {
   const [currentScreen, setCurrentScreen] = useState("Inbox");
@@ -19,6 +20,7 @@ const Home = () => {
     ForgotPassword: () => <ForgotPassword />,
     Chat: () => <Chat />,
     Discover: () => <Discover/>,
+    Diary: () => <Diary />,
     Profile: () => <Profile />,
     
   };

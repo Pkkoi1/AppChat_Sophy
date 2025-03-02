@@ -5,14 +5,12 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  SafeAreaView, // Import SafeAreaView
+  SafeAreaView,
   StyleSheet,
   StatusBar,
 } from "react-native";
 import styles from "./Login.style";
-import { FAB } from "react-native-elements";
 import Icon from "react-native-vector-icons/Ionicons";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AntDesign } from "@expo/vector-icons";
 
 function LoginScreen({ navigation }) {
@@ -25,22 +23,35 @@ function LoginScreen({ navigation }) {
     setIsButtonEnabled(phone.length > 0 && password.length > 0);
   }, [phone, password]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!phone || !password) {
       Alert.alert("Thông báo", "Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    Alert.alert("Đăng nhập thành công!", `Số điện thoại: ${phone}`);
-    navigation.navigate("Home");
+    try {
+      // Lấy danh sách người dùng từ API
+      const response = await fetch("https://67c44b10c4649b9551b32c00.mockapi.io/api/login");
+      const users = await response.json();
+
+      // Kiểm tra thông tin đăng nhập
+      const user = users.find((u) => u.user === phone && u.password === password);
+
+      if (user) {
+        Alert.alert("Đăng nhập thành công!", `Số điện thoại: ${phone}`);
+        navigation.navigate("Home");
+      } else {
+        Alert.alert("Đăng nhập thất bại!", "Sai thông tin đăng nhập!");
+      }
+    } catch (error) {
+      Alert.alert("Lỗi", "Không thể kết nối đến máy chủ. Vui lòng thử lại!");
+      console.error("Error:", error);
+    }
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }} backgroundColor="#007AFF">
-      <StatusBar
-        barStyle="light-content" // Chỉnh màu chữ của status bar
-        backgroundColor="#1b96fd" // Chỉnh màu nền của status bar
-      />
+      <StatusBar barStyle="light-content" backgroundColor="#1b96fd" />
 
       <View style={styles.container}>
         <View style={styles.header}>
@@ -71,9 +82,7 @@ function LoginScreen({ navigation }) {
             value={password}
             onChangeText={setPassword}
           />
-          <TouchableOpacity
-            onPress={() => setSecureTextEntry(!secureTextEntry)}
-          >
+          <TouchableOpacity onPress={() => setSecureTextEntry(!secureTextEntry)}>
             <Text style={styles.showText}>
               {secureTextEntry ? "HIỆN" : "ẨN"}
             </Text>
@@ -93,10 +102,7 @@ function LoginScreen({ navigation }) {
 
         <View style={styles.buttonField}>
           <TouchableOpacity
-            style={[
-              styles.nextButton,
-              isButtonEnabled && styles.nextButtonEnabled,
-            ]}
+            style={[styles.nextButton, isButtonEnabled && styles.nextButtonEnabled]}
             onPress={handleLogin}
             disabled={!isButtonEnabled}
           >
