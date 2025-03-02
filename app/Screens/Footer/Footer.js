@@ -12,7 +12,7 @@ export const footerItem = [
     screen: "Inbox",
   },
   { name: "contacts", filledName: "contacts", title: "Danh bạ", screen: null },
-  { name: "find", filledName: "find", title: "Khám phá", screen: null },
+  { name: "find", filledName: "find", title: "Khám phá", screen: "Discover" },
   {
     name: "clockcircleo",
     filledName: "clockcircle",

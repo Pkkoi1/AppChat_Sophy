@@ -8,6 +8,7 @@ import Register from "../Register/Register";
 import Profile from "../Profile/Profile";
 import ForgotPassword from "../Login/ForgotPassword";
 import Chat from "../Chat/Body";
+import Discover from "../Discover/Discover";
 
 const Home = () => {
   const [currentScreen, setCurrentScreen] = useState("Inbox");
@@ -17,7 +18,9 @@ const Home = () => {
     Register: () => <Register />,
     ForgotPassword: () => <ForgotPassword />,
     Chat: () => <Chat />,
+    Discover: () => <Discover/>,
     Profile: () => <Profile />,
+    
   };
 
   const CurrentScreenComponent =

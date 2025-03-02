@@ -68,6 +68,16 @@ const HeadView = ({ page }) => {
         </>
       )}
 
+
+      {/* Hiển thị QR code cho trang Khám phá */}
+      {page === "Discover" && (
+        <>
+          <TouchableOpacity>
+            <AntDesign name="qrcode" size={24} color="white" />
+          </TouchableOpacity>
+        </>
+      )}
+
       {/* Hiển thị setting cho trang Cá nhân */}
       {page === "Profile" && (
         <TouchableOpacity>
