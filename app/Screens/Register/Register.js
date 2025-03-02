@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import contaier from "@/components/Container/ContainerStyle";
-import RegisterStyle from "@/app/Screens/Register/RegisterStyle";
+import RegisterStyle from "@/app/Screens/register/RegisterStyle";
 import {
   View,
   Text,

@@ -4,69 +4,90 @@
     "name": "Nguyễn Văn A",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "online",
-    "lastActive": "2025-03-01T12:00:00Z"
+    "lastActive": "2025-03-01T12:00:00Z",
+    "phone": "123",
+    "password": "khoi"
   },
   {
     "id": 2,
     "name": "Trần Thị B",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "offline",
-    "lastActive": "2025-03-01T10:00:00Z"
+    "lastActive": "2025-03-01T10:00:00Z",
+    "phone": "123",
+    "password": "nghiem"
   },
   {
     "id": 3,
     "name": "Lê Văn C",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "busy",
-    "lastActive": "2025-03-01T08:00:00Z"
+    "lastActive": "2025-03-01T08:00:00Z",
+    "phone": "0726456655",
+    "password": "acas"
   },
   {
     "id": 4,
     "name": "Phạm Thị D",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "away",
-    "lastActive": "2025-03-01T11:30:00Z"
+    "lastActive": "2025-03-01T11:30:00Z",
+    "phone": "0726456655",
+    "password": "acas"
+    
   },
   {
     "id": 5,
     "name": "Hoàng Văn E",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "online",
-    "lastActive": "2025-03-01T12:00:00Z"
+    "lastActive": "2025-03-01T12:00:00Z",
+    "phone": "0726456655",
+    "password": "acas"
   },
   {
     "id": 6,
     "name": "Võ Thị F",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "offline",
-    "lastActive": "2025-03-01T09:45:00Z"
+    "lastActive": "2025-03-01T09:45:00Z",
+    "phone": "0726456655",
+    "password": "acas"
   },
   {
     "id": 7,
     "name": "Đinh Văn G",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "busy",
-    "lastActive": "2025-03-01T11:50:00Z"
+    "lastActive": "2025-03-01T11:50:00Z",
+    "phone": "0726456655",
+    "password": "acas"
   },
   {
     "id": 8,
     "name": "Bùi Thị H",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "away",
-    "lastActive": "2025-03-01T11:55:00Z"
+    "lastActive": "2025-03-01T11:55:00Z",
+    "phone": "0726456655",
+    "password": "acas"
   },
   {
     "id": 9,
     "name": "Ngô Văn I",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "online",
-    "lastActive": "2025-03-01T12:00:00Z"
+    "lastActive": "2025-03-01T12:00:00Z",
+    "phone": "0726456655",
+    "password": "acas"
   },
   {
     "id": 10,
     "name": "Tạ Thị J",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&sg",
     "status": "offline",
-    "lastActive": "2025-03-01T09:10:00Z"
+    "lastActive": "2025-03-01T09:10:00Z",
+    "phone": "0726456655",
+    "password": "acas"
   }
 ]

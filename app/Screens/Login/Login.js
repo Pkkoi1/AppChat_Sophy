@@ -5,15 +5,16 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  SafeAreaView, // Import SafeAreaView
+  SafeAreaView,
   StyleSheet,
   StatusBar,
 } from "react-native";
 import styles from "./Login.style";
-import { FAB } from "react-native-elements";
 import Icon from "react-native-vector-icons/Ionicons";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AntDesign } from "@expo/vector-icons";
+
+// Đọc dữ liệu từ file user.json
+const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
 
 function LoginScreen({ navigation }) {
   const [phone, setPhone] = useState("");
@@ -31,16 +32,20 @@ function LoginScreen({ navigation }) {
       return;
     }
 
-    Alert.alert("Đăng nhập thành công!", `Số điện thoại: ${phone}`);
-    navigation.navigate("Home");
+    // Tìm người dùng có phone và password khớp
+    const user = users.find((u) => u.phone === phone && u.password === password);
+
+    if (user) {
+      Alert.alert("Đăng nhập thành công!", `Chào ${user.name}!`);
+      navigation.navigate("Home", { userId: user.id, userName: user.name }); // Truyền thông tin người dùng
+    } else {
+      Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
+    }
   };
 
   return (
     <SafeAreaView style={{ flex: 1 }} backgroundColor="#007AFF">
-      <StatusBar
-        barStyle="light-content" // Chỉnh màu chữ của status bar
-        backgroundColor="#1b96fd" // Chỉnh màu nền của status bar
-      />
+      <StatusBar barStyle="light-content" backgroundColor="#1b96fd" />
 
       <View style={styles.container}>
         <View style={styles.header}>
@@ -71,9 +76,7 @@ function LoginScreen({ navigation }) {
             value={password}
             onChangeText={setPassword}
           />
-          <TouchableOpacity
-            onPress={() => setSecureTextEntry(!secureTextEntry)}
-          >
+          <TouchableOpacity onPress={() => setSecureTextEntry(!secureTextEntry)}>
             <Text style={styles.showText}>
               {secureTextEntry ? "HIỆN" : "ẨN"}
             </Text>
@@ -93,10 +96,7 @@ function LoginScreen({ navigation }) {
 
         <View style={styles.buttonField}>
           <TouchableOpacity
-            style={[
-              styles.nextButton,
-              isButtonEnabled && styles.nextButtonEnabled,
-            ]}
+            style={[styles.nextButton, isButtonEnabled && styles.nextButtonEnabled]}
             onPress={handleLogin}
             disabled={!isButtonEnabled}
           >

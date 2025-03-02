@@ -11,18 +11,13 @@ export const footerItem = [
     title: "Tin nhắn",
     screen: "Inbox",
   },
-  {
-    name: "contacts",
-    filledName: "contacts",
-    title: "Danh bạ",
-    screen: "Directory",
-  },
-  { name: "find", filledName: "find", title: "Khám phá", screen: null },
+  { name: "contacts", filledName: "contacts", title: "Danh bạ", screen: "Directory" },
+  { name: "find", filledName: "find", title: "Khám phá", screen: "Discover" },
   {
     name: "clockcircleo",
     filledName: "clockcircle",
     title: "Nhật ký",
-    screen: null,
+    screen: "Diary",
   },
   { name: "user", filledName: "user", title: "Cá nhân", screen: "Profile" },
 ];
