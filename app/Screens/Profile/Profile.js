@@ -23,7 +23,7 @@ const data = [
 
 const UserProfileScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const [scrollY] = useState(new Animated.Value(0)); // Theo dõi vị trí cuộn
+  const scrollY = useState(new Animated.Value(0))[0]; // Đảm bảo scrollY là Animated.Value
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -32,57 +32,53 @@ const UserProfileScreen = () => {
     }, 2000);
   };
 
-  // Hiệu ứng giãn khi kéo
-  const translateY = scrollY.interpolate({
-    inputRange: [-100, 0, 100],
-    outputRange: [50, 0, 50], // Giãn nội dung khi kéo lên hoặc xuống
-    extrapolate: "clamp",
-  });
+  
 
   return (
-    <View style={{ flex: 1 }}>
-      <ScrollView
-        style={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        bounces={true} // Bật hiệu ứng giãn tự nhiên
-        overScrollMode="always" // Cho phép kéo giãn trên Android
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: true }
-        )}
-        scrollEventThrottle={16} // Tối ưu hóa hiệu ứng khi cuộn
-      >
-        <Animated.View style={{ transform: [{ translateY }] }}>
-          {data.map((item) => (
-            <TouchableOpacity
-              key={item.title}
-              style={[styles.item, styles[`group${item.group}`]]}
-            >
-              <View style={styles.itemContent}>
-                <View style={styles.iconWrapper}>
-                  {item.title === "Khôi Nghiêm" ? (
-                    <View style={styles.iconCircle}>
-                      <AntDesign name="user" size={24} color="blue" />
-                    </View>
-                  ) : item.icon === "security" ? (
-                    <MaterialIcons name="security" size={24} color="blue" />
-                  ) : (
-                    <AntDesign name={item.icon} size={24} color="blue" />
-                  )}
-                </View>
-                <View style={styles.textWrapper}>
-                  <Text style={styles.itemTitle}>{item.title}</Text>
-                  <Text style={styles.itemDescription}>{item.description}</Text>
-                </View>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      bounces={true} // Bật hiệu ứng giãn tự nhiên
+      overScrollMode="always" // Cho phép kéo giãn trên Android
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: false } // Sử dụng native driver để tối ưu hiệu suất
+      )}
+      scrollEventThrottle={16} // Tối ưu hóa hiệu ứng khi cuộn
+      
+    >
+      <Animated.View>
+        {data.map((item) => (
+          <TouchableOpacity
+            key={item.title}
+            style={[styles.item, styles[`group${item.group}`]]}
+          >
+            <View style={styles.itemContent}>
+              <View style={styles.iconWrapper}>
+                {item.title === "Khôi Nghiêm" ? (
+                  <View style={styles.iconCircle}>
+                    <AntDesign name="user" size={24} color="blue" />
+                  </View>
+                ) : item.icon === "security" ? (
+                  <MaterialIcons name="security" size={24} color="blue" />
+                ) : (
+                  <AntDesign name={item.icon} size={24} color="blue" />
+                )}
               </View>
-              <AntDesign name="right" size={16} color="#000" />
-            </TouchableOpacity>
-          ))}
-        </Animated.View>
-      </ScrollView>
-    </View>
+              <View style={styles.textWrapper}>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemDescription}>{item.description}</Text>
+              </View>
+            </View>
+            <AntDesign name="right" size={16} color="#000" />
+          </TouchableOpacity>
+        ))}
+        {/* Thêm khoảng trống để đảm bảo cuộn ở mọi nơi */}
+        <View style={styles.paddingBottom} />
+      </Animated.View>
+    </ScrollView>
   );
 };
 
@@ -132,19 +128,22 @@ const styles = StyleSheet.create({
   },
   group0: {
     borderBottomWidth: 10,
-    borderBlockColor: "#f0f0f0",
+    borderBottomColor: "#f0f0f0", // Sửa lỗi borderBlockColor thành borderBottomColor
   },
   group2: {
     borderBottomWidth: 10,
-    borderBlockColor: "#f0f0f0",
+    borderBottomColor: "#f0f0f0",
   },
   group5: {
     borderBottomWidth: 10,
-    borderBlockColor: "#f0f0f0",
+    borderBottomColor: "#f0f0f0",
   },
   group7: {
     borderBottomWidth: 10,
-    borderBlockColor: "#f0f0f0",
+    borderBottomColor: "#f0f0f0",
+  },
+  paddingBottom: {
+    height: 50, // Thêm khoảng trống để đảm bảo cuộn
   },
 });
 
