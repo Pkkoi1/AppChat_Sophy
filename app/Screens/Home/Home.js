@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { View, Text } from "react-native";
-import Footer from "../footer/Footer";
-import HomeStyle from "./HomeStyle";
-import HeadView from "../header/Header";
-import ListInbox from "../inbox/ListInbox";
-import Profile from "../profile/Profile";
-import ForgotPassword from "../login/ForgotPassword";
-import Directory from "../directory/Index.jsx";
-import Chat from "../chat/Body";
-import Discover from "../discover/Discover";
-import Diary from "../diary/Diary";
+import Footer from "../footer/Footer.js";
+import HomeStyle from "./HomeStyle.js";
+import HeadView from "../header/Header.js";
+import ListInbox from "../inbox/ListInbox.js";
+import Profile from "../profile/Profile.js";
+import ForgotPassword from "../login/ForgotPassword.js";
+import Directory from "../directory/Index.js";
+import Chat from "../chat/Body.js";
+import Discover from "../discover/Discover.js";
+import Diary from "../diary/Diary.js";
 
 const Home = () => {
   const [currentScreen, setCurrentScreen] = useState("Inbox");
