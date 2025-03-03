@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
-import contaier from "@/components/Container/ContainerStyle";
+import contaier from "../../../components/container/ContainerStyle";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import PhoneNumber from "../../../components/PhoneNumber/PhoneNumber";
+import PhoneNumber from "../../../components/phoneNumber/PhoneNumber";
 import { CheckBox } from "@rneui/themed";
 import RegisterStyle from "./RegisterStyle";
 
