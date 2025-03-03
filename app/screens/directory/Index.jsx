@@ -1,25 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View } from "react-native";
 import { Tab } from "@rneui/themed";
 import Friend from "./friend/ListFriends";
 import Group from "./group/ListGroups";
 import OA from "./officialAccount/ListAccounts";
-import IndexStyle from "./IndexStyle"; // Import style mới
+import IndexStyle from "./IndexStyle";
 
 const Directory = () => {
   const [index, setIndex] = useState(0);
+  const [tabKey, setTabKey] = useState(0); // Key để ép Tab render lại
 
-  // Mảng chứa nội dung tương ứng với từng tab
+  useEffect(() => {
+    setTabKey((prevKey) => prevKey + 1); // Thay đổi key để Tab render lại từ đầu
+  }, []);
+
   const screenComponents = [<Friend />, <Group />, <OA />];
 
   return (
     <View style={IndexStyle.container}>
-      {/* Thanh menu */}
       <Tab
+        key={tabKey} // Thêm key để ép Tab render lại
         value={index}
         onChange={setIndex}
-        indicatorStyle={IndexStyle.activeItem}
-        variant="primary"
+        indicatorStyle={{
+          backgroundColor: "#0767fd",
+          height: 3,
+        }}
         containerStyle={IndexStyle.menubar}
       >
         <Tab.Item
@@ -45,7 +51,6 @@ const Directory = () => {
         />
       </Tab>
 
-      {/* Chỉ hiển thị nội dung theo tab đang chọn */}
       <View style={IndexStyle.tabContainer}>{screenComponents[index]}</View>
     </View>
   );

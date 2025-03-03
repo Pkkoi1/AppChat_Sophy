@@ -1,5 +1,5 @@
-import React from "react";
-import { FlatList, View } from "react-native";
+import React, { useState } from "react";
+import { FlatList, RefreshControl, View } from "react-native";
 import Inbox from "./Inbox";
 
 const messages = [
@@ -135,9 +135,20 @@ const messages = [
 ];
 
 const ListInbox = () => {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handlerRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
   return (
     <View style={{ flex: 1, width: "100%" }}>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
+        }
         data={messages}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, RefreshControl, Text, View } from "react-native";
 import { Button, Menu, Divider } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 import Group from "./Group";
@@ -10,6 +10,14 @@ import Groups from "../../../../assets/objects/group.json";
 const ListGroup = () => {
   const [sortCriteria, setSortCriteria] = useState("lastActivity");
   const [menuVisible, setMenuVisible] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handlerRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
 
   const options = [
     { label: "Hoạt động cuối", value: "lastActivity" },
@@ -45,6 +53,9 @@ const ListGroup = () => {
   return (
     <View style={ListGroupStyle.container}>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
+        }
         data={[
           { isSubMenu: true },
           { isSortHeader: true },

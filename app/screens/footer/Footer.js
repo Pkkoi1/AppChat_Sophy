@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TouchableOpacity, Animated } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Animated,
+  SafeAreaView,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { useRoute } from "@react-navigation/native";
 import FooterStyle from "./FooterStyle";
@@ -11,7 +17,12 @@ export const footerItem = [
     title: "Tin nhắn",
     screen: "Inbox",
   },
-  { name: "contacts", filledName: "contacts", title: "Danh bạ", screen: "Directory" },
+  {
+    name: "contacts",
+    filledName: "contacts",
+    title: "Danh bạ",
+    screen: "Directory",
+  },
   { name: "find", filledName: "find", title: "Khám phá", screen: "Discover" },
   {
     name: "clockcircleo",
@@ -70,7 +81,7 @@ const Footer = ({ setCurrentScreen }) => {
   };
 
   return (
-    <View style={FooterStyle.footer}>
+    <SafeAreaView style={FooterStyle.footer}>
       <View style={FooterStyle.iconContainer}>
         {footerItem.map((item, index) => (
           <TouchableOpacity key={index} onPress={() => handlePress(item)}>
@@ -103,7 +114,7 @@ const Footer = ({ setCurrentScreen }) => {
           </TouchableOpacity>
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

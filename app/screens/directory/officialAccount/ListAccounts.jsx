@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { Button, Menu, Divider } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 import Account from "./Account";
@@ -9,9 +9,20 @@ import accountsData from "../../../../assets/objects/account.json";
 
 const ListAccounts = () => {
   const [sortCriteria, setSortCriteria] = useState("followers");
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handlerRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
   return (
     <View style={ListAccountsStyle.container}>
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
+        }
         data={[{ isSubMenu: true }, { isSortHeader: true }, ...accountsData]}
         renderItem={({ item }) => {
           if (item.isSubMenu) {
