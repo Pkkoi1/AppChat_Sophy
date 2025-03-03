@@ -3,9 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
@@ -13,7 +11,9 @@
     "**/*.tsx",
     "**/*.js",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "app/screens/register/TermsOfService", "app/screens/register/SocialNetworkTerms", "app/screens/diary/Diary.jsx"  ]
+    "expo-env.d.ts",
+    "app/Screens/register/TermsOfService",
+    "app/Screens/register/SocialNetworkTerms",
+    "app/Screens/diary/Diary.jsx"
+  ]
 }
-
