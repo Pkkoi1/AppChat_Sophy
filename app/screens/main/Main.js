@@ -2,9 +2,9 @@
 import React, { useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import images from "@/assets/objects/Main_Images";
-import contaier from "@/components/Container/ContainerStyle";
-import submitButton from "@/components/Button/ButtonStyle";
-import BackgroundStyles from "@/components/Background/BackgroundStyles";
+import contaier from "@/components/container/ContainerStyle";
+import submitButton from "@/components/button/ButtonStyle";
+import BackgroundStyles from "@/components/background/BackgroundStyles";
 
 import {
   Image,

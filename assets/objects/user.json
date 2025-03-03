@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "name": "Nguyễn Văn A",
+    "name": "Phạm Đăng Khôi",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "online",
     "lastActive": "2025-03-01T12:00:00Z",
@@ -10,7 +10,7 @@
   },
   {
     "id": 2,
-    "name": "Trần Thị B",
+    "name": "Nguyễn Thành Nghiêm",
     "avatar": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHVVIFq6pYPIlmU9WNXdRo2CzFIk5qTtfagg&s",
     "status": "offline",
     "lastActive": "2025-03-01T10:00:00Z",

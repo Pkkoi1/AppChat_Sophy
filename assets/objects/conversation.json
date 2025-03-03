@@ -1,0 +1,302 @@
+[
+  {
+    "conversation_id": "7891011",
+    "participants": [
+      { "id": 1, "name": "Phạm Đăng Khôi" },
+      { "id": 2, "name": "Nguyễn Thành Nghiêm" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 1,
+        "receiver_id": 2,
+        "timestamp": "2025-03-02T19:30:00",
+        "content": "Bình ơi, mai có đi đá bóng không? ⚽"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 2,
+        "receiver_id": 1,
+        "timestamp": "2025-03-02T19:32:00",
+        "content": "Có chứ! Mấy giờ tập trung vậy?"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 1,
+        "receiver_id": 2,
+        "timestamp": "2025-03-02T19:33:00",
+        "content": "7h tối ở sân cũ nha! 🏟️"
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891012",
+    "participants": [
+      { "id": 3, "name": "Lê Văn C" },
+      { "id": 4, "name": "Phạm Thị D" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 3,
+        "receiver_id": 4,
+        "timestamp": "2025-03-02T15:10:00",
+        "content": "Chào, mai mình đi chơi không?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 4,
+        "receiver_id": 3,
+        "timestamp": "2025-03-02T15:12:00",
+        "content": "Được, đi đâu?"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 3,
+        "receiver_id": 4,
+        "timestamp": "2025-03-02T15:13:00",
+        "content": "Đi ăn tối ở quán cũ nhé."
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891013",
+    "participants": [
+      { "id": 5, "name": "Hoàng Văn E" },
+      { "id": 6, "name": "Võ Thị F" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 5,
+        "receiver_id": 6,
+        "timestamp": "2025-03-02T18:20:00",
+        "content": "Đi học chưa?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 6,
+        "receiver_id": 5,
+        "timestamp": "2025-03-02T18:22:00",
+        "content": "Đang trên đường, bạn đâu rồi?"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 5,
+        "receiver_id": 6,
+        "timestamp": "2025-03-02T18:24:00",
+        "content": "Tớ cũng sắp tới."
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891014",
+    "participants": [
+      { "id": 7, "name": "Đinh Văn G" },
+      { "id": 8, "name": "Bùi Thị H" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 7,
+        "receiver_id": 8,
+        "timestamp": "2025-03-02T17:30:00",
+        "content": "Cảm ơn bạn đã giúp đỡ hôm qua!"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 8,
+        "receiver_id": 7,
+        "timestamp": "2025-03-02T17:35:00",
+        "content": "Không có gì đâu, mình rất vui được giúp đỡ!"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 7,
+        "receiver_id": 8,
+        "timestamp": "2025-03-02T17:40:00",
+        "content": "Hy vọng chúng ta sẽ làm việc chung nữa!"
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891015",
+    "participants": [
+      { "id": 9, "name": "Ngô Văn I" },
+      { "id": 10, "name": "Tạ Thị J" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 9,
+        "receiver_id": 10,
+        "timestamp": "2025-03-02T14:00:00",
+        "content": "Mai có đi du lịch không?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 10,
+        "receiver_id": 9,
+        "timestamp": "2025-03-02T14:05:00",
+        "content": "Đi chứ, đi đâu vậy?"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 9,
+        "receiver_id": 10,
+        "timestamp": "2025-03-02T14:07:00",
+        "content": "Đến biển nhé, mình đã lên lịch rồi."
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891016",
+    "participants": [
+      { "id": 1, "name": "Phạm Đăng Khôi" },
+      { "id": 3, "name": "Lê Văn C" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 1,
+        "receiver_id": 3,
+        "timestamp": "2025-03-02T12:30:00",
+        "content": "Làm gì chiều nay không?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 3,
+        "receiver_id": 1,
+        "timestamp": "2025-03-02T12:32:00",
+        "content": "Mình đi cà phê với bạn."
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 1,
+        "receiver_id": 3,
+        "timestamp": "2025-03-02T12:35:00",
+        "content": "Mình cũng vậy, hẹn gặp ở quán nhé!"
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891017",
+    "participants": [
+      { "id": 5, "name": "Hoàng Văn E" },
+      { "id": 7, "name": "Đinh Văn G" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 5,
+        "receiver_id": 7,
+        "timestamp": "2025-03-02T13:00:00",
+        "content": "Tối nay đi chơi không?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 7,
+        "receiver_id": 5,
+        "timestamp": "2025-03-02T13:05:00",
+        "content": "Đi chứ, bạn chọn địa điểm nhé!"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 5,
+        "receiver_id": 7,
+        "timestamp": "2025-03-02T13:07:00",
+        "content": "Được rồi, hẹn gặp 7h tối nhé!"
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891018",
+    "participants": [
+      { "id": 9, "name": "Ngô Văn I" },
+      { "id": 2, "name": "Nguyễn Thành Nghiêm" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 9,
+        "receiver_id": 2,
+        "timestamp": "2025-03-02T16:00:00",
+        "content": "Ngày mai mình có lịch học, bạn có thời gian không?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 2,
+        "receiver_id": 9,
+        "timestamp": "2025-03-02T16:05:00",
+        "content": "Có, mình rảnh. Chúng ta gặp nhau vào lúc nào?"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 9,
+        "receiver_id": 2,
+        "timestamp": "2025-03-02T16:07:00",
+        "content": "Hẹn gặp lúc 3h chiều nhé!"
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891019",
+    "participants": [
+      { "id": 8, "name": "Bùi Thị H" },
+      { "id": 10, "name": "Tạ Thị J" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 8,
+        "receiver_id": 10,
+        "timestamp": "2025-03-02T20:00:00",
+        "content": "Ngày mai đi đâu chơi không?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 10,
+        "receiver_id": 8,
+        "timestamp": "2025-03-02T20:05:00",
+        "content": "Có thể, bạn muốn đi đâu?"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 8,
+        "receiver_id": 10,
+        "timestamp": "2025-03-02T20:07:00",
+        "content": "Đi công viên đi, mình thích đi dạo."
+      }
+    ]
+  },
+  {
+    "conversation_id": "7891020",
+    "participants": [
+      { "id": 4, "name": "Phạm Thị D" },
+      { "id": 6, "name": "Võ Thị F" }
+    ],
+    "messages": [
+      {
+        "message_id": "msg_001",
+        "sender_id": 4,
+        "receiver_id": 6,
+        "timestamp": "2025-03-02T21:00:00",
+        "content": "Tối nay mình đi chơi không?"
+      },
+      {
+        "message_id": "msg_002",
+        "sender_id": 6,
+        "receiver_id": 4,
+        "timestamp": "2025-03-02T21:05:00",
+        "content": "Đi chứ, bạn muốn đi đâu?"
+      },
+      {
+        "message_id": "msg_003",
+        "sender_id": 4,
+        "receiver_id": 6,
+        "timestamp": "2025-03-02T21:07:00",
+        "content": "Đi ăn tối ở quán nhé!"
+      }
+    ]
+  }
+]

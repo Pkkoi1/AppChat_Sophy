@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider as PaperProvider } from "react-native-paper";
 import { StyleSheet } from "react-native";
+import { TransitionPresets } from "@react-navigation/stack";
 
 import Register from "./screens/register/Register";
 import Login from "./screens/login/Login";
@@ -21,8 +22,10 @@ function RootLayout() {
   return (
     <PaperProvider>
       <Stack.Navigator
-        styles={styles.container}
-        screenOptions={{ headerShown: false }}
+        screenOptions={{
+          headerShown: false,
+          animation: "fade", // Tắt hoạt ảnh chuyển cảnh
+        }}
       >
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Register" component={Register} />
