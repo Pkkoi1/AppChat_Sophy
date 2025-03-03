@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
 import contaier from "@/components/Container/ContainerStyle";
-import RegisterStyle from "@/app/screensss/register/RegisterStyle";
 import {
   View,
   Text,
@@ -11,6 +10,7 @@ import {
 } from "react-native";
 import PhoneNumber from "../../../components/PhoneNumber/PhoneNumber";
 import { CheckBox } from "@rneui/themed";
+import RegisterStyle from "./RegisterStyle";
 
 const { width, height } = Dimensions.get("window");
 const Register = () => {
@@ -32,7 +32,9 @@ const Register = () => {
   return (
     <View style={contaier.main}>
       <View style={RegisterStyle({ width, height }).phone_field}>
-        <Text style={RegisterStyle({ width, height }).app_name}>Nhập số điện thoại</Text>
+        <Text style={RegisterStyle({ width, height }).app_name}>
+          Nhập số điện thoại
+        </Text>
         <PhoneNumber />
       </View>
       <View style={RegisterStyle({ width, height }).clause_field}>
@@ -45,8 +47,12 @@ const Register = () => {
             uncheckedIcon="checkbox-blank-outline"
           />
           <Text>Tôi đồng ý với các </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('TermsOfService')}>
-            <Text style={RegisterStyle({ width, height }).linkText}>điều khoản sử dụng Sophy</Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("TermsOfService")}
+          >
+            <Text style={RegisterStyle({ width, height }).linkText}>
+              điều khoản sử dụng Sophy
+            </Text>
           </TouchableOpacity>
         </View>
         <View style={RegisterStyle({ width, height }).check_option}>
@@ -58,7 +64,9 @@ const Register = () => {
             uncheckedIcon="checkbox-blank-outline"
           />
           <Text>Tôi đồng ý với </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SocialNetworkTerms')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("SocialNetworkTerms")}
+          >
             <Text style={RegisterStyle({ width, height }).linkText}>
               điều khoản Mạng xã hội của Sophy
             </Text>
@@ -71,14 +79,19 @@ const Register = () => {
           onPress={() => navigation.navigate("Verify")}
           style={RegisterStyle({ width, height }).button_not_checked}
         >
-          <Text style={RegisterStyle({ width, height }).submit_text}>Tiếp tục</Text>
+          <Text style={RegisterStyle({ width, height }).submit_text}>
+            Tiếp tục
+          </Text>
         </TouchableOpacity>
       </View>
 
       <View style={RegisterStyle({ width, height }).footer_option}>
         <Text>Đã có tài khoản?</Text>
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={RegisterStyle({ width, height }).linkText}> Đăng nhập ngay</Text>
+          <Text style={RegisterStyle({ width, height }).linkText}>
+            {" "}
+            Đăng nhập ngay
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

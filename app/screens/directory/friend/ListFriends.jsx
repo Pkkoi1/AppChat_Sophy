@@ -1,17 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
-import FriendSubMenu from "./subMenu";
+import FriendSubMenu from "./SubMenu";
 import Friends from "./Friend";
 import friendsList from "../../../../assets/objects/user.json";
 import ListFriendStyle from "./ListFriendStyle";
 
 const ListFriends = () => {
+  const [refreshing, setRefreshing] = useState(false);
+
+  const handlerRefresh = () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  };
+
   const renderHeader = () => (
     <View style={ListFriendStyle.container}>
       <FriendSubMenu />
@@ -54,6 +64,9 @@ const ListFriends = () => {
         ListHeaderComponent={renderHeader}
         data={Object.keys(groupedFriends)}
         keyExtractor={(item) => item}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
+        }
         renderItem={({ item }) => (
           <View style={ListFriendStyle.listFriendContainer}>
             <Text style={ListFriendStyle.categoryTitle}>{item}</Text>

@@ -4,7 +4,6 @@ import { useNavigation } from "@react-navigation/native";
 import images from "@/assets/objects/Main_Images";
 import contaier from "@/components/Container/ContainerStyle";
 import submitButton from "@/components/Button/ButtonStyle";
-import MainStyle from "@/app/screensss/main/MainStyle";
 import BackgroundStyles from "@/components/Background/BackgroundStyles";
 
 import {
@@ -17,6 +16,7 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
+import MainStyle from "./MainStyle";
 
 const { width, height } = Dimensions.get("window");
 
@@ -48,10 +48,12 @@ const Main = () => {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={MainStyle({ width }).imageContainer}>
-              <Image source={item.source} style={MainStyle({width}).image} />
-              <View style={MainStyle({width}).textContainer}>
-                <Text style={MainStyle({width}).title}>{item.title}</Text>
-                <Text style={MainStyle({width}).description}>{item.description}</Text>
+              <Image source={item.source} style={MainStyle({ width }).image} />
+              <View style={MainStyle({ width }).textContainer}>
+                <Text style={MainStyle({ width }).title}>{item.title}</Text>
+                <Text style={MainStyle({ width }).description}>
+                  {item.description}
+                </Text>
               </View>
             </View>
           )}
@@ -60,32 +62,34 @@ const Main = () => {
           ref={flatListRef}
         />
 
-        <View style={MainStyle({width}).indicatorContainer}>
+        <View style={MainStyle({ width }).indicatorContainer}>
           {images.map((_, index) => (
             <View
               key={index}
               style={[
-                MainStyle({width}).indicator,
+                MainStyle({ width }).indicator,
                 currentIndex === index
-                  ? MainStyle({width}).activeIndicator
-                  : MainStyle({width}).inactiveIndicator,
+                  ? MainStyle({ width }).activeIndicator
+                  : MainStyle({ width }).inactiveIndicator,
               ]}
             />
           ))}
         </View>
       </ImageBackground>
-      <View style={MainStyle({width}).buttonContainer}>
+      <View style={MainStyle({ width }).buttonContainer}>
         <TouchableOpacity
-          style={[submitButton().submit, MainStyle({width}).signIn_Button]}
-          onPress={() => navigation.navigate('Login')}
+          style={[submitButton().submit, MainStyle({ width }).signIn_Button]}
+          onPress={() => navigation.navigate("Login")}
         >
-          <Text style={MainStyle({width}).buttonText}>Đăng nhập</Text>
+          <Text style={MainStyle({ width }).buttonText}>Đăng nhập</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[submitButton().submit, MainStyle({width}).signUp_Button]}
+          style={[submitButton().submit, MainStyle({ width }).signUp_Button]}
           onPress={() => navigation.navigate("Register")}
         >
-          <Text style={MainStyle({width}).buttonSignUpText}>Tạo tài khoản mới</Text>
+          <Text style={MainStyle({ width }).buttonSignUpText}>
+            Tạo tài khoản mới
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -93,7 +97,6 @@ const Main = () => {
 };
 
 const styles = StyleSheet.create({
- 
   imageContainer: {
     width: width,
     alignItems: "center",
