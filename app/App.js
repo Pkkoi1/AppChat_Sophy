@@ -3,17 +3,17 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider as PaperProvider } from "react-native-paper";
 import { StyleSheet } from "react-native";
 
-import Register from "./Screens/register/Register";
-import Login from "./Screens/login/Login";
-import ForgotPassword from "./Screens/login/ForgotPassword";
-import SocialNetworkTerms from "./Screens/register/SocialNetworkTerms";
-import TermsOfService from "./Screens/register/TermsOfService";
-import Home from "./Screens/home/Home";
-import Chat from "./Screens/chat/Body";
-import Profile from "./Screens/profile/Profile";
-import Discover from "./Screens/discover/Discover";
-import Diary from "./Screens/diary/Diary";
-import Main from "./Screens/main/Main";
+import Register from "./screens/register/Register";
+import Login from "./screens/login/Login";
+import ForgotPassword from "./screens/login/ForgotPassword";
+import SocialNetworkTerms from "./screens/register/SocialNetworkTerms";
+import TermsOfService from "./screens/register/TermsOfService";
+import Home from "./screens/home/Home";
+import Chat from "./screens/chat/Body";
+import Profile from "./screens/profile/Profile";
+import Discover from "./screens/discover/Discover";
+import Diary from "./screens/diary/Diary";
+import Main from "./screens/main/Main";
 
 const Stack = createNativeStackNavigator();
 

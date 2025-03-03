@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import images from "@/assets/objects/Main_Images";
 import contaier from "@/components/Container/ContainerStyle";
 import submitButton from "@/components/Button/ButtonStyle";
-import MainStyle from "@/app/Screens/main/MainStyle";
+import MainStyle from "@/app/screensss/main/MainStyle";
 import BackgroundStyles from "@/components/Background/BackgroundStyles";
 
 import {

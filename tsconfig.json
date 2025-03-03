@@ -14,6 +14,6 @@
     "**/*.js",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/Screens/register/TermsOfService", "app/Screens/register/SocialNetworkTerms"  ]
+, "app/screens/register/TermsOfService", "app/screens/register/SocialNetworkTerms", "app/screens/diary/Diary.jsx"  ]
 }
 
