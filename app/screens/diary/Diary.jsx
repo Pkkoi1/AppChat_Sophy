@@ -96,7 +96,11 @@ const Diary = () => {
     }, 2000);
   };
 
-
+  const translateY = scrollY.interpolate({
+    inputRange: [-0, 0, 0],
+    outputRange: [0, 0, -0],
+    extrapolate: "clamp",
+  });
 
   const renderMomentItem = ({ item }) => (
     <TouchableOpacity style={styles.momentItem}>
@@ -167,7 +171,7 @@ const Diary = () => {
           />
         </View>
 
-        <Animated.View>
+        <Animated.View style={{ transform: [{ translateY }] }}>
           {diaryItems.map((item) => (
             <View key={item.id} style={styles.postContainer}>
               <View style={styles.postHeader}>

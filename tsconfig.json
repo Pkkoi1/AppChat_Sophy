@@ -15,5 +15,5 @@
     "app/Screens/register/TermsOfService",
     "app/Screens/register/SocialNetworkTerms",
     "app/Screens/diary/Diary.jsx"
-  ]
+, "app/screens/profile/myProfile/MyProfile.jsx"  ]
 }

@@ -11,7 +11,6 @@ import styles from "./ForgotPassword.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-
 function ResetPasswordScreen({ navigation }) {
   const [phone, setPhone] = useState("");
 
@@ -44,7 +43,8 @@ function ResetPasswordScreen({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Số điện thoại"
-        keyboardType="phone-pad"
+        keyboardType="phone-
+pad"
         value={phone}
         onChangeText={setPhone}
       />
