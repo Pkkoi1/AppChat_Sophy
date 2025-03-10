@@ -1,17 +1,17 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "expo-router";
 
-const ChatHeader = () => {
+const ChatHeader = ({ receiver }) => {
   const navigation = useNavigation();
   const handlerBack = () => {
     navigation.goBack();
   };
+
   return (
     <LinearGradient
       colors={["#1f7bff", "#12bcfa"]}
@@ -23,7 +23,7 @@ const ChatHeader = () => {
         <Ionicons name="arrow-back" size={24} color="#ffffff" />
       </TouchableOpacity>
       <View>
-        <Text style={ChatHeaderStyle.text}>Họ Tên</Text>
+        <Text style={ChatHeaderStyle.text}>{receiver?.name || "Họ Tên"}</Text>
         <Text style={ChatHeaderStyle.subText}>Vừa mới truy cập</Text>
       </View>
 
