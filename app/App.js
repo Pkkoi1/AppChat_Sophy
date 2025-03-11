@@ -1,8 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Provider as PaperProvider } from "react-native-paper";
-import { StyleSheet } from "react-native";
-import { TransitionPresets } from "@react-navigation/stack";
+import { Settings, StyleSheet } from "react-native";
 
 import Register from "./screens/register/Register";
 import Login from "./screens/login/Login";
@@ -15,6 +14,8 @@ import Profile from "./screens/profile/Profile";
 import Discover from "./screens/discover/Discover";
 import Diary from "./screens/diary/Diary";
 import Main from "./screens/main/Main";
+import MyProfile from "./screens/profile/MyProfile";
+import Setting from "./screens/profile/Setting";
 
 const Stack = createNativeStackNavigator();
 
@@ -41,6 +42,11 @@ function RootLayout() {
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="Discover" component={Discover} />
         <Stack.Screen name="Diary" component={Diary} />
+        <Stack.Screen name="MyProfile" component={MyProfile} />
+
+
+        <Stack.Screen name="Setting" component={Setting} />
+
       </Stack.Navigator>
     </PaperProvider>
   );

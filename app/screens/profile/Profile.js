@@ -9,6 +9,7 @@ import {
   Animated,
 } from "react-native";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native"; // Thêm import này
 
 const data = [
   { title: "Khôi Nghiêm", description: "Xem trang cá nhân của bạn", icon: "user", group: 0 },
@@ -24,6 +25,7 @@ const data = [
 const UserProfileScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const scrollY = useState(new Animated.Value(0))[0]; // Đảm bảo scrollY là Animated.Value
+  const navigation = useNavigation(); // Khởi tạo navigation
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -32,7 +34,9 @@ const UserProfileScreen = () => {
     }, 2000);
   };
 
-  
+  const handleProfilePress = () => {
+    navigation.navigate("MyProfile"); // Thực hiện điều hướng tới trang ProfileDetails
+  };
 
   return (
     <ScrollView
@@ -47,13 +51,13 @@ const UserProfileScreen = () => {
         { useNativeDriver: false } // Sử dụng native driver để tối ưu hiệu suất
       )}
       scrollEventThrottle={16} // Tối ưu hóa hiệu ứng khi cuộn
-      
     >
       <Animated.View>
         {data.map((item) => (
           <TouchableOpacity
             key={item.title}
             style={[styles.item, styles[`group${item.group}`]]}
+            onPress={item.title === "Khôi Nghiêm" ? handleProfilePress : null} // Điều hướng khi nhấn vào trang cá nhân
           >
             <View style={styles.itemContent}>
               <View style={styles.iconWrapper}>
@@ -75,7 +79,6 @@ const UserProfileScreen = () => {
             <AntDesign name="right" size={16} color="#000" />
           </TouchableOpacity>
         ))}
-        {/* Thêm khoảng trống để đảm bảo cuộn ở mọi nơi */}
         <View style={styles.paddingBottom} />
       </Animated.View>
     </ScrollView>
@@ -85,14 +88,14 @@ const UserProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f0f2f5",
   },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: "#f0f2f5",
     paddingVertical: 20,
     paddingHorizontal: 20,
     backgroundColor: "#fff",
@@ -109,7 +112,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 55,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#f0f2f5",
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: -10,
@@ -128,22 +131,22 @@ const styles = StyleSheet.create({
   },
   group0: {
     borderBottomWidth: 10,
-    borderBottomColor: "#f0f0f0", // Sửa lỗi borderBlockColor thành borderBottomColor
+    borderBottomColor: "#f0f2f5",
   },
   group2: {
     borderBottomWidth: 10,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: "#f0f2f5",
   },
   group5: {
     borderBottomWidth: 10,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: "#f0f2f5",
   },
   group7: {
     borderBottomWidth: 10,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: "#f0f2f5",
   },
   paddingBottom: {
-    height: 50, // Thêm khoảng trống để đảm bảo cuộn
+    height: 50,
   },
 });
 
