@@ -15,9 +15,9 @@ const ListInbox = ({ userId }) => {
     }, 2000);
   };
 
-  // Filter conversations where the first participant's ID matches the userId
-  const filteredConversations = conversations.filter(
-    (conversation) => conversation.participants[0].id === userId
+  // Filter conversations where any participant's ID matches the userId
+  const filteredConversations = conversations.filter((conversation) =>
+    conversation.participants.some((participant) => participant.id === userId)
   );
 
   return (
@@ -31,9 +31,8 @@ const ListInbox = ({ userId }) => {
         renderItem={({ item }) => {
           const lastMessage = item.messages[item.messages.length - 1];
           const otherParticipant = item.participants.find(
-            (p) => p.id !== lastMessage.sender_id
-          ) ||
-            item.participants[0] || { name: "Unknown", avatar: null }; // Default value if otherParticipant is null
+            (p) => p.id !== userId
+          ) || { name: "Unknown", avatar: null }; // Default value if otherParticipant is null
 
           const avatar =
             otherParticipant.avatar ||

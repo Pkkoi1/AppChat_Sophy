@@ -13,6 +13,7 @@ import ChatFooter from "./footer/ChatFooter";
 import Conversation from "./message/Conversation";
 import conversations from "../../../assets/objects/conversation.json";
 import MessageScreenStyle from "./MessageScreenStyle";
+import moment from "moment";
 
 const MessageScreen = ({ route }) => {
   const { conversation_id, user_id } = route.params;
@@ -53,6 +54,11 @@ const MessageScreen = ({ route }) => {
   }, [conversation_id]);
 
   const handleSendMessage = (message) => {
+    const lastMessage = messages[messages.length - 1];
+    const isNewTimeGap =
+      !lastMessage ||
+      moment().diff(moment(lastMessage.timestamp), "minutes") >= 20;
+
     const newMessage = {
       message_id: `msg_${Date.now()}`,
       sender_id: user_id,
@@ -60,6 +66,7 @@ const MessageScreen = ({ route }) => {
       timestamp: new Date().toISOString(),
       ...message,
     };
+
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
@@ -90,6 +97,5 @@ const MessageScreen = ({ route }) => {
     </SafeAreaView>
   );
 };
-
 
 export default MessageScreen;

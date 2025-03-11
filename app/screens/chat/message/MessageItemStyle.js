@@ -1,10 +1,9 @@
-import React from "react";
 import { StyleSheet } from "react-native";
 
 const MessageItemStyle = StyleSheet.create({
   container: {
     flexDirection: "row",
-    alignItems: "flex-end",
+    alignItems: "flex-start", // Căn avatar theo đầu tin nhắn
     marginVertical: 5,
   },
   senderContainer: {
@@ -17,22 +16,19 @@ const MessageItemStyle = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     maxWidth: "80%",
+    position: "relative", // Để avatar có thể nằm trên
   },
   sender: {
     backgroundColor: "#d4f1ff",
     alignSelf: "flex-end",
-    marginRight: 10, // Add margin to the right for sender
+    marginRight: 10,
   },
   receiver: {
     backgroundColor: "#FFF",
     alignSelf: "flex-start",
-    marginLeft: 10, // Add margin to the left for receiver
   },
   receiverWithAvatar: {
-    marginLeft: 0, // Adjust margin when avatar is present
-  },
-  receiverWithoutAvatar: {
-    marginLeft: 50, // Fixed margin when avatar is not present
+    marginLeft: 35, // Để hộp tin nhắn không quá sát avatar
   },
   timestamp: {
     fontSize: 12,
@@ -44,10 +40,12 @@ const MessageItemStyle = StyleSheet.create({
     color: "#000",
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginHorizontal: 5,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    position: "absolute",
+    top: 0,
+    // left: -35, // Đặt avatar ở góc trên bên trái hộp tin nhắn
   },
 });
 

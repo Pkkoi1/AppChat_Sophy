@@ -26,6 +26,10 @@ const Conversation = ({ conversation, senderId }) => {
             ? moment(item.timestamp).format("HH:mm DD/MM/YYYY")
             : `${moment(item.timestamp).format("HH:mm")} Hôm nay`;
 
+        const avatar = conversation.participants.find(
+          (p) => p.id === item.sender_id
+        )?.avatar;
+
         return (
           <View>
             {isTimeGap && (
@@ -38,13 +42,7 @@ const Conversation = ({ conversation, senderId }) => {
             <MessageItem
               message={item}
               isSender={item.sender_id === senderId}
-              avatar={
-                showAvatar && item.sender_id !== senderId
-                  ? conversation.participants.find(
-                      (p) => p.id === item.sender_id
-                    )?.avatar
-                  : null
-              }
+              avatar={avatar}
             />
           </View>
         );
