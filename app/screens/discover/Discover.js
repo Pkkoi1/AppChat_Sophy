@@ -56,6 +56,7 @@ const Discover = () => {
               </Text>
             </View>
           </View>
+
           <View style={styles.imageContainer}>
             <Image
               source={require("../../../assets/images/avt.jpg")}
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
     right: -2,
   },
   group1: {
-    borderBottomWidth: 10,
+    borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0", // Sửa lỗi borderBlockColor thành borderBottomColor
   },
   group2: {
@@ -192,11 +193,11 @@ const styles = StyleSheet.create({
     borderBottomColor: "#f0f0f0",
   },
   group3: {
-    borderBottomWidth: 10,
+    borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
   group4: {
-    borderBottomWidth: 10,
+    borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
   group5: {

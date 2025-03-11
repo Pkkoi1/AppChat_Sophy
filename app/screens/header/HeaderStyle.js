@@ -31,6 +31,18 @@ const HeaderStyle = () => {
       color: "white",
       paddingVertical: 5,
     },
+
+    setting: {
+      flex: 1,
+      backgroundColor: "#1b96fd",
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      height: 35,
+      color: "white",
+      paddingVertical: 8,
+      fontWeight: 700,
+      fontSize: 18,
+    },
   });
 };
 
