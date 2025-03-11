@@ -3,7 +3,7 @@ import { Text, View, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 
-const Inbox = ({ name, message, date, conversation_id }) => {
+const Inbox = ({ name, avatar, message, date, conversation_id, user_id }) => {
   const navigation = useNavigation();
 
   const getTimeDifference = (date) => {
@@ -32,6 +32,7 @@ const Inbox = ({ name, message, date, conversation_id }) => {
       onPress={() =>
         navigation.navigate("Chat", {
           conversation_id: conversation_id, // Truyền conversation_id vào params
+          user_id: user_id, // Truyền user_id vào params
         })
       }
       activeOpacity={0.6}
@@ -46,7 +47,7 @@ const Inbox = ({ name, message, date, conversation_id }) => {
       }}
     >
       <Image
-        source={require("../../../assets/images/avt.jpg")}
+        source={{ uri: avatar }} // Display avatar
         style={{ width: 50, height: 50, borderRadius: 25, marginRight: 20 }}
       />
       <View style={{ flex: 1 }}>

@@ -9,7 +9,7 @@ import ForgotPassword from "./screens/login/ForgotPassword";
 import SocialNetworkTerms from "./screens/register/SocialNetworkTerms";
 import TermsOfService from "./screens/register/TermsOfService";
 import Home from "./screens/home/Home";
-import Chat from "./screens/chat/Body";
+import Chat from "./screens/chat/MessageScreen";
 import Profile from "./screens/profile/Profile";
 import Discover from "./screens/discover/Discover";
 import Diary from "./screens/diary/Diary";

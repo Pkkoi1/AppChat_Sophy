@@ -33,7 +33,9 @@ function LoginScreen({ navigation }) {
     }
 
     // Tìm người dùng có phone và password khớp
-    const user = users.find((u) => u.phone === phone && u.password === password);
+    const user = users.find(
+      (u) => u.phone === phone && u.password === password
+    );
 
     if (user) {
       Alert.alert("Đăng nhập thành công!", `Chào ${user.name}!`);
@@ -76,7 +78,9 @@ function LoginScreen({ navigation }) {
             value={password}
             onChangeText={setPassword}
           />
-          <TouchableOpacity onPress={() => setSecureTextEntry(!secureTextEntry)}>
+          <TouchableOpacity
+            onPress={() => setSecureTextEntry(!secureTextEntry)}
+          >
             <Text style={styles.showText}>
               {secureTextEntry ? "HIỆN" : "ẨN"}
             </Text>
@@ -96,7 +100,10 @@ function LoginScreen({ navigation }) {
 
         <View style={styles.buttonField}>
           <TouchableOpacity
-            style={[styles.nextButton, isButtonEnabled && styles.nextButtonEnabled]}
+            style={[
+              styles.nextButton,
+              isButtonEnabled && styles.nextButtonEnabled,
+            ]}
             onPress={handleLogin}
             disabled={!isButtonEnabled}
           >

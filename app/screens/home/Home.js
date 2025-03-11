@@ -1,46 +1,60 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Tab, TabView } from "@rneui/themed";
-import { AntDesign } from "@expo/vector-icons";
+import { View } from "react-native";
+import { TabView } from "@rneui/themed";
 import ListInbox from "../inbox/ListInbox";
 import Profile from "../profile/Profile";
 import Directory from "../directory/Index";
 import Discover from "../discover/Discover";
 import Diary from "../diary/Diary";
 import HeadView from "../header/Header";
+import Footer from "../footer/Footer";
 import HomeStyle from "./HomeStyle";
 
-const screens = [
-  {
-    name: "Inbox",
-    component: <ListInbox />,
-    icon: "message1",
-    title: "Tin nhắn",
-  },
-  {
-    name: "Directory",
-    component: <Directory />,
-    icon: "contacts",
-    title: "Danh bạ",
-  },
-  {
-    name: "Discover",
-    component: <Discover />,
-    icon: "find",
-    title: "Khám phá",
-  },
-  {
-    name: "Diary",
-    component: <Diary />,
-    icon: "clockcircleo",
-    title: "Nhật ký",
-  },
-  { name: "Profile", component: <Profile />, icon: "user", title: "Cá nhân" },
-];
-
-const Home = () => {
+const Home = ({ route }) => {
+  const { userId, userName } = route.params;
   const [index, setIndex] = useState(0);
-  const unreadMessages = 3;
+
+  const screens = [
+    {
+      name: "Inbox",
+      component: <ListInbox userId={userId} />,
+      icon: "message1",
+      title: "Tin nhắn",
+    },
+    {
+      name: "Directory",
+      component: <Directory userId={userId} />,
+      icon: "contacts",
+      title: "Danh bạ",
+    },
+    {
+      name: "Discover",
+      component: <Discover userId={userId} />,
+      icon: "find",
+      title: "Khám phá",
+    },
+    {
+      name: "Diary",
+      component: <Diary userId={userId} />,
+      icon: "clockcircleo",
+      title: "Nhật ký",
+    },
+    {
+      name: "Profile",
+      component: <Profile userId={userId} />,
+      icon: "user",
+      title: "Cá nhân",
+    },
+  ];
+
+  const setCurrentScreen = (screenName) => {
+    const screenIndex = screens.findIndex(
+      (screen) => screen.name === screenName
+    );
+    if (screenIndex !== -1) {
+      setIndex(screenIndex);
+    }
+  };
 
   return (
     <View style={HomeStyle.homeContainer}>
@@ -53,33 +67,7 @@ const Home = () => {
           </TabView.Item>
         ))}
       </TabView>
-      <View style={HomeStyle.footer}>
-        {screens.map((screen, idx) => (
-          <TouchableOpacity
-            key={screen.name}
-            onPress={() => setIndex(idx)}
-            style={{ flex: 1, alignItems: "center" }}
-          >
-            <AntDesign
-              name={screen.icon}
-              size={index === idx ? 22 : 20}
-              color={index === idx ? "#1b96fd" : "#000"}
-            />
-            {screen.name === "Inbox" && unreadMessages > 0 && (
-              <View style={HomeStyle.badge}>
-                <Text style={HomeStyle.badgeText}>{unreadMessages}</Text>
-              </View>
-            )}
-            {index === idx && (
-              <Text
-                style={[HomeStyle.iconText, { color: "#1b96fd", marginTop: 2 }]}
-              >
-                {screen.title}
-              </Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Footer setCurrentScreen={setCurrentScreen} />
     </View>
   );
 };
