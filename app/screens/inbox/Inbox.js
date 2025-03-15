@@ -1,9 +1,17 @@
 import React from "react";
-import { Text, View, Image, TouchableOpacity } from "react-native";
+import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 
-const Inbox = ({ name, avatar, message, date, conversation_id, user_id }) => {
+const Inbox = ({
+  name,
+  avatar,
+  message,
+  date,
+  conversation_id,
+  user_id,
+  groupName,
+}) => {
   const navigation = useNavigation();
 
   const getTimeDifference = (date) => {
@@ -36,27 +44,44 @@ const Inbox = ({ name, avatar, message, date, conversation_id, user_id }) => {
         })
       }
       activeOpacity={0.6}
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        padding: 10,
-        paddingLeft: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ddd",
-        backgroundColor: "white",
-      }}
+      style={styles.container}
     >
-      <Image
-        source={{ uri: avatar }} // Display avatar
-        style={{ width: 50, height: 50, borderRadius: 25, marginRight: 20 }}
-      />
+      <View style={styles.avatarContainer}>
+        {typeof avatar === "string" ? (
+          <Image source={{ uri: avatar }} style={styles.avatar} />
+        ) : (
+          avatar
+        )}
+      </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 16, fontWeight: "bold" }}>{name}</Text>
+        <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+          {groupName || name}
+        </Text>
         <Text style={{ color: "gray" }}>{message}</Text>
       </View>
       <Text style={{ color: "gray" }}>{getTimeDifference(date)}</Text>
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    paddingLeft: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#ddd",
+    backgroundColor: "white",
+  },
+  avatarContainer: {
+    marginRight: 20,
+  },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+});
 
 export default Inbox;

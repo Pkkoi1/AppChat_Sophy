@@ -20,6 +20,8 @@ const MessageScreen = ({ route }) => {
 
   const [messages, setMessages] = useState([]);
   const [participants, setParticipants] = useState([]);
+  const [isGroup, setIsGroup] = useState(false);
+  const [groupName, setGroupName] = useState(null);
   const [receiver, setReceiver] = useState(null);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
@@ -31,6 +33,10 @@ const MessageScreen = ({ route }) => {
     if (conversation) {
       setMessages(conversation.messages || []);
       setParticipants(conversation.participants || []);
+      setIsGroup(conversation.isGroup || false);
+      if (conversation.isGroup) {
+        setGroupName(conversation.groupName);
+      }
       const receiver = conversation.participants.find((p) => p.id !== user_id);
       setReceiver(receiver);
     } else {
@@ -72,7 +78,11 @@ const MessageScreen = ({ route }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ebecf0" }}>
-      <ChatHeader receiver={receiver} />
+      <ChatHeader
+        receiver={receiver}
+        groupName={groupName}
+        participants={participants}
+      />
       <View style={MessageScreenStyle.conversationContainer}>
         {messages.length === 0 ? (
           <Text>Không có tin nhắn</Text>
@@ -80,6 +90,7 @@ const MessageScreen = ({ route }) => {
           <Conversation
             conversation={{ messages, participants }}
             senderId={user_id}
+            groupName={groupName}
           />
         )}
       </View>

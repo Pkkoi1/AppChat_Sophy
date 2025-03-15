@@ -6,7 +6,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "expo-router";
 
-const ChatHeader = ({ receiver }) => {
+const ChatHeader = ({ receiver, groupName, participants }) => {
   const navigation = useNavigation();
   const handlerBack = () => {
     navigation.goBack();
@@ -22,9 +22,17 @@ const ChatHeader = ({ receiver }) => {
       <TouchableOpacity onPress={handlerBack}>
         <Ionicons name="arrow-back" size={24} color="#ffffff" />
       </TouchableOpacity>
-      <View>
-        <Text style={ChatHeaderStyle.text}>{receiver?.name || "Họ Tên"}</Text>
-        <Text style={ChatHeaderStyle.subText}>Vừa mới truy cập</Text>
+      <View style={ChatHeaderStyle.conversationName}>
+        <Text
+          style={ChatHeaderStyle.text}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {groupName || receiver?.name || "Họ Tên"}
+        </Text>
+        <Text style={ChatHeaderStyle.subText}>
+          {groupName ? `${participants.length} thành viên` : "Vừa mới truy cập"}
+        </Text>
       </View>
 
       <TouchableOpacity>
@@ -57,6 +65,13 @@ const ChatHeaderStyle = StyleSheet.create({
     },
     shadowOpacity: 0.1,
     elevation: 5,
+  },
+  conversationName: {
+    width: "45%",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "flex-start",
+    marginLeft: 0,
   },
   text: {
     color: "#fff",
