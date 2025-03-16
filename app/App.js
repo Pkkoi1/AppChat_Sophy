@@ -20,6 +20,7 @@ import ReceivedFriendRequests from "./screens/directory/friend/friendRequest/Rec
 import UserProfile from "./screens/profile/userProfile/UserProfile"; // Đảm bảo đường dẫn đúng
 import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo đường dẫn đúng
 import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm bảo đường dẫn đúng
+import Options from "./screens/optional/OptionalScreen";
 const Stack = createNativeStackNavigator();
 
 function RootLayout() {
@@ -51,6 +52,13 @@ function RootLayout() {
         <Stack.Screen name="UserProfile" component={UserProfile} />
         <Stack.Screen name="AddFriend" component={AddFriend} />
         <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
+        <Stack.Screen
+          name="Options"
+          component={Options}
+          options={{ animation: "slide_from_right" }} // Thêm hiệu ứng xếp chồng lên
+        />
+
+        <Stack.Screen name="Setting" component={Setting} />
       </Stack.Navigator>
     </PaperProvider>
   );
