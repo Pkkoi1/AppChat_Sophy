@@ -6,10 +6,19 @@ import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "expo-router";
 
-const ChatHeader = ({ receiver, groupName, participants }) => {
+const ChatHeader = ({ receiver, groupName, participants, isGroup }) => {
   const navigation = useNavigation();
   const handlerBack = () => {
     navigation.goBack();
+  };
+
+  const handlerOptionScreen = () => {
+    navigation.navigate("Options", {
+      receiver,
+      groupName,
+      participants,
+      isGroup,
+    });
   };
 
   return (
@@ -41,7 +50,7 @@ const ChatHeader = ({ receiver, groupName, participants }) => {
       <TouchableOpacity>
         <Ionicons name="videocam-outline" size={24} color="#ffffff" />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={handlerOptionScreen}>
         <Ionicons name="menu-outline" size={24} color="#ffffff" />
       </TouchableOpacity>
     </LinearGradient>
