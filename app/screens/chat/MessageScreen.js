@@ -82,6 +82,7 @@ const MessageScreen = ({ route }) => {
         receiver={receiver}
         groupName={groupName}
         participants={participants}
+        isGroup={isGroup}
       />
       <View style={MessageScreenStyle.conversationContainer}>
         {messages.length === 0 ? (

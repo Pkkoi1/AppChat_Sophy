@@ -16,6 +16,7 @@ import Diary from "./screens/diary/Diary";
 import Main from "./screens/main/Main";
 import MyProfile from "./screens/profile/MyProfile";
 import Setting from "./screens/profile/Setting";
+import Options from "./screens/optional/OptionalScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,10 +44,13 @@ function RootLayout() {
         <Stack.Screen name="Discover" component={Discover} />
         <Stack.Screen name="Diary" component={Diary} />
         <Stack.Screen name="MyProfile" component={MyProfile} />
-
+        <Stack.Screen
+          name="Options"
+          component={Options}
+          options={{ animation: "slide_from_right" }} // Thêm hiệu ứng xếp chồng lên
+        />
 
         <Stack.Screen name="Setting" component={Setting} />
-
       </Stack.Navigator>
     </PaperProvider>
   );

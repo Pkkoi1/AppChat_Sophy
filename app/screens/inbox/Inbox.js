@@ -35,6 +35,13 @@ const Inbox = ({
     }
   };
 
+  const truncateMessage = (message, maxLength) => {
+    if (message.length > maxLength) {
+      return message.substring(0, maxLength) + "...";
+    }
+    return message;
+  };
+
   return (
     <TouchableOpacity
       onPress={() =>
@@ -54,12 +61,12 @@ const Inbox = ({
         )}
       </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-          {groupName || name}
-        </Text>
-        <Text style={{ color: "gray" }}>{message}</Text>
+        <View style={styles.header}>
+          <Text style={styles.name}>{groupName || name}</Text>
+          <Text style={styles.time}>{getTimeDifference(date)}</Text>
+        </View>
+        <Text style={styles.message}>{truncateMessage(message, 50)}</Text>
       </View>
-      <Text style={{ color: "gray" }}>{getTimeDifference(date)}</Text>
     </TouchableOpacity>
   );
 };
@@ -81,6 +88,22 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  time: {
+    color: "gray",
+    fontSize: 12,
+  },
+  message: {
+    color: "gray",
   },
 });
 
