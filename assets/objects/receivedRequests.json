@@ -1,0 +1,44 @@
+[
+    {
+      "id": "1",
+      "name": "Bi - Thanh Đạt",
+      "status": "Muốn kết bạn",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-15T10:00:00Z"
+    },
+    {
+      "id": "2",
+      "name": "Thùy Lệ",
+      "status": "Muốn kết bạn",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-15T14:00:00Z"
+    },
+    {
+      "id": "3",
+      "name": "Minh Anh",
+      "status": "Muốn kết bạn",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-14T09:00:00Z"
+    },
+    {
+      "id": "4",
+      "name": "Hải Đăng",
+      "status": "Muốn kết bạn",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-14T15:00:00Z" 
+    },
+    {
+      "id": "5",
+      "name": "Lan Nhi",
+      "status": "Muốn kết bạn",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-10T12:00:00Z" 
+    },
+    {
+      "id": "6",
+      "name": "Trọng Nghĩa",
+      "status": "Muốn kết bạn",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-02-08T16:00:00Z" 
+    }
+  ]
