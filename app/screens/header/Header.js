@@ -34,7 +34,8 @@ const HeadView = ({ page }) => {
           </TouchableOpacity>
         );
 
-      case "Profile":
+        case "Profile":
+        case "ReceivedFriendRequests":
         return (
           <TouchableOpacity onPress={() => navigation.navigate("Setting")}>
             <AntDesign name="setting" size={24} color="white" />
@@ -78,19 +79,25 @@ const HeadView = ({ page }) => {
 
   return (
     <View style={HeaderStyle().container}>
-       {page === "Setting" ? (
+      {page === "Setting" ? (
         <>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={HeaderStyle().setting}>Cài đặt</Text> 
+          <Text style={HeaderStyle().setting}>Cài đặt</Text>
+        </>
+      ) : page === "ReceivedFriendRequests" ? (
+        <>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={HeaderStyle().setting}>Lời mời kết bạn</Text>
         </>
       ) : (
         <>
           <TouchableOpacity>
             <AntDesign name="search1" size={24} color="white" />
           </TouchableOpacity>
-
           <TextInput
             style={HeaderStyle().searchInput}
             placeholder="Tìm kiếm"
@@ -100,7 +107,7 @@ const HeadView = ({ page }) => {
           />
         </>
       )}
-
+  
       {renderPageIcons()}
     </View>
   );

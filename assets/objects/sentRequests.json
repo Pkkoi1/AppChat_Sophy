@@ -1,0 +1,42 @@
+[
+    {
+      "id": "7",
+      "name": "0123456789",
+      "status": "Muốn kết bạn",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-15T11:22:00Z", 
+      "timeAgo": "1 phút trước"
+    },
+    {
+      "id": "8",
+      "name": "Đỗ Thảo Uyên",
+      "status": "Bạn cùng nhóm",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-15T11:21:00Z",
+      "timeAgo": "2 phút trước"
+    },
+    {
+      "id": "9",
+      "name": "Đặng Đoàn Phi Yến",
+      "status": "Bạn cùng nhóm",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-15T11:21:00Z",
+      "timeAgo": "2 phút trước"
+    },
+    {
+      "id": "10",
+      "name": "Chí Tùng",
+      "status": "Bạn cùng nhóm",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-15T11:20:00Z",
+      "timeAgo": "2 phút trước"
+    },
+    {
+      "id": "11",
+      "name": "Đỗ Hoàng Thu Ngân",
+      "status": "Bạn cùng nhóm",
+      "avatar": "../../../../../assets/images/avt.jpg",
+      "timestamp": "2025-03-15T11:20:00Z", 
+      "timeAgo": "3 phút trước"
+    }
+  ]

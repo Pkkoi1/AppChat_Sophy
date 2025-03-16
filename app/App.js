@@ -16,7 +16,10 @@ import Diary from "./screens/diary/Diary";
 import Main from "./screens/main/Main";
 import MyProfile from "./screens/profile/MyProfile";
 import Setting from "./screens/profile/Setting";
-
+import ReceivedFriendRequests from "./screens/directory/friend/friendRequest/ReceivedFriendRequests";
+import UserProfile from "./screens/profile/userProfile/UserProfile"; // Đảm bảo đường dẫn đúng
+import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo đường dẫn đúng
+import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm bảo đường dẫn đúng
 const Stack = createNativeStackNavigator();
 
 function RootLayout() {
@@ -43,10 +46,11 @@ function RootLayout() {
         <Stack.Screen name="Discover" component={Discover} />
         <Stack.Screen name="Diary" component={Diary} />
         <Stack.Screen name="MyProfile" component={MyProfile} />
-
-
         <Stack.Screen name="Setting" component={Setting} />
-
+        <Stack.Screen name="ReceivedFriendRequests" component={ReceivedFriendRequests} />
+        <Stack.Screen name="UserProfile" component={UserProfile} />
+        <Stack.Screen name="AddFriend" component={AddFriend} />
+        <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
       </Stack.Navigator>
     </PaperProvider>
   );
