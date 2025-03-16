@@ -48,7 +48,10 @@ function RootLayout() {
         <Stack.Screen name="Diary" component={Diary} />
         <Stack.Screen name="MyProfile" component={MyProfile} />
         <Stack.Screen name="Setting" component={Setting} />
-        <Stack.Screen name="ReceivedFriendRequests" component={ReceivedFriendRequests} />
+        <Stack.Screen
+          name="ReceivedFriendRequests"
+          component={ReceivedFriendRequests}
+        />
         <Stack.Screen name="UserProfile" component={UserProfile} />
         <Stack.Screen name="AddFriend" component={AddFriend} />
         <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
@@ -57,8 +60,6 @@ function RootLayout() {
           component={Options}
           options={{ animation: "slide_from_right" }} // Thêm hiệu ứng xếp chồng lên
         />
-
-        <Stack.Screen name="Setting" component={Setting} />
       </Stack.Navigator>
     </PaperProvider>
   );
