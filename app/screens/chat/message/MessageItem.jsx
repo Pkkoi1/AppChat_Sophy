@@ -2,8 +2,9 @@ import React from "react";
 import { View, Text, Image } from "react-native";
 import moment from "moment";
 import MessageItemStyle from "./MessageItemStyle";
+import HighlightText from "../../../../components/highlightText/HighlightText"; // Import HighlightText
 
-const MessageItem = ({ message, isSender, avatar }) => {
+const MessageItem = ({ message, isSender, avatar, searchQuery }) => {
   const formattedTimestamp = moment(message.timestamp).format(
     "DD/MM/YYYY HH:mm"
   );
@@ -29,7 +30,11 @@ const MessageItem = ({ message, isSender, avatar }) => {
         ]}
       >
         <Text style={MessageItemStyle.timestamp}>{formattedTimestamp}</Text>
-        <Text style={MessageItemStyle.content}>{message.content}</Text>
+        <HighlightText
+          text={message.content}
+          highlight={searchQuery}
+          style={MessageItemStyle.content}
+        />
       </View>
     </View>
   );

@@ -21,22 +21,78 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 // Popup menu options với màu sắc icon như trong hình
 const popupOptions = [
-  { label: "Trả lời", icon: "reply-outline", action: "reply", iconColor: "#A855F7" }, // Màu tím
-  { label: "Chuyển tiếp", icon: "share-outline", action: "forward", iconColor: "#3B82F6" }, // Màu xanh dương
-  { label: "Lưu Cloud", icon: "cloud-upload-outline", action: "saveToCloud", iconColor: "#3B82F6" }, // Màu xanh dương
+  {
+    label: "Trả lời",
+    icon: "reply-outline",
+    action: "reply",
+    iconColor: "#A855F7",
+  }, // Màu tím
+  {
+    label: "Chuyển tiếp",
+    icon: "share-outline",
+    action: "forward",
+    iconColor: "#3B82F6",
+  }, // Màu xanh dương
+  {
+    label: "Lưu Cloud",
+    icon: "cloud-upload-outline",
+    action: "saveToCloud",
+    iconColor: "#3B82F6",
+  }, // Màu xanh dương
   { label: "Thu hồi", icon: "undo", action: "recall", iconColor: "#F97316" }, // Màu cam
-  { label: "Sao chép", icon: "content-copy", action: "copy", iconColor: "#3B82F6" }, // Màu xanh dương
+  {
+    label: "Sao chép",
+    icon: "content-copy",
+    action: "copy",
+    iconColor: "#3B82F6",
+  }, // Màu xanh dương
   { label: "Ghim", icon: "pin-outline", action: "pin", iconColor: "#F97316" }, // Màu cam
-  { label: "Nhắc hẹn", icon: "clock-outline", action: "reminder", iconColor: "#EF4444" }, // Màu đỏ
-  { label: "Chọn nhiều", icon: "checkbox-multiple-marked-outline", action: "selectMultiple", iconColor: "#3B82F6" }, // Màu xanh dương
-  { label: "Tạo tin nhắn nhanh", icon: "lightning-bolt", action: "createQuickMessage", iconColor: "#3B82F6" }, // Màu xanh dương
-  { label: "Dịch", icon: "translate", action: "translate", iconColor: "#22C55E" }, // Màu xanh lá
-  { label: "Đọc văn bản", icon: "volume-high", action: "readText", iconColor: "#22C55E" }, // Màu xanh lá
-  { label: "Chi tiết", icon: "information-outline", action: "details", iconColor: "#6B7280" }, // Màu xám
-  { label: "Xóa", icon: "delete-outline", action: "delete", iconColor: "#EF4444", color: "red" }, // Màu đỏ
+  {
+    label: "Nhắc hẹn",
+    icon: "clock-outline",
+    action: "reminder",
+    iconColor: "#EF4444",
+  }, // Màu đỏ
+  {
+    label: "Chọn nhiều",
+    icon: "checkbox-multiple-marked-outline",
+    action: "selectMultiple",
+    iconColor: "#3B82F6",
+  }, // Màu xanh dương
+  {
+    label: "Tạo tin nhắn nhanh",
+    icon: "lightning-bolt",
+    action: "createQuickMessage",
+    iconColor: "#3B82F6",
+  }, // Màu xanh dương
+  {
+    label: "Dịch",
+    icon: "translate",
+    action: "translate",
+    iconColor: "#22C55E",
+  }, // Màu xanh lá
+  {
+    label: "Đọc văn bản",
+    icon: "volume-high",
+    action: "readText",
+    iconColor: "#22C55E",
+  }, // Màu xanh lá
+  {
+    label: "Chi tiết",
+    icon: "information-outline",
+    action: "details",
+    iconColor: "#6B7280",
+  }, // Màu xám
+  {
+    label: "Xóa",
+    icon: "delete-outline",
+    action: "delete",
+    iconColor: "#EF4444",
+    color: "red",
+  }, // Màu đỏ
 ];
 
-const Conversation = ({ conversation, senderId }) => {
+const Conversation = ({ conversation, senderId, searchQuery }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({}); // Trạng thái lưu phản ứng cho từng tin nhắn
@@ -98,7 +154,10 @@ const Conversation = ({ conversation, senderId }) => {
         // Thêm logic để đặt nhắc hẹn
         break;
       case "selectMultiple":
-        console.log("Chọn nhiều tin nhắn bắt đầu từ:", selectedMessage.message_id);
+        console.log(
+          "Chọn nhiều tin nhắn bắt đầu từ:",
+          selectedMessage.message_id
+        );
         // Thêm logic để bật chế độ chọn nhiều
         break;
       case "createQuickMessage":
@@ -129,12 +188,13 @@ const Conversation = ({ conversation, senderId }) => {
   };
 
   return (
-    <>
+    <View style={ConversationStyle.conversationContainer}>
       <FlatList
         data={[...conversation.messages].reverse()}
         keyExtractor={(item) => item.message_id}
         renderItem={({ item, index }) => {
-          const prevMessage = index > 0 ? conversation.messages[index - 1] : null;
+          const prevMessage =
+            index > 0 ? conversation.messages[index - 1] : null;
           const isNewSender =
             !prevMessage || prevMessage.sender_id !== item.sender_id;
           const isTimeGap =
@@ -172,13 +232,13 @@ const Conversation = ({ conversation, senderId }) => {
                     isSender={item.sender_id === senderId}
                     avatar={avatar}
                     reactions={reactions} // Truyền danh sách phản ứng vào MessageItem
+                    searchQuery={searchQuery} // Truyền searchQuery vào MessageItem
                   />
                 </View>
               </Pressable>
             </View>
           );
         }}
-        contentContainerStyle={ConversationStyle.conversationContainer}
         inverted={true}
       />
 
@@ -259,7 +319,7 @@ const Conversation = ({ conversation, senderId }) => {
           </View>
         </Pressable>
       </Modal>
-    </>
+    </View>
   );
 };
 
