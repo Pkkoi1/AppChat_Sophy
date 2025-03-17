@@ -8,13 +8,19 @@ import GalleryOption from "./gallery/GalleryOption";
 import GroupOption from "./group/GroupOption";
 import ConversationOption from "./conversationOption/ConversationOption";
 import BanAndRemoveOption from "./banAndRemove/BanAndRemoveOption";
-
 import Colors from "../../../components/colors/Color";
 
 const OptionalScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { receiver, groupName, participants, isGroup } = route.params;
+  const {
+    receiver,
+    groupName,
+    participants,
+    isGroup,
+    conversation_id,
+    user_id,
+  } = route.params;
 
   return (
     <View style={styles.container}>
@@ -32,22 +38,18 @@ const OptionalScreen = () => {
           receiver={receiver}
           groupName={groupName}
           participants={participants}
+          conversation_id={conversation_id}
+          user_id={user_id}
         />
         <Description isGroup={isGroup} />
-        <GalleryOption isGroup={isGroup}></GalleryOption>
+        <GalleryOption isGroup={isGroup} />
         <GroupOption
           isGroup={isGroup}
           receiver={receiver}
           participants={participants}
-        ></GroupOption>
-        <ConversationOption
-          isGroup={isGroup}
-          receiver={receiver}
-        ></ConversationOption>
-        <BanAndRemoveOption
-          isGroup={isGroup}
-          receiver={receiver}
-        ></BanAndRemoveOption>
+        />
+        <ConversationOption isGroup={isGroup} receiver={receiver} />
+        <BanAndRemoveOption isGroup={isGroup} receiver={receiver} />
       </ScrollView>
     </View>
   );
