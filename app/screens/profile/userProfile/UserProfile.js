@@ -7,24 +7,27 @@ import {
   StyleSheet,
   ScrollView,
   Animated,
+  TextInput,
   RefreshControl,
+  FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-
+import Color from "../../../../components/colors/Color";
+import postsData from "../../../../assets/objects/post.json";
 const UserProfile = ({ route }) => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
-  const [requestSent, setRequestSent] = useState(null); // Sử dụng null làm giá trị ban đầu
+  const [requestSent, setRequestSent] = useState(null);
+  const [posts, setPosts] = useState(postsData); // Sử dụng dữ liệu từ JSON
 
   const { user, requestSent: initialRequestSent } = route.params || {};
 
-  // Cập nhật trạng thái requestSent dựa trên initialRequestSent từ route.params
   useEffect(() => {
     if (initialRequestSent) {
-      setRequestSent(initialRequestSent); // Gán trực tiếp giá trị của initialRequestSent ("pending", "accepted", hoặc null)
+      setRequestSent(initialRequestSent);
     }
   }, [initialRequestSent]);
 
@@ -46,12 +49,20 @@ const UserProfile = ({ route }) => {
   };
 
   const handleCancelRequest = () => {
-    setRequestSent(null); // Hủy yêu cầu, quay lại trạng thái "Kết bạn"
+    setRequestSent(null);
   };
 
   const handleAcceptRequest = () => {
     navigation.navigate("AcceptFriend", { user });
-  }
+  };
+
+  const renderPostImages = ({ item }) => (
+    <TouchableOpacity onPress={() => {
+      // Xử lý khi nhấp vào ảnh (ví dụ: mở ảnh lớn)
+    }}>
+      <Image source={require("../../../../assets/images/avt.jpg")} style={styles.postImage} />
+    </TouchableOpacity>
+  );
 
   return (
     <ScrollView
@@ -106,42 +117,128 @@ const UserProfile = ({ route }) => {
           </View>
 
           <View style={styles.buttonContainer}>
-            
             {requestSent === "accepted" ? (
-              <>
-              <TouchableOpacity style={styles.deniedButton}>
-                <Text style={styles.deniedButtonText}>Từ chối</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={handleAcceptRequest}
-                style={styles.acceptedButton}>
-                <Text style={styles.acceptedButtonText}>Đồng ý</Text>
-              </TouchableOpacity>
-              </>
-            ) : requestSent === "pending" ? (
-              <>
-                <TouchableOpacity style={styles.messageButton}>
-                  <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
-                  <Text style={styles.messageButtonText}>Nhắn tin</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.removeFriendButton} onPress={handleCancelRequest}>
-                  <Ionicons name="person-remove-outline" size={20} color="#666" />
-                  <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
-                </TouchableOpacity>
-              </>
+              <View style={styles.requestInfoContainer}>
+                <Text style={styles.requestTitle}>
+                  Gửi lời mời kết bạn từ nhóm chung
+                </Text>
+                <View style={styles.requestInfo}>
+                  <Icon name="person" size={20} color="#888" style={styles.requestIcon} />
+                  <Text style={styles.requestLabel}>
+                    Tên Zalo: {user?.name || "Thủy Lê"}
+                  </Text>
+                </View>
+                <View style={styles.requestInfo}>
+                  <Icon name="group" size={20} color="#888" style={styles.requestIcon} />
+                  <Text style={styles.requestInfo}>
+                    Nhóm chung: Flipgrid_Experimental Group.{" "}
+                    <Text style={styles.link}>Xem chi tiết</Text>
+                  </Text>
+                </View>
+                <TextInput
+                  style={styles.requestInput}
+                  value={`Xin chào, tôi là ${user?.name || "Thủy Lê"}`}
+                  editable={false}
+                />
+                <View style={styles.actionButtons}>
+                  <TouchableOpacity style={styles.deniedButton}>
+                    <Text style={styles.deniedButtonText}>Từ chối</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleAcceptRequest}
+                    style={styles.acceptedButton}
+                  >
+                    <Text style={styles.acceptedButtonText}>Đồng ý</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             ) : (
-              <>
-              <TouchableOpacity style={styles.messageButton}>
-                  <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
-                  <Text style={styles.messageButtonText}>Nhắn tin</Text>
-                </TouchableOpacity>
-              <TouchableOpacity style={styles.addFriendButton} onPress={handleAddFriend}>
-                <Ionicons name="person-add-outline" size={20} color="#666" />
-                <Text style={styles.addFriendButtonText}>Kết bạn</Text>
-              </TouchableOpacity>
-              </>
-              
+              <View style={styles.buttonAndStatusContainer}>
+                <View style={styles.horizontalButtons}>
+                  <TouchableOpacity style={styles.messageButton}>
+                    <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+                    <Text style={styles.messageButtonText}>Nhắn tin</Text>
+                  </TouchableOpacity>
+                  {requestSent === "pending" ? (
+                    <TouchableOpacity
+                      style={styles.removeFriendButton}
+                      onPress={handleCancelRequest}
+                    >
+                      <Ionicons name="person-remove-outline" size={20} color="#666" />
+                      <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.addFriendButton}
+                      onPress={handleAddFriend}
+                    >
+                      <Ionicons name="person-add-outline" size={20} color="#666" />
+                      <Text style={styles.addFriendButtonText}>Kết bạn</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+                <View style={styles.divider} />
+                {/* <Text style={styles.statusText}>
+                  {user?.name || "Thủy Lê"} chưa có hoạt động nào. Hãy trò chuyện cùng nhau để hiểu nhau hơn
+                </Text> */}
+              </View>
             )}
+          </View>
+
+
+
+
+
+          {/* Thêm các bài đăng */}
+          <View style={styles.postsContainer}>
+            {posts.map((post, index) => (
+              <View style={styles.postContainer} key={index}>
+                <Text style={styles.postDate}>{post.date}</Text>
+                <View style={styles.post}>
+                  <Text style={styles.postContent}>{post.content}</Text>
+
+                  {/* FlatList hiển thị danh sách hình ảnh */}
+                  <FlatList
+                    data={[1, 2]} // Giả sử có 2 ảnh, bạn cần thay thế bằng dữ liệu thực tế
+                    renderItem={renderPostImages}
+                    keyExtractor={(item, index) => index.toString()}
+                    horizontal={true} // Hiển thị ảnh theo chiều ngang
+                  />
+
+                  <View style={styles.musicContainer}>
+                    <Ionicons name="musical-notes-outline" size={20} color="#7865C9" />
+                    <Text style={styles.musicText}>Bài hát: {post.music}</Text>
+                  </View>
+
+                  <View style={styles.postFooter}>
+                  <View style={styles.postFooterLeft}>
+                      <View style={styles.iconAndText}>
+                        <Ionicons style={styles.icon}  name="heart" size={20} color="#f00" />
+                        <Text style={styles.postLikes}>{post.likes} bạn</Text>
+                      </View>
+                      <View style={styles.iconAndText}>
+                        <Text style={styles.postComments}>{post.comments} bình luận</Text>
+                      </View>
+                    </View>
+                  </View>
+                  {/* Các nút Thích, Bình luận, ... */}
+                  <View style={styles.postFooterRight}>
+                    <View style={styles.footerIconsContainer}>
+                      <TouchableOpacity style={styles.footerIcon}>
+                        <Ionicons name="heart-outline" size={20} color="#888" />
+                        <Text style={styles.footerText}>Thích</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={styles.footerIcon}>
+                        <Ionicons name="chatbox-ellipses-outline" size={20} color="#888" />
+                      </TouchableOpacity>
+                    </View>
+                    <TouchableOpacity>
+                      <Icon name="more-horiz" size={20} color="#888" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            ))}
           </View>
         </View>
       </View>
@@ -223,21 +320,29 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   buttonContainer: {
-    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+  },
+  buttonAndStatusContainer: {
+    width: "90%",
+    alignItems: "center",
+  },
+  horizontalButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   messageButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#E6F0FA",
+    backgroundColor: Color.blueBackgroundButton2,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
     marginRight: 10,
-    width: 180,
+    flex: 1,
   },
   messageButtonText: {
     fontSize: 16,
@@ -254,7 +359,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
-    width: 180,
+    flex: 1,
   },
   removeFriendButton: {
     flexDirection: "row",
@@ -264,29 +369,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 20,
-    width: 180,
-  },
-  acceptedButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#007AFF",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginHorizontal: 5,
-    width: 180,
-  },
-  deniedButton : {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "rgb(212, 212, 212)",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    marginHorizontal: 5,
-    width: 180,
+    flex: 1,
   },
   addFriendButtonText: {
     fontSize: 16,
@@ -302,20 +385,213 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
   },
+  divider: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "#ccc",
+    marginVertical: 15,
+  },
+  statusText: {
+    fontSize: 14,
+    color: "#666",
+    textAlign: "center",
+    paddingHorizontal: 10,
+  },
+  requestInfoContainer: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    width: "90%",
+  },
+  requestTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#000",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  requestInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  requestIcon: {
+    marginRight: 10,
+  },
+  requestLabel: {
+    fontSize: 16,
+    color: "#000",
+  },
+  groupInfo: {
+    fontSize: 14,
+    color: "#666",
+  },
+  link: {
+    color: "#007AFF",
+    fontSize: 14,
+  },
+  requestInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 15,
+    fontSize: 16,
+    color: "#000",
+  },
+  actionButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  acceptedButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginRight: 10,
+    flex: 1,
+    alignItems: "center",
+  },
+  deniedButton: {
+    backgroundColor: "#E5E5EA",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginRight: 10,
+    flex: 1,
+    alignItems: "center",
+  },
   acceptedButtonText: {
     fontSize: 16,
     color: "#fff",
-    marginLeft: 5,
     fontWeight: "500",
     textAlign: "center",
   },
   deniedButtonText: {
     fontSize: 16,
     color: "#000",
-    marginLeft: 5,
     fontWeight: "500",
     textAlign: "center",
   },
+  postsContainer: {
+    paddingHorizontal: 15,
+    paddingBottom: 20,
+  },
+  postContainer: {
+    marginBottom: 15,
+  },
+  post: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  postHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10,
+  },
+  postDate: {
+    marginVertical: 5,
+    marginHorizontal: 5,
+    fontSize: 14,
+    color: "#000",
+    backgroundColor: "#E0E3EA",
+    padding: 5,
+    alignSelf: "flex-start",
+    borderRadius: 5,
+  },
+  postContent: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 10,
+  },
+  postImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginRight: 10,
+    marginBottom: 10,
+  },
+  musicContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  musicText: {
+    fontSize: 14,
+    color: "#888",
+    marginLeft: 5,
+  },
+  postFooter: {
+    flexDirection: "column", // Changed to column
+    justifyContent: "space-between",
+    alignItems: "flex-start", // Aligned to start
+    marginVertical: 5,
+  },
+  postFooterLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%", 
+    justifyContent: "space-between",
+  },
+  postFooterRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between", // Added to distribute buttons evenly
+    width: "100%", // Take full width
+    marginTop: 10, // Add some space between left and right sections
+  },
+  footerIconsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  postLikes: {
+    fontSize: 14,
+    color: "#888",
+    marginLeft: 5,
+  },
+  postComments: {
+    fontSize: 14,
+    color: "#888",
+    marginLeft: 5,
+  },
+  footerIcon: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 5, // Removed to allow even distribution
+    backgroundColor: Color.grayBackgroundButton,
+    padding: 5,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+  },
+  footerText: {
+    fontSize: 14,
+    color: "#000",
+    marginLeft: 5,
+  },
+  iconAndText: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    backgroundColor: Color.grayBackgroundButton,
+    borderRadius: 30,
+    padding: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 5,
+  }
 });
 
 export default UserProfile;

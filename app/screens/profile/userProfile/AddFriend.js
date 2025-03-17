@@ -9,9 +9,9 @@ import {
   RefreshControl,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import ToggleSwitch from "../../../../components/toggle/ToggleSwitch"; // Đảm bảo đường dẫn đúng
 
 const AddFriend = ({ route }) => {
   const navigation = useNavigation();
@@ -46,7 +46,6 @@ const AddFriend = ({ route }) => {
       }
     >
       <View style={styles.container}>
-       
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Icon name="arrow-back-ios" size={24} color="#fff" />
@@ -88,14 +87,7 @@ const AddFriend = ({ route }) => {
 
           <View style={styles.toggleContainer}>
             <Text style={styles.toggleText}>Chặn xem nhật ký của tôi</Text>
-            <TouchableOpacity onPress={toggleSwitch}>
-              <MaterialCommunityIcons
-                name={isToggled ? "toggle-switch-off-outline" : "toggle-switch-outline"}
-                size={30}
-                color={isToggled ? "#0084FF" : "#ccc"}
-                style={styles.toggleIcon}
-              />
-            </TouchableOpacity>
+            <ToggleSwitch isOn={isToggled} onToggle={toggleSwitch} />
           </View>
           <TouchableOpacity style={styles.sendRequestButton} onPress={handleSendRequest}>
             <Text style={styles.sendRequestText}>Gửi yêu cầu</Text>
@@ -216,9 +208,6 @@ const styles = StyleSheet.create({
   toggleText: {
     fontSize: 14,
     color: "#333",
-  },
-  toggleIcon: {
-    transform: [{ rotate: "180deg" }],
   },
   sendRequestButton: {
     backgroundColor: "#0084FF",

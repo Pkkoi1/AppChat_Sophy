@@ -12,6 +12,8 @@ import HeadView from "../../../header/Header";
 import receivedRequests from "../../../../../assets/objects/receivedRequests.json";
 import sentRequests from "../../../../../assets/objects/sentRequests.json";
 
+import Color from "../../../../../components/colors/Color";
+
 // Hàm nhóm dữ liệu theo thời gian
 const groupByTime = (data) => {
   const today = new Date("2025-03-15T00:00:00Z");
@@ -76,8 +78,17 @@ const ReceivedFriendRequests = ({ navigation }) => {
   }, []);
 
   const handleRequestPress = (item, type) => {
-    const requestSent = type === "received" ?  "accepted" :"pending" ;
+    const requestSent = type === "received" ? "accepted" : "pending";
     navigation.navigate("UserProfile", { user: item, requestSent });
+  };
+
+  const handleAccept = (item) => {
+    console.log(`Đồng ý kết bạn với ${item.name}`);
+    navigation.navigate("FriendOptions", { user: item });
+  };
+
+  const handleReject = (item) => {
+    console.log(`Từ chối kết bạn với ${item.name}`);
   };
 
   const ReceivedTab = () => (
@@ -89,24 +100,34 @@ const ReceivedFriendRequests = ({ navigation }) => {
           style={styles.requestItem}
           onPress={() => handleRequestPress(item, "received")}
         >
-          <Image source={require("../../../../../assets/images/avt.jpg")} style={styles.avatar} />
-          <View style={styles.infoContainer}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.status}>{item.status}</Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.rejectButton}>
-              <Text style={styles.rejectText}>TỪ CHỐI</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.acceptButton}>
-              <Text style={styles.acceptText}>ĐỒNG Ý</Text>
-            </TouchableOpacity>
+          <Image
+            source={require("../../../../../assets/images/avt.jpg")}
+            style={styles.avatar}
+          />
+          <View style={styles.infoWrapper}>
+            <View style={styles.infoContainer}>
+              <Text style={styles.name}>{item.name}</Text>
+              <Text style={styles.status}>{item.status || "Muốn kết bạn"}</Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.rejectButton}
+                onPress={() => handleReject(item)}
+              >
+                <Text style={styles.rejectText}>TỪ CHỐI</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.acceptButton}
+                onPress={() => handleAccept(item)}
+              >
+                <Text style={styles.acceptText}>ĐỒNG Ý</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </TouchableOpacity>
       )}
       renderSectionHeader={({ section: { title } }) => (
         <View style={styles.sectionHeader}>
-          <View style={styles.line} />
           <Text style={styles.sectionHeaderText}>{title}</Text>
           <View style={styles.line} />
         </View>
@@ -129,7 +150,10 @@ const ReceivedFriendRequests = ({ navigation }) => {
           style={styles.requestItem}
           onPress={() => handleRequestPress(item, "sent")}
         >
-          <Image source={require("../../../../../assets/images/avt.jpg")} style={styles.avatar} />
+          <Image
+            source={require("../../../../../assets/images/avt.jpg")}
+            style={styles.avatar}
+          />
           <View style={styles.infoContainer}>
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.status}>{item.status}</Text>
@@ -142,7 +166,6 @@ const ReceivedFriendRequests = ({ navigation }) => {
       )}
       renderSectionHeader={({ section: { title } }) => (
         <View style={styles.sectionHeader}>
-          <View style={styles.line} />
           <Text style={styles.sectionHeaderText}>{title}</Text>
           <View style={styles.line} />
         </View>
@@ -220,7 +243,7 @@ const styles = StyleSheet.create({
   sectionHeaderText: {
     fontSize: 14,
     color: "gray",
-    marginHorizontal: 10,
+    marginRight: 10,
   },
   line: {
     flex: 1,
@@ -229,11 +252,8 @@ const styles = StyleSheet.create({
   },
   requestItem: {
     flexDirection: "row",
-    alignItems: "center",
     paddingVertical: 10,
     paddingHorizontal: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f2f5",
   },
   avatar: {
     width: 50,
@@ -241,8 +261,13 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     marginRight: 15,
   },
+  infoWrapper: {
+    flex: 1,
+    flexDirection: "column",
+  },
   infoContainer: {
     flex: 1,
+    marginBottom: 10,
   },
   name: {
     fontSize: 16,
@@ -261,42 +286,43 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
+    alignItems: "center",
   },
   rejectButton: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    backgroundColor: Color.grayBackgroundButton,
+    paddingVertical: 5,
+    paddingHorizontal: 50,
     borderRadius: 20,
     marginRight: 10,
   },
   rejectText: {
     fontSize: 14,
     color: "#000",
-    fontWeight: "bold",
   },
   acceptButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    backgroundColor: Color.blueBackgroundButton,
+    paddingVertical: 5,
+    paddingHorizontal: 50,
     borderRadius: 20,
   },
   acceptText: {
     fontSize: 14,
-    color: "#fff",
+    color: Color.blueText,
     fontWeight: "bold",
   },
   withdrawButton: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
+    backgroundColor: Color.grayBackgroundButton,
+    paddingVertical: 5,
+    paddingHorizontal: 20,
     borderRadius: 20,
+    marginLeft: 10,
+    marginTop: 15,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
   },
   withdrawText: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#000",
     fontWeight: "bold",
   },

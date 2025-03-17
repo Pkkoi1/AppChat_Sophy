@@ -356,7 +356,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   gridText: {
-    fontSize: 10, // Giữ nguyên 10, phù hợp với icon mỏng
+    fontSize: 12, // Giữ nguyên 10, phù hợp với icon mỏng
     color: "#333",
     textAlign: "center",
     width: "100%", // Đảm bảo văn bản bắt đầu từ trái
