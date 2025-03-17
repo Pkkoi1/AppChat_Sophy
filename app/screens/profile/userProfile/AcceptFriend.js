@@ -11,6 +11,8 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import ToggleSwitch from "../../../../components/toggle/ToggleSwitch"; // Đảm bảo đường dẫn đúng
+import Color from "../../../../components/colors/Color";
 
 const FriendOptions = ({ route }) => {
   const navigation = useNavigation();
@@ -77,12 +79,7 @@ const FriendOptions = ({ route }) => {
           <View style={styles.toggleContainer}>
             <Text style={styles.toggleText}>Chặn xem nhật ký của tôi</Text>
             <TouchableOpacity onPress={toggleSwitch}>
-              <MaterialCommunityIcons
-                name={isToggled ? "toggle-switch-off-outline" : "toggle-switch-outline"}
-                size={30}
-                color={isToggled ? "#0084FF" : "#ccc"}
-                style={styles.toggleIcon}
-              />
+            <ToggleSwitch isOn={isToggled} onToggle={toggleSwitch} />
             </TouchableOpacity>
           </View>
 
@@ -109,7 +106,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#0084FF",
     padding: 15,
-    paddingTop: 40, // Đảm bảo không bị che bởi status bar
     elevation: 4,
   },
   headerTitle: {
@@ -170,7 +166,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     backgroundColor: "#fff",
     paddingVertical: 10,
-    borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,

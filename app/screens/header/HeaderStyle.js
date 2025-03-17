@@ -23,7 +23,6 @@ const HeaderStyle = () => {
     },
     searchInput: {
       flex: 1,
-      backgroundColor: "#1b96fd",
       borderRadius: 10,
       paddingHorizontal: 10,
       height: 35,
@@ -34,7 +33,6 @@ const HeaderStyle = () => {
 
     setting: {
       flex: 1,
-      backgroundColor: "#1b96fd",
       borderRadius: 10,
       paddingHorizontal: 10,
       height: 35,

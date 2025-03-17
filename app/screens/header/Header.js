@@ -8,6 +8,7 @@ import {
 import { TextInput, View, TouchableOpacity, Text } from "react-native";
 import HeaderStyle from "./HeaderStyle";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 
 const HeadView = ({ page }) => {
   const [search, setSearch] = useState("");
@@ -34,8 +35,8 @@ const HeadView = ({ page }) => {
           </TouchableOpacity>
         );
 
-        case "Profile":
-        case "ReceivedFriendRequests":
+      case "Profile":
+      case "ReceivedFriendRequests":
         return (
           <TouchableOpacity onPress={() => navigation.navigate("Setting")}>
             <AntDesign name="setting" size={24} color="white" />
@@ -78,7 +79,12 @@ const HeadView = ({ page }) => {
   };
 
   return (
-    <View style={HeaderStyle().container}>
+    <LinearGradient
+      colors={["#1f7bff", "#12bcfa"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={HeaderStyle().container}
+    >
       {page === "Setting" ? (
         <>
           <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -107,9 +113,9 @@ const HeadView = ({ page }) => {
           />
         </>
       )}
-  
+
       {renderPageIcons()}
-    </View>
+    </LinearGradient>
   );
 };
 
