@@ -1,13 +1,21 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "expo-router";
 
-const ChatHeader = ({ receiver, groupName, participants, isGroup }) => {
+const ChatHeader = ({
+  receiver,
+  groupName,
+  participants,
+  isGroup,
+  user_id,
+  conversation_id,
+  onSearchPress,
+}) => {
   const navigation = useNavigation();
+
   const handlerBack = () => {
     navigation.goBack();
   };
@@ -18,6 +26,8 @@ const ChatHeader = ({ receiver, groupName, participants, isGroup }) => {
       groupName,
       participants,
       isGroup,
+      user_id,
+      conversation_id,
     });
   };
 
@@ -43,7 +53,6 @@ const ChatHeader = ({ receiver, groupName, participants, isGroup }) => {
           {groupName ? `${participants.length} thành viên` : "Vừa mới truy cập"}
         </Text>
       </View>
-
       <TouchableOpacity>
         <Feather name="phone" size={24} color="#ffffff" />
       </TouchableOpacity>

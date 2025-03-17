@@ -1,5 +1,13 @@
 import React from "react";
-import { Image, SafeAreaView, Text, View, StyleSheet } from "react-native";
+import {
+  Image,
+  SafeAreaView,
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
@@ -8,6 +16,7 @@ const options = [
   {
     name: "Tìm\n tin nhắn",
     icon: <AntDesign name="search1" size={20} color="black" />,
+    action: "searchMessages",
   },
   {
     name: "Trang\n cá nhân",
@@ -29,8 +38,25 @@ const options = [
   },
 ];
 
-const ConversationName = ({ receiver, groupName, participants }) => {
+const ConversationName = ({
+  receiver,
+  groupName,
+  participants,
+  conversation_id,
+  user_id,
+}) => {
+  const navigation = useNavigation();
   const defaultGroupAvatar = require("../../../../assets/images/default-group-avatar.jpg");
+
+  const handlePress = (option) => {
+    if (option.action === "searchMessages") {
+      navigation.navigate("Chat", {
+        conversation_id,
+        user_id,
+        startSearch: true,
+      });
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,10 +74,14 @@ const ConversationName = ({ receiver, groupName, participants }) => {
             return null;
           }
           return (
-            <View key={index} style={styles.option}>
+            <TouchableOpacity
+              key={index}
+              style={styles.option}
+              onPress={() => handlePress(option)}
+            >
               <View style={styles.optionIcon}>{option.icon}</View>
               <Text style={styles.optionText}>{option.name}</Text>
-            </View>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -90,7 +120,6 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 11,
-
     textAlign: "center",
   },
   optionIcon: {
