@@ -99,7 +99,7 @@ const HeadView = ({ page }) => {
           </TouchableOpacity>
           <Text style={HeaderStyle().setting}>Lời mời kết bạn</Text>
         </>
-      ) : (
+      ) : ( // Trang chính của ứng dụng
         <>
           <TouchableOpacity>
             <AntDesign name="search1" size={24} color="white" />

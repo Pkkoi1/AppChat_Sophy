@@ -16,20 +16,37 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Color from "../../../../components/colors/Color";
 import postsData from "../../../../assets/objects/post.json";
+import usersData from "../../../../assets/objects/user.json";
+
 const UserProfile = ({ route }) => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
   const [requestSent, setRequestSent] = useState(null);
-  const [posts, setPosts] = useState(postsData); // Sử dụng dữ liệu từ JSON
+  const [posts, setPosts] = useState(postsData);
+  const [userExists, setUserExists] = useState(false); // Kiểm tra id có tồn tại trong usersData không
+  const [user, setUser] = useState(null); // Lưu thông tin user
 
-  const { user, requestSent: initialRequestSent } = route.params || {};
+  // Lấy id từ route.params
+  const { id, requestSent: initialRequestSent } = route.params || {};
 
   useEffect(() => {
     if (initialRequestSent) {
       setRequestSent(initialRequestSent);
     }
   }, [initialRequestSent]);
+
+  useEffect(() => {
+    // Tìm user trong usersData dựa trên id truyền vào
+    const foundUser = usersData.find((u) => u.id === id);
+    if (foundUser) {
+      setUser(foundUser);
+      setUserExists(true); // id tồn tại trong usersData
+    } else {
+      setUser(null);
+      setUserExists(false); 
+    }
+  }, [id]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -57,9 +74,7 @@ const UserProfile = ({ route }) => {
   };
 
   const renderPostImages = ({ item }) => (
-    <TouchableOpacity onPress={() => {
-      // Xử lý khi nhấp vào ảnh (ví dụ: mở ảnh lớn)
-    }}>
+    <TouchableOpacity onPress={() => {}}>
       <Image source={require("../../../../assets/images/avt.jpg")} style={styles.postImage} />
     </TouchableOpacity>
   );
@@ -106,88 +121,113 @@ const UserProfile = ({ route }) => {
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>TN</Text>
+                <Text style={styles.avatarText}>TN</Text>
             </View>
             <Text style={styles.name}>{user?.name || "Thành Nghiêm"}</Text>
-            <TouchableOpacity>
-              <Text style={styles.editText}>
-                Bạn chưa thể xem nhật ký của {user?.name || "Thành Nghiêm"} khi chưa là bạn bè
+          </View>
+          
+          {!userExists ? (
+            <View style={styles.buttonContainer}>
+              <View style={styles.avatarContainer}>
+                
+                  <Text style={styles.editText}>
+                    Bạn chưa thể xem nhật ký của {user?.name || "Thành Nghiêm"} khi chưa là bạn bè
+                  </Text>
+              </View>
+
+              {requestSent === "accepted" ? (
+                <View style={styles.requestInfoContainer}>
+                  <Text style={styles.requestTitle}>
+                    Gửi lời mời kết bạn từ nhóm chung
+                  </Text>
+                  <View style={styles.requestInfo}>
+                    <Icon name="person" size={20} color="#888" style={styles.requestIcon} />
+                    <Text style={styles.requestLabel}>
+                      Tên Zalo: {user?.name || "Thủy Lê"}
+                    </Text>
+                  </View>
+                  <View style={styles.requestInfo}>
+                    <Icon name="group" size={20} color="#888" style={styles.requestIcon} />
+                    <Text style={styles.requestInfo}>
+                      Nhóm chung: Flipgrid_Experimental Group.{" "}
+                      <Text style={styles.link}>Xem chi tiết</Text>
+                    </Text>
+                  </View>
+                  <TextInput
+                    style={styles.requestInput}
+                    value={`Xin chào, tôi là ${user?.name || "Thủy Lê"}`}
+                    editable={false}
+                  />
+                  <View style={styles.actionButtons}>
+                    <TouchableOpacity style={styles.deniedButton}>
+                      <Text style={styles.deniedButtonText}>Từ chối</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={handleAcceptRequest}
+                      style={styles.acceptedButton}
+                    >
+                      <Text style={styles.acceptedButtonText}>Đồng ý</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.buttonAndStatusContainer}>
+                  <View style={styles.horizontalButtons}>
+                    <TouchableOpacity style={styles.messageButton}>
+                      <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+                      <Text style={styles.messageButtonText}>Nhắn tin</Text>
+                    </TouchableOpacity>
+                    {requestSent === "pending" ? (
+                      <TouchableOpacity
+                        style={styles.removeFriendButton}
+                        onPress={handleCancelRequest}
+                      >
+                        <Ionicons name="person-remove-outline" size={20} color="#666" />
+                        <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
+                      </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        style={styles.addFriendButton}
+                        onPress={handleAddFriend}
+                      >
+                        <Ionicons name="person-add-outline" size={20} color="#666" />
+                        <Text style={styles.addFriendButtonText}>Kết bạn</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  <View style={styles.divider} />
+                  {/* <Text style={styles.statusText}>
+                    {user?.name || "Thủy Lê"} chưa có hoạt động nào. Hãy trò chuyện cùng nhau để hiểu nhau hơn
+                  </Text> */}
+                </View>
+              )}
+            </View>
+          ) : ( // Tiểu sử
+            <>
+              <Text style={styles.statusText}>
+                Công ty cổ phần thép TVP
               </Text>
+              <Text style={styles.statusText}>
+                123456789
+              </Text>
+              <Text style={styles.statusText}>
+                user@gmail.com
+              </Text>
+            </>
+
+          )}
+
+          {/* Add the new buttons here */}
+          <View style={styles.optionsContainer}>
+            <TouchableOpacity style={styles.optionButton}>
+              <Icon name="photo" size={22} color="#0066cc" />
+              <Text style={styles.optionText}>Ảnh  123</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionButton}>
+              <Icon name="videocam" size={22} color="#128fb0" />
+              <Text style={styles.optionText}>Video  11</Text>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.buttonContainer}>
-            {requestSent === "accepted" ? (
-              <View style={styles.requestInfoContainer}>
-                <Text style={styles.requestTitle}>
-                  Gửi lời mời kết bạn từ nhóm chung
-                </Text>
-                <View style={styles.requestInfo}>
-                  <Icon name="person" size={20} color="#888" style={styles.requestIcon} />
-                  <Text style={styles.requestLabel}>
-                    Tên Zalo: {user?.name || "Thủy Lê"}
-                  </Text>
-                </View>
-                <View style={styles.requestInfo}>
-                  <Icon name="group" size={20} color="#888" style={styles.requestIcon} />
-                  <Text style={styles.requestInfo}>
-                    Nhóm chung: Flipgrid_Experimental Group.{" "}
-                    <Text style={styles.link}>Xem chi tiết</Text>
-                  </Text>
-                </View>
-                <TextInput
-                  style={styles.requestInput}
-                  value={`Xin chào, tôi là ${user?.name || "Thủy Lê"}`}
-                  editable={false}
-                />
-                <View style={styles.actionButtons}>
-                  <TouchableOpacity style={styles.deniedButton}>
-                    <Text style={styles.deniedButtonText}>Từ chối</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleAcceptRequest}
-                    style={styles.acceptedButton}
-                  >
-                    <Text style={styles.acceptedButtonText}>Đồng ý</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ) : (
-              <View style={styles.buttonAndStatusContainer}>
-                <View style={styles.horizontalButtons}>
-                  <TouchableOpacity style={styles.messageButton}>
-                    <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
-                    <Text style={styles.messageButtonText}>Nhắn tin</Text>
-                  </TouchableOpacity>
-                  {requestSent === "pending" ? (
-                    <TouchableOpacity
-                      style={styles.removeFriendButton}
-                      onPress={handleCancelRequest}
-                    >
-                      <Ionicons name="person-remove-outline" size={20} color="#666" />
-                      <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      style={styles.addFriendButton}
-                      onPress={handleAddFriend}
-                    >
-                      <Ionicons name="person-add-outline" size={20} color="#666" />
-                      <Text style={styles.addFriendButtonText}>Kết bạn</Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-                <View style={styles.divider} />
-                {/* <Text style={styles.statusText}>
-                  {user?.name || "Thủy Lê"} chưa có hoạt động nào. Hãy trò chuyện cùng nhau để hiểu nhau hơn
-                </Text> */}
-              </View>
-            )}
-          </View>
-
-
-
-
 
           {/* Thêm các bài đăng */}
           <View style={styles.postsContainer}>
@@ -315,14 +355,13 @@ const styles = StyleSheet.create({
   },
   editText: {
     color: "#505050",
-    marginBottom: 20,
+    marginVertical: 20,
     fontSize: 14,
     textAlign: "center",
   },
   buttonContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
   },
   buttonAndStatusContainer: {
     width: "90%",
@@ -591,7 +630,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginRight: 5,
-  }
+  },
+  optionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingTop: 10,
+    paddingBottom: 20,
+    paddingHorizontal: 10,
+  },
+  optionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // Changed to center
+    paddingHorizontal: 55,
+    paddingVertical: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  optionText: {
+    fontSize: 12,
+    color: '#000',
+    textAlign: 'center', // Added textAlign
+  },
 });
 
 export default UserProfile;

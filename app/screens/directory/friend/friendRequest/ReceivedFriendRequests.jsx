@@ -11,10 +11,8 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import HeadView from "../../../header/Header";
 import receivedRequests from "../../../../../assets/objects/receivedRequests.json";
 import sentRequests from "../../../../../assets/objects/sentRequests.json";
-
 import Color from "../../../../../components/colors/Color";
 
-// Hàm nhóm dữ liệu theo thời gian
 const groupByTime = (data) => {
   const today = new Date("2025-03-15T00:00:00Z");
   const oneMonthAgo = new Date(today);
@@ -84,8 +82,9 @@ const ReceivedFriendRequests = ({ navigation }) => {
 
   const handleAccept = (item) => {
     console.log(`Đồng ý kết bạn với ${item.name}`);
-    navigation.navigate("FriendOptions", { user: item });
+    navigation.navigate("AcceptFriend", { user: item });
   };
+  
 
   const handleReject = (item) => {
     console.log(`Từ chối kết bạn với ${item.name}`);
@@ -275,7 +274,7 @@ const styles = StyleSheet.create({
     color: "#000",
   },
   status: {
-    fontSize: 14,
+    fontSize: 12,
     color: "gray",
     marginTop: 2,
   },
@@ -284,29 +283,37 @@ const styles = StyleSheet.create({
     color: "gray",
     marginTop: 2,
   },
-  buttonContainer: {
+   buttonContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: 'space-around',
+    width: '100%',
   },
   rejectButton: {
     backgroundColor: Color.grayBackgroundButton,
     paddingVertical: 5,
-    paddingHorizontal: 50,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    marginRight: 10,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
   },
   rejectText: {
-    fontSize: 14,
+    fontSize: 12,
+    fontWeight: "bold",
     color: "#000",
   },
   acceptButton: {
     backgroundColor: Color.blueBackgroundButton,
     paddingVertical: 5,
-    paddingHorizontal: 50,
+    paddingHorizontal: 20,
     borderRadius: 20,
+    flex: 1,
+    marginHorizontal: 5,
+    alignItems: 'center',
   },
   acceptText: {
-    fontSize: 14,
+    fontSize: 12,
     color: Color.blueText,
     fontWeight: "bold",
   },
