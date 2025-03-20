@@ -12,7 +12,7 @@ import {
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
-import { login } from "@/api/API";
+import { api } from "@/api/API";
 
 // Đọc dữ liệu từ file user.json
 const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
@@ -35,25 +35,32 @@ function LoginScreen({ navigation }) {
 
     try {
       // Gọi API đăng nhập
-      const response = await login(phone, password);
+      const response = await api.login({ phone, password });
+      // console.log("API Response:", response); // Kiểm tra phản hồi từ API
 
       // Kiểm tra trạng thái phản hồi
-      if (response) {
-        Alert.alert("Đăng nhập thành công!", `Chào ${response.fullname}!`);
+      if (response && response.data && response.data.user) {
+        const { user } = response.data; // Lấy thông tin người dùng từ response.data
+        Alert.alert("Đăng nhập thành công!", `Chào ${user.fullname}!`);
         navigation.navigate("Home", {
-          userId: response.userId,
-          userName: response.fullname,
+          userId: user.userId,
+          userName: user.fullname,
         });
       } else {
         Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
       }
     } catch (error) {
-      Alert.alert("Đăng nhập thất bại!", "Có lỗi xảy ra, vui lòng thử lại!");
-
+      if (error.message.includes("Network Error")) {
+        Alert.alert(
+          "Lỗi mạng",
+          "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng!"
+        );
+      } else {
+        Alert.alert("Đăng nhập thất bại!", "Có lỗi xảy ra, vui lòng thử lại!");
+      }
       console.error("Lỗi đăng nhập:", error);
     }
   };
-
   return (
     <SafeAreaView style={{ flex: 1 }} backgroundColor="#007AFF">
       <StatusBar barStyle="light-content" backgroundColor="#1b96fd" />
