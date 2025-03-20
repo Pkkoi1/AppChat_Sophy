@@ -12,6 +12,7 @@ import {
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
+import { api } from "@/api/API";
 
 // Đọc dữ liệu từ file user.json
 const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
@@ -26,25 +27,40 @@ function LoginScreen({ navigation }) {
     setIsButtonEnabled(phone.length > 0 && password.length > 0);
   }, [phone, password]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!phone || !password) {
       Alert.alert("Thông báo", "Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    // Tìm người dùng có phone và password khớp
-    const user = users.find(
-      (u) => u.phone === phone && u.password === password
-    );
+    try {
+      // Gọi API đăng nhập
+      const response = await api.login({ phone, password });
+      // console.log("API Response:", response); // Kiểm tra phản hồi từ API
 
-    if (user) {
-      Alert.alert("Đăng nhập thành công!", `Chào ${user.name}!`);
-      navigation.navigate("Home", { userId: user.id, userName: user.name }); // Truyền thông tin người dùng
-    } else {
-      Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
+      // Kiểm tra trạng thái phản hồi
+      if (response && response.data && response.data.user) {
+        const { user } = response.data; // Lấy thông tin người dùng từ response.data
+        Alert.alert("Đăng nhập thành công!", `Chào ${user.fullname}!`);
+        navigation.navigate("Home", {
+          userId: user.userId,
+          userName: user.fullname,
+        });
+      } else {
+        Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
+      }
+    } catch (error) {
+      if (error.message.includes("Network Error")) {
+        Alert.alert(
+          "Lỗi mạng",
+          "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng!"
+        );
+      } else {
+        Alert.alert("Đăng nhập thất bại!", "Có lỗi xảy ra, vui lòng thử lại!");
+      }
+      console.error("Lỗi đăng nhập:", error);
     }
   };
-
   return (
     <SafeAreaView style={{ flex: 1 }} backgroundColor="#007AFF">
       <StatusBar barStyle="light-content" backgroundColor="#1b96fd" />
