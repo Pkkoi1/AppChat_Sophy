@@ -12,6 +12,7 @@ import {
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
+import { login } from "@/api/API";
 
 // Đọc dữ liệu từ file user.json
 const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
@@ -26,22 +27,30 @@ function LoginScreen({ navigation }) {
     setIsButtonEnabled(phone.length > 0 && password.length > 0);
   }, [phone, password]);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!phone || !password) {
       Alert.alert("Thông báo", "Vui lòng nhập đầy đủ thông tin!");
       return;
     }
 
-    // Tìm người dùng có phone và password khớp
-    const user = users.find(
-      (u) => u.phone === phone && u.password === password
-    );
+    try {
+      // Gọi API đăng nhập
+      const response = await login(phone, password);
 
-    if (user) {
-      Alert.alert("Đăng nhập thành công!", `Chào ${user.name}!`);
-      navigation.navigate("Home", { userId: user.id, userName: user.name }); // Truyền thông tin người dùng
-    } else {
-      Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
+      // Kiểm tra trạng thái phản hồi
+      if (response) {
+        Alert.alert("Đăng nhập thành công!", `Chào ${response.fullname}!`);
+        navigation.navigate("Home", {
+          userId: response.userId,
+          userName: response.fullname,
+        });
+      } else {
+        Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
+      }
+    } catch (error) {
+      Alert.alert("Đăng nhập thất bại!", "Có lỗi xảy ra, vui lòng thử lại!");
+
+      console.error("Lỗi đăng nhập:", error);
     }
   };
 

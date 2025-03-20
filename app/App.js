@@ -21,12 +21,13 @@ import UserProfile from "./screens/profile/userProfile/UserProfile"; // Đảm b
 import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo đường dẫn đúng
 import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm bảo đường dẫn đúng
 import Options from "./screens/optional/OptionalScreen";
+import { NavigationContainer } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator();
 
 function RootLayout() {
   return (
-    <PaperProvider>
+    <NavigationContainer>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
@@ -56,9 +57,13 @@ function RootLayout() {
         <Stack.Screen name="UserProfile" component={UserProfile} />
         <Stack.Screen name="AddFriend" component={AddFriend} />
         <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
-        <Stack.Screen name="Options" component={Options} options={{ animation: "slide_from_right" }}/>
+        <Stack.Screen
+          name="Options"
+          component={Options}
+          options={{ animation: "slide_from_right" }}
+        />
       </Stack.Navigator>
-    </PaperProvider>
+    </NavigationContainer>
   );
 }
 
