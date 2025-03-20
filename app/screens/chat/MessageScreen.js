@@ -3,14 +3,12 @@ import {
   SafeAreaView,
   View,
   Text,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Keyboard,
-  TouchableOpacity,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import ChatHeader from "./header/ChatHeader";
 import ChatFooter from "./footer/ChatFooter";
 import SearchHeader from "../optional/name/searchMessage/SearchHeader";
@@ -26,7 +24,6 @@ const MessageScreen = ({ route, navigation }) => {
   const nav = useNavigation();
 
   const [messages, setMessages] = useState([]);
-  const [filteredMessages, setFilteredMessages] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [isGroup, setIsGroup] = useState(false);
   const [groupName, setGroupName] = useState(null);
@@ -34,7 +31,12 @@ const MessageScreen = ({ route, navigation }) => {
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(startSearch || false);
+  const [highlightedMessageIds, setHighlightedMessageIds] = useState([]);
+  const [highlightedMessageId, setHighlightedMessageId] = useState(null);
+  const [isManualScroll, setIsManualScroll] = useState(false);
+  const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const flatListRef = useRef(null);
+  const debounceSearch = useRef(null);
 
   useEffect(() => {
     const conversation = conversations.find(
@@ -72,54 +74,6 @@ const MessageScreen = ({ route, navigation }) => {
     };
   }, [conversation_id]);
 
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-
-    if (query.trim() === "") {
-      setFilteredMessages([]);
-      flatListRef.current?.scrollToEnd({ animated: true });
-      return;
-    }
-
-    const fuse = new Fuse(messages, {
-      keys: ["content"],
-      threshold: 0.3, // Điều chỉnh mức độ chính xác của tìm kiếm
-    });
-
-    const results = fuse.search(query).map((result) => result.item);
-
-    console.log("Kết quả tìm kiếm:", results);
-    console.log("Từ khóa tìm kiếm:", query);
-
-    setFilteredMessages(results);
-
-    if (results.length > 0) {
-      // Sắp xếp các kết quả tìm kiếm theo thứ tự tăng dần của timestamp
-      const sortedResults = results.sort((a, b) =>
-        moment(a.timestamp).diff(moment(b.timestamp))
-      );
-
-      // Lấy ID của tin nhắn mới nhất trong kết quả tìm kiếm
-      const latestMessageId =
-        sortedResults[sortedResults.length - 1].message_id;
-
-      const index = messages.findIndex(
-        (msg) => msg.message_id === latestMessageId
-      );
-
-      if (index >= 0 && index < messages.length) {
-        flatListRef.current?.scrollToIndex({
-          index: index,
-          animated: true,
-        });
-      } else {
-        console.warn("Chỉ mục cuộn nằm ngoài phạm vi của danh sách");
-      }
-    } else {
-      console.warn("Không tìm thấy kết quả phù hợp.");
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }
-  };
   const handleSendMessage = (message) => {
     const lastMessage = messages[messages.length - 1];
     const isNewTimeGap =
@@ -137,17 +91,104 @@ const MessageScreen = ({ route, navigation }) => {
     setMessages((prevMessages) => [...prevMessages, newMessage]);
   };
 
+  const handleSearchMessages = (query) => {
+    setSearchQuery(query);
+
+    if (query.trim() === "") {
+      setHighlightedMessageIds([]);
+      setCurrentSearchIndex(0);
+      return;
+    }
+
+    const fuse = new Fuse(messages, {
+      keys: ["content"], // Tìm kiếm theo trường "content" của tin nhắn
+      threshold: 0.4, // Độ chính xác tìm kiếm (càng cao càng dễ khớp)
+      distance: 100, // Khoảng cách tối đa giữa các ký tự
+    });
+
+    // Lấy kết quả tìm kiếm
+    const results = fuse.search(query).map((result) => result.item);
+
+    // Sắp xếp kết quả theo thứ tự giảm dần dựa trên timestamp
+    const sortedResults = results.sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    // Lấy danh sách message_id từ kết quả đã sắp xếp
+    const sortedMessageIds = sortedResults.map((item) => item.message_id);
+
+    setHighlightedMessageIds(sortedMessageIds);
+    setCurrentSearchIndex(0);
+
+    if (sortedMessageIds.length > 0) {
+      console.log("Kết quả tìm kiếm (giảm dần):", sortedMessageIds);
+      scrollToMessage(0); // Cuộn đến kết quả đầu tiên
+    } else {
+      console.log("Không tìm thấy tin nhắn khớp với từ khóa:", query);
+    }
+  };
+
+  const scrollToMessage = (index) => {
+    if (index >= 0 && index < highlightedMessageIds.length) {
+      const messageId = highlightedMessageIds[index];
+      const originalIndex = messages.findIndex(
+        (msg) => msg.message_id === messageId
+      );
+
+      if (originalIndex !== -1) {
+        const reversedIndex = messages.length - 1 - originalIndex;
+
+        if (reversedIndex >= 0 && reversedIndex < messages.length) {
+          setIsManualScroll(true); // Đặt trạng thái cuộn thủ công
+          flatListRef.current?.scrollToIndex({
+            index: reversedIndex,
+            animated: true,
+            viewPosition: 0.5, // Đặt tin nhắn ở giữa màn hình
+          });
+
+          // Highlight tin nhắn
+          setHighlightedMessageId(messageId);
+
+
+          console.log(`Scrolled to message at index: ${reversedIndex}`);
+        } else {
+          console.warn("Reversed index không hợp lệ:", reversedIndex);
+        }
+      } else {
+        console.warn("Không tìm thấy messageId trong danh sách:", messageId);
+      }
+    } else {
+      console.warn("Index không hợp lệ:", index);
+    }
+  };
+
+  const handleSearchInput = (query) => {
+    setSearchQuery(query);
+
+    if (debounceSearch.current) {
+      clearTimeout(debounceSearch.current);
+    }
+
+    debounceSearch.current = setTimeout(() => {
+      handleSearchMessages(query);
+    }, 1000); // Dừng 1 giây trước khi thực hiện tìm kiếm
+  };
+
   const handleCancelSearch = () => {
     setIsSearching(false);
     setSearchQuery("");
-    setFilteredMessages([]);
+    setHighlightedMessageIds([]);
+    setCurrentSearchIndex(0);
     navigation.goBack();
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ebecf0" }}>
       {isSearching ? (
-        <SearchHeader onSearch={handleSearch} onCancel={handleCancelSearch} />
+        <SearchHeader
+          onCancel={handleCancelSearch}
+          onSearch={handleSearchInput}
+        />
       ) : (
         <ChatHeader
           receiver={receiver}
@@ -164,31 +205,20 @@ const MessageScreen = ({ route, navigation }) => {
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         style={{ flex: 1 }}
       >
-        <FlatList
-          ref={flatListRef}
-          data={[...messages].reverse()} // Đảo ngược thứ tự tin nhắn
-          keyExtractor={(item) => item.message_id.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-            // onPress={() =>
-            //   nav.navigate("ChatDetails", { messageId: item.message_id })
-            // }
-            >
-              <Conversation
-                conversation={{ messages: [item], participants }}
-                senderId={user_id}
-                groupName={groupName}
-                searchQuery={searchQuery}
-              />
-            </TouchableOpacity>
-          )}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>Không có tin nhắn</Text>
-          }
-          inverted
-          contentContainerStyle={{ flexGrow: 1 }}
-          style={{ paddingTop: 40 }}
-        />
+        {messages.length > 0 ? (
+          <Conversation
+            conversation={{ messages, participants }}
+            senderId={user_id}
+            highlightedMessageIds={highlightedMessageIds}
+            highlightedMessageId={highlightedMessageId}
+            searchQuery={searchQuery}
+            flatListRef={flatListRef}
+            isManualScroll={isManualScroll} // Truyền trạng thái cuộn thủ công
+            setIsManualScroll={setIsManualScroll} // Truyền hàm cập nhật trạng thái
+          />
+        ) : (
+          <Text style={styles.emptyText}>Không có tin nhắn nào.</Text>
+        )}
       </KeyboardAvoidingView>
       {!isSearching && (
         <ChatFooter
@@ -196,7 +226,30 @@ const MessageScreen = ({ route, navigation }) => {
           style={MessageScreenStyle.chatFooter}
         />
       )}
-      {isSearching && <SearchFooter resultCount={filteredMessages.length} />}
+      {isSearching && (
+        <SearchFooter
+          resultCount={highlightedMessageIds.length}
+          currentIndex={currentSearchIndex}
+          onNext={() => {
+            if (currentSearchIndex > 0) {
+              const prevIndex = currentSearchIndex - 1; // Chuyển thành cuộn lên
+              setCurrentSearchIndex(prevIndex);
+              scrollToMessage(prevIndex);
+            }
+          }}
+          onPrevious={() => {
+            if (currentSearchIndex < highlightedMessageIds.length - 1) {
+              const nextIndex = currentSearchIndex + 1; // Chuyển thành cuộn xuống
+              setCurrentSearchIndex(nextIndex);
+              scrollToMessage(nextIndex);
+            }
+          }}
+          disableNext={currentSearchIndex <= 0} // Vô hiệu hóa nút "Xuống" nếu ở đầu danh sách
+          disablePrevious={
+            currentSearchIndex >= highlightedMessageIds.length - 1
+          } // Vô hiệu hóa nút "Lên" nếu ở cuối danh sách
+        />
+      )}
     </SafeAreaView>
   );
 };

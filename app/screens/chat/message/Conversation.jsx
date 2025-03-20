@@ -1,19 +1,49 @@
 import React, { useRef, useEffect, useState } from "react";
-import {
-  View,
-  FlatList,
-  Text,
-  Pressable,
-} from "react-native";
+import { View, FlatList, Text, Pressable } from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
 import ConversationStyle from "./ConversationStyle";
 import MessagePopup from "./MessagePopup";
 
-const Conversation = ({ conversation, senderId, searchQuery }) => {
+const Conversation = ({
+  conversation,
+  senderId,
+  highlightedMessageIds = [],
+  highlightedMessageId,
+  searchQuery = "",
+  flatListRef,
+  isManualScroll,
+  setIsManualScroll,
+}) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
+  // Đảo ngược danh sách tin nhắn
+  const reversedMessages = [...conversation.messages].reverse();
+
+  useEffect(() => {
+    if (reversedMessages.length === 0) {
+      console.warn("Danh sách tin nhắn trống, không thể cuộn.");
+      return;
+    }
+
+    if (!isManualScroll && highlightedMessageIds.length > 0) {
+      const firstMessageId = highlightedMessageIds[0];
+      const originalIndex = reversedMessages.findIndex(
+        (msg) => msg.message_id === firstMessageId
+      );
+
+      if (originalIndex >= 0 && originalIndex < reversedMessages.length) {
+        flatListRef.current?.scrollToIndex({
+          index: originalIndex,
+          animated: true,
+          viewPosition: 0.5,
+        });
+      } else {
+        console.warn("Index không hợp lệ:", originalIndex);
+      }
+    }
+  }, [highlightedMessageIds, reversedMessages, isManualScroll]);
 
   const handleLongPress = (message) => {
     setSelectedMessage(message);
@@ -23,35 +53,35 @@ const Conversation = ({ conversation, senderId, searchQuery }) => {
   return (
     <View style={ConversationStyle.conversationContainer}>
       <FlatList
-        data={[...conversation.messages].reverse()}
+        ref={flatListRef}
+        data={reversedMessages}
         keyExtractor={(item) => item.message_id}
         renderItem={({ item, index }) => {
           const prevMessage =
-            index > 0 ? conversation.messages[index - 1] : null;
-          const isNewSender =
-            !prevMessage || prevMessage.sender_id !== item.sender_id;
-          const isTimeGap =
-            !prevMessage ||
-            moment(item.timestamp).diff(
-              moment(prevMessage.timestamp),
-              "minutes"
-            ) >= 20;
+            index < reversedMessages.length - 1
+              ? reversedMessages[index + 1]
+              : null;
 
-          const showAvatar = isNewSender || isTimeGap;
-          const formattedTimestamp =
-            moment().diff(moment(item.timestamp), "days") >= 1
-              ? moment(item.timestamp).format("HH:mm DD/MM/YYYY")
-              : `${moment(item.timestamp).format("HH:mm")} Hôm nay`;
+          const timeDiff = prevMessage
+            ? moment(item.timestamp).diff(
+                moment(prevMessage.timestamp),
+                "minutes"
+              )
+            : null;
+
+          const shouldShowTimestamp = !prevMessage || timeDiff >= 20;
+
+          const formattedTimestamp = moment(item.timestamp).format(
+            "HH:mm DD/MM/YYYY"
+          );
 
           const avatar = conversation.participants.find(
             (p) => p.id === item.sender_id
           )?.avatar;
 
-          const reactions = messageReactions[item.message_id] || [];
-
           return (
             <View>
-              {isTimeGap && (
+              {shouldShowTimestamp && (
                 <View style={ConversationStyle.timestampContainer}>
                   <Text style={ConversationStyle.timestampText}>
                     {formattedTimestamp}
@@ -59,15 +89,17 @@ const Conversation = ({ conversation, senderId, searchQuery }) => {
                 </View>
               )}
               <Pressable onLongPress={() => handleLongPress(item)}>
-                <View>
-                  <MessageItem
-                    message={item}
-                    isSender={item.sender_id === senderId}
-                    avatar={avatar}
-                    reactions={reactions}
-                    searchQuery={searchQuery}
-                  />
-                </View>
+                <MessageItem
+                  message={item}
+                  isSender={item.sender_id === senderId}
+                  avatar={avatar}
+                  isHighlighted={item.message_id === highlightedMessageId}
+                  searchQuery={
+                    highlightedMessageIds.includes(item.message_id)
+                      ? searchQuery
+                      : ""
+                  }
+                />
               </Pressable>
             </View>
           );
