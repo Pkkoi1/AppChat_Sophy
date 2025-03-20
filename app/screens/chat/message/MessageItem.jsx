@@ -4,7 +4,13 @@ import moment from "moment";
 import MessageItemStyle from "./MessageItemStyle";
 import HighlightText from "../../../../components/highlightText/HighlightText"; // Import HighlightText
 
-const MessageItem = ({ message, isSender, avatar, searchQuery }) => {
+const MessageItem = ({
+  message,
+  isSender,
+  avatar,
+  searchQuery,
+  isHighlighted,
+}) => {
   const formattedTimestamp = moment(message.timestamp).format(
     "DD/MM/YYYY HH:mm"
   );
@@ -16,6 +22,7 @@ const MessageItem = ({ message, isSender, avatar, searchQuery }) => {
         isSender
           ? MessageItemStyle.senderContainer
           : MessageItemStyle.receiverContainer,
+        isHighlighted && MessageItemStyle.highlighted,
       ]}
     >
       {!isSender && avatar && (

@@ -1,11 +1,12 @@
 import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import Color from "@/components/colors/Color";
 
 const SearchHeader = ({ onSearch, onCancel }) => {
   return (
     <View style={styles.container}>
-      <Ionicons name="arrow-back" size={24} color="black" onPress={onCancel} />
+      <Ionicons name="arrow-back" size={22} color="grey" onPress={onCancel} />
       <TextInput
         style={styles.input}
         placeholder="Tìm tin nhắn..."
@@ -26,8 +27,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
     padding: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    //cở chữ
+    fontSize: 15,
+    fontStyle: "normal",
+    color: Color.gray,
   },
 });
 

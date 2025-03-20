@@ -48,6 +48,11 @@ const MessageItemStyle = StyleSheet.create({
     marginLeft: 5,
     // left: -35, // Đặt avatar ở góc trên bên trái hộp tin nhắn
   },
+  highlighted: {
+    backgroundColor: "#d1e7ff", // Màu nền xanh nhạt
+    borderRadius: 8, // Bo góc
+    padding: 5, // Thêm khoảng cách bên trong
+  },
 });
 
 export default MessageItemStyle;
