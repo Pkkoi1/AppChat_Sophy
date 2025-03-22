@@ -12,7 +12,7 @@ import {
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
-import { api } from "@/api/API";
+import { api } from "@/api/api";
 
 // Đọc dữ liệu từ file user.json
 const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
@@ -36,15 +36,15 @@ function LoginScreen({ navigation }) {
     try {
       // Gọi API đăng nhập
       const response = await api.login({ phone, password });
-      // console.log("API Response:", response); // Kiểm tra phản hồi từ API
 
-      // Kiểm tra trạng thái phản hồi
       if (response && response.data && response.data.user) {
         const { user } = response.data; // Lấy thông tin người dùng từ response.data
-        Alert.alert("Đăng nhập thành công!", `Chào ${user.fullname}!`);
+        Alert.alert("Đăng nhập thành công!", `Chào ${phone}!`);
         navigation.navigate("Home", {
-          userId: user.userId,
+          userId: user.id,
           userName: user.fullname,
+          phone: phone,
+          id: user.userId,
         });
       } else {
         Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");

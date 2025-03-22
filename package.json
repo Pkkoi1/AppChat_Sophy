@@ -17,6 +17,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@expo/vector-icons": "^14.0.4",
+    "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-native-community/clipboard": "^1.5.1",
     "@react-native-picker/picker": "^2.9.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
@@ -47,6 +48,7 @@
     "install": "^0.13.0",
     "link": "^2.1.1",
     "moment": "^2.30.1",
+    "os": "^0.1.2",
     "react": "18.3.1",
     "react-async-hook": "^4.0.0",
     "react-dom": "18.3.1",
@@ -59,6 +61,7 @@
     "react-native-gesture-handler": "~2.20.2",
     "react-native-international-phone-number": "^0.9.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
+    "react-native-network-info": "^5.2.1",
     "react-native-pager-view": "6.5.1",
     "react-native-paper": "^5.13.1",
     "react-native-phone-number-input": "^2.1.0",

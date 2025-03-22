@@ -55,7 +55,9 @@ const Conversation = ({
       <FlatList
         ref={flatListRef}
         data={reversedMessages}
-        keyExtractor={(item) => item.message_id}
+        keyExtractor={(item) =>
+          item.message_id || item._id || item.messageDetailId
+        }
         renderItem={({ item, index }) => {
           const prevMessage =
             index < reversedMessages.length - 1
@@ -63,15 +65,15 @@ const Conversation = ({
               : null;
 
           const timeDiff = prevMessage
-            ? moment(item.timestamp).diff(
-                moment(prevMessage.timestamp),
+            ? moment(item.createdAt).diff(
+                moment(prevMessage.createdAt),
                 "minutes"
               )
             : null;
 
           const shouldShowTimestamp = !prevMessage || timeDiff >= 20;
 
-          const formattedTimestamp = moment(item.timestamp).format(
+          const formattedTimestamp = moment(item.createdAt).format(
             "HH:mm DD/MM/YYYY"
           );
 
@@ -91,7 +93,7 @@ const Conversation = ({
               <Pressable onLongPress={() => handleLongPress(item)}>
                 <MessageItem
                   message={item}
-                  isSender={item.sender_id === senderId}
+                  isSender={item.senderId === senderId}
                   avatar={avatar}
                   isHighlighted={item.message_id === highlightedMessageId}
                   searchQuery={

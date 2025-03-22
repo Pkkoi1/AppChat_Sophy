@@ -18,9 +18,11 @@ import conversations from "../../../assets/objects/conversation.json";
 import MessageScreenStyle from "./MessageScreenStyle";
 import moment from "moment";
 import Fuse from "fuse.js";
+import { api } from "@/api/api";
 
 const MessageScreen = ({ route, navigation }) => {
-  const { conversation_id, user_id, startSearch } = route.params;
+  const { conversation_id, user_id, startSearch, receiverId, id } =
+    route.params;
   const nav = useNavigation();
 
   const [messages, setMessages] = useState([]);
@@ -38,26 +40,125 @@ const MessageScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null);
   const debounceSearch = useRef(null);
 
-  useEffect(() => {
-    const conversation = conversations.find(
-      (conv) => conv.conversation_id === conversation_id
-    );
+  // useEffect(() => {
+  //   const fetchConversations = async () => {
+  //     try {
+  //       const response = await api.getMessages(conversation_id);
+  //       const conversationData = response.data; // Giả sử API trả về dữ liệu cuộc trò chuyện
+  //       console.log("Dữ liệu cuộc trò chuyện:", response);
+  //       if (conversationData && conversationData.length > 0) {
+  //         const conversation = conversationData[0]; // Giả sử bạn chỉ cần cuộc trò chuyện đầu tiên
+  //         setMessages(conversation.messages || []);
+  //         setParticipants(conversation.participants || []);
+  //         setIsGroup(conversation.isGroup || false);
+  //         if (conversation.isGroup) {
+  //           setGroupName(conversation.groupName);
+  //         }
+  //         const receiver = conversation.participants.find(
+  //           (p) => p.id !== user_id
+  //         );
+  //         setReceiver(receiver);
+  //       } else {
+  //         console.warn(
+  //           "Không tìm thấy cuộc trò chuyện với ID:",
+  //           conversation_id
+  //         );
+  //       }
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy dữ liệu cuộc trò chuyện:", error);
+  //     }
+  //   };
 
-    if (conversation) {
-      const sortedMessages = (conversation.messages || []).sort((a, b) =>
-        moment(a.timestamp).diff(moment(b.timestamp))
-      );
-      setMessages(sortedMessages);
-      setParticipants(conversation.participants || []);
-      setIsGroup(conversation.isGroup || false);
-      if (conversation.isGroup) {
-        setGroupName(conversation.groupName);
+  //   fetchConversations();
+
+  //   const conversation = conversations.find(
+  //     (conv) => conv.conversation_id === conversation_id
+  //   );
+
+  //   if (conversation) {
+  //     const sortedMessages = (conversation.messages || []).sort((a, b) =>
+  //       moment(a.timestamp).diff(moment(b.timestamp))
+  //     );
+  //     setMessages(sortedMessages);
+  //     setParticipants(conversation.participants || []);
+  //     setIsGroup(conversation.isGroup || false);
+  //     if (conversation.isGroup) {
+  //       setGroupName(conversation.groupName);
+  //     }
+  //     const receiver = conversation.participants.find((p) => p.id !== user_id);
+  //     setReceiver(receiver);
+  //   } else {
+  //     console.warn("Không tìm thấy cuộc trò chuyện với ID:", conversation_id);
+  //   }
+
+  //   const keyboardDidShowListener = Keyboard.addListener(
+  //     "keyboardDidShow",
+  //     () => setIsKeyboardVisible(true)
+  //   );
+  //   const keyboardDidHideListener = Keyboard.addListener(
+  //     "keyboardDidHide",
+  //     () => setIsKeyboardVisible(false)
+  //   );
+
+  //   return () => {
+  //     keyboardDidShowListener.remove();
+  //     keyboardDidHideListener.remove();
+  //   };
+  // }, [conversation_id]);
+
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const response = await api.getMessages(conversation_id);
+        const conversationData = response.data; // API trả về danh sách tin nhắn
+        console.log("Người gửi", user_id);
+
+        if (conversationData && conversationData.length > 0) {
+          // Sắp xếp tin nhắn theo thời gian
+          const sortedMessages = conversationData.sort(
+            (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+          );
+
+          setMessages(sortedMessages);
+
+          // Lấy danh sách người tham gia từ các tin nhắn
+          const participantsSet = new Set(
+            sortedMessages.map((msg) => msg.senderId)
+          );
+          setParticipants(Array.from(participantsSet));
+
+          // Kiểm tra xem đây có phải là nhóm không
+          const isGroupConversation = participantsSet.size > 2;
+          setIsGroup(isGroupConversation);
+
+          // Nếu là nhóm, đặt tên nhóm (giả sử tên nhóm được lấy từ API khác)
+          if (isGroupConversation) {
+            setGroupName("Group Chat"); // Thay bằng tên nhóm thực tế nếu có
+          }
+
+          // Xác định người nhận (receiver) nếu không phải nhóm
+          if (!isGroupConversation) {
+            const receiverId = Array.from(participantsSet).find(
+              (id) => id !== user_id
+            );
+            setReceiver({ id: receiverId });
+          }
+        } else {
+          console.warn(
+            "Không tìm thấy tin nhắn nào cho cuộc trò chuyện:",
+            conversation_id
+          );
+          setMessages([]); // Đặt danh sách tin nhắn rỗng
+          setParticipants([]); // Đặt danh sách người tham gia rỗng
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu cuộc trò chuyện:", error);
+        setMessages([]); // Đặt danh sách tin nhắn rỗng trong trường hợp lỗi
+        setParticipants([]); // Đặt danh sách người tham gia rỗng trong trường hợp lỗi
       }
-      const receiver = conversation.participants.find((p) => p.id !== user_id);
-      setReceiver(receiver);
-    } else {
-      console.warn("Không tìm thấy cuộc trò chuyện với ID:", conversation_id);
-    }
+    };
+
+    fetchConversations();
 
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
@@ -74,6 +175,7 @@ const MessageScreen = ({ route, navigation }) => {
     };
   }, [conversation_id]);
 
+  //gửi tin nhắn
   const handleSendMessage = (message) => {
     const lastMessage = messages[messages.length - 1];
     const isNewTimeGap =
@@ -148,7 +250,6 @@ const MessageScreen = ({ route, navigation }) => {
 
           // Highlight tin nhắn
           setHighlightedMessageId(messageId);
-
 
           console.log(`Scrolled to message at index: ${reversedIndex}`);
         } else {

@@ -11,13 +11,13 @@ import Footer from "../footer/Footer";
 import HomeStyle from "./HomeStyle";
 
 const Home = ({ route }) => {
-  const { userId, userName } = route.params;
+  const { userId, userName, phone, id } = route.params;
   const [index, setIndex] = useState(0);
 
   const screens = [
     {
       name: "Inbox",
-      component: <ListInbox userId={userId} />,
+      component: <ListInbox userId={userId} id={id} />,
       icon: "message1",
       title: "Tin nhắn",
     },
