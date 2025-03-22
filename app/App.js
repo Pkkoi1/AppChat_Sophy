@@ -10,6 +10,7 @@ import SocialNetworkTerms from "./screens/register/SocialNetworkTerms";
 import TermsOfService from "./screens/register/TermsOfService";
 import Home from "./screens/home/Home";
 import Chat from "./screens/chat/MessageScreen";
+// import Chat from "./screens/testApi/TestScreen";
 import Profile from "./screens/profile/Profile";
 import Discover from "./screens/discover/Discover";
 import Diary from "./screens/diary/Diary";

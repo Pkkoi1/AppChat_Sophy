@@ -11,7 +11,7 @@ const MessageItem = ({
   searchQuery,
   isHighlighted,
 }) => {
-  const formattedTimestamp = moment(message.timestamp).format(
+  const formattedTimestamp = moment(message.createdAt).format(
     "DD/MM/YYYY HH:mm"
   );
 
@@ -37,6 +37,8 @@ const MessageItem = ({
         ]}
       >
         <Text style={MessageItemStyle.timestamp}>{formattedTimestamp}</Text>
+        {/* <Text style={MessageItemStyle.timestamp}>{message.senderId}</Text> */}
+
         <HighlightText
           text={message.content}
           highlight={searchQuery}
