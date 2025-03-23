@@ -40,7 +40,6 @@ const MessageScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null);
   const debounceSearch = useRef(null);
 
-  // useEffect(() => {
   //   const fetchConversations = async () => {
   //     try {
   //       const response = await api.getMessages(conversation_id);
@@ -112,6 +111,7 @@ const MessageScreen = ({ route, navigation }) => {
         const response = await api.getMessages(conversation_id);
         const conversationData = response.data; // API trả về danh sách tin nhắn
         console.log("Người gửi", user_id);
+        console.log("Người nhận", receiverId);
 
         if (conversationData && conversationData.length > 0) {
           // Sắp xếp tin nhắn theo thời gian
@@ -292,13 +292,18 @@ const MessageScreen = ({ route, navigation }) => {
         />
       ) : (
         <ChatHeader
-          receiver={receiver}
-          groupName={groupName}
-          participants={participants}
-          isGroup={isGroup}
+          // receiver={receiver}
+          // groupName={groupName}
+          // participants={participants}
+          // isGroup={isGroup}
+          // user_id={user_id}
+          // receiverId={receiverId} // Đảm bảo không truyền undefined
+          // conversation_id={conversation_id}
+          // onSearchPress={() => setIsSearching(true)}
+          navigation={navigation} // Truyền navigation từ MessageScreen
+          receiver={receiverId}
           user_id={user_id}
           conversation_id={conversation_id}
-          onSearchPress={() => setIsSearching(true)}
         />
       )}
       <KeyboardAvoidingView
@@ -310,6 +315,7 @@ const MessageScreen = ({ route, navigation }) => {
           <Conversation
             conversation={{ messages, participants }}
             senderId={user_id}
+            receiverId={receiver?.id}
             highlightedMessageIds={highlightedMessageIds}
             highlightedMessageId={highlightedMessageId}
             searchQuery={searchQuery}

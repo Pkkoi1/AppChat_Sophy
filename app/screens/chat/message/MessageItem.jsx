@@ -10,6 +10,7 @@ const MessageItem = ({
   avatar,
   searchQuery,
   isHighlighted,
+  receiverId,
 }) => {
   const formattedTimestamp = moment(message.createdAt).format(
     "DD/MM/YYYY HH:mm"

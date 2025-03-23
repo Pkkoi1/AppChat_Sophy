@@ -107,13 +107,53 @@
 // });
 
 // export default ChatHeader;
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
+import { api } from "@/api/api";
 
-const ChatHeader = ({ user_id }) => {
+const ChatHeader = ({ user_id, receiver, navigation, conversation_id }) => {
+  const [receiverName, setReceiverName] = useState("");
+  const handlerBack = () => {
+    navigation.goBack();
+  };
+
+  const handlerOptionScreen = () => {
+    if (!receiverName) {
+      console.warn("receiver hoặc groupName không hợp lệ");
+      return;
+    }
+    navigation.navigate("Options", {
+      receiver,
+      groupName: "",
+      participants: [],
+      isGroup: false,
+      user_id,
+      conversation_id,
+    });
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await api.getUserById(receiver);
+        if (response && response.data) {
+          setReceiverName(
+            response.data.fullname || "Người dùng không xác định"
+          );
+        } else {
+          setReceiverName("Người dùng không xác định");
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, [receiver]);
+
   return (
     <LinearGradient
       colors={["#1f7bff", "#12bcfa"]}
@@ -121,7 +161,7 @@ const ChatHeader = ({ user_id }) => {
       end={{ x: 1, y: 0 }}
       style={ChatHeaderStyle.container}
     >
-      <TouchableOpacity>
+      <TouchableOpacity onPress={handlerBack}>
         <Ionicons name="arrow-back" size={24} color="#ffffff" />
       </TouchableOpacity>
       <View style={ChatHeaderStyle.conversationName}>
@@ -130,9 +170,7 @@ const ChatHeader = ({ user_id }) => {
           numberOfLines={1}
           ellipsizeMode="tail"
         >
-          {/* {receiver?.id || "Không có ID"} Hiển thị receiver.id */}
-          {user_id}
-          Khôi
+          {receiverName || "Đang tải..."}
         </Text>
         <Text style={ChatHeaderStyle.subText}>Vừa mới truy cập</Text>
       </View>
@@ -142,7 +180,7 @@ const ChatHeader = ({ user_id }) => {
       <TouchableOpacity>
         <Ionicons name="videocam-outline" size={24} color="#ffffff" />
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={handlerOptionScreen}>
         <Ionicons name="menu-outline" size={24} color="#ffffff" />
       </TouchableOpacity>
     </LinearGradient>
@@ -154,25 +192,14 @@ const ChatHeaderStyle = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: 0,
-    width: "100%",
     paddingVertical: 10,
     paddingHorizontal: 15,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.1,
-    elevation: 5,
   },
   conversationName: {
     width: "45%",
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "flex-start",
-    marginLeft: 0,
   },
   text: {
     color: "#fff",
