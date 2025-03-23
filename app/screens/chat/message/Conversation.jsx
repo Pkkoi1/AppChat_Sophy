@@ -14,6 +14,7 @@ const Conversation = ({
   flatListRef,
   isManualScroll,
   setIsManualScroll,
+  receiverId,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -26,7 +27,6 @@ const Conversation = ({
       console.warn("Danh sách tin nhắn trống, không thể cuộn.");
       return;
     }
-
     if (!isManualScroll && highlightedMessageIds.length > 0) {
       const firstMessageId = highlightedMessageIds[0];
       const originalIndex = reversedMessages.findIndex(
@@ -93,6 +93,7 @@ const Conversation = ({
               <Pressable onLongPress={() => handleLongPress(item)}>
                 <MessageItem
                   message={item}
+                  receiverId={receiverId}
                   isSender={item.senderId === senderId}
                   avatar={avatar}
                   isHighlighted={item.message_id === highlightedMessageId}

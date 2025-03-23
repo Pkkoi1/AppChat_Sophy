@@ -39,6 +39,10 @@ export const api = {
   getMessages: async (conversationId) => {
     return await http.get(`/messages/${conversationId}`);
   },
+  //Lấy user theo id
+  getUserById: async (userId) => {
+    return await http.get(`/users/get-user-by-id/${userId}`);
+  },
   logout: async () => {
     await AsyncStorage.removeItem("authToken");
   },
