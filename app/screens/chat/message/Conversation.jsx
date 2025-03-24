@@ -12,38 +12,30 @@ const Conversation = ({
   highlightedMessageId,
   searchQuery = "",
   flatListRef,
-  isManualScroll,
-  setIsManualScroll,
   receiverId,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
-  // Đảo ngược danh sách tin nhắn
-  const reversedMessages = [...conversation.messages].reverse();
 
   useEffect(() => {
-    if (reversedMessages.length === 0) {
-      console.warn("Danh sách tin nhắn trống, không thể cuộn.");
-      return;
-    }
-    if (!isManualScroll && highlightedMessageIds.length > 0) {
-      const firstMessageId = highlightedMessageIds[0];
-      const originalIndex = reversedMessages.findIndex(
-        (msg) => msg.message_id === firstMessageId
-      );
+    if (!highlightedMessageIds.length || !flatListRef.current) return;
 
-      if (originalIndex >= 0 && originalIndex < reversedMessages.length) {
-        flatListRef.current?.scrollToIndex({
-          index: originalIndex,
-          animated: true,
-          viewPosition: 0.5,
-        });
-      } else {
-        console.warn("Index không hợp lệ:", originalIndex);
-      }
+    const lastHighlightedMessageId =
+      highlightedMessageIds[highlightedMessageIds.length - 1]; // Lấy tin nhắn cuối cùng tìm thấy
+
+    const messageIndex = conversation.messages.findIndex(
+      (msg) => msg.messageDetailId === lastHighlightedMessageId
+    );
+
+    if (messageIndex !== -1) {
+      flatListRef.current?.scrollToIndex({
+        index: messageIndex,
+        animated: true,
+        viewPosition: 0.5,
+      });
     }
-  }, [highlightedMessageIds, reversedMessages, isManualScroll]);
+  }, [highlightedMessageIds, conversation.messages]);
 
   const handleLongPress = (message) => {
     setSelectedMessage(message);
@@ -54,39 +46,27 @@ const Conversation = ({
     <View style={ConversationStyle.conversationContainer}>
       <FlatList
         ref={flatListRef}
-        data={reversedMessages}
-        keyExtractor={(item) =>
-          item.message_id || item._id || item.messageDetailId
-        }
+        data={conversation.messages}
+        keyExtractor={(item) => item.messageDetailId || item.message_id}
         renderItem={({ item, index }) => {
           const prevMessage =
-            index < reversedMessages.length - 1
-              ? reversedMessages[index + 1]
+            index < conversation.messages.length - 1
+              ? conversation.messages[index + 1]
               : null;
 
-          const timeDiff = prevMessage
-            ? moment(item.createdAt).diff(
-                moment(prevMessage.createdAt),
-                "minutes"
-              )
-            : null;
-
-          const shouldShowTimestamp = !prevMessage || timeDiff >= 20;
-
-          const formattedTimestamp = moment(item.createdAt).format(
-            "HH:mm DD/MM/YYYY"
-          );
-
-          const avatar = conversation.participants.find(
-            (p) => p.id === item.sender_id
-          )?.avatar;
+          const shouldShowTimestamp =
+            !prevMessage ||
+            moment(item.createdAt).diff(
+              moment(prevMessage.createdAt),
+              "minutes"
+            ) >= 20;
 
           return (
             <View>
               {shouldShowTimestamp && (
                 <View style={ConversationStyle.timestampContainer}>
                   <Text style={ConversationStyle.timestampText}>
-                    {formattedTimestamp}
+                    {moment(item.createdAt).format("HH:mm DD/MM/YYYY")}
                   </Text>
                 </View>
               )}
@@ -95,10 +75,10 @@ const Conversation = ({
                   message={item}
                   receiverId={receiverId}
                   isSender={item.senderId === senderId}
-                  avatar={avatar}
-                  isHighlighted={item.message_id === highlightedMessageId}
+                  avatar=""
+                  isHighlighted={item.messageDetailId === highlightedMessageId}
                   searchQuery={
-                    highlightedMessageIds.includes(item.message_id)
+                    highlightedMessageIds.includes(item.messageDetailId)
                       ? searchQuery
                       : ""
                   }

@@ -41,10 +41,10 @@ function LoginScreen({ navigation }) {
         const { user } = response.data; // Lấy thông tin người dùng từ response.data
         Alert.alert("Đăng nhập thành công!", `Chào ${phone}!`);
         navigation.navigate("Home", {
-          userId: user.id,
+          userId: user.userId,
           userName: user.fullname,
           phone: phone,
-          id: user.userId,
+          id: user.id,
         });
       } else {
         Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
@@ -72,7 +72,7 @@ function LoginScreen({ navigation }) {
 
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate("Main")}>
             <Icon name="arrow-back" size={32} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Đăng nhập</Text>

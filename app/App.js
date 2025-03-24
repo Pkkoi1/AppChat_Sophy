@@ -23,6 +23,7 @@ import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo
 import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm bảo đường dẫn đúng
 import Options from "./screens/optional/OptionalScreen";
 import { NavigationContainer } from "@react-navigation/native";
+import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,7 @@ function RootLayout() {
       >
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen

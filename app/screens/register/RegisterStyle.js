@@ -1,4 +1,6 @@
 import { StyleSheet } from "react-native";
+import Color from "@/components/colors/Color";
+import { overlay } from "react-native-paper";
 
 const RegisterStyle = (props) => {
   const { width, height } = props;
@@ -24,7 +26,7 @@ const RegisterStyle = (props) => {
       color: "#0c8de8",
       textDecorationLine: "none",
       fontWeight: "bold",
-      textAlign:"left",
+      textAlign: "left",
     },
     text: {
       flexWrap: "wrap",
@@ -54,8 +56,23 @@ const RegisterStyle = (props) => {
       alignItems: "center",
       marginTop: 20,
     },
+    button_checked: {
+      backgroundColor: Color.sophy, // Màu xanh khi được kích hoạt
+      width: width * 0.9,
+      height: 50,
+      borderRadius: 50,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 20,
+      color: "#fff",
+    },
     submit_text: {
       color: "#a7acb2",
+      fontSize: 16,
+      fontWeight: "bold",
+    },
+    submit_text_checked: {
+      color: "#fff",
       fontSize: 16,
       fontWeight: "bold",
     },
@@ -67,6 +84,9 @@ const RegisterStyle = (props) => {
       bottom: 0,
       width: "100%",
       padding: 10,
+    },
+    overlay: {
+      borderRadius: 100,
     },
   });
 };

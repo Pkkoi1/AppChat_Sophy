@@ -1,7 +1,15 @@
 import React from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import HeadView from "../header/Header";
+import { api } from "@/api/api";
+import { useNavigation } from "expo-router";
 
 const settings = [
   { id: "1", title: "Tài khoản và bảo mật", icon: "shield" },
@@ -19,18 +27,49 @@ const settings = [
   { id: "13", title: "Chuyển tài khoản", icon: "swap-horizontal" },
 ];
 
-const Setting = () => {
+const Setting = ({ navigation }) => {
+  const handleLogout = async () => {
+    try {
+      // Gọi API để đăng xuất
+      await api.logout();
+      console.log("Đăng xuất thành công");
+
+      // Chuyển hướng người dùng về màn hình đăng nhập
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }], // Thay "LoginScreen" bằng tên màn hình đăng nhập của bạn
+      });
+    } catch (error) {
+      console.error("Lỗi khi đăng xuất:", error);
+      Alert.alert("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
+    }
+  };
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={[styles.settingItem, item.id === "2" || item.id === "4" || item.id === "10" || item.id === "12" ? styles.itemWithThickBorder : {}]}>
+    <TouchableOpacity
+      style={[
+        styles.settingItem,
+        item.id === "2" ||
+        item.id === "4" ||
+        item.id === "10" ||
+        item.id === "12"
+          ? styles.itemWithThickBorder
+          : {},
+      ]}
+    >
       <View style={styles.leftContainer}>
         <Ionicons name={item.icon} size={24} color="rgb(61, 131, 237)" />
         <Text style={styles.settingText}>{item.title}</Text>
       </View>
-      <Ionicons name={item.id === "12" ? "chatbubble-ellipses-outline" : "chevron-forward"} size={16} color="gray" />
+      <Ionicons
+        name={
+          item.id === "12" ? "chatbubble-ellipses-outline" : "chevron-forward"
+        }
+        size={16}
+        color="gray"
+      />
     </TouchableOpacity>
   );
-  
-  
 
   return (
     <View style={styles.container}>
@@ -42,7 +81,7 @@ const Setting = () => {
         style={styles.list}
         // Add keyExtractor to give a unique key for each item
       />
-      <TouchableOpacity style={styles.logoutButton}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Ionicons name="log-out" size={20} color="#000" />
         <Text style={styles.logoutText}>Đăng xuất</Text>
       </TouchableOpacity>
@@ -64,11 +103,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 20,
-    borderBottomWidth: 1,  // Default border width
+    borderBottomWidth: 1, // Default border width
     borderBottomColor: "#f0f2f5",
   },
   itemWithThickBorder: {
-    borderBottomWidth: 10,  // Đặt borderBottomWidth lớn hơn cho các mục yêu cầu
+    borderBottomWidth: 10, // Đặt borderBottomWidth lớn hơn cho các mục yêu cầu
   },
   leftContainer: {
     flexDirection: "row",

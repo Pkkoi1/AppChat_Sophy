@@ -14,9 +14,16 @@ const http = axios.create({
 
 // Thêm interceptor để tự động thêm token vào header
 http.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("authToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  try {
+    const token = await AsyncStorage.getItem("authToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log("Token được thêm vào header:", token);
+    } else {
+      console.warn("Không tìm thấy token trong AsyncStorage.");
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy token từ AsyncStorage:", error);
   }
   return config;
 });
@@ -44,6 +51,24 @@ export const api = {
     return await http.get(`/users/get-user-by-id/${userId}`);
   },
   logout: async () => {
-    await AsyncStorage.removeItem("authToken");
+    try {
+      // Gửi yêu cầu logout đến server trước khi xóa token
+      const response = await http.post("/auth/logout");
+      console.log("Đăng xuất thành công:", response.data);
+
+      // Xóa token khỏi AsyncStorage sau khi logout thành công
+      await AsyncStorage.removeItem("authToken");
+    } catch (error) {
+      if (error.response) {
+        // Lỗi từ phía server
+        console.error("Lỗi từ server:", error.response.data);
+      } else if (error.request) {
+        // Không nhận được phản hồi từ server
+        console.error("Không nhận được phản hồi từ server:", error.request);
+      } else {
+        // Lỗi khác
+        console.error("Lỗi khi gọi API logout:", error.message);
+      }
+    }
   },
 };
