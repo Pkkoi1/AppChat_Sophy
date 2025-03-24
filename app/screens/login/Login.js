@@ -72,7 +72,7 @@ function LoginScreen({ navigation }) {
 
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate("Main")}>
             <Icon name="arrow-back" size={32} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Đăng nhập</Text>
