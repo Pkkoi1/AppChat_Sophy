@@ -127,7 +127,7 @@ const ChatHeader = ({ user_id, receiver, navigation, conversation_id }) => {
     }
     navigation.navigate("Options", {
       receiver,
-      groupName: "",
+      groupName: receiverName,
       participants: [],
       isGroup: false,
       user_id,
@@ -137,6 +137,12 @@ const ChatHeader = ({ user_id, receiver, navigation, conversation_id }) => {
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!receiver) {
+        console.warn("Receiver không hợp lệ.");
+        setReceiverName("Người dùng không xác định");
+        return;
+      }
+
       try {
         const response = await api.getUserById(receiver);
         if (response && response.data) {
@@ -147,7 +153,13 @@ const ChatHeader = ({ user_id, receiver, navigation, conversation_id }) => {
           setReceiverName("Người dùng không xác định");
         }
       } catch (error) {
-        console.error("Error fetching user:", error);
+        if (error.response?.status === 404) {
+          console.warn("Không tìm thấy người dùng:", receiver);
+          setReceiverName("Người dùng không xác định");
+        } else {
+          console.error("Lỗi khi lấy thông tin người dùng:", error);
+          setReceiverName("Lỗi tải thông tin");
+        }
       }
     };
 

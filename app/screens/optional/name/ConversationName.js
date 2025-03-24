@@ -54,6 +54,7 @@ const ConversationName = ({
         conversation_id,
         user_id,
         startSearch: true,
+        receiver,
       });
     }
   };

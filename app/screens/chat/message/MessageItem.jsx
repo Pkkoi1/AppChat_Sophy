@@ -26,8 +26,15 @@ const MessageItem = ({
         isHighlighted && MessageItemStyle.highlighted,
       ]}
     >
-      {!isSender && avatar && (
-        <Image source={{ uri: avatar }} style={MessageItemStyle.avatar} />
+      {!isSender && (
+        <Image
+          source={{
+            uri:
+              // avatar ||
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s", // Đường dẫn hình ảnh mặc định
+          }}
+          style={MessageItemStyle.avatar}
+        />
       )}
 
       <View

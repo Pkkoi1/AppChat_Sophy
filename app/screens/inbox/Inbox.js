@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
+import { fetchUserInfo } from "@/components/getUserInfo/UserInfo";
 
 const Inbox = ({
   name,
@@ -15,6 +16,7 @@ const Inbox = ({
   id,
 }) => {
   const navigation = useNavigation();
+  const [receiver, setReceiver] = useState({});
 
   const getTimeDifference = (date) => {
     const now = moment();
@@ -44,6 +46,18 @@ const Inbox = ({
     return message;
   };
 
+  useEffect(() => {
+    const getUserInfo = async () => {
+      if (!groupName) {
+        // Chỉ gọi fetchUserInfo nếu groupName là null hoặc rỗng
+        const data = await fetchUserInfo(receiverId);
+        setReceiver(data);
+      }
+    };
+
+    getUserInfo();
+  }, [receiverId, groupName]);
+
   return (
     <TouchableOpacity
       onPress={() =>
@@ -66,10 +80,12 @@ const Inbox = ({
       </View>
       <View style={{ flex: 1 }}>
         <View style={styles.header}>
-          <Text style={styles.name}>{groupName || name}</Text>
+          <Text style={styles.name}>{groupName || receiver?.fullname}</Text>
           <Text style={styles.time}>{getTimeDifference(date)}</Text>
         </View>
-        <Text style={styles.message}>{truncateMessage(message, 50)}</Text>
+        <Text style={styles.message} numberOfLines={1} ellipsizeMode="tail">
+          {truncateMessage(message, 50)}
+        </Text>
       </View>
     </TouchableOpacity>
   );
@@ -108,6 +124,9 @@ const styles = StyleSheet.create({
   },
   message: {
     color: "gray",
+    fontSize: 14,
+    marginTop: 4,
+    maxWidth: "90%", // Giới hạn chiều rộng của tin nhắn
   },
 });
 
