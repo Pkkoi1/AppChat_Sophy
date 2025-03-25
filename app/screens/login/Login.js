@@ -61,9 +61,6 @@ function LoginScreen({ navigation }) {
       console.error("Lỗi đăng nhập:", error);
       console.log("Lỗi đăng nhập:", error.message);
       console.log("Lỗi đăng nhập:", error.response);
-      console.log("Lỗi đăng nhập:", error.request);
-      console.log("DATABASE_API:", DATABASE_API);
-      console.log("MY_IP:", MY_IP);
     }
   };
   return (
