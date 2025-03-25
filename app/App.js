@@ -24,6 +24,8 @@ import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm
 import Options from "./screens/optional/OptionalScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
+import EnterName from "./screens/register/enterProfile/EnterName";
+import EnterInfo from "./screens/register/enterProfile/EnterInfo";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +41,8 @@ function RootLayout() {
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
+        <Stack.Screen name="EnterName" component={EnterName} />
+        <Stack.Screen name="EnterInfo" component={EnterInfo} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen

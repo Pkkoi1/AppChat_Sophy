@@ -1,5 +1,5 @@
 import { Button } from "@rneui/themed";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { signInWithPhoneNumber } from "firebase/auth";
@@ -7,6 +7,8 @@ import { auth } from "../../../../firebaseConfig"; // Import auth từ firebaseC
 
 const VerifyPhoneNumber = ({ phoneNumber, onCancel }) => {
   const navigation = useNavigation();
+
+ 
 
   const formatPhoneNumber = (phoneNumber) => {
     if (!phoneNumber.startsWith("+")) {
@@ -16,21 +18,25 @@ const VerifyPhoneNumber = ({ phoneNumber, onCancel }) => {
   };
 
   const sendOTP = async () => {
-    try {
-      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
-      const confirmationResult = await signInWithPhoneNumber(
-        auth,
-        formattedPhoneNumber
-      );
-      console.log("OTP sent successfully");
-      navigation.navigate("VerifyOTPCode", {
-        confirmationResult,
-        phoneNumber: formattedPhoneNumber,
-      });
-    } catch (error) {
-      console.error("Error sending OTP:", error.message);
-      alert("Không thể gửi OTP. Vui lòng thử lại.");
-    }
+    // try {
+    //   const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+    //   const confirmationResult = await signInWithPhoneNumber(
+    //     auth,
+    //     formattedPhoneNumber
+    //   );
+    //   console.log("OTP sent successfully");
+    //   navigation.navigate("VerifyOTPCode", {
+    //     confirmationResult,
+    //     phoneNumber: formattedPhoneNumber,
+    //   });
+    // } catch (error) {
+    //   console.error("Error sending OTP:", error.message);
+    //   alert("Không thể gửi OTP. Vui lòng thử lại.");
+    // }
+
+    navigation.navigate("VerifyOTPCode", {
+      phoneNumber: phoneNumber,
+    });
   };
 
   useEffect(() => {
@@ -75,6 +81,7 @@ const VerifyPhoneNumberStyle = StyleSheet.create({
     borderRadius: 50,
     flexDirection: "column",
     gap: 10,
+  
   },
   button: {
     backgroundColor: "none",

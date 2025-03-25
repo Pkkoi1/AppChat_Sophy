@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,17 @@ const VerifyOTPCode = ({ route, navigation }) => {
   const { phoneNumber } = route.params || { phoneNumber: "0123456789" }; // Dữ liệu giả nếu không có
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
-
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: "",
+      headerStyle: {
+        backgroundColor: "#fff",
+        shadowColor: "#fff",
+        elevation: 0,
+      },
+    });
+  }, [navigation]);
   const handleInputChange = (value, index) => {
     const newOtp = [...otp];
     newOtp[index] = value;
@@ -27,6 +37,10 @@ const VerifyOTPCode = ({ route, navigation }) => {
     const enteredOtp = otp.join("");
     if (enteredOtp.length === 6) {
       Alert.alert("Xác minh thành công", `Mã OTP: ${enteredOtp}`);
+      navigation.navigate("EnterName", {
+        phoneNumber,
+        navigation
+      });
     } else {
       Alert.alert("Lỗi", "Vui lòng nhập đủ 6 số OTP.");
     }
@@ -52,7 +66,7 @@ const VerifyOTPCode = ({ route, navigation }) => {
       </View>
 
       <TouchableOpacity style={styles.verifyButton} onPress={handleVerify}>
-        <Text style={styles.verifyButtonText}>Xác minh</Text>
+        <Text style={styles.verifyButtonText}>Tiếp tục</Text>
       </TouchableOpacity>
     </View>
   );
@@ -64,7 +78,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: 20,
   },
   header: {
     fontSize: 24,
@@ -80,8 +93,9 @@ const styles = StyleSheet.create({
   otpContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "80%",
+    width: "100%",
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   otpInput: {
     width: 50,
@@ -92,6 +106,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     color: "#000",
+    marginRight: 5,
   },
   verifyButton: {
     backgroundColor: "#007BFF",
