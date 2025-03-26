@@ -4,7 +4,8 @@ import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { TextInput } from "react-native-paper";
 import Color from "../../../../components/colors/Color";
 
-const EnterName = ({ phoneNumber, navigation }) => {
+const EnterName = ({ route, navigation }) => {
+  const { phoneNumber } = route.params || { phoneNumber: "0123456789" }; // Dữ liệu giả nếu không có
   const [fullname, setFullname] = useState("");
   const [error, setError] = useState(""); // Trạng thái để lưu lỗi
 
@@ -35,6 +36,9 @@ const EnterName = ({ phoneNumber, navigation }) => {
       setError("Tên phải dài từ 2 đến 40 ký tự.");
       return;
     }
+
+    console.log("fullname", fullname.trim());
+    console.log("phoneNumber", phoneNumber);
 
     if (
       !/^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưĂ-ỹ][a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưĂ-ỹ\s]*$/.test(

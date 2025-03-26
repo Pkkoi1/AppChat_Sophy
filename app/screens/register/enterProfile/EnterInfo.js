@@ -5,11 +5,26 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  KeyboardAvoidingView,
+  ScrollView,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { RadioButton } from "react-native-paper";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { Picker } from "@react-native-picker/picker";
+import { MaterialIcons } from "@expo/vector-icons"; // Import icon lịch
 import Color from "../../../../components/colors/Color";
+import { api } from "@/api/api";
 
-const EnterInfo = ({ phoneNumber, fullname, navigation }) => {
+const EnterInfo = ({ route, navigation }) => {
+  const { phoneNumber, fullname } = route.params || {
+    phoneNumber: "0123456789",
+    fullname: "Nguyễn Văn A",
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -21,32 +36,38 @@ const EnterInfo = ({ phoneNumber, fullname, navigation }) => {
       },
     });
   }, [navigation]);
-  const [day, setDay] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
-  const [gender, setGender] = useState("");
+
+  const [date, setDate] = useState(new Date("2000-01-01")); // Mặc định ngày sinh
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [gender, setGender] = useState("Nam"); // Mặc định giới tính
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(""); // Lỗi định dạng mật khẩu
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false); // Theo dõi trạng thái bàn phím
 
-  const handleNext = () => {
-    if (!day || !month || !year || !gender || !password || !confirmPassword) {
+  const sanitizedPhoneNumber = phoneNumber.replace(/\s+/g, "");
+
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError(
+        "Mật khẩu phải có ít nhất 6 ký tự, bao gồm cả chữ và số, và không chứa ký tự đặc biệt."
+      );
+    } else {
+      setPasswordError(""); // Xóa lỗi nếu hợp lệ
+    }
+  };
+
+  const handleNext = async () => {
+    if (!date || !gender || !password || !confirmPassword) {
       setError("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
-    if (parseInt(day) < 1 || parseInt(day) > 31) {
-      setError("Ngày không hợp lệ.");
-      return;
-    }
-
-    if (parseInt(month) < 1 || parseInt(month) > 12) {
-      setError("Tháng không hợp lệ.");
-      return;
-    }
-
-    if (parseInt(year) < 1900 || parseInt(year) > new Date().getFullYear()) {
-      setError("Năm không hợp lệ.");
+    if (passwordError) {
+      setError("Mật khẩu không hợp lệ.");
       return;
     }
 
@@ -55,119 +76,171 @@ const EnterInfo = ({ phoneNumber, fullname, navigation }) => {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự.");
-      return;
-    }
-
     setError(""); // Xóa lỗi nếu hợp lệ
-    const birthDate = `${day.padStart(2, "0")}-${month.padStart(
-      2,
-      "0"
-    )}-${year}`;
-    console.log("Thông tin hợp lệ:", { birthDate, gender, password });
-    // Điều hướng sang màn hình tiếp theo hoặc xử lý logic
+
+    const isMale = gender === "Nam";
+
+    const payload = {
+      phone: sanitizedPhoneNumber,
+      password,
+      fullname,
+      isMale,
+      birthday: date.toISOString().split("T")[0],
+    };
+
+    try {
+      setLoading(true);
+      const response = await api.registerAccount(payload);
+      setLoading(false);
+
+      Alert.alert("Thành công", "Đăng ký tài khoản thành công!", [
+        {
+          text: "OK",
+          // onPress: () => navigation.navigate("CameraScreen"),
+          onPress: () => navigation.navigate("Login"),
+        },
+      ]);
+    } catch (error) {
+      setLoading(false);
+      console.error("Lỗi đăng ký:", error);
+
+      Alert.alert("Lỗi", "Đăng ký tài khoản thất bại. Vui lòng thử lại.");
+    }
   };
 
+  const onDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) setDate(selectedDate);
+  };
+
+  // Lắng nghe sự kiện bàn phím
+  React.useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setIsKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setIsKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Nhập thông tin cá nhân</Text>
-
-      {/* Nhập ngày sinh */}
-      <Text style={styles.label}>Ngày sinh</Text>
-      <View style={styles.birthDateContainer}>
-        <TextInput
-          style={[styles.input, styles.birthDateInput]}
-          placeholder="DD"
-          value={day}
-          onChangeText={setDay}
-          keyboardType="numeric"
-          maxLength={2}
-        />
-        <TextInput
-          style={[styles.input, styles.birthDateInput]}
-          placeholder="MM"
-          value={month}
-          onChangeText={setMonth}
-          keyboardType="numeric"
-          maxLength={2}
-        />
-        <TextInput
-          style={[styles.input, styles.birthDateInput]}
-          placeholder="YYYY"
-          value={year}
-          onChangeText={setYear}
-          keyboardType="numeric"
-          maxLength={4}
-        />
-      </View>
-
-      {/* Chọn giới tính */}
-      <Text style={styles.label}>Giới tính</Text>
-      <View style={styles.genderContainer}>
-        <TouchableOpacity
-          style={styles.genderOption}
-          onPress={() => setGender("male")}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }} // Thay đổi chiều cao khi bàn phím xuất hiện
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView
+          contentContainerStyle={[
+            { height: isKeyboardVisible ? "120%" : "100%" },
+            styles.scrollContainer,
+          ]}
         >
-          <RadioButton
-            value="male"
-            status={gender === "male" ? "checked" : "unchecked"}
-            onPress={() => setGender("male")}
-          />
-          <Text>Nam</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.genderOption}
-          onPress={() => setGender("female")}
-        >
-          <RadioButton
-            value="female"
-            status={gender === "female" ? "checked" : "unchecked"}
-            onPress={() => setGender("female")}
-          />
-          <Text>Nữ</Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.container}>
+            <Text style={styles.header}>Thêm thông tin cá nhân</Text>
 
-      {/* Nhập mật khẩu */}
-      <Text style={styles.label}>Mật khẩu</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập mật khẩu"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+            {/* Nhập ngày sinh */}
+            <Text style={styles.label}>Ngày sinh</Text>
+            <TouchableOpacity
+              style={styles.dateInput}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={styles.dateText}>
+                {date.toLocaleDateString("vi-VN")}
+              </Text>
+              <MaterialIcons name="calendar-today" size={20} color="#000" />
+            </TouchableOpacity>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={onDateChange}
+              />
+            )}
 
-      {/* Xác nhận mật khẩu */}
-      <Text style={styles.label}>Xác nhận mật khẩu</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nhập lại mật khẩu"
-        secureTextEntry
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-      />
+            {/* Chọn giới tính */}
+            <Text style={styles.label}>Giới tính</Text>
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={gender}
+                onValueChange={(itemValue) => setGender(itemValue)}
+              >
+                <Picker.Item label="Nam" value="Nam" />
+                <Picker.Item label="Nữ" value="Nữ" />
+              </Picker>
+            </View>
 
-      {/* Hiển thị lỗi nếu có */}
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            {/* Nhập mật khẩu */}
+            <Text style={styles.label}>Mật khẩu</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nhập mật khẩu"
+              secureTextEntry
+              value={password}
+              onChangeText={(value) => {
+                setPassword(value);
+                validatePassword(value); // Kiểm tra định dạng mật khẩu
+              }}
+            />
+            {passwordError ? (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
 
-      {/* Nút tiếp tục */}
-      <TouchableOpacity onPress={handleNext} style={styles.button}>
-        <Text style={styles.buttonText}>Tiếp tục</Text>
-      </TouchableOpacity>
-    </View>
+            {/* Xác nhận mật khẩu */}
+            <Text style={styles.label}>Xác nhận mật khẩu</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nhập lại mật khẩu"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+            />
+            {confirmPassword && password !== confirmPassword && (
+              <Text style={styles.errorText}>
+                Mật khẩu và xác nhận mật khẩu không khớp.
+              </Text>
+            )}
+
+            {/* Hiển thị lỗi nếu có */}
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+            {/* Hiển thị loading */}
+            {loading && <ActivityIndicator size="large" color={Color.sophy} />}
+
+            {/* Nút tiếp tục */}
+            <TouchableOpacity
+              onPress={handleNext}
+              style={styles.button}
+              disabled={loading}
+            >
+              <Text style={styles.buttonText}>Tiếp tục</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
   container: {
     padding: 20,
     backgroundColor: "#fff",
     flex: 1,
   },
   header: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
@@ -177,31 +250,35 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: Color.gray,
   },
-  input: {
+  dateInput: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    backgroundColor: "#f5f5f5",
     marginBottom: 15,
+  },
+  dateText: {
+    fontSize: 16,
+    color: "#000",
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    backgroundColor: "#f5f5f5",
+    marginBottom: 15,
+  },
+  input: {
     backgroundColor: "#f5f5f5",
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
     borderColor: "#ddd",
-  },
-  birthDateContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  birthDateInput: {
-    flex: 1,
-    marginHorizontal: 5,
-    textAlign: "center",
-  },
-  genderContainer: {
-    flexDirection: "row",
     marginBottom: 15,
-  },
-  genderOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 20,
   },
   errorText: {
     color: "red",

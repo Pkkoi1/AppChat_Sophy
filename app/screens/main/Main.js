@@ -85,6 +85,7 @@ const Main = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[submitButton().submit, MainStyle({ width }).signUp_Button]}
+          // onPress={() => navigation.navigate("CameraScreen")}
           onPress={() => navigation.navigate("Register")}
         >
           <Text style={MainStyle({ width }).buttonSignUpText}>
