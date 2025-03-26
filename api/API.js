@@ -1,6 +1,6 @@
 import axios from "axios";
 import { DATABASE_API } from "@env";
-export const myIP = "192.168.1.12";
+export const myIP = "192.168.1.64";
 const API = DATABASE_API || `http://${myIP}:3000/api`;
 
 const http = axios.create({

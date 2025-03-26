@@ -14,9 +14,11 @@ import RegisterStyle from "./RegisterStyle";
 
 const { width, height } = Dimensions.get("window");
 const Register = () => {
+  const [phoneNumber, setPhoneNumber] = useState("");
   const navigation = useNavigation();
   const [isSelected1, setSelection1] = useState(false);
   const [isSelected2, setSelection2] = useState(false);
+  const [isPhoneNumberFilled, setIsPhoneNumberFilled] = useState(false); // New state
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -29,13 +31,20 @@ const Register = () => {
     });
   }, [navigation]);
 
+  const handlePhoneNumberChange = (phoneNumber) => {
+    setPhoneNumber(phoneNumber);
+    setIsPhoneNumberFilled(phoneNumber.length > 9);
+  };
+
+  const isButtonEnabled = isSelected1 && isSelected2 && isPhoneNumberFilled;
+
   return (
     <View style={contaier.main}>
       <View style={RegisterStyle({ width, height }).phone_field}>
         <Text style={RegisterStyle({ width, height }).app_name}>
           Nhập số điện thoại
         </Text>
-        <PhoneNumber />
+        <PhoneNumber onPhoneNumberChange={handlePhoneNumberChange} />
       </View>
       <View style={RegisterStyle({ width, height }).clause_field}>
         <View style={RegisterStyle({ width, height }).check_option}>
@@ -76,10 +85,19 @@ const Register = () => {
 
       <View style={RegisterStyle({ width, height }).submit}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Verify")}
-          style={RegisterStyle({ width, height }).button_not_checked}
+          onPress={() => navigation.navigate("Verify", { phoneNumber: phoneNumber })}
+          style={[
+            RegisterStyle({ width, height }).button_not_checked,
+            isButtonEnabled &&
+              RegisterStyle({ width, height }).button_checked,
+          ]}
+          disabled={!isButtonEnabled}
         >
-          <Text style={RegisterStyle({ width, height }).submit_text}>
+          <Text style={[
+              RegisterStyle({ width, height }).submit_text,
+              isButtonEnabled && { color: '#fff' } // Change text color to white when enabled
+            ]}
+          >
             Tiếp tục
           </Text>
         </TouchableOpacity>

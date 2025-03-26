@@ -1,3 +1,4 @@
+import Color from "@/components/colors/Color";
 import { StyleSheet } from "react-native";
 
 const RegisterStyle = (props) => {
@@ -47,6 +48,15 @@ const RegisterStyle = (props) => {
     },
     button_not_checked: {
       backgroundColor: "#e0e0e0",
+      width: width * 0.9,
+      height: 50,
+      borderRadius: 50,
+      justifyContent: "center",
+      alignItems: "center",
+      marginTop: 20,
+    },
+    button_checked: {
+      backgroundColor: "#1068fe",
       width: width * 0.9,
       height: 50,
       borderRadius: 50,
