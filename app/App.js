@@ -10,6 +10,7 @@ import SocialNetworkTerms from "./screens/register/SocialNetworkTerms";
 import TermsOfService from "./screens/register/TermsOfService";
 import Home from "./screens/home/Home";
 import Chat from "./screens/chat/MessageScreen";
+// import Chat from "./screens/testApi/TestScreen";
 import Profile from "./screens/profile/Profile";
 import Discover from "./screens/discover/Discover";
 import Diary from "./screens/diary/Diary";
@@ -23,6 +24,9 @@ import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm
 import Options from "./screens/optional/OptionalScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import Verify from "./screens/register/Verify";
+import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
+import EnterName from "./screens/register/enterProfile/EnterName";
+import EnterInfo from "./screens/register/enterProfile/EnterInfo";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +41,9 @@ function RootLayout() {
       >
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
+        <Stack.Screen name="EnterName" component={EnterName} />
+        <Stack.Screen name="EnterInfo" component={EnterInfo} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen

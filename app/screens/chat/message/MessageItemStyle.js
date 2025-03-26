@@ -15,6 +15,7 @@ const MessageItemStyle = StyleSheet.create({
   messageBox: {
     padding: 10,
     borderRadius: 10,
+    marginLeft: 45,
     maxWidth: "80%",
     position: "relative", // Để avatar có thể nằm trên
   },
@@ -45,8 +46,9 @@ const MessageItemStyle = StyleSheet.create({
     borderRadius: 15,
     position: "absolute",
     top: 0,
+    zIndex: 5, // Để avatar nằm trên hộp tin nhắn
     marginLeft: 5,
-    // left: -35, // Đặt avatar ở góc trên bên trái hộp tin nhắn
+    left: 0, // Đặt avatar ở góc trên bên trái hộp tin nhắn
   },
   highlighted: {
     backgroundColor: "#d1e7ff", // Màu nền xanh nhạt

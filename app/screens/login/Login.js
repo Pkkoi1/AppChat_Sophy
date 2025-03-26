@@ -12,8 +12,10 @@ import {
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
-import { api } from "@/api/API";
+
 import { Button} from '@rneui/themed';
+import { api } from "@/api/api";
+
 // Đọc dữ liệu từ file user.json
 const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
 
@@ -36,15 +38,15 @@ function LoginScreen({ navigation }) {
     try {
       // Gọi API đăng nhập
       const response = await api.login({ phone, password });
-      // console.log("API Response:", response); // Kiểm tra phản hồi từ API
 
-      // Kiểm tra trạng thái phản hồi
       if (response && response.data && response.data.user) {
         const { user } = response.data; // Lấy thông tin người dùng từ response.data
-        Alert.alert("Đăng nhập thành công!", `Chào ${user.fullname}!`);
+        Alert.alert("Đăng nhập thành công!", `Chào ${phone}!`);
         navigation.navigate("Home", {
           userId: user.userId,
           userName: user.fullname,
+          phone: phone,
+          id: user.id,
         });
       } else {
         Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
@@ -59,6 +61,8 @@ function LoginScreen({ navigation }) {
         Alert.alert("Đăng nhập thất bại!", "Có lỗi xảy ra, vui lòng thử lại!");
       }
       console.error("Lỗi đăng nhập:", error);
+      console.log("Lỗi đăng nhập:", error.message);
+      console.log("Lỗi đăng nhập:", error.response);
     }
   };
   return (
@@ -67,7 +71,7 @@ function LoginScreen({ navigation }) {
 
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.navigate("Main")}>
             <Icon name="arrow-back" size={32} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Đăng nhập</Text>

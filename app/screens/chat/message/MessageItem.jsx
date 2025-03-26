@@ -10,8 +10,9 @@ const MessageItem = ({
   avatar,
   searchQuery,
   isHighlighted,
+  receiverId,
 }) => {
-  const formattedTimestamp = moment(message.timestamp).format(
+  const formattedTimestamp = moment(message.createdAt).format(
     "DD/MM/YYYY HH:mm"
   );
 
@@ -25,8 +26,15 @@ const MessageItem = ({
         isHighlighted && MessageItemStyle.highlighted,
       ]}
     >
-      {!isSender && avatar && (
-        <Image source={{ uri: avatar }} style={MessageItemStyle.avatar} />
+      {!isSender && (
+        <Image
+          source={{
+            uri:
+              // avatar ||
+              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s", // Đường dẫn hình ảnh mặc định
+          }}
+          style={MessageItemStyle.avatar}
+        />
       )}
 
       <View
@@ -37,6 +45,8 @@ const MessageItem = ({
         ]}
       >
         <Text style={MessageItemStyle.timestamp}>{formattedTimestamp}</Text>
+        {/* <Text style={MessageItemStyle.timestamp}>{message.senderId}</Text> */}
+
         <HighlightText
           text={message.content}
           highlight={searchQuery}

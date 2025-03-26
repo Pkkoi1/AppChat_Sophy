@@ -9,16 +9,19 @@ import {
   Dimensions,
 } from "react-native";
 import PhoneNumber from "../../../components/phoneNumber/PhoneNumber";
-import { CheckBox } from "@rneui/themed";
+import { CheckBox, Overlay } from "@rneui/themed";
 import RegisterStyle from "./RegisterStyle";
+import VerifyPhoneNumber from "./verifyPhoneNumber/VerifyPhoneNumber";
 
 const { width, height } = Dimensions.get("window");
 const Register = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const navigation = useNavigation();
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [isSelected1, setSelection1] = useState(false);
   const [isSelected2, setSelection2] = useState(false);
   const [isPhoneNumberFilled, setIsPhoneNumberFilled] = useState(false); // New state
+  const [visible, setVisible] = useState(false);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -44,7 +47,11 @@ const Register = () => {
         <Text style={RegisterStyle({ width, height }).app_name}>
           Nhập số điện thoại
         </Text>
-        <PhoneNumber onPhoneNumberChange={handlePhoneNumberChange} />
+
+//         <PhoneNumber onPhoneNumberChange={handlePhoneNumberChange} />
+
+        <PhoneNumber onChange={(value) => setPhoneNumber(value)} />
+
       </View>
       <View style={RegisterStyle({ width, height }).clause_field}>
         <View style={RegisterStyle({ width, height }).check_option}>
@@ -85,18 +92,39 @@ const Register = () => {
 
       <View style={RegisterStyle({ width, height }).submit}>
         <TouchableOpacity
-          onPress={() => navigation.navigate("Verify", { phoneNumber: phoneNumber })}
-          style={[
-            RegisterStyle({ width, height }).button_not_checked,
-            isButtonEnabled &&
-              RegisterStyle({ width, height }).button_checked,
-          ]}
-          disabled={!isButtonEnabled}
+//           onPress={() => navigation.navigate("Verify", { phoneNumber: phoneNumber })}
+//           style={[
+//             RegisterStyle({ width, height }).button_not_checked,
+//             isButtonEnabled &&
+//               RegisterStyle({ width, height }).button_checked,
+//           ]}
+//           disabled={!isButtonEnabled}
+//         >
+//           <Text style={[
+//               RegisterStyle({ width, height }).submit_text,
+//               isButtonEnabled && { color: '#fff' } // Change text color to white when enabled
+//             ]}
+          onPress={() => {
+            if (isSelected1 && isSelected2 && phoneNumber.trim() !== "") {
+              setVisible(true); // Hiển thị VerifyPhoneNumber
+            } else {
+              alert(
+                "Bạn cần nhập số điện thoại và đồng ý với các điều khoản để tiếp tục."
+              );
+            }
+          }}
+          style={
+            isSelected1 && isSelected2
+              ? RegisterStyle({ width, height }).button_checked
+              : RegisterStyle({ width, height }).button_not_checked
+          }
         >
-          <Text style={[
-              RegisterStyle({ width, height }).submit_text,
-              isButtonEnabled && { color: '#fff' } // Change text color to white when enabled
-            ]}
+          <Text
+            style={
+              isSelected1 && isSelected2
+                ? RegisterStyle({ width, height }).submit_text_checked
+                : RegisterStyle({ width, height }).submit_text
+            }
           >
             Tiếp tục
           </Text>
@@ -112,6 +140,12 @@ const Register = () => {
           </Text>
         </TouchableOpacity>
       </View>
+      <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
+        <VerifyPhoneNumber
+          phoneNumber={phoneNumber} // Truyền số điện thoại
+          onCancel={() => setVisible(false)} // Hàm tắt Overlay
+        />
+      </Overlay>
     </View>
   );
 };
