@@ -1,3 +1,4 @@
+import Color from "@/components/colors/Color";
 import { StyleSheet } from "react-native";
 import Color from "@/components/colors/Color";
 import { overlay } from "react-native-paper";
@@ -64,7 +65,6 @@ const RegisterStyle = (props) => {
       justifyContent: "center",
       alignItems: "center",
       marginTop: 20,
-      color: "#fff",
     },
     submit_text: {
       color: "#a7acb2",

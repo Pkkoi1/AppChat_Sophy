@@ -6,6 +6,17 @@ import { LogBox } from "react-native";
 
 LogBox.ignoreLogs(["Support for defaultProps will be removed"]);
 
+// <<<<<<< nghiem
+// const PhoneNumber = ({ onPhoneNumberChange }) => {
+//   const [phoneNumber, setPhoneNumber] = useState("");
+//   const defaultCountry = "VN"; // Sử dụng giá trị mặc định bằng JS
+
+//   const handlePhoneNumberChange = (number) => {
+//     setPhoneNumber(number);
+//     if (onPhoneNumberChange) {
+//       onPhoneNumberChange(number);
+//     }
+// =======
 const PhoneNumber = ({ onChange }) => {
   const [value, setValue] = useState(""); // Lưu số điện thoại
   const defaultCountry = "VN"; // Mã quốc gia mặc định
@@ -26,6 +37,9 @@ const PhoneNumber = ({ onChange }) => {
     <View>
       <PhoneInput
         defaultCode={defaultCountry}
+//         placeholder=" "
+//         onChangeText={handlePhoneNumberChange}
+//         value={phoneNumber}
         placeholder="Nhập số điện thoại"
         value={value}
         onChangeFormattedText={handleChange} // Gọi hàm khi số điện thoại thay đổi

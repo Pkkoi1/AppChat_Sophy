@@ -12,6 +12,8 @@ import {
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
+
+import { Button} from '@rneui/themed';
 import { api } from "@/api/api";
 
 // Đọc dữ liệu từ file user.json

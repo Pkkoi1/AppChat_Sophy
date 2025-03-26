@@ -23,6 +23,7 @@ import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo
 import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm bảo đường dẫn đúng
 import Options from "./screens/optional/OptionalScreen";
 import { NavigationContainer } from "@react-navigation/native";
+import Verify from "./screens/register/Verify";
 import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
 import EnterName from "./screens/register/enterProfile/EnterName";
 import EnterInfo from "./screens/register/enterProfile/EnterInfo";
@@ -69,6 +70,7 @@ function RootLayout() {
           component={Options}
           options={{ animation: "slide_from_right" }}
         />
+        <Stack.Screen name = "Verify" component = {Verify} />
       </Stack.Navigator>
     </NavigationContainer>
   );
