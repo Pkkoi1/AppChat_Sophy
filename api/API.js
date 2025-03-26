@@ -129,6 +129,17 @@ export const api = {
   registerAccount: async (params) => {
     return await http.post("/auth/register", params);
   },
+  //Check số dien thoại đã tồn tại hay chưa
+  //Check số dien thoại đã tồn tại hay chưa
+  checkPhone: async (phone) => {
+    const resp = await http.get(`/users/check-used-phone/${phone}`);
+    if (resp.status === 200) {
+      return resp.data; // Trả về dữ liệu nếu thành công
+    }
+    throw new Error(
+      "Lỗi khi kiểm tra số điện thoại tại api: " + resp.statusText
+    );
+  },
   logout: async () => {
     try {
       const response = await http.post("/auth/logout");

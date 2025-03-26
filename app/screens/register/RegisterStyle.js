@@ -1,6 +1,5 @@
 import Color from "@/components/colors/Color";
 import { StyleSheet } from "react-native";
-import Color from "@/components/colors/Color";
 import { overlay } from "react-native-paper";
 
 const RegisterStyle = (props) => {
