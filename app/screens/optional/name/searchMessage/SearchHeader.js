@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Color from "@/components/colors/Color";
+import Color from "@/app/components/colors/Color";
 
 const SearchHeader = ({ onSearch, onCancel }) => {
   return (

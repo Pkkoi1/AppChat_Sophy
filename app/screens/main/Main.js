@@ -2,9 +2,9 @@
 import React, { useState, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import images from "@/assets/objects/Main_Images";
-import contaier from "@/components/container/ContainerStyle";
-import submitButton from "@/components/button/ButtonStyle";
-import BackgroundStyles from "@/components/background/BackgroundStyles";
+import contaier from "@/app/components/container/ContainerStyle";
+import submitButton from "@/app/components/button/ButtonStyle";
+import BackgroundStyles from "@/app/components/background/BackgroundStyles";
 
 import {
   Image,
@@ -85,8 +85,8 @@ const Main = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[submitButton().submit, MainStyle({ width }).signUp_Button]}
-          // onPress={() => navigation.navigate("CameraScreen")}
-          onPress={() => navigation.navigate("Register")}
+          onPress={() => navigation.navigate("CameraScreen")}
+          // onPress={() => navigation.navigate("Register")}
         >
           <Text style={MainStyle({ width }).buttonSignUpText}>
             Tạo tài khoản mới

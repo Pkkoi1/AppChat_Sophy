@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
-import contaier from "../../../components/container/ContainerStyle";
+import contaier from "../../components/container/ContainerStyle";
 import {
   View,
   Text,
@@ -9,11 +9,11 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import PhoneNumber from "../../../components/phoneNumber/PhoneNumber";
+import PhoneNumber from "../../components/phoneNumber/PhoneNumber";
 import { CheckBox, Overlay } from "@rneui/themed";
 import RegisterStyle from "./RegisterStyle";
 import VerifyPhoneNumber from "./verifyPhoneNumber/VerifyPhoneNumber";
-import { api } from "../../../api/api"; // Import API
+import { api } from "../../api/api"; // Import API
 
 const { width, height } = Dimensions.get("window");
 

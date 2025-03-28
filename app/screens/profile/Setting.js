@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import HeadView from "../header/Header";
-import { api } from "@/api/api";
+import { api } from "@/app/api/api";
 import { useNavigation } from "expo-router";
 
 const settings = [

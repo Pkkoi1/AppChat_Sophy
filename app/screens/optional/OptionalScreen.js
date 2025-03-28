@@ -8,7 +8,7 @@ import GalleryOption from "./gallery/GalleryOption";
 import GroupOption from "./group/GroupOption";
 import ConversationOption from "./conversationOption/ConversationOption";
 import BanAndRemoveOption from "./banAndRemove/BanAndRemoveOption";
-import Colors from "../../../components/colors/Color";
+import Colors from "../../components/colors/Color";
 
 const OptionalScreen = () => {
   const route = useRoute();

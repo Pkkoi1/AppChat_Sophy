@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Colors from "../../../../components/colors/Color";
+import Colors from "../../../components/colors/Color";
 import { Ionicons } from "@expo/vector-icons";
 
 const friendGroupOptions = [

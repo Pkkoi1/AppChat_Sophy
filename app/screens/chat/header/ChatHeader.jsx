@@ -112,7 +112,7 @@ import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
-import { api } from "@/api/api";
+import { api } from "@/app/api/api";
 
 const ChatHeader = ({ user_id, receiver, navigation, conversation_id }) => {
   const [receiverName, setReceiverName] = useState("");
