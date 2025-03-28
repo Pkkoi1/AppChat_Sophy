@@ -11,7 +11,7 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import HeadView from "../../../header/Header";
 import receivedRequests from "../../../../../assets/objects/receivedRequests.json";
 import sentRequests from "../../../../../assets/objects/sentRequests.json";
-import Color from "../../../../../components/colors/Color";
+import Color from "../../../../components/colors/Color";
 
 const groupByTime = (data) => {
   const today = new Date("2025-03-15T00:00:00Z");
@@ -84,7 +84,6 @@ const ReceivedFriendRequests = ({ navigation }) => {
     console.log(`Đồng ý kết bạn với ${item.name}`);
     navigation.navigate("AcceptFriend", { user: item });
   };
-  
 
   const handleReject = (item) => {
     console.log(`Từ chối kết bạn với ${item.name}`);
@@ -283,11 +282,11 @@ const styles = StyleSheet.create({
     color: "gray",
     marginTop: 2,
   },
-   buttonContainer: {
+  buttonContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: "space-around",
+    width: "100%",
   },
   rejectButton: {
     backgroundColor: Color.grayBackgroundButton,
@@ -296,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flex: 1,
     marginHorizontal: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   rejectText: {
     fontSize: 12,
@@ -310,7 +309,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flex: 1,
     marginHorizontal: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   acceptText: {
     fontSize: 12,

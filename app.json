@@ -41,6 +41,16 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos to your library",
+          "savePhotosPermissionTitle": "Save Photos Permission",
+          "savePhotosPermissionMessage": "This app would like to save photos to your library.",
+          "isAccessMediaLocationEnabled": true
+        }
       ]
     ],
     "experiments": {

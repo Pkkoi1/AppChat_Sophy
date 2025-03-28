@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, StyleSheet, View } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from "@expo/vector-icons/Feather";
 import Fontisto from "@expo/vector-icons/Fontisto";
-import ToggleSwitch from "../../../../components/toggle/ToggleSwitch";
+import ToggleSwitch from "../../../components/toggle/ToggleSwitch";
 
 const FriendDescription = [
   {

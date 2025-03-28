@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Image } from "react-native";
 import moment from "moment";
 import MessageItemStyle from "./MessageItemStyle";
-import HighlightText from "../../../../components/highlightText/HighlightText"; // Import HighlightText
+import HighlightText from "../../../components/highlightText/HighlightText"; // Import HighlightText
 
 const MessageItem = ({
   message,

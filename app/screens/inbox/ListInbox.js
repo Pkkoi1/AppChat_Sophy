@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View, Image, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Inbox from "./Inbox";
-import { api } from "@/api/api";
+import { api } from "@/app/api/api";
 
 const ListInbox = ({ userId, id }) => {
   const [refreshing, setRefreshing] = useState(false);

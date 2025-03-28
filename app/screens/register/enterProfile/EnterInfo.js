@@ -16,8 +16,8 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { MaterialIcons } from "@expo/vector-icons"; // Import icon lịch
-import Color from "../../../../components/colors/Color";
-import { api } from "@/api/api";
+import Color from "../../../components/colors/Color";
+import { api } from "@/app/api/api";
 
 const EnterInfo = ({ route, navigation }) => {
   const { phoneNumber, fullname } = route.params || {
