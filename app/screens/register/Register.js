@@ -56,13 +56,23 @@ const Register = () => {
       const response = await api.checkPhone(
         phoneNumber.trim().replace(/\s+/g, "")
       );
-      if (response) {
-        // Nếu số điện thoại đã tồn tại, hiển thị thông báo
-        // console.log("Số điện thoại chưa được sử dụng, tiếp tục xác minh.");
+
+      if (response && response.message === "Verification code generated.") {
+        console.log("OTP:", response.otp);
+        console.log("OTP ID:", response.otpId);
+
+        // Hiển thị màn hình xác minh số điện thoại
         setVisible(true); // Hiển thị VerifyPhoneNumber
+      } else {
+        // Nếu phản hồi không đúng định dạng mong muốn
+        Alert.alert("Lỗi", "Phản hồi từ API không hợp lệ.");
       }
     } catch (error) {
-      // console.error("Lỗi khi kiểm tra số điện thoại:", error);
+      console.error("Lỗi khi kiểm tra số điện thoại:", error);
+      console.error(
+        "Phản hồi từ API kiểm tra số điện thoại không hợp lệ.",
+        error.response.data
+      );
       Alert.alert("Lỗi", "Số điện thoại đã được sử dụng.\nVui lòng thử lại.");
     }
   };

@@ -130,15 +130,27 @@ export const api = {
     return await http.post("/auth/register", params);
   },
   //Check số dien thoại đã tồn tại hay chưa
-  //Check số dien thoại đã tồn tại hay chưa
   checkPhone: async (phone) => {
-    const resp = await http.get(`/users/check-used-phone/${phone}`);
-    if (resp.status === 200) {
-      return resp.data; // Trả về dữ liệu nếu thành công
+    try {
+      const resp = await http.get(`/auth/check-used-phone/${phone}`);
+      if (
+        resp.status === 200 &&
+        resp.data.message === "Verification code generated."
+      ) {
+        return {
+          otpId: resp.data.otpId,
+          otp: resp.data.otp,
+          message: resp.data.message,
+        }; // Trả về dữ liệu nếu thành công
+      }
+      throw new Error("Phản hồi từ API không hợp lệ.");
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra số điện thoại:", error.message);
+      throw new Error(
+        "Lỗi khi kiểm tra số điện thoại tại api: " +
+          (error.response?.statusText || error.message)
+      );
     }
-    throw new Error(
-      "Lỗi khi kiểm tra số điện thoại tại api: " + resp.statusText
-    );
   },
   logout: async () => {
     try {
