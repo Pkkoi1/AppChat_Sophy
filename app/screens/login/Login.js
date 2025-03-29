@@ -63,6 +63,8 @@ function LoginScreen({ navigation }) {
       console.error("Lỗi đăng nhập:", error);
       console.log("Lỗi đăng nhập:", error.message);
       console.log("Lỗi đăng nhập:", error.response);
+      console.log("Lỗi đăng nhập:", error.request);
+      console.log("Lỗi đăng nhập:", error.config);
     }
   };
   return (

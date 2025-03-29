@@ -16,7 +16,7 @@ import SearchFooter from "../optional/name/searchMessage/SearchFooter";
 import Conversation from "./message/Conversation";
 import MessageScreenStyle from "./MessageScreenStyle";
 import Fuse from "fuse.js";
-import { api } from "@/api/api";
+import { api } from "../../../api/api";
 
 const MessageScreen = ({ route, navigation }) => {
   const { conversation_id, user_id, startSearch, receiverId } = route.params;
