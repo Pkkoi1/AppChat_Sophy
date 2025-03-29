@@ -96,7 +96,10 @@ const EnterInfo = ({ route, navigation }) => {
       Alert.alert("Thành công", "Đăng ký tài khoản thành công!", [
         {
           text: "OK",
-          // onPress: () => navigation.navigate("CameraScreen"),
+          // onPress: () =>
+          //   navigation.navigate("CameraScreen", {
+          //     navigation,
+          //   }),
           onPress: () => navigation.navigate("Login"),
         },
       ]);
