@@ -1,20 +1,24 @@
-import { initializeApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { initializeApp } from 'firebase/app';
 
-// Cấu hình Firebase
+// Optionally import the services that you want to use
+// import {...} from 'firebase/auth';
+// import {...} from 'firebase/database';
+// import {...} from 'firebase/firestore';
+// import {...} from 'firebase/functions';
+// import {...} from 'firebase/storage';
+
+// Initialize Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyBH2vfHaCilrVk6MGUHaOjY8oRjxYo7mLk",
-  authDomain: "sophy-ec7d5.firebaseapp.com",
-  projectId: "sophy-ec7d5",
-  storageBucket: "sophy-ec7d5.firebasestorage.app",
-  messagingSenderId: "325730902328",
-  appId: "1:325730902328:web:0597f070be694b6a7361cd",
-  measurementId: "G-4DKEKXZC5L",
+  apiKey: 'api-key',
+  authDomain: 'project-id.firebaseapp.com',
+  databaseURL: 'https://project-id.firebaseio.com',
+  projectId: 'project-id',
+  storageBucket: 'project-id.appspot.com',
+  messagingSenderId: 'sender-id',
+  appId: 'app-id',
+  measurementId: 'G-measurement-id',
 };
 
-// Khởi tạo Firebase
-export const app = initializeApp(firebaseConfig);
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
+const app = initializeApp(firebaseConfig);
+// For more information on how to access Firebase in your project,
+// see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase

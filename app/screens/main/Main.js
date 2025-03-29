@@ -85,8 +85,8 @@ const Main = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[submitButton().submit, MainStyle({ width }).signUp_Button]}
-          onPress={() => navigation.navigate("CameraScreen")}
-          // onPress={() => navigation.navigate("Register")}
+          // onPress={() => navigation.navigate("CameraScreen")}
+          onPress={() => navigation.navigate("Register")}
         >
           <Text style={MainStyle({ width }).buttonSignUpText}>
             Tạo tài khoản mới
@@ -96,69 +96,5 @@ const Main = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  imageContainer: {
-    width: width,
-    alignItems: "center",
-  },
-  image: {
-    width: width * 0.8,
-    height: 200,
-  },
-  textContainer: {
-    alignItems: "center",
-    marginTop: 10,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  description: {
-    textAlign: "center",
-    marginHorizontal: 20,
-  },
-  indicatorContainer: {
-    flexDirection: "row",
-    position: "absolute",
-    bottom: width * 0.15,
-    justifyContent: "center",
-    width: "100%",
-  },
-  indicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginHorizontal: 5,
-  },
-  activeIndicator: {
-    backgroundColor: "#1b6dfa",
-  },
-  inactiveIndicator: {
-    backgroundColor: "gray",
-  },
-  signIn_Button: {
-    backgroundColor: "#1068fe",
-  },
-  signUp_Button: {
-    backgroundColor: "#e9efef",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  buttonSignUpText: {
-    color: "#0d0d0d",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  buttonContainer: {
-    position: "absolute",
-    bottom: 50,
-    width: "100%",
-    alignItems: "center",
-  },
-});
 
 export default Main;

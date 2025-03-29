@@ -1,15 +1,29 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { CameraView, useCameraPermissions, Camera } from "expo-camera";
 import { shareAsync } from "expo-sharing";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as MediaLibrary from "expo-media-library";
+import { useMediaLibraryPermissions } from "expo-image-picker";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "expo-router";
 
 const CameraScreen = () => {
   const cameraRef = useRef(null);
   const [cameraPermission, setCameraPermission] = useCameraPermissions(null);
-  const [mediaLibraryPermission, setMediaLibraryPermission] = useState(null);
+  const [mediaLibraryPermission, setMediaLibraryPermission] =
+    useMediaLibraryPermissions(null);
   const [photo, setPhoto] = useState(null);
+  const [facing, setFacing] = useState("back");
 
+  const toggleCameraFacing = () => {
+    setFacing(facing === "back" ? "front" : "back");
+  };
+
+  const toggleExit = () => {
+    // navigation.goBack();
+    console.log("Exit camera");
+  };
   useEffect(() => {
     (async () => {
       const cameraStatus = await Camera.requestCameraPermissionsAsync();
@@ -54,6 +68,11 @@ const CameraScreen = () => {
     if (photo && mediaLibraryPermission) {
       await MediaLibrary.saveToLibraryAsync(photo.uri);
       alert("Ảnh đã được lưu vào thư viện!");
+    } else {
+      alert("Không có quyền truy cập vào thư viện ảnh!");
+      console.log("Media library permission not granted.");
+      console.log(mediaLibraryPermission);
+      // console.log(photo);
     }
   };
 
@@ -75,10 +94,27 @@ const CameraScreen = () => {
   }
 
   return (
-    <CameraView style={styles.camera} ref={cameraRef}>
+    <CameraView style={styles.camera} ref={cameraRef} facing={facing}>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={takePicture} style={styles.button}>
-          <Text style={styles.buttonText}>Chụp ảnh</Text>
+        <TouchableOpacity
+          onPress={takePicture}
+          style={styles.takePictureButton}
+        >
+          <View style={styles.circleButton}></View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={toggleCameraFacing}
+          style={styles.flipButtonContainer}
+        >
+          <MaterialIcons
+            style={styles.flipButton}
+            name="flip-camera-android"
+            size={30}
+            color="white"
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleExit} style={styles.exitButton}>
+          <Ionicons name="arrow-back" size={30} color="white" />
         </TouchableOpacity>
       </View>
     </CameraView>
@@ -103,11 +139,39 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     marginBottom: 20,
   },
-  button: {
-    backgroundColor: "#fff",
+  flipButtonContainer: {
+    backgroundColor: "none",
     padding: 10,
     borderRadius: 5,
     margin: 10,
+    width: 65,
+    height: 65,
+    position: "absolute",
+    right: 5,
+    top: 30,
+  },
+  takePictureButton: {
+    backgroundColor: "none",
+    padding: 20,
+    borderRadius: 50,
+    margin: 10,
+    width: 65,
+    height: 65,
+    borderColor: "#fff",
+    borderWidth: 3,
+    borderStyle: "solid",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  circleButton: {
+    borderRadius: 50,
+    backgroundColor: "#fff",
+    // marginRight: 10,
+    width: 48,
+    height: 48,
+  },
+  flipButton: {
+    backgroundColor: "none",
   },
   buttonText: {
     fontSize: 18,
@@ -117,6 +181,15 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "80%",
     resizeMode: "contain",
+  },
+
+  exitButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    backgroundColor: "none",
+    borderRadius: 5,
+    padding: 10,
   },
 });
 
