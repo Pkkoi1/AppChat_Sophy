@@ -20,7 +20,7 @@ const HeadView = ({ page }) => {
         return (
           <>
             <TouchableOpacity>
-              <AntDesign name="qrcode" size={24} color="white" />
+              <AntDesign name="qrcode" size={24} color="white" onPress={() => navigation.navigate("ScanQR")} />
             </TouchableOpacity>
             <TouchableOpacity>
               <AntDesign name="plus" size={24} color="white" />
@@ -31,7 +31,7 @@ const HeadView = ({ page }) => {
       case "Discover":
         return (
           <TouchableOpacity>
-            <AntDesign name="qrcode" size={24} color="white" />
+            <AntDesign name="qrcode" size={24} color="white"  onPress={() => navigation.navigate("ScanQR")}/>
           </TouchableOpacity>
         );
 

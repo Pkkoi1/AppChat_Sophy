@@ -29,6 +29,7 @@ import EnterName from "./screens/register/enterProfile/EnterName";
 import EnterInfo from "./screens/register/enterProfile/EnterInfo";
 import CameraScreen from "./features/camera/Camera";
 // import CameraScreen from "@/components/camera/CameraScreen";
+import ScanQR from "./screens/header/headerAction/ScanQR";
 
 const Stack = createNativeStackNavigator();
 
@@ -74,6 +75,7 @@ function RootLayout() {
           options={{ animation: "slide_from_right" }}
         />
         <Stack.Screen name="Verify" component={Verify} />
+        <Stack.Screen name="ScanQR" component={ScanQR} />
       </Stack.Navigator>
     </NavigationContainer>
   );
