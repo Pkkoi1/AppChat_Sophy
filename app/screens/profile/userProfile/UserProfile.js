@@ -14,7 +14,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import Color from "../../../../components/colors/Color";
+import Color from "../../../components/colors/Color";
 import postsData from "../../../../assets/objects/post.json";
 import usersData from "../../../../assets/objects/user.json";
 
@@ -44,7 +44,7 @@ const UserProfile = ({ route }) => {
       setUserExists(true); // id tồn tại trong usersData
     } else {
       setUser(null);
-      setUserExists(false); 
+      setUserExists(false);
     }
   }, [id]);
 
@@ -75,7 +75,10 @@ const UserProfile = ({ route }) => {
 
   const renderPostImages = ({ item }) => (
     <TouchableOpacity onPress={() => {}}>
-      <Image source={require("../../../../assets/images/avt.jpg")} style={styles.postImage} />
+      <Image
+        source={require("../../../../assets/images/avt.jpg")}
+        style={styles.postImage}
+      />
     </TouchableOpacity>
   );
 
@@ -121,18 +124,18 @@ const UserProfile = ({ route }) => {
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatar}>
-                <Text style={styles.avatarText}>TN</Text>
+              <Text style={styles.avatarText}>TN</Text>
             </View>
             <Text style={styles.name}>{user?.name || "Thành Nghiêm"}</Text>
           </View>
-          
+
           {!userExists ? (
             <View style={styles.buttonContainer}>
               <View style={styles.avatarContainer}>
-                
-                  <Text style={styles.editText}>
-                    Bạn chưa thể xem nhật ký của {user?.name || "Thành Nghiêm"} khi chưa là bạn bè
-                  </Text>
+                <Text style={styles.editText}>
+                  Bạn chưa thể xem nhật ký của {user?.name || "Thành Nghiêm"}{" "}
+                  khi chưa là bạn bè
+                </Text>
               </View>
 
               {requestSent === "accepted" ? (
@@ -141,13 +144,23 @@ const UserProfile = ({ route }) => {
                     Gửi lời mời kết bạn từ nhóm chung
                   </Text>
                   <View style={styles.requestInfo}>
-                    <Icon name="person" size={20} color="#888" style={styles.requestIcon} />
+                    <Icon
+                      name="person"
+                      size={20}
+                      color="#888"
+                      style={styles.requestIcon}
+                    />
                     <Text style={styles.requestLabel}>
                       Tên Zalo: {user?.name || "Thủy Lê"}
                     </Text>
                   </View>
                   <View style={styles.requestInfo}>
-                    <Icon name="group" size={20} color="#888" style={styles.requestIcon} />
+                    <Icon
+                      name="group"
+                      size={20}
+                      color="#888"
+                      style={styles.requestIcon}
+                    />
                     <Text style={styles.requestInfo}>
                       Nhóm chung: Flipgrid_Experimental Group.{" "}
                       <Text style={styles.link}>Xem chi tiết</Text>
@@ -174,7 +187,11 @@ const UserProfile = ({ route }) => {
                 <View style={styles.buttonAndStatusContainer}>
                   <View style={styles.horizontalButtons}>
                     <TouchableOpacity style={styles.messageButton}>
-                      <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+                      <Ionicons
+                        name="chatbubble-outline"
+                        size={20}
+                        color="#0066cc"
+                      />
                       <Text style={styles.messageButtonText}>Nhắn tin</Text>
                     </TouchableOpacity>
                     {requestSent === "pending" ? (
@@ -182,15 +199,25 @@ const UserProfile = ({ route }) => {
                         style={styles.removeFriendButton}
                         onPress={handleCancelRequest}
                       >
-                        <Ionicons name="person-remove-outline" size={20} color="#666" />
-                        <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
+                        <Ionicons
+                          name="person-remove-outline"
+                          size={20}
+                          color="#666"
+                        />
+                        <Text style={styles.removeFriendButtonText}>
+                          Hủy kết bạn
+                        </Text>
                       </TouchableOpacity>
                     ) : (
                       <TouchableOpacity
                         style={styles.addFriendButton}
                         onPress={handleAddFriend}
                       >
-                        <Ionicons name="person-add-outline" size={20} color="#666" />
+                        <Ionicons
+                          name="person-add-outline"
+                          size={20}
+                          color="#666"
+                        />
                         <Text style={styles.addFriendButtonText}>Kết bạn</Text>
                       </TouchableOpacity>
                     )}
@@ -202,30 +229,24 @@ const UserProfile = ({ route }) => {
                 </View>
               )}
             </View>
-          ) : ( // Tiểu sử
+          ) : (
+            // Tiểu sử
             <>
-              <Text style={styles.statusText}>
-                Công ty cổ phần thép TVP
-              </Text>
-              <Text style={styles.statusText}>
-                123456789
-              </Text>
-              <Text style={styles.statusText}>
-                user@gmail.com
-              </Text>
+              <Text style={styles.statusText}>Công ty cổ phần thép TVP</Text>
+              <Text style={styles.statusText}>123456789</Text>
+              <Text style={styles.statusText}>user@gmail.com</Text>
             </>
-
           )}
 
           {/* Add the new buttons here */}
           <View style={styles.optionsContainer}>
             <TouchableOpacity style={styles.optionButton}>
               <Icon name="photo" size={22} color="#0066cc" />
-              <Text style={styles.optionText}>Ảnh  123</Text>
+              <Text style={styles.optionText}>Ảnh 123</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionButton}>
               <Icon name="videocam" size={22} color="#128fb0" />
-              <Text style={styles.optionText}>Video  11</Text>
+              <Text style={styles.optionText}>Video 11</Text>
             </TouchableOpacity>
           </View>
 
@@ -246,18 +267,29 @@ const UserProfile = ({ route }) => {
                   />
 
                   <View style={styles.musicContainer}>
-                    <Ionicons name="musical-notes-outline" size={20} color="#7865C9" />
+                    <Ionicons
+                      name="musical-notes-outline"
+                      size={20}
+                      color="#7865C9"
+                    />
                     <Text style={styles.musicText}>Bài hát: {post.music}</Text>
                   </View>
 
                   <View style={styles.postFooter}>
-                  <View style={styles.postFooterLeft}>
+                    <View style={styles.postFooterLeft}>
                       <View style={styles.iconAndText}>
-                        <Ionicons style={styles.icon}  name="heart" size={20} color="#f00" />
+                        <Ionicons
+                          style={styles.icon}
+                          name="heart"
+                          size={20}
+                          color="#f00"
+                        />
                         <Text style={styles.postLikes}>{post.likes} bạn</Text>
                       </View>
                       <View style={styles.iconAndText}>
-                        <Text style={styles.postComments}>{post.comments} bình luận</Text>
+                        <Text style={styles.postComments}>
+                          {post.comments} bình luận
+                        </Text>
                       </View>
                     </View>
                   </View>
@@ -269,7 +301,11 @@ const UserProfile = ({ route }) => {
                         <Text style={styles.footerText}>Thích</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={styles.footerIcon}>
-                        <Ionicons name="chatbox-ellipses-outline" size={20} color="#888" />
+                        <Ionicons
+                          name="chatbox-ellipses-outline"
+                          size={20}
+                          color="#888"
+                        />
                       </TouchableOpacity>
                     </View>
                     <TouchableOpacity>
@@ -581,7 +617,7 @@ const styles = StyleSheet.create({
   postFooterLeft: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%", 
+    width: "100%",
     justifyContent: "space-between",
   },
   postFooterRight: {
@@ -592,8 +628,8 @@ const styles = StyleSheet.create({
     marginTop: 10, // Add some space between left and right sections
   },
   footerIconsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   postLikes: {
     fontSize: 14,
@@ -632,8 +668,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   optionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
     paddingTop: 10,
     paddingBottom: 20,
     paddingHorizontal: 10,
@@ -653,8 +689,8 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 12,
-    color: '#000',
-    textAlign: 'center', // Added textAlign
+    color: "#000",
+    textAlign: "center", // Added textAlign
   },
 });
 

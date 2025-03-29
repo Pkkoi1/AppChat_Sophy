@@ -1,4 +1,4 @@
-import { api } from "../../api/api";
+import { api } from "@/app/api/api";
 
 // Hàm tiện ích để lấy thông tin người dùng
 export const fetchUserInfo = async (id) => {

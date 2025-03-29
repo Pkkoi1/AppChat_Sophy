@@ -1,4 +1,4 @@
-import Color from "@/components/colors/Color";
+import Color from "@/app/components/colors/Color";
 import { StyleSheet } from "react-native";
 import { overlay } from "react-native-paper";
 

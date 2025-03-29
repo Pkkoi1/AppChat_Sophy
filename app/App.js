@@ -27,6 +27,7 @@ import Verify from "./screens/register/Verify";
 import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
 import EnterName from "./screens/register/enterProfile/EnterName";
 import EnterInfo from "./screens/register/enterProfile/EnterInfo";
+import CameraScreen from "./features/camera/Camera";
 // import CameraScreen from "@/components/camera/CameraScreen";
 
 const Stack = createNativeStackNavigator();
@@ -51,8 +52,8 @@ function RootLayout() {
           name="SocialNetworkTerms"
           component={SocialNetworkTerms}
         />
-        {/* <Stack.Screen name="CameraScreen" component={CameraScreen} /> */}
-        <Stack.Screen name="TermsOfService" component={TermsOfService} />
+        <Stack.Screen name="CameraScreen" component={CameraScreen} />
+        {/* <Stack.Screen name="TermsOfService" component={TermsOfService} /> */}
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="Profile" component={Profile} />

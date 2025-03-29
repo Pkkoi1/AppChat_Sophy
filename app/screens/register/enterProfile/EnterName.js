@@ -2,7 +2,7 @@ import { useNavigation } from "expo-router";
 import React, { useLayoutEffect, useState } from "react";
 import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { TextInput } from "react-native-paper";
-import Color from "../../../../components/colors/Color";
+import Color from "../../../components/colors/Color";
 
 const EnterName = ({ route, navigation }) => {
   const { phoneNumber } = route.params || { phoneNumber: "0123456789" }; // Dữ liệu giả nếu không có

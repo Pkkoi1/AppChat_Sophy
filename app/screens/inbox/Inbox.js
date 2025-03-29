@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-import { fetchUserInfo } from "@/components/getUserInfo/UserInfo";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const Inbox = ({
   name,

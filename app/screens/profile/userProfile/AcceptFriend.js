@@ -11,8 +11,8 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import ToggleSwitch from "../../../../components/toggle/ToggleSwitch"; // Đảm bảo đường dẫn đúng
-import Color from "../../../../components/colors/Color";
+import ToggleSwitch from "../../../components/toggle/ToggleSwitch"; // Đảm bảo đường dẫn đúng
+import Color from "../../../components/colors/Color";
 
 const FriendOptions = ({ route }) => {
   const navigation = useNavigation();
@@ -33,7 +33,7 @@ const FriendOptions = ({ route }) => {
   };
 
   const handleDone = () => {
-    navigation.goBack(); 
+    navigation.goBack();
   };
 
   const handleAcceptFriendship = () => {
@@ -53,7 +53,7 @@ const FriendOptions = ({ route }) => {
             <Icon name="arrow-back-ios" size={24} color="#fff" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Tùy chọn bạn bè</Text>
-          <View style={{ width: 24 }} /> 
+          <View style={{ width: 24 }} />
         </View>
 
         <View style={styles.overlay}>
@@ -79,14 +79,13 @@ const FriendOptions = ({ route }) => {
           <View style={styles.toggleContainer}>
             <Text style={styles.toggleText}>Chặn xem nhật ký của tôi</Text>
             <TouchableOpacity onPress={toggleSwitch}>
-            <ToggleSwitch isOn={isToggled} onToggle={toggleSwitch} />
+              <ToggleSwitch isOn={isToggled} onToggle={toggleSwitch} />
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={styles.doneButton} onPress={handleDone}>
             <Text style={styles.doneButtonText}>XONG</Text>
           </TouchableOpacity>
-          
         </View>
       </View>
     </ScrollView>
@@ -146,7 +145,6 @@ const styles = StyleSheet.create({
     color: "#000",
     fontWeight: "bold",
     marginRight: 10,
-    
   },
   editIcon: {
     marginTop: 2,
