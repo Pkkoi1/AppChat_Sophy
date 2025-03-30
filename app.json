@@ -13,8 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/4.png",
+        "backgroundColor": "none"
       },
       "permissions": [
         "android.permission.CAMERA",
