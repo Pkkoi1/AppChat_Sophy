@@ -20,6 +20,8 @@ const { width, height } = Dimensions.get("window");
 const Register = () => {
   const navigation = useNavigation();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [otpass, setOtpass] = useState("");
+  const [otpId, setOtpId] = useState("");
   const [isSelected1, setSelection1] = useState(false);
   const [isSelected2, setSelection2] = useState(false);
   const [isPhoneNumberFilled, setIsPhoneNumberFilled] = useState(false); // New state
@@ -60,6 +62,8 @@ const Register = () => {
       if (response && response.message === "Verification code generated.") {
         console.log("OTP:", response.otp);
         console.log("OTP ID:", response.otpId);
+        setOtpass(response.otp); // Lưu OTP vào state
+        setOtpId(response.otpId); // Lưu OTP ID vào state
 
         // Hiển thị màn hình xác minh số điện thoại
         setVisible(true); // Hiển thị VerifyPhoneNumber
@@ -154,6 +158,8 @@ const Register = () => {
       <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
         <VerifyPhoneNumber
           phoneNumber={phoneNumber} // Truyền số điện thoại
+          otpass={otpass} // Truyền OTP
+          otpId={otpId} // Truyền OTP ID
           onCancel={() => setVisible(false)} // Hàm tắt Overlay
         />
       </Overlay>
