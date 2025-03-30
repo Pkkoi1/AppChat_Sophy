@@ -95,6 +95,10 @@ export const api = {
       return response;
     } catch (error) {
       console.error("Lỗi đăng nhập:", error.message);
+      console.error(
+        "Chi tiết lỗi đăng nhập:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },

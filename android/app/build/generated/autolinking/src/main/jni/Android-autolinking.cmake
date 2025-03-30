@@ -8,7 +8,6 @@ set(REACTNATIVE_MERGED_SO true)
 
 add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/" rnasyncstorage_autolinked_build)
 add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/@react-native-clipboard/clipboard/android/build/generated/source/codegen/jni/" rnclipboard_autolinked_build)
-
 add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/" RNDateTimePickerCGen_autolinked_build)
 
 
@@ -29,7 +28,6 @@ add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/react-na
 set(AUTOLINKED_LIBRARIES
   react_codegen_rnasyncstorage
   react_codegen_rnclipboard
-  
   react_codegen_RNDateTimePickerCGen
   
   
