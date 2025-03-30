@@ -43,7 +43,6 @@ MERGED from [:expo-keep-awake] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_mod
 MERGED from [:expo-linear-gradient] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-linear-gradient\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-linking] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-linking\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-media-library] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-14:12
-MERGED from [:expo-permissions] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-permissions\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-sharing] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-29:12
 MERGED from [:expo-splash-screen] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-splash-screen\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-system-ui] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-system-ui\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
@@ -594,8 +593,6 @@ MERGED from [:expo-linking] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_module
 MERGED from [:expo-linking] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-linking\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-media-library] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-media-library] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
-MERGED from [:expo-permissions] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-permissions\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
-MERGED from [:expo-permissions] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-permissions\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-sharing] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-sharing] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-splash-screen] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-splash-screen\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
