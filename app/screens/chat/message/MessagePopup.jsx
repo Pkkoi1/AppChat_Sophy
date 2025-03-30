@@ -8,7 +8,7 @@ import {
   FlatList,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import * as Clipboard from "@react-native-community/clipboard";
+import * as Clipboard from "@react-native-clipboard/clipboard";
 import MessagePopupStyle from "./MessagePopupStyle";
 
 const popupOptions = [
