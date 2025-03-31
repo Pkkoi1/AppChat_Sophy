@@ -2,7 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 
-const API = `http://192.168.1.14:3000/api` || DATABASE_API;
+const API = `http://${MY_IP}:3000/api` || DATABASE_API;
 const http = axios.create({
   baseURL: API,
   headers: {
