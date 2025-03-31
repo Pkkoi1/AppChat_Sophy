@@ -44,6 +44,8 @@ import com.swmansion.rnscreens.RNScreensPackage;
 import com.tkporter.sendsms.SendSMSPackage;
 // react-native-vector-icons
 import com.oblador.vectoricons.VectorIconsPackage;
+// react-native-vision-camera
+import com.mrousavy.camera.react.CameraPackage;
 // react-native-webview
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 
@@ -108,6 +110,7 @@ public class PackageList {
       new RNScreensPackage(),
       new SendSMSPackage(),
       new VectorIconsPackage(),
+      new CameraPackage(),
       new RNCWebViewPackage()
     ));
   }
