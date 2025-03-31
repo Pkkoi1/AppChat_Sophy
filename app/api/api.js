@@ -80,16 +80,27 @@ export const api = {
       const response = await http.post("/auth/login", params);
       console.log("Phản hồi từ API login:", response.data);
 
-      if (response && response.data) {
-        const { accessToken, refreshToken } = response.data.token; // Truy cập từ response.data.token
+      // if (response && response.data) {
+      //   const { accessToken, refreshToken } = response.data.token; // Truy cập từ response.data.token
 
-        if (!accessToken || !refreshToken) {
-          throw new Error("API không trả về accessToken hoặc refreshToken");
+      //   if (!accessToken || !refreshToken) {
+      //     throw new Error("API không trả về accessToken hoặc refreshToken");
+      //   }
+
+      //   // Lưu accessToken và refreshToken vào AsyncStorage
+      //   await AsyncStorage.setItem("authToken", accessToken);
+      //   await AsyncStorage.setItem("refreshToken", refreshToken);
+      // }
+      if (response && response.data) {
+        const token = response.data.token; // Truy cập trực tiếp token từ response.data
+
+        if (!token) {
+          throw new Error("API không trả về token");
         }
 
-        // Lưu accessToken và refreshToken vào AsyncStorage
-        await AsyncStorage.setItem("authToken", accessToken);
-        await AsyncStorage.setItem("refreshToken", refreshToken);
+        // Lưu token vào AsyncStorage
+        await AsyncStorage.setItem("authToken", token);
+        await AsyncStorage.setItem("refreshToken", token);
       }
 
       return response;
