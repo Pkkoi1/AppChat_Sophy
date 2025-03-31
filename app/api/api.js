@@ -161,6 +161,10 @@ export const api = {
       throw new Error("Phản hồi từ API không hợp lệ.");
     } catch (error) {
       console.error("Lỗi khi kiểm tra số điện thoại:", error.message);
+      console.error(
+        "Chi tiết lỗi khi kiểm tra số điện thoại:",
+        error.response?.data || error.message
+      );
       throw new Error(
         "Lỗi khi kiểm tra số điện thoại tại api: " +
           (error.response?.statusText || error.message)
