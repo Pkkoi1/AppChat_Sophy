@@ -60,7 +60,7 @@ export default StyleSheet.create({
       borderBottomColor: "#007AFF",
       borderBottomWidth: 1,
       fontSize: 16,
-      marginHorizontal: 20,
+      paddingHorizontal: 20,
     },
     nextButton: {
       position: 'absolute',
@@ -89,4 +89,95 @@ export default StyleSheet.create({
       left: '50%', // Căn giữa theo chiều ngang
       transform: [{ translateX: -25 }, { translateY: -25 }]
     },
+    nextButtonEnabled: {
+      backgroundColor: "#007AFF",
+    },
+    errorText: { // Added error text style
+      color: 'red',
+      marginLeft: 20,
+      marginBottom: 10,
+    },
+    phoneContainer: {
+      marginHorizontal: 0,
+      marginBottom: 10,
+      borderBottomColor: "#007AFF",
+      borderBottomWidth: 1,
+      width: '100%',
+    },
+    textContainer: {
+      backgroundColor: 'white',
+    },
+    codeTextStyle: {
+      fontSize: 16,
+    },
+    textInputStyle: {
+      fontSize: 16,
+    },
+    countryPickerButtonStyle: {
+      
+    },
+    phoneInputContainer: {
+      marginHorizontal: 0,
+      marginBottom: 10,
+    },
+    centeredView: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dimmed background
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: "white",
+      borderRadius: 20,
+      padding: 35,
+      alignItems: "center",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      width: '80%', // Adjust width as needed
+    },
+    button: {
+      borderRadius: 20,
+      padding: 10,
+      elevation: 2,
+      marginHorizontal: 5,
+    },
+    buttonConfirm: {
+      backgroundColor: "#2196F3",
+    },
+    buttonCancel: {
+      backgroundColor: "#A9A9A9",
+    },
+    textStyle: {
+      color: "white",
+      fontWeight: "bold",
+      textAlign: "center"
+    },
+    modalHeader: {
+      marginBottom: 15,
+      textAlign: "center",
+      fontSize: 18,
+      fontWeight: 'bold',
+    },
+    modalText: {
+      marginBottom: 15,
+      textAlign: "center"
+    },
+    modalButtonsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end', // Align buttons to the right
+    }
   });

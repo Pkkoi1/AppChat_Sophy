@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // Import useEffect
 import {
   View,
   Text,
@@ -18,12 +18,24 @@ import {
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import AvatarUser from "@/app/components/profile/AvatarUser";
+// import { userInfo } from "os"; // Xóa import này
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
+  const [userInfo, setUserInfo] = useState({});
+
+  useEffect(() => {
+    // Lấy userInfo từ route.params
+    if (route.params && route.params.userInfo) {
+      setUserInfo(route.params.userInfo);
+    }
+  }, [route.params]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -33,7 +45,6 @@ const ProfileScreen = () => {
     }, 2000); // Giả lập thời gian làm mới 2 giây
   };
 
-  // Tính toán chiều cao ảnh bìa dựa trên scrollY
   const coverImageHeight = scrollY.interpolate({
     inputRange: [0, 100], // Phạm vi vuốt từ 0 đến 100
     outputRange: [200, 300], // Chiều cao từ 200 đến 300 khi vuốt
@@ -53,13 +64,11 @@ const ProfileScreen = () => {
       scrollEventThrottle={16} // Cập nhật mượt mà hơn
     >
       <View style={styles.container}>
-        {/* Container for Cover Image and Header */}
         <View style={styles.coverContainer}>
           <Animated.Image
             source={require("../../../assets/images/avt.jpg")}
             style={[styles.coverImage, { height: coverImageHeight }]}
           />
-          {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back-ios" size={24} color="#fff" />
@@ -81,20 +90,14 @@ const ProfileScreen = () => {
           </View>
         </View>
 
-        {/* Overlay and Scrollable Content */}
         <View style={styles.overlay}>
-          {/* Avatar and Name Section */}
           <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>TN</Text>
-            </View>
-            <Text style={styles.name}>Thành Nghiêm</Text>
+            <AvatarUser fullName={userInfo.fullname} />
             <TouchableOpacity>
               <Text style={styles.editText}>Cập nhật giới thiệu bạn thân</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Options - Scrollable */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

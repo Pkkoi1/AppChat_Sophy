@@ -91,8 +91,8 @@ export default StyleSheet.create({
     justifyContent: "center",
   },
   nextButton: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     borderRadius: 30,
     backgroundColor: "#d9eaff",
     justifyContent: "center",
