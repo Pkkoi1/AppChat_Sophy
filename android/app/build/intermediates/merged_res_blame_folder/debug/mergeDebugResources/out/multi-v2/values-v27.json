@@ -4,7 +4,7 @@
             "outputFile": "com.anonymous.ChatApp_Sophy.app-mergeDebugResources-83:/values-v27/values-v27.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\DANG KHOI\\.gradle\\caches\\8.10.2\\transforms\\71cd547f93f438ffaf1e84f2decc95c7\\transformed\\core-splashscreen-1.2.0-alpha02\\res\\values-v27\\values-v27.xml",
+                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\71cd547f93f438ffaf1e84f2decc95c7\\transformed\\core-splashscreen-1.2.0-alpha02\\res\\values-v27\\values-v27.xml",
                     "from": {
                         "startLines": "2,3,4,7",
                         "startColumns": "4,4,4,4",
