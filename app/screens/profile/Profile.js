@@ -12,7 +12,6 @@ import {
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-
 const UserProfileScreen = ({ userInfo }) => {
   const [refreshing, setRefreshing] = useState(false);
   const scrollY = useState(new Animated.Value(0))[0];
