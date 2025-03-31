@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -7,26 +7,71 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import auth from "@react-native-firebase/auth";
 
 const VerifyOTPCode = ({ route, navigation }) => {
-  const { phoneNumber } = route.params || { phoneNumber: "0123456789" }; // Dữ liệu giả nếu không có
+  const { phoneNumber, otpass } = route.params; // Nhận verificationId từ route.params
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: true,
+      title: "",
+      headerStyle: {
+        backgroundColor: "#fff",
+        shadowColor: "#fff",
+        elevation: 0,
+      },
+    });
+  }, [navigation]);
+
   const handleInputChange = (value, index) => {
     const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
 
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
+    if (value === "") {
+      // Khi nhấn Backspace, xóa ô hiện tại và di chuyển về ô trước
+      newOtp[index] = "";
+      setOtp(newOtp);
+      if (index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
+    } else if (/^\d$/.test(value)) {
+      // Chỉ chấp nhận số (0-9)
+      newOtp[index] = value;
+      setOtp(newOtp);
+      if (index < otp.length - 1) {
+        inputRefs.current[index + 1]?.focus();
+      }
     }
   };
 
-  const handleVerify = () => {
-    const enteredOtp = otp.join("");
+  const handleKeyPress = (event, index) => {
+    if (event.nativeEvent.key === "Backspace" && otp[index] === "") {
+      if (index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
+    }
+  };
+
+  const handleVerify = async () => {
+    const enteredOtp = otp.join(""); // Ghép các số OTP thành chuỗi
     if (enteredOtp.length === 6) {
-      Alert.alert("Xác minh thành công", `Mã OTP: ${enteredOtp}`);
+      try {
+        // Xác thực OTP bằng verificationId và mã OTP
+        // const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
+        // await auth().signInWithCredential(credential);
+
+        if (enteredOtp == otpass) {
+          Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
+          navigation.navigate("EnterName", {
+            phoneNumber,
+          });
+        }
+      } catch (error) {
+        console.error("Error verifying OTP:", error.message);
+        Alert.alert("Lỗi", "Mã OTP không hợp lệ. Vui lòng thử lại.");
+      }
     } else {
       Alert.alert("Lỗi", "Vui lòng nhập đủ 6 số OTP.");
     }
@@ -46,14 +91,21 @@ const VerifyOTPCode = ({ route, navigation }) => {
             onChangeText={(value) => handleInputChange(value, index)}
             keyboardType="numeric"
             maxLength={1}
+            onKeyPress={(event) => handleKeyPress(event, index)}
             ref={(el) => (inputRefs.current[index] = el)}
           />
         ))}
       </View>
 
       <TouchableOpacity style={styles.verifyButton} onPress={handleVerify}>
-        <Text style={styles.verifyButtonText}>Xác minh</Text>
+        <Text style={styles.verifyButtonText}>Tiếp tục</Text>
       </TouchableOpacity>
+      {/* <TouchableOpacity
+        style={[styles.resendButton, { marginTop: 10 }]}
+        onPress={resendOTP}
+      >
+        <Text style={styles.resendButtonText}>Gửi lại mã OTP</Text>
+      </TouchableOpacity> */}
     </View>
   );
 };
@@ -64,7 +116,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
-    padding: 20,
   },
   header: {
     fontSize: 24,
@@ -80,8 +131,9 @@ const styles = StyleSheet.create({
   otpContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "80%",
+    width: "100%",
     marginBottom: 20,
+    paddingHorizontal: 20,
   },
   otpInput: {
     width: 50,
@@ -92,6 +144,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 18,
     color: "#000",
+    marginRight: 5,
   },
   verifyButton: {
     backgroundColor: "#007BFF",
@@ -102,6 +155,17 @@ const styles = StyleSheet.create({
   verifyButtonText: {
     color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  resendButton: {
+    backgroundColor: "#f0f0f0",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  resendButtonText: {
+    color: "#007BFF",
+    fontSize: 14,
     fontWeight: "bold",
   },
 });

@@ -12,7 +12,9 @@ import {
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
-import { api } from "@/api/api";
+
+import { Button } from "@rneui/themed";
+import { api } from "@/app/api/api";
 
 // Đọc dữ liệu từ file user.json
 const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
@@ -60,10 +62,11 @@ function LoginScreen({ navigation }) {
       }
       console.error("Lỗi đăng nhập:", error);
       console.log("Lỗi đăng nhập:", error.message);
-      console.log("Lỗi đăng nhập:", error.response);
-      console.log("Lỗi đăng nhập:", error.request);
-      console.log("DATABASE_API:", DATABASE_API);
-      console.log("MY_IP:", MY_IP);
+      console.log("Chi tiết lỗi:", error.response?.data || error.message);
+      // console.log(
+      //   "Chi tiết lỗi khi đăng nhập:",
+      //   error.response?.data || error.message
+      // ); lại
     }
   };
   return (

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
-import { fetchUserInfo } from "@/components/getUserInfo/UserInfo";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const Inbox = ({
   name,
@@ -72,10 +72,13 @@ const Inbox = ({
       style={styles.container}
     >
       <View style={styles.avatarContainer}>
-        {typeof avatar === "string" ? (
-          <Image source={{ uri: avatar }} style={styles.avatar} />
+        {typeof avatar === "string" || avatar?.uri ? (
+          <Image
+            source={typeof avatar === "string" ? { uri: avatar } : avatar}
+            style={styles.avatar}
+          />
         ) : (
-          avatar
+          avatar // Nếu avatar là một React component, render trực tiếp
         )}
       </View>
       <View style={{ flex: 1 }}>

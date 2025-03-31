@@ -23,7 +23,15 @@ import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo
 import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm bảo đường dẫn đúng
 import Options from "./screens/optional/OptionalScreen";
 import { NavigationContainer } from "@react-navigation/native";
+import Verify from "./screens/register/Verify";
 import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
+import EnterName from "./screens/register/enterProfile/EnterName";
+import EnterInfo from "./screens/register/enterProfile/EnterInfo";
+import CameraScreen from "./features/camera/Camera";
+// import CameraScreen from "@/components/camera/CameraScreen";
+import ScanQR from "./screens/header/headerAction/ScanQR";
+import VerificationCode from "./screens/login/VerificationCode";
+import CreateNewPassword from "./screens/login/CreateNewPassword";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,13 +47,16 @@ function RootLayout() {
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
+        <Stack.Screen name="EnterName" component={EnterName} />
+        <Stack.Screen name="EnterInfo" component={EnterInfo} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen
           name="SocialNetworkTerms"
           component={SocialNetworkTerms}
         />
-        <Stack.Screen name="TermsOfService" component={TermsOfService} />
+        <Stack.Screen name="CameraScreen" component={CameraScreen} />
+        {/* <Stack.Screen name="TermsOfService" component={TermsOfService} /> */}
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Chat" component={Chat} />
         <Stack.Screen name="Profile" component={Profile} />
@@ -65,6 +76,12 @@ function RootLayout() {
           component={Options}
           options={{ animation: "slide_from_right" }}
         />
+        <Stack.Screen name="Verify" component={Verify} />
+        <Stack.Screen name="ScanQR" component={ScanQR} />
+        <Stack.Screen name="VerificationCode" component={VerificationCode} />
+        <Stack.Screen name="CreateNewPassword" component={CreateNewPassword} />
+
+
       </Stack.Navigator>
     </NavigationContainer>
   );

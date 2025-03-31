@@ -11,7 +11,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import ToggleSwitch from "../../../../components/toggle/ToggleSwitch"; // Đảm bảo đường dẫn đúng
+import ToggleSwitch from "../../../components/toggle/ToggleSwitch"; // Đảm bảo đường dẫn đúng
 
 const AddFriend = ({ route }) => {
   const navigation = useNavigation();
@@ -19,8 +19,8 @@ const AddFriend = ({ route }) => {
   const [isToggled, setIsToggled] = useState(false);
 
   const { user } = route.params || {};
-  const senderName = "Thành Nghiêm"; 
-  const wordLimit = "94/150"; 
+  const senderName = "Thành Nghiêm";
+  const wordLimit = "94/150";
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -75,7 +75,8 @@ const AddFriend = ({ route }) => {
 
           <View style={styles.requestInfo}>
             <Text style={styles.requestText}>
-              Xin chào, mình là {senderName}. Thấy bạn trong nhóm chụp hình nên mình muốn kết bạn!
+              Xin chào, mình là {senderName}. Thấy bạn trong nhóm chụp hình nên
+              mình muốn kết bạn!
             </Text>
             <View style={styles.requestDetails}>
               <Text style={styles.wordLimit}>{wordLimit}</Text>
@@ -89,7 +90,10 @@ const AddFriend = ({ route }) => {
             <Text style={styles.toggleText}>Chặn xem nhật ký của tôi</Text>
             <ToggleSwitch isOn={isToggled} onToggle={toggleSwitch} />
           </View>
-          <TouchableOpacity style={styles.sendRequestButton} onPress={handleSendRequest}>
+          <TouchableOpacity
+            style={styles.sendRequestButton}
+            onPress={handleSendRequest}
+          >
             <Text style={styles.sendRequestText}>Gửi yêu cầu</Text>
           </TouchableOpacity>
         </View>
@@ -111,8 +115,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#0084FF",
     padding: 15,
-    paddingTop: 20,  
-    elevation: 4,  
+    paddingTop: 20,
+    elevation: 4,
   },
   headerTitle: {
     fontSize: 18,
@@ -129,7 +133,7 @@ const styles = StyleSheet.create({
   avatarContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-start", 
+    justifyContent: "flex-start",
     marginBottom: 20,
     paddingHorizontal: 15,
   },

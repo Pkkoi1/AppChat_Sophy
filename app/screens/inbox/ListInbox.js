@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { FlatList, RefreshControl, View, Image, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Inbox from "./Inbox";
-import { api } from "@/api/api";
+import { api } from "@/app/api/api";
 
 const ListInbox = ({ userId, id }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [conversations, setConversations] = useState([]);
+  const [users, setUsers] = useState([]); // Thêm state để lưu danh sách người dùng
 
   const navigation = useNavigation();
 
@@ -14,14 +15,37 @@ const ListInbox = ({ userId, id }) => {
     try {
       const response = await api.conversations();
       if (response && response.data) {
-        setConversations(response.data || []); // Đảm bảo conversations luôn là mảng
+        const allConversations = response.data || [];
+        setConversations(allConversations);
+
+        // Lọc danh sách receiverId từ các cuộc trò chuyện
+        const receiverIds = allConversations
+          .filter((conversation) => conversation.receiverId) // Chỉ lấy các cuộc trò chuyện có receiverId
+          .map((conversation) => conversation.receiverId);
+
+        // Lấy thông tin người dùng theo receiverId
+        const fetchedUsers = await getUsersByReceiverId(receiverIds);
+        setUsers(fetchedUsers); // Lưu danh sách người dùng vào state
       } else {
         console.error("No conversations found in the response.");
-        setConversations([]); // Đặt giá trị mặc định nếu không có dữ liệu
+        setConversations([]);
       }
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      setConversations([]); // Đặt giá trị mặc định nếu có lỗi
+      setConversations([]);
+    }
+  };
+
+  const getUsersByReceiverId = async (receiverIds) => {
+    try {
+      const userPromises = receiverIds.map((receiverId) =>
+        api.getUserById(receiverId)
+      );
+      const users = await Promise.all(userPromises);
+      return users.map((response) => response.data); // Trả về danh sách thông tin người dùng
+    } catch (error) {
+      console.error("Error fetching users by receiverId:", error);
+      return [];
     }
   };
 
@@ -130,23 +154,32 @@ const ListInbox = ({ userId, id }) => {
             content: "No messages yet",
             createdAt: null,
           };
-          const otherMembers = item.groupMembers.filter(
-            (memberId) => memberId !== userId
-          );
+
+          // Lấy thông tin người dùng từ danh sách users
+          const receiverInfo = item.receiverId
+            ? users.find((user) => user.userId === item.receiverId)
+            : null;
 
           let avatar;
           if (item.isGroup) {
             avatar = item.groupAvatarUrl
               ? { uri: item.groupAvatarUrl }
-              : renderGroupAvatar(otherMembers); // Render avatar nhóm
+              : renderGroupAvatar(item.groupMembers); // Render avatar nhóm
           } else {
-            avatar =
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s"; // Avatar mặc định
+            avatar = {
+              uri:
+                receiverInfo?.urlavatar ||
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s",
+            }; // Chuẩn hóa thành đối tượng { uri: ... }
           }
 
           return (
             <Inbox
-              name={item.isGroup ? item.groupName : "Private Chat"}
+              name={
+                item.isGroup
+                  ? item.groupName
+                  : receiverInfo?.fullname || "Private Chat"
+              }
               avatar={avatar}
               message={lastMessage.content}
               date={lastMessage.createdAt}

@@ -20,7 +20,7 @@ const HeadView = ({ page }) => {
         return (
           <>
             <TouchableOpacity>
-              <AntDesign name="qrcode" size={24} color="white" />
+              <AntDesign name="qrcode" size={24} color="white" onPress={() => navigation.navigate("ScanQR")} />
             </TouchableOpacity>
             <TouchableOpacity>
               <AntDesign name="plus" size={24} color="white" />
@@ -31,7 +31,7 @@ const HeadView = ({ page }) => {
       case "Discover":
         return (
           <TouchableOpacity>
-            <AntDesign name="qrcode" size={24} color="white" />
+            <AntDesign name="qrcode" size={24} color="white"  onPress={() => navigation.navigate("ScanQR")}/>
           </TouchableOpacity>
         );
 
@@ -93,6 +93,20 @@ const HeadView = ({ page }) => {
           <Text style={HeaderStyle().setting}>Cài đặt</Text>
         </>
       ) : page === "ReceivedFriendRequests" ? (
+        <>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={HeaderStyle().setting}>Lời mời kết bạn</Text>
+        </>
+      ) : page === "VerificationCode" ? (
+        <>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={HeaderStyle().setting}>G</Text>
+        </>
+      ): page === "CreateNewPassword" ? (
         <>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />

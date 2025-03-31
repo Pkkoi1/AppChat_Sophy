@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,25 +7,74 @@ import {
   ScrollView,
   RefreshControl,
   Animated,
+  Image,
 } from "react-native";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native"; // Thêm import này
+import { useNavigation } from "@react-navigation/native";
 
-const data = [
-  { title: "Khôi Nghiêm", description: "Xem trang cá nhân của bạn", icon: "user", group: 0 },
-  { title: "zCloud", description: "Không gian lưu trữ dữ liệu trên đám mây", icon: "cloud", group: 1 },
-  { title: "zStyle - Nổi bật trên Zalo", description: "Hình nền và nhạc cho cuộc gọi Zalo", icon: "playcircleo", group: 2 },
-  { title: "Cloud của tôi", description: "Lưu trữ các tin nhắn quan trọng", icon: "cloud", group: 3 },
-  { title: "Dữ liệu trên máy", description: "Quản lý dữ liệu Zalo của bạn", icon: "save", group: 4 },
-  { title: "Ví QR", description: "Lưu trữ và xuất trình các mã QR quan trọng", icon: "qrcode", group: 5 },
-  { title: "Tài khoản và bảo mật", description: "Quản lý tài khoản và bảo mật", icon: "lock", group: 6 },
-  { title: "Quyền riêng tư", description: "Cài đặt quyền riêng tư của bạn", icon: "security", group: 7 },
-];
-
-const UserProfileScreen = () => {
+const UserProfileScreen = ({ userInfo }) => {
   const [refreshing, setRefreshing] = useState(false);
-  const scrollY = useState(new Animated.Value(0))[0]; // Đảm bảo scrollY là Animated.Value
-  const navigation = useNavigation(); // Khởi tạo navigation
+  const scrollY = useState(new Animated.Value(0))[0];
+  const navigation = useNavigation();
+
+  const data = [
+    {
+      title: `${userInfo.fullname || "Unknow"}`,
+      description: "Xem trang cá nhân của bạn",
+      icon: "none",
+      urlavatar: `${userInfo.urlavatar || "https://via.placeholder.com/150"}`,
+      group: 0,
+      action: "viewProfile",
+    },
+    {
+      title: "zCloud",
+      description: "Không gian lưu trữ dữ liệu trên đám mây",
+      icon: "cloud",
+      group: 1,
+      action: "viewProfile",
+    },
+    {
+      title: "zStyle - Nổi bật trên Zalo",
+      description: "Hình nền và nhạc cho cuộc gọi Zalo",
+      icon: "playcircleo",
+      group: 2,
+    },
+    {
+      title: "Cloud của tôi",
+      description: "Lưu trữ các tin nhắn quan trọng",
+      icon: "cloud",
+      group: 3,
+      action: "viewProfile",
+    },
+    {
+      title: "Dữ liệu trên máy",
+      description: "Quản lý dữ liệu Zalo của bạn",
+      icon: "save",
+      group: 4,
+      action: "viewProfile",
+    },
+    {
+      title: "Ví QR",
+      description: "Lưu trữ và xuất trình các mã QR quan trọng",
+      icon: "qrcode",
+      group: 5,
+      action: "viewProfile",
+    },
+    {
+      title: "Tài khoản và bảo mật",
+      description: "Quản lý tài khoản và bảo mật",
+      icon: "lock",
+      group: 6,
+      action: "viewProfile",
+    },
+    {
+      title: "Quyền riêng tư",
+      description: "Cài đặt quyền riêng tư của bạn",
+      icon: "security",
+      group: 7,
+      action: "viewProfile",
+    },
+  ];
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -35,7 +84,9 @@ const UserProfileScreen = () => {
   };
 
   const handleProfilePress = () => {
-    navigation.navigate("MyProfile"); // Thực hiện điều hướng tới trang ProfileDetails
+    navigation.navigate("MyProfile", {
+      userInfo: userInfo,
+    });
   };
 
   return (
@@ -44,27 +95,35 @@ const UserProfileScreen = () => {
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
-      bounces={true} // Bật hiệu ứng giãn tự nhiên
-      overScrollMode="always" // Cho phép kéo giãn trên Android
+      bounces={true}
+      overScrollMode="always"
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: false } // Sử dụng native driver để tối ưu hiệu suất
+        { useNativeDriver: false }
       )}
-      scrollEventThrottle={16} // Tối ưu hóa hiệu ứng khi cuộn
+      scrollEventThrottle={16}
     >
       <Animated.View>
         {data.map((item) => (
           <TouchableOpacity
             key={item.title}
             style={[styles.item, styles[`group${item.group}`]]}
-            onPress={item.title === "Khôi Nghiêm" ? handleProfilePress : null} // Điều hướng khi nhấn vào trang cá nhân
+            onPress={() => {
+              if (item.action === "viewProfile") {
+                handleProfilePress();
+              } else {
+                // Handle other actions here
+                console.log("Action:", item.action);
+              }
+            }}
           >
             <View style={styles.itemContent}>
               <View style={styles.iconWrapper}>
-                {item.title === "Khôi Nghiêm" ? (
-                  <View style={styles.iconCircle}>
-                    <AntDesign name="user" size={24} color="blue" />
-                  </View>
+                {item.icon === "none" ? (
+                  <Image
+                    source={{ uri: item.urlavatar }}
+                    style={styles.avatar} // Hiển thị ảnh từ urlavatar
+                  />
                 ) : item.icon === "security" ? (
                   <MaterialIcons name="security" size={24} color="blue" />
                 ) : (
@@ -117,6 +176,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginHorizontal: -10,
   },
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    padding: 0,
+  },
   textWrapper: {
     flex: 1,
     paddingLeft: 15,
@@ -124,6 +189,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 16,
     fontWeight: "500",
+    padding: 0,
   },
   itemDescription: {
     fontSize: 12,

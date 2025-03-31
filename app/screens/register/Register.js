@@ -1,25 +1,32 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useLayoutEffect, useState } from "react";
-import contaier from "../../../components/container/ContainerStyle";
+import contaier from "../../components/container/ContainerStyle";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  Alert,
 } from "react-native";
-import PhoneNumber from "../../../components/phoneNumber/PhoneNumber";
+import PhoneNumber from "../../components/phoneNumber/PhoneNumber";
 import { CheckBox, Overlay } from "@rneui/themed";
 import RegisterStyle from "./RegisterStyle";
 import VerifyPhoneNumber from "./verifyPhoneNumber/VerifyPhoneNumber";
+import { api } from "../../api/api"; // Import API
 
 const { width, height } = Dimensions.get("window");
+
 const Register = () => {
   const navigation = useNavigation();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [otpass, setOtpass] = useState("");
+  const [otpId, setOtpId] = useState("");
   const [isSelected1, setSelection1] = useState(false);
   const [isSelected2, setSelection2] = useState(false);
+  const [isPhoneNumberFilled, setIsPhoneNumberFilled] = useState(false); // New state
   const [visible, setVisible] = useState(false);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: true,
@@ -32,6 +39,47 @@ const Register = () => {
     });
   }, [navigation]);
 
+  const handlePhoneNumberChange = (phoneNumber) => {
+    setPhoneNumber(phoneNumber);
+    setIsPhoneNumberFilled(phoneNumber.length > 9);
+  };
+
+  const handleContinue = async () => {
+    if (!isSelected1 || !isSelected2 || phoneNumber.trim() === "") {
+      Alert.alert(
+        "Thông báo",
+        "Bạn cần nhập số điện thoại và đồng ý với các điều khoản để tiếp tục."
+      );
+      return;
+    }
+
+    try {
+      // Kiểm tra số điện thoại qua API
+      const response = await api.checkPhone(
+        phoneNumber.trim().replace(/\s+/g, "")
+      );
+
+      if (response && response.message === "Verification code generated.") {
+        console.log("OTP:", response.otp);
+        console.log("OTP ID:", response.otpId);
+        setOtpass(response.otp); // Lưu OTP vào state
+        setOtpId(response.otpId); // Lưu OTP ID vào state
+
+        // Hiển thị màn hình xác minh số điện thoại
+        setVisible(true); // Hiển thị VerifyPhoneNumber
+      } else {
+        // Nếu phản hồi không đúng định dạng mong muốn
+        Alert.alert("Lỗi", "Phản hồi từ API không hợp lệ.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra số điện thoại:", error);
+      console.error(
+        "Phản hồi từ API kiểm tra số điện thoại không hợp lệ.",
+        error.response.data
+      );
+      Alert.alert("Lỗi", "Số điện thoại đã được sử dụng.\nVui lòng thử lại.");
+    }
+  };
   return (
     <View style={contaier.main}>
       <View style={RegisterStyle({ width, height }).phone_field}>
@@ -79,15 +127,7 @@ const Register = () => {
 
       <View style={RegisterStyle({ width, height }).submit}>
         <TouchableOpacity
-          onPress={() => {
-            if (isSelected1 && isSelected2 && phoneNumber.trim() !== "") {
-              setVisible(true); // Hiển thị VerifyPhoneNumber
-            } else {
-              alert(
-                "Bạn cần nhập số điện thoại và đồng ý với các điều khoản để tiếp tục."
-              );
-            }
-          }}
+          onPress={handleContinue} // Gọi hàm kiểm tra số điện thoại
           style={
             isSelected1 && isSelected2
               ? RegisterStyle({ width, height }).button_checked
@@ -118,6 +158,8 @@ const Register = () => {
       <Overlay isVisible={visible} onBackdropPress={() => setVisible(false)}>
         <VerifyPhoneNumber
           phoneNumber={phoneNumber} // Truyền số điện thoại
+          otpass={otpass} // Truyền OTP
+          otpId={otpId} // Truyền OTP ID
           onCancel={() => setVisible(false)} // Hàm tắt Overlay
         />
       </Overlay>
