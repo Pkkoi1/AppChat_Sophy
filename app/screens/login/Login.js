@@ -62,9 +62,11 @@ function LoginScreen({ navigation }) {
       }
       console.error("Lỗi đăng nhập:", error);
       console.log("Lỗi đăng nhập:", error.message);
-      console.log("Lỗi đăng nhập:", error.response);
-      console.log("Lỗi đăng nhập:", error.request);
-      console.log("Lỗi đăng nhập:", error.config);
+      console.log("Chi tiết lỗi:", error.response?.data || error.message);
+      // console.log(
+      //   "Chi tiết lỗi khi đăng nhập:",
+      //   error.response?.data || error.message
+      // ); lại
     }
   };
   return (

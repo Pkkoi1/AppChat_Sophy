@@ -17,6 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import Color from "../../../components/colors/Color";
 import postsData from "../../../../assets/objects/post.json";
 import usersData from "../../../../assets/objects/user.json";
+import AvatarUser from "../../../components/profile/AvatarUser";
 
 const UserProfile = ({ route }) => {
   const navigation = useNavigation();
@@ -123,10 +124,7 @@ const UserProfile = ({ route }) => {
 
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>TN</Text>
-            </View>
-            <Text style={styles.name}>{user?.name || "Thành Nghiêm"}</Text>
+            <AvatarUser fullName={user?.name} />
           </View>
 
           {!userExists ? (

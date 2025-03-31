@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { TabView } from "@rneui/themed";
 import ListInbox from "../inbox/ListInbox";
@@ -9,10 +9,12 @@ import Diary from "../diary/Diary";
 import HeadView from "../header/Header";
 import Footer from "../footer/Footer";
 import HomeStyle from "./HomeStyle";
+import { api } from "@/app/api/api";
 
 const Home = ({ route }) => {
   const { userId, userName, phone, id } = route.params;
   const [index, setIndex] = useState(0);
+  const [userInfo, setUserInfo] = useState({});
 
   const screens = [
     {
@@ -41,7 +43,7 @@ const Home = ({ route }) => {
     },
     {
       name: "Profile",
-      component: <Profile userId={userId} />,
+      component: <Profile userInfo={userInfo} />,
       icon: "user",
       title: "Cá nhân",
     },
@@ -55,6 +57,27 @@ const Home = ({ route }) => {
       setIndex(screenIndex);
     }
   };
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await api.getUserById(userId);
+      if (response && response.data) {
+        setUserInfo(response.data);
+      } else {
+        console.error("No user info found in the response.");
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      console.error("Error details:", error.response?.data || error.message);
+      console.error("Userid:", userId);
+      setUserInfo({});
+    }
+  };
+
+  // Gọi hàm fetchUserInfo khi component được mount
+  useEffect(() => {
+    fetchUserInfo(); // Gọi hàm để lấy thông tin người dùng
+  }, []); // Chỉ gọi một lần khi component được mount
 
   return (
     <View style={HomeStyle.homeContainer}>

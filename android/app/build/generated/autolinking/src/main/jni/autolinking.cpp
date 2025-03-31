@@ -86,6 +86,7 @@ providerRegistry->add(concreteComponentDescriptorProvider<RNCAndroidDialogPicker
 providerRegistry->add(concreteComponentDescriptorProvider<RNCAndroidDropdownPickerComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNGestureHandlerButtonComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNGestureHandlerRootViewComponentDescriptor>());
+providerRegistry->add(concreteComponentDescriptorProvider<LEGACY_RNCViewPagerComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNCViewPagerComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNCSafeAreaProviderComponentDescriptor>());
 providerRegistry->add(concreteComponentDescriptorProvider<RNCSafeAreaViewComponentDescriptor>());
