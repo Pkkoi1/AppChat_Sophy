@@ -10,7 +10,7 @@ import {
 import auth from "@react-native-firebase/auth";
 
 const VerifyOTPCode = ({ route, navigation }) => {
-  const { phoneNumber, otpId } = route.params; // Nhận verificationId từ route.params
+  const { phoneNumber, otpass } = route.params; // Nhận verificationId từ route.params
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
 
@@ -30,18 +30,26 @@ const VerifyOTPCode = ({ route, navigation }) => {
     const newOtp = [...otp];
 
     if (value === "") {
-      // Nếu người dùng xóa ký tự, nhảy về ô trước đó
+      // Khi nhấn Backspace, xóa ô hiện tại và di chuyển về ô trước
       newOtp[index] = "";
       setOtp(newOtp);
       if (index > 0) {
         inputRefs.current[index - 1]?.focus();
       }
-    } else {
-      // Nếu người dùng nhập ký tự, chuyển sang ô tiếp theo
+    } else if (/^\d$/.test(value)) {
+      // Chỉ chấp nhận số (0-9)
       newOtp[index] = value;
       setOtp(newOtp);
-      if (index < 5) {
+      if (index < otp.length - 1) {
         inputRefs.current[index + 1]?.focus();
+      }
+    }
+  };
+
+  const handleKeyPress = (event, index) => {
+    if (event.nativeEvent.key === "Backspace" && otp[index] === "") {
+      if (index > 0) {
+        inputRefs.current[index - 1]?.focus();
       }
     }
   };
@@ -51,37 +59,21 @@ const VerifyOTPCode = ({ route, navigation }) => {
     if (enteredOtp.length === 6) {
       try {
         // Xác thực OTP bằng verificationId và mã OTP
-        const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
-        await auth().signInWithCredential(credential);
+        // const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
+        // await auth().signInWithCredential(credential);
 
-        Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
-        navigation.navigate("EnterName", {
-          phoneNumber,
-        });
+        if (enteredOtp == otpass) {
+          Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
+          navigation.navigate("EnterName", {
+            phoneNumber,
+          });
+        }
       } catch (error) {
         console.error("Error verifying OTP:", error.message);
         Alert.alert("Lỗi", "Mã OTP không hợp lệ. Vui lòng thử lại.");
       }
     } else {
       Alert.alert("Lỗi", "Vui lòng nhập đủ 6 số OTP.");
-    }
-  };
-
-  const resendOTP = async () => {
-    try {
-      const formattedPhoneNumber = phoneNumber; // Số điện thoại đã được định dạng từ trước
-      const newConfirmation = await auth().signInWithPhoneNumber(
-        formattedPhoneNumber
-      );
-
-      console.log("OTP resent successfully");
-
-      // Cập nhật verificationId mới
-      Alert.alert("Thông báo", "Mã OTP đã được gửi lại.");
-      route.params.otpId = newConfirmation.verificationId;
-    } catch (error) {
-      console.error("Error sending OTP:", error.code, error.message);
-      Alert.alert("Lỗi", "Không thể gửi lại OTP. Vui lòng thử lại.");
     }
   };
 
@@ -99,6 +91,7 @@ const VerifyOTPCode = ({ route, navigation }) => {
             onChangeText={(value) => handleInputChange(value, index)}
             keyboardType="numeric"
             maxLength={1}
+            onKeyPress={(event) => handleKeyPress(event, index)}
             ref={(el) => (inputRefs.current[index] = el)}
           />
         ))}
@@ -107,12 +100,12 @@ const VerifyOTPCode = ({ route, navigation }) => {
       <TouchableOpacity style={styles.verifyButton} onPress={handleVerify}>
         <Text style={styles.verifyButtonText}>Tiếp tục</Text>
       </TouchableOpacity>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={[styles.resendButton, { marginTop: 10 }]}
         onPress={resendOTP}
       >
         <Text style={styles.resendButtonText}>Gửi lại mã OTP</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
