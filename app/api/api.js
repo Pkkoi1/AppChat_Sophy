@@ -80,27 +80,16 @@ export const api = {
       const response = await http.post("/auth/login", params);
       console.log("Phản hồi từ API login:", response.data);
 
-      // if (response && response.data) {
-      //   const { accessToken, refreshToken } = response.data.token; // Truy cập từ response.data.token
-
-      //   if (!accessToken || !refreshToken) {
-      //     throw new Error("API không trả về accessToken hoặc refreshToken");
-      //   }
-
-      //   // Lưu accessToken và refreshToken vào AsyncStorage
-      //   await AsyncStorage.setItem("authToken", accessToken);
-      //   await AsyncStorage.setItem("refreshToken", refreshToken);
-      // }
       if (response && response.data) {
-        const token = response.data.token; // Truy cập trực tiếp token từ response.data
+        const { accessToken, refreshToken } = response.data.token; // Truy cập từ response.data.token
 
-        if (!token) {
-          throw new Error("API không trả về token");
+        if (!accessToken || !refreshToken) {
+          throw new Error("API không trả về accessToken hoặc refreshToken");
         }
 
-        // Lưu token vào AsyncStorage
-        await AsyncStorage.setItem("authToken", token);
-        await AsyncStorage.setItem("refreshToken", token);
+        // Lưu accessToken và refreshToken vào AsyncStorage
+        await AsyncStorage.setItem("authToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
       }
 
       return response;
@@ -114,20 +103,30 @@ export const api = {
     }
   },
   refreshToken: async () => {
-    const refreshToken = await AsyncStorage.getItem("refreshToken");
-    if (!refreshToken) {
-      throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
+    try {
+      const refreshToken = await AsyncStorage.getItem("refreshToken");
+      if (!refreshToken) {
+        throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
+      }
+
+      const response = await http.post("/auth/refresh", null, {
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+        },
+      });
+
+      // Lưu accessToken mới vào AsyncStorage
+      const newAccessToken = response.data.accessToken;
+      if (!newAccessToken) {
+        throw new Error("API không trả về accessToken mới.");
+      }
+
+      await AsyncStorage.setItem("authToken", newAccessToken);
+      return newAccessToken;
+    } catch (error) {
+      console.error("Lỗi khi làm mới token:", error.message);
+      throw error;
     }
-
-    const response = await http.post("/auth/refresh", null, {
-      headers: {
-        Authorization: `Bearer ${refreshToken}`,
-      },
-    });
-
-    // Lưu accessToken mới vào AsyncStorage
-    await AsyncStorage.setItem("authToken", response.data.accessToken);
-    return response.data.accessToken;
   },
   conversations: async () => {
     return await http.get(`/conversations`);
