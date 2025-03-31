@@ -14,6 +14,7 @@ import auth from "@react-native-firebase/auth";
 const VerifyPhoneNumber = ({ phoneNumber, otpass, otpId, onCancel }) => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [code, setCode] = useState(otpass);
 
   const formatPhoneNumber = (phoneNumber) => {
     const cleanedPhoneNumber = phoneNumber.replace(/\s+/g, "");
@@ -25,38 +26,45 @@ const VerifyPhoneNumber = ({ phoneNumber, otpass, otpId, onCancel }) => {
 
   const sendOTP = async () => {
     setIsLoading(true);
-    // try {
-    //   const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
-    //   console.log("Sending OTP to:", formattedPhoneNumber);
 
-    //   // Gửi OTP bằng Firebase Authentication cho React Native
-    //   const confirmation = await auth().signInWithPhoneNumber(
-    //     formattedPhoneNumber
-    //   );
+    try {
+      // Định dạng số điện thoại
+      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
 
-    //   console.log("OTP sent successfully");
+      // Gửi OTP qua Firebase Authentication
+      const confirmation = await auth().signInWithPhoneNumber(
+        formattedPhoneNumber
+      );
 
-    //   // Điều hướng đến màn hình nhập mã OTP
-    //   navigation.navigate("VerifyOTPCode", {
-    //     confirmation,
-    //     phoneNumber: formattedPhoneNumber,
-    //   });
-    // } catch (error) {
-    //   console.error("Error sending OTP:", error.message);
-    //   console.log("Error sending OTP:", error);
-    //   console.log("Error code:", error.code);
-    //   // Hiển thị thông báo lỗi cho người dùng
-    //   Alert.alert("Lỗi", `Không thể gửi OTP: ${error.message}`);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      // Lấy verificationId từ confirmation
+      const verificationId = confirmation.verificationId;
 
-    navigation.navigate("VerifyOTPCode", {
-      phoneNumber: phoneNumber,
-      otpass: otpass,
-      otpId: otpId,
-    });
-    setIsLoading(false);
+      if (!verificationId) {
+        throw new Error("Không thể lấy mã xác thực. Vui lòng thử lại.");
+      }
+
+      // Hiển thị thông báo thành công và điều hướng đến màn hình nhập OTP
+      Alert.alert("Thành công", "Mã OTP đã được gửi qua SMS.");
+      navigation.navigate("VerifyOTPCode", {
+        phoneNumber: phoneNumber,
+        otpId: verificationId, // Chỉ truyền verificationId
+      });
+    } catch (error) {
+      console.error("Error sending OTP:", error.message);
+
+      // Xử lý lỗi nếu không gửi được OTP
+      Alert.alert(
+        "Lỗi",
+        error.message || "Không thể gửi mã OTP. Vui lòng thử lại."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+    // navigation.navigate("VerifyOTPCode", {
+    //   phoneNumber: phoneNumber,
+    //   otpass: confirmation,
+    //   otpId: verificationId,
+    // });
   };
 
   return (

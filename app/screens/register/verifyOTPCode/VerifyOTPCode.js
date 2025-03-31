@@ -7,11 +7,10 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { signInWithPhoneNumber } from "firebase/auth";
-import { auth } from "../../../../firebaseConfig";
+import auth from "@react-native-firebase/auth";
 
 const VerifyOTPCode = ({ route, navigation }) => {
-  const { phoneNumber, otpass } = route.params; // Nhận OTP từ route.params
+  const { phoneNumber, otpId } = route.params; // Nhận verificationId từ route.params
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
 
@@ -49,15 +48,19 @@ const VerifyOTPCode = ({ route, navigation }) => {
 
   const handleVerify = async () => {
     const enteredOtp = otp.join(""); // Ghép các số OTP thành chuỗi
-    if (enteredOtp.length === 6 && enteredOtp === otpass) {
+    if (enteredOtp.length === 6) {
       try {
+        // Xác thực OTP bằng verificationId và mã OTP
+        const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
+        await auth().signInWithCredential(credential);
+
         Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
         navigation.navigate("EnterName", {
           phoneNumber,
         });
       } catch (error) {
         console.error("Error verifying OTP:", error.message);
-        Alert.alert("Lỗi", "Mã OTP không hợp lệ.\n Vui lòng thử lại.");
+        Alert.alert("Lỗi", "Mã OTP không hợp lệ. Vui lòng thử lại.");
       }
     } else {
       Alert.alert("Lỗi", "Vui lòng nhập đủ 6 số OTP.");
@@ -67,17 +70,18 @@ const VerifyOTPCode = ({ route, navigation }) => {
   const resendOTP = async () => {
     try {
       const formattedPhoneNumber = phoneNumber; // Số điện thoại đã được định dạng từ trước
-      const newConfirmationResult = await signInWithPhoneNumber(
-        auth,
+      const newConfirmation = await auth().signInWithPhoneNumber(
         formattedPhoneNumber
       );
+
       console.log("OTP resent successfully");
 
-      // Cập nhật confirmationResult mới
+      // Cập nhật verificationId mới
       Alert.alert("Thông báo", "Mã OTP đã được gửi lại.");
+      route.params.otpId = newConfirmation.verificationId;
     } catch (error) {
       console.error("Error sending OTP:", error.code, error.message);
-      Alert.alert("Lỗi", "Không thể gửi lại OTP.\n Vui lòng thử lại.");
+      Alert.alert("Lỗi", "Không thể gửi lại OTP. Vui lòng thử lại.");
     }
   };
 
@@ -109,11 +113,6 @@ const VerifyOTPCode = ({ route, navigation }) => {
       >
         <Text style={styles.resendButtonText}>Gửi lại mã OTP</Text>
       </TouchableOpacity>
-
-      {/* Hiển thị OTP để debug */}
-      <Text style={{ marginTop: 10, color: "gray" }}>
-        OTP (debug): {otpass}
-      </Text>
     </View>
   );
 };
