@@ -3,7 +3,7 @@ import { View, FlatList, Text, Pressable } from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
 import ConversationStyle from "./ConversationStyle";
-import MessagePopup from "../../../components/messagePopup/MessagePopup";
+import MessagePopup from "../../../features/messagePopup/MessagePopup";
 
 const Conversation = ({
   conversation,

@@ -99,6 +99,20 @@ const HeadView = ({ page }) => {
           </TouchableOpacity>
           <Text style={HeaderStyle().setting}>Lời mời kết bạn</Text>
         </>
+      ) : page === "VerificationCode" ? (
+        <>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={HeaderStyle().setting}>G</Text>
+        </>
+      ): page === "CreateNewPassword" ? (
+        <>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={HeaderStyle().setting}>Lời mời kết bạn</Text>
+        </>
       ) : ( // Trang chính của ứng dụng
         <>
           <TouchableOpacity>
