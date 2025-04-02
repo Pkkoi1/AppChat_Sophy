@@ -51,7 +51,7 @@ export default StyleSheet.create({
       
     },
     subtitle: {
-      fontSize: 16,
+      fontSize: 14,
       color: '#000',
       textAlign: 'left',
     },
