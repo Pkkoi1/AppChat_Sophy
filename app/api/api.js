@@ -2,8 +2,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 
-// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
-const API = `http://192.168.1.14:3000/api`;
+const API = `http://192.168.1.39:3000/api` || DATABASE_API;
 
 const http = axios.create({
   baseURL: API,
@@ -184,6 +183,42 @@ export const api = {
       await AsyncStorage.removeItem("refreshToken");
     } catch (error) {
       console.error("Lỗi khi gọi API logout:", error);
+    }
+  },
+  verifyPhoneOTP: async (phone, otp, otpId) => {
+    try {
+      const response = await http.post("/auth/verify-otp", { phone, otp, otpId });
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi xác minh OTP:", error.message);
+      throw error;
+    }
+  },
+  sendOtpForgotPassword: async (phone) => {
+    try {
+      const response = await http.post("/auth/send-otp-forgot-password", { phone });
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi gửi OTP quên mật khẩu:", error.message);
+      throw error;
+    }
+  },
+  verifyOTPForgotPassword: async (phone, otp, otpId) => {
+    try {
+      const response = await http.post("/auth/verify-otp-forgot-password", { phone, otp, otpId });
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi xác minh OTP:", error.message);
+      throw error;
+    }
+  },
+  resetPassword: async (phone, newPassword) => {
+    try {
+      const response = await http.put("/auth/forgot-password", { phone, newPassword });
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi đặt lại mật khẩu:", error.message);
+      throw error;
     }
   },
 };

@@ -13,6 +13,7 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import PhoneInput from "react-native-phone-number-input";
 import { validatePhoneNumber } from 'react-native-phone-number-input';
+import { api } from "../../api/api";
 
 function ResetPasswordScreen({ navigation }) {
   const [phone, setPhone] = useState("");
@@ -44,20 +45,38 @@ function ResetPasswordScreen({ navigation }) {
 
     try {
       const fullNumber = `+84${phone}`;
-      const checkValid = await phoneInput.current?.isValidNumber(fullNumber);
-      if (!checkValid) {
-        setPhoneError("Số điện thoại không hợp lệ.");
-        setShowPhoneInput(true); // Show PhoneInput if phone number is invalid
-        return;
+      // const checkValid = await phoneInput.current?.isValidNumber(fullNumber);
+      // if (!checkValid) {
+      //   setPhoneError("Số điện thoại không hợp lệ.");
+      //   setShowPhoneInput(true);
+      //   return;
+      // }
+
+      // Gọi API checkPhone để kiểm tra số điện thoại và lấy OTP
+      const checkPhoneResponse = await api.sendOtpForgotPassword(phone);
+
+      // Nếu API trả về OTP, chuyển đến màn hình VerificationCode
+      if (checkPhoneResponse && checkPhoneResponse.otp) {
+        console.log("OTP:", checkPhoneResponse.otp);
+        setShowConfirmationModal(false);
+        navigation.navigate("VerificationCode", {
+          phone: phone,
+          otp: checkPhoneResponse.otp, // Truyền OTP sang màn hình VerificationCode
+          otpId: checkPhoneResponse.otpId, // Truyền otpId sang màn hình VerificationCode
+        });
+      } else {
+        // Xử lý trường hợp không nhận được OTP (ví dụ: hiển thị thông báo lỗi)
+        Alert.alert(
+          "Lỗi",
+          "Không thể tạo mã OTP. Vui lòng thử lại sau."
+        );
       }
     } catch (error) {
-      console.log("Error validating phone number:", error);
-      setPhoneError("Số điện thoại không hợp lệ.");
-      setShowPhoneInput(true);
-      return;
+      console.error("Lỗi khi kiểm tra số điện thoại:", error);
+      setPhoneError(
+        "Số điện thoại không tồn tại hoặc có lỗi xảy ra. Vui lòng kiểm tra lại."
+      );
     }
-
-    setShowConfirmationModal(true); // Show confirmation modal instead of Alert
   };
 
   const handlePhoneChange = (text) => {

@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {api} from '../../api/api'; // Assuming the API module is imported
+import HeadView from '../header/Header';
 
 const { width } = Dimensions.get('window');
 
@@ -13,14 +15,22 @@ const VerificationScreen = ({ route, navigation }) => {
     inputRefs.current = inputRefs.current.slice(0, 6);
   }, []);
 
-  const handleVerification = () => {
+  const handleVerification = async () => {
     if (code.every(digit => digit !== '')) {
-      // Perform verification logic here (e.g., API call)
       const verificationCode = code.join('');
       console.log('Verification code:', verificationCode);
       console.log('Phone number:', phone);
-      // Navigate to the next screen upon successful verification
-      navigation.navigate('CreateNewPassword');
+      try {
+        const response = await api.verifyOTPForgotPassword(phone, verificationCode, route.params.otpId);
+        if (response.message === 'Phone verified successfully') {
+          navigation.navigate('CreateNewPassword', { phone: phone });
+        } else {
+          Alert.alert('Lỗi', 'Mã xác thực không đúng');
+        }
+      } catch (error) {
+        console.error("Lỗi xác minh OTP:", error);
+        Alert.alert('Lỗi', 'Có lỗi xảy ra khi xác minh OTP');
+      }
     } else {
       Alert.alert('Lỗi', 'Vui lòng nhập đủ 6 chữ số');
     }
@@ -39,12 +49,7 @@ const VerificationScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={26} color="#fff" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Nhập mã xác thực</Text>
-      </View>
+      <HeadView page="VerificationCode" navigation={navigation} />
 
       {/* Content */}
       <View style={styles.content}>
@@ -121,14 +126,19 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
     alignItems: 'center',
+
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: 'gray',
     marginBottom: 20,
     textAlign: 'center',
+    backgroundColor: "#F0F4F3",
+    width: '100%',
+    height: 30,
+    padding: 5,
+
   },
   phoneContainer: {
     marginBottom: 20,
@@ -151,6 +161,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     marginBottom: 20,
+    padding: 20,
   },
   codeInput: {
     width: width * 0.12,

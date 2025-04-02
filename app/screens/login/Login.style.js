@@ -32,7 +32,7 @@ export default StyleSheet.create({
     fontWeight: "bold",
   },
   subtitleContainer: {
-    backgroundColor: "#F0F4F3", // Màu xanh giống header Zalo
+    backgroundColor: "#F0F4F3", 
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 0,
