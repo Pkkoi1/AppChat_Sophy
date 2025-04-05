@@ -97,6 +97,8 @@ const ProfileScreen = () => {
               width={100}
               height={100}
               avtText={40}
+              shadow={true}
+              bordered={true}
             />
             <Text style={styles.name}>{userInfo.fullname}</Text>
             <TouchableOpacity>
