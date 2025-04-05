@@ -12,14 +12,14 @@ import HomeStyle from "./HomeStyle";
 import { api } from "@/app/api/api";
 
 const Home = ({ route }) => {
-  const { userId, userName, phone, id } = route.params;
+  const { userId, userName, phone } = route.params;
   const [index, setIndex] = useState(0);
   const [userInfo, setUserInfo] = useState({});
 
   const screens = [
     {
       name: "Inbox",
-      component: <ListInbox userId={userId} id={id} />,
+      component: <ListInbox userId={userId} />,
       icon: "message1",
       title: "Tin nhắn",
     },
@@ -81,7 +81,7 @@ const Home = ({ route }) => {
 
   return (
     <View style={HomeStyle.homeContainer}>
-      <HeadView page={screens[index].name} />
+      <HeadView page={screens[index].name} userInfo={userInfo} />
 
       <TabView value={index} onChange={setIndex} animationType="spring">
         {screens.map((screen, idx) => (

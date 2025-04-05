@@ -1,7 +1,6 @@
 const Color = {
   sophy: "#1b96fd",
   gray: "#888c90",
-  
 
   // màu background nút
   grayBackgroundButton: "#F5F4FA",
@@ -10,6 +9,8 @@ const Color = {
 
   // màu chữ
   blueText: "#2C99E5",
+  //Xanh dậm
+  blueText2: "#0344a8",
 };
 
 export default Color;

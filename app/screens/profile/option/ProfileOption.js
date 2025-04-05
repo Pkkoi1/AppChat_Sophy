@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-const OptionProfile = () => {
+const ProfileOption = () => {
     return (
         <View>
             
@@ -9,4 +9,4 @@ const OptionProfile = () => {
     );
 };
 
-export default OptionProfile;
+export default ProfileOption;
