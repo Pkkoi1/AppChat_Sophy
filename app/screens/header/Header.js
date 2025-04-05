@@ -10,7 +10,7 @@ import HeaderStyle from "./HeaderStyle";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 
-const HeadView = ({ page }) => {
+const HeadView = ({ page, userInfo }) => {
   const [search, setSearch] = useState("");
   const navigation = useNavigation();
 
@@ -20,7 +20,12 @@ const HeadView = ({ page }) => {
         return (
           <>
             <TouchableOpacity>
-              <AntDesign name="qrcode" size={24} color="white" onPress={() => navigation.navigate("ScanQR")} />
+              <AntDesign
+                name="qrcode"
+                size={24}
+                color="white"
+                onPress={() => navigation.navigate("ScanQR")}
+              />
             </TouchableOpacity>
             <TouchableOpacity>
               <AntDesign name="plus" size={24} color="white" />
@@ -31,14 +36,21 @@ const HeadView = ({ page }) => {
       case "Discover":
         return (
           <TouchableOpacity>
-            <AntDesign name="qrcode" size={24} color="white"  onPress={() => navigation.navigate("ScanQR")}/>
+            <AntDesign
+              name="qrcode"
+              size={24}
+              color="white"
+              onPress={() => navigation.navigate("ScanQR")}
+            />
           </TouchableOpacity>
         );
 
       case "Profile":
       case "ReceivedFriendRequests":
         return (
-          <TouchableOpacity onPress={() => navigation.navigate("Setting")}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Setting", { userInfo })}
+          >
             <AntDesign name="setting" size={24} color="white" />
           </TouchableOpacity>
         );
@@ -106,14 +118,15 @@ const HeadView = ({ page }) => {
           </TouchableOpacity>
           <Text style={HeaderStyle().setting}>Gửi mã xác thưc</Text>
         </>
-      ): page === "CreateNewPassword" ? (
+      ) : page === "CreateNewPassword" ? (
         <>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text style={HeaderStyle().setting}>Tạo mật khẩu mới</Text>
         </>
-      ) : ( // Trang chính của ứng dụng
+      ) : (
+        // Trang chính của ứng dụng
         <>
           <TouchableOpacity>
             <AntDesign name="search1" size={24} color="white" />

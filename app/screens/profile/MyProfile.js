@@ -21,7 +21,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 // import { userInfo } from "os"; // Xóa import này
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -92,7 +92,13 @@ const ProfileScreen = () => {
 
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
-            <AvatarUser fullName={userInfo.fullname} />
+            <AvatarUser
+              fullName={userInfo.fullname}
+              width={100}
+              height={100}
+              avtText={40}
+            />
+            <Text style={styles.name}>{userInfo.fullname}</Text>
             <TouchableOpacity>
               <Text style={styles.editText}>Cập nhật giới thiệu bạn thân</Text>
             </TouchableOpacity>
@@ -121,11 +127,7 @@ const ProfileScreen = () => {
               <Text style={styles.optionText}>Kho khoảnh khắc</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionButton}>
-              <MaterialIcons
-                name="history"
-                size={22}
-                color="#f86f0d"
-              />
+              <MaterialIcons name="history" size={22} color="#f86f0d" />
               <Text style={styles.optionText}>Kỷ niệm năm xưa</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionButton}>
@@ -189,8 +191,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F6F6F6",
   },
-  scrollViewContent: {
-  },
+  scrollViewContent: {},
   avatarContainer: {
     alignItems: "center",
     paddingTop: 20,

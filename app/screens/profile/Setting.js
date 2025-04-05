@@ -13,7 +13,12 @@ import { api } from "@/app/api/api";
 import { useNavigation } from "expo-router";
 
 const settings = [
-  { id: "1", title: "Tài khoản và bảo mật", icon: "shield" },
+  {
+    id: "1",
+    title: "Tài khoản và bảo mật",
+    icon: "shield",
+    screen: "AccountAndSecurity",
+  },
   { id: "2", title: "Quyền riêng tư", icon: "lock-closed" },
   { id: "3", title: "Dữ liệu trên máy", icon: "time" },
   { id: "4", title: "Sao lưu và khôi phục", icon: "cloud-upload" },
@@ -28,7 +33,9 @@ const settings = [
   { id: "13", title: "Chuyển tài khoản", icon: "swap-horizontal" },
 ];
 
-const Setting = ({ navigation }) => {
+const Setting = ({ route, navigation }) => {
+  const { userInfo } = route.params; // Lấy userInfo từ route.params
+
   const handleLogout = async () => {
     try {
       // Gọi API để đăng xuất
@@ -57,6 +64,16 @@ const Setting = ({ navigation }) => {
           ? styles.itemWithThickBorder
           : {},
       ]}
+      onPress={() => {
+        if (item.screen) {
+          navigation.navigate(item.screen, { userInfo }); // Truyền userInfo
+        } else if (item.id === "12") {
+          navigation.navigate("Support");
+        } else if (item.id === "1") {
+          navigation.navigate("AccountAndSecurity", { userInfo }); // Truyền userInfo
+        }
+        console.log(userInfo); // Log the title of the clicked item}
+      }}
     >
       <View style={styles.leftContainer}>
         <Ionicons name={item.icon} size={24} color="rgb(61, 131, 237)" />

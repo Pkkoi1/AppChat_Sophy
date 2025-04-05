@@ -81,7 +81,7 @@ const Home = ({ route }) => {
 
   return (
     <View style={HomeStyle.homeContainer}>
-      <HeadView page={screens[index].name} />
+      <HeadView page={screens[index].name} userInfo={userInfo} />
 
       <TabView value={index} onChange={setIndex} animationType="spring">
         {screens.map((screen, idx) => (
