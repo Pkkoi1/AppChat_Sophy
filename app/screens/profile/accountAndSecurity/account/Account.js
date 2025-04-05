@@ -21,6 +21,8 @@ const Account = ({ userInfo }) => {
             width={60}
             height={60}
             avtText={24}
+            shadow={false}
+            bordered={false}
           />
         )}
         <View style={styles.infoContainer}>

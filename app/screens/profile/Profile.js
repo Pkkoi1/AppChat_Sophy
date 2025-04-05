@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import AvatarUser from "@/app/components/profile/AvatarUser";
 
 const UserProfileScreen = ({ userInfo }) => {
   const [refreshing, setRefreshing] = useState(false);
@@ -22,7 +23,7 @@ const UserProfileScreen = ({ userInfo }) => {
       title: `${userInfo.fullname || "Unknow"}`,
       description: "Xem trang cá nhân của bạn",
       icon: "none",
-      urlavatar: `${userInfo.urlavatar || "https://via.placeholder.com/150"}`,
+      urlavatar: userInfo.urlavatar || null,
       group: 0,
       action: "viewProfile",
     },
@@ -120,10 +121,21 @@ const UserProfileScreen = ({ userInfo }) => {
             <View style={styles.itemContent}>
               <View style={styles.iconWrapper}>
                 {item.icon === "none" ? (
-                  <Image
-                    source={{ uri: item.urlavatar }}
-                    style={styles.avatar} // Hiển thị ảnh từ urlavatar
-                  />
+                  item.urlavatar ? (
+                    <Image
+                      source={{ uri: item.urlavatar }}
+                      style={styles.avatar} // Hiển thị ảnh từ urlavatar
+                    />
+                  ) : (
+                    <AvatarUser
+                      fullName={item.title}
+                      width={50}
+                      height={50}
+                      avtText={20}
+                      shadow={false}
+                      bordered={false}
+                    />
+                  )
                 ) : item.icon === "security" ? (
                   <MaterialIcons name="security" size={24} color="blue" />
                 ) : (

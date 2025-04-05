@@ -1,7 +1,15 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
-const AvatarUser = ({ fullName, width, height, avtText }) => {
+const AvatarUser = ({
+  fullName,
+  width,
+  height,
+  avtText,
+  shadow = true,
+  bordered = true,
+}) => {
   const getInitials = (name) => {
     if (!name) return "";
     const nameParts = name.split(" ");
@@ -17,15 +25,78 @@ const AvatarUser = ({ fullName, width, height, avtText }) => {
     return firstNameInitial + lastNameInitial;
   };
 
+  const convertToEnglish = (char) => {
+    const vietnameseMap = {
+      Ă: "A",
+      Â: "A",
+      Á: "A",
+      À: "A",
+      Ả: "A",
+      Ã: "A",
+      Ạ: "A",
+      Đ: "D",
+      Ê: "E",
+      É: "E",
+      È: "E",
+      Ẻ: "E",
+      Ẽ: "E",
+      Ẹ: "E",
+      Í: "I",
+      Ì: "I",
+      Ỉ: "I",
+      Ĩ: "I",
+      Ị: "I",
+      Ô: "O",
+      Ơ: "O",
+      Ó: "O",
+      Ò: "O",
+      Ỏ: "O",
+      Õ: "O",
+      Ọ: "O",
+      Ú: "U",
+      Ù: "U",
+      Ủ: "U",
+      Ũ: "U",
+      Ụ: "U",
+      Ư: "U",
+      Ý: "Y",
+      Ỳ: "Y",
+      Ỷ: "Y",
+      Ỹ: "Y",
+      Ỵ: "Y",
+    };
+    return vietnameseMap[char] || char;
+  };
+
+  const getColorForInitial = (initial) => {
+    const englishInitial = convertToEnglish(initial);
+    const charCode = englishInitial.charCodeAt(0);
+    if (charCode >= 65 && charCode <= 69) return ["#FF5733", "#FF8D1A"]; // A-E
+    if (charCode >= 70 && charCode <= 74) return ["#00cc00", "#1AFF8D"]; // F-J
+    if (charCode >= 75 && charCode <= 79) return ["#3357FF", "#1A8DFF"]; // K-O
+    if (charCode >= 80 && charCode <= 84) return ["#8D33FF", "#D91AFF"]; // P-T
+    if (charCode >= 85 && charCode <= 90) return ["#FF33A1", "#FF1A57"]; // U-Z
+    return ["#CCCCCC", "#AAAAAA"]; // Default color
+  };
+
   const initials = getInitials(fullName);
+  const colors = getColorForInitial(initials.charAt(0));
 
   return (
     <View style={styles.avatarContainer}>
-      <View style={[styles.avatar, { width, height }]}>
+      <LinearGradient
+        colors={colors}
+        style={[
+          styles.avatar,
+          { width, height, borderRadius: width / 2 },
+          shadow && styles.shadow, // Thêm bóng nếu `shadow` là true
+          bordered && styles.bordered, // Thêm viền nếu `bordered` là true
+        ]}
+      >
         <Text style={[styles.avatarText, { fontSize: avtText }]}>
           {initials}
         </Text>
-      </View>
+      </LinearGradient>
     </View>
   );
 };
@@ -35,32 +106,23 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   avatar: {
-    borderRadius: 50,
-    backgroundColor: "#00cc00",
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 4,
-    borderColor: "#fff",
+  },
+  shadow: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
   },
+  bordered: {
+    borderWidth: 4,
+    borderColor: "#fff",
+  },
   avatarText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-  name: {
-    fontSize: 24,
-    color: "#000",
-    marginVertical: 10,
-    fontWeight: "bold",
-  },
-  editText: {
-    color: "#00aaff",
-    marginBottom: 10,
-    fontSize: 14,
   },
 });
 
