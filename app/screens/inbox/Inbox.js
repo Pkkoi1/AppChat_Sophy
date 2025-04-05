@@ -13,7 +13,6 @@ const Inbox = ({
   user_id,
   groupName,
   receiverId,
-  id,
 }) => {
   const navigation = useNavigation();
   const [receiver, setReceiver] = useState({});
@@ -65,7 +64,6 @@ const Inbox = ({
           conversation_id: conversation_id, // Truyền conversation_id vào params
           user_id: user_id, // Truyền user_id vào params
           receiverId: receiverId, // Truyền receiverId vào params
-          id: id, // Truyền id vào params
         })
       }
       activeOpacity={0.6}

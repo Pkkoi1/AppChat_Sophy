@@ -46,7 +46,6 @@ function LoginScreen({ navigation }) {
           userId: user.userId,
           userName: user.fullname,
           phone: phone,
-          id: user.id,
         });
       } else {
         Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
