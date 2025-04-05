@@ -100,7 +100,7 @@ const EnterInfo = ({ route, navigation }) => {
           //   navigation.navigate("CameraScreen", {
           //     navigation,
           //   }),
-          onPress: () => navigation.navigate("MyProfile"),
+          onPress: () => navigation.navigate("Home"),
         },
       ]);
     } catch (error) {
