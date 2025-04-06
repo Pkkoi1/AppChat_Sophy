@@ -33,12 +33,12 @@ const AccountAndSecurityScreen = ({ route }) => {
             onPress={() => navigation.goBack()}
           />
           <Text style={styles.headerTitle}>
-            Tài khoản và bảo mật {userInfo?.fullname}
+            Tài khoản và bảo mật
           </Text>
         </View>
       </LinearGradient>
       <ScrollView>
-        <Account userInfo={userInfo} />
+        <Account userInfo={userInfo} navigation={navigation} />
       </ScrollView>
     </View>
   );

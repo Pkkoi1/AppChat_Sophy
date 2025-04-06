@@ -92,14 +92,22 @@ const ProfileScreen = () => {
 
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
-            <AvatarUser
-              fullName={userInfo.fullname}
-              width={100}
-              height={100}
-              avtText={40}
-              shadow={true}
-              bordered={true}
-            />
+            {userInfo?.urlavatar ? (
+              <Image
+                source={{ uri: userInfo.urlavatar }}
+                style={styles.avatar}
+              />
+            ) : (
+              <AvatarUser
+                fullName={userInfo.fullname}
+                width={100}
+                height={100}
+                avtText={40}
+                shadow={true}
+                bordered={true}
+              />
+            )}
+
             <Text style={styles.name}>{userInfo.fullname}</Text>
             <TouchableOpacity>
               <Text style={styles.editText}>Cập nhật giới thiệu bạn thân</Text>

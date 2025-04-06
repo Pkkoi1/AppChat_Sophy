@@ -4,12 +4,22 @@ import AvatarUser from "@/app/components/profile/AvatarUser"; // Đường dẫn
 import Color from "@/app/components/colors/Color";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-const Account = ({ userInfo }) => {
+
+const Account = ({ userInfo, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>Tài khoản</Text>
 
-      <TouchableOpacity style={styles.accountContainer}>
+      <TouchableOpacity
+        style={styles.accountContainer}
+        activeOpacity={0.8}
+        onPress={() => {
+          // Personal
+          navigation.navigate("Personal", {
+            userInfo: userInfo,
+          });
+        }}
+      >
         {userInfo?.urlavatar ? (
           <Image
             source={{ uri: userInfo.urlavatar }}

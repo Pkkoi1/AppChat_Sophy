@@ -169,8 +169,8 @@ const ListInbox = ({ userId }) => {
             avatar = {
               uri:
                 receiverInfo?.urlavatar ||
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s",
-            }; // Chuẩn hóa thành đối tượng { uri: ... }
+                "null",
+            }; 
           }
 
           return (

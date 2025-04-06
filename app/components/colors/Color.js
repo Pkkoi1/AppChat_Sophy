@@ -5,6 +5,7 @@ const Color = {
   // màu background nút
   grayBackgroundButton: "#F5F4FA",
   blueBackgroundButton: "#EFF8FD",
+  grayBackgroundButton2: "#ecedef",
   blueBackgroundButton2: "#DCEBFF",
 
   // màu chữ
