@@ -234,4 +234,17 @@ export const api = {
       throw error;
     }
   },
+  // /update-user/info
+  updateUser: async (userId, params) => {
+    try {
+      const response = await http.put(
+        `/users/update-user/info/${userId}`,
+        params
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
+      throw error;
+    }
+  },
 };

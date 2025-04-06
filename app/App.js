@@ -34,6 +34,7 @@ import VerificationCode from "./screens/login/VerificationCode";
 import CreateNewPassword from "./screens/login/CreateNewPassword";
 import AccountAndSecurityScreen from "./screens/profile/accountAndSecurity/AccountAndSecurityScreen";
 import Personal from "./screens/profile/personal/Personal";
+import Edit from "./components/profile/Edit";
 
 const Stack = createNativeStackNavigator();
 
@@ -87,6 +88,7 @@ function RootLayout() {
           component={AccountAndSecurityScreen}
         />
         <Stack.Screen name="Personal" component={Personal} />
+        <Stack.Screen name="Edit" component={Edit} />
       </Stack.Navigator>
     </NavigationContainer>
   );

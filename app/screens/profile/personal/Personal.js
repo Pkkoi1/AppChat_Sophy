@@ -15,7 +15,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Octicons from "@expo/vector-icons/Octicons";
 import Color from "@/app/components/colors/Color";
 
-const Personal = ({ route }) => {
+const Personal = ({ route, navigation }) => {
   const { userInfo, isReady = true } = route.params || {};
 
   const info = [
@@ -64,8 +64,9 @@ const Personal = ({ route }) => {
         <View style={styles.avatar}>
           {userInfo?.urlavatar ? (
             <Image
-              source={{ uri: userInfo.urlavatar }}
+              source={{ uri: userInfo?.urlavatar }}
               style={styles.avatarImage}
+              resizeMode="cover"
             />
           ) : (
             <AvatarUser
@@ -91,7 +92,14 @@ const Personal = ({ route }) => {
           ))}
         </View>
 
-        <TouchableOpacity style={styles.editButton}>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => {
+            navigation.navigate("Edit", {
+              userInfo: userInfo,
+            });
+          }}
+        >
           <MaterialCommunityIcons
             name="pencil-outline"
             size={20}
@@ -126,6 +134,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+    backgroundColor: "#000",
   },
   infoContainer: {
     width: "100%",
