@@ -90,22 +90,31 @@ const EnterInfo = ({ route, navigation }) => {
 
     try {
       setLoading(true);
-      const response = await api.registerAccount(payload);
+      // Gửi yêu cầu đăng ký
+      await api.registerAccount(payload);
+
+      // Sau khi đăng ký thành công, tự động đăng nhập
+      const loginPayload = {
+        phone: sanitizedPhoneNumber,
+        password,
+      };
+
+      const loginResponse = await api.login(loginPayload);
+
       setLoading(false);
 
-      Alert.alert("Thành công", "Đăng ký tài khoản thành công!", [
-        {
-          text: "OK",
-          // onPress: () =>
-          //   navigation.navigate("CameraScreen", {
-          //     navigation,
-          //   }),
-          onPress: () => navigation.navigate("MyProfile"),
-        },
-      ]);
+      if (loginResponse && loginResponse.data) {
+        // Điều hướng đến màn hình chính hoặc màn hình phù hợp
+        navigation.navigate("Home", {
+          userId: loginResponse.data.user.userId,
+        });
+        console.log("Đăng nhập thành công:", loginResponse.data.user.userId);
+      } else {
+        Alert.alert("Lỗi", "Đăng nhập tự động thất bại. Vui lòng thử lại.");
+      }
     } catch (error) {
       setLoading(false);
-      console.error("Lỗi đăng ký:", error);
+      console.error("Lỗi đăng ký hoặc đăng nhập:", error);
 
       Alert.alert("Lỗi", "Đăng ký tài khoản thất bại. Vui lòng thử lại.");
     }

@@ -4,7 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import Inbox from "./Inbox";
 import { api } from "@/app/api/api";
 
-const ListInbox = ({ userId, id }) => {
+const ListInbox = ({ userId }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [users, setUsers] = useState([]); // Thêm state để lưu danh sách người dùng
@@ -169,8 +169,8 @@ const ListInbox = ({ userId, id }) => {
             avatar = {
               uri:
                 receiverInfo?.urlavatar ||
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s",
-            }; // Chuẩn hóa thành đối tượng { uri: ... }
+                "null",
+            }; 
           }
 
           return (
@@ -187,7 +187,6 @@ const ListInbox = ({ userId, id }) => {
               user_id={userId}
               groupName={item.groupName}
               receiverId={item.receiverId}
-              id={id}
             />
           );
         }}

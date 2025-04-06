@@ -32,6 +32,9 @@ import CameraScreen from "./features/camera/Camera";
 import ScanQR from "./screens/header/headerAction/ScanQR";
 import VerificationCode from "./screens/login/VerificationCode";
 import CreateNewPassword from "./screens/login/CreateNewPassword";
+import AccountAndSecurityScreen from "./screens/profile/accountAndSecurity/AccountAndSecurityScreen";
+import Personal from "./screens/profile/personal/Personal";
+import Edit from "./components/profile/Edit";
 
 const Stack = createNativeStackNavigator();
 
@@ -80,8 +83,12 @@ function RootLayout() {
         <Stack.Screen name="ScanQR" component={ScanQR} />
         <Stack.Screen name="VerificationCode" component={VerificationCode} />
         <Stack.Screen name="CreateNewPassword" component={CreateNewPassword} />
-
-
+        <Stack.Screen
+          name="AccountAndSecurity"
+          component={AccountAndSecurityScreen}
+        />
+        <Stack.Screen name="Personal" component={Personal} />
+        <Stack.Screen name="Edit" component={Edit} />
       </Stack.Navigator>
     </NavigationContainer>
   );

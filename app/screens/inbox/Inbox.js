@@ -3,6 +3,7 @@ import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import AvatarUser from "@/app/components/profile/AvatarUser";
 
 const Inbox = ({
   name,
@@ -13,18 +14,21 @@ const Inbox = ({
   user_id,
   groupName,
   receiverId,
-  id,
 }) => {
   const navigation = useNavigation();
   const [receiver, setReceiver] = useState({});
 
   const getTimeDifference = (date) => {
+    const validDate = moment(new Date(date)); // Chuyển đổi date thành đối tượng Date hợp lệ
+    if (!validDate.isValid()) {
+      return "Ngày không hợp lệ";
+    }
+
     const now = moment();
-    const messageDate = moment(date);
-    const diffInSeconds = now.diff(messageDate, "seconds");
-    const diffInMinutes = now.diff(messageDate, "minutes");
-    const diffInHours = now.diff(messageDate, "hours");
-    const diffInDays = now.diff(messageDate, "days");
+    const diffInSeconds = now.diff(validDate, "seconds");
+    const diffInMinutes = now.diff(validDate, "minutes");
+    const diffInHours = now.diff(validDate, "hours");
+    const diffInDays = now.diff(validDate, "days");
 
     if (diffInSeconds < 60) {
       return `${diffInSeconds} giây trước`;
@@ -35,7 +39,7 @@ const Inbox = ({
     } else if (diffInDays < 7) {
       return `${diffInDays} ngày trước`;
     } else {
-      return messageDate.format("DD/MM/YY");
+      return validDate.format("DD/MM/YY");
     }
   };
 
@@ -65,20 +69,23 @@ const Inbox = ({
           conversation_id: conversation_id, // Truyền conversation_id vào params
           user_id: user_id, // Truyền user_id vào params
           receiverId: receiverId, // Truyền receiverId vào params
-          id: id, // Truyền id vào params
         })
       }
       activeOpacity={0.6}
       style={styles.container}
     >
       <View style={styles.avatarContainer}>
-        {typeof avatar === "string" || avatar?.uri ? (
-          <Image
-            source={typeof avatar === "string" ? { uri: avatar } : avatar}
-            style={styles.avatar}
-          />
+        {avatar && avatar.uri && avatar.uri !== "null" ? (
+          <Image source={{ uri: avatar.uri }} style={styles.avatar} />
         ) : (
-          avatar // Nếu avatar là một React component, render trực tiếp
+          <AvatarUser
+            fullName={receiver?.fullname || name}
+            width={50}
+            height={50}
+            avtText={20}
+            shadow={false}
+            bordered={false}
+          />
         )}
       </View>
       <View style={{ flex: 1 }}>
