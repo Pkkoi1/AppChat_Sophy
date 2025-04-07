@@ -93,7 +93,7 @@ export const api = {
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
-          
+
           JSON.stringify(response.data.user)
         );
       }
@@ -251,6 +251,20 @@ export const api = {
     } catch (error) {
       console.error(
         "Lỗi khi cập nhật thông tin người dùng:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  uploadImage: async (imageBase64) => {
+    try {
+      const response = await http.put("/users/mobile/update-avatar", {
+        imageBase64, // Gửi ảnh dưới dạng base64
+      });
+      return response.data; // Trả về dữ liệu từ API
+    } catch (error) {
+      console.error(
+        "Lỗi khi tải ảnh lên:",
         error.response?.data || error.message
       );
       throw error;
