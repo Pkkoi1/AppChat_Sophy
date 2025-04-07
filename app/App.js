@@ -28,7 +28,7 @@ import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
 import EnterName from "./screens/register/enterProfile/EnterName";
 import EnterInfo from "./screens/register/enterProfile/EnterInfo";
 import CameraScreen from "./features/camera/Camera";
-// import CameraScreen from "@/components/camera/CameraScreen";
+// import CameraScreen from "@/components/camera/CameraScreen";>
 import ScanQR from "./screens/header/headerAction/ScanQR";
 import VerificationCode from "./screens/login/VerificationCode";
 import CreateNewPassword from "./screens/login/CreateNewPassword";
