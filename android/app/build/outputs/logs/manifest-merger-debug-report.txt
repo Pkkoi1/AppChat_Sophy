@@ -36,6 +36,7 @@ MERGED from [:expo-file-system] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_mo
 MERGED from [:expo-font] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-font\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-haptics] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-haptics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-9:12
 MERGED from [:expo-image-loader] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-loader\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-image-manipulator] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-manipulator\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-image-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-57:12
 MERGED from [:expo-manifests] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-manifests\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-json-utils] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-json-utils\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
@@ -579,6 +580,8 @@ MERGED from [:expo-haptics] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_module
 MERGED from [:expo-haptics] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-haptics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-image-loader] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-loader\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-image-loader] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-loader\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-image-manipulator] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-manipulator\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-image-manipulator] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-manipulator\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-image-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:6:5-44
 MERGED from [:expo-image-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:6:5-44
 MERGED from [:expo-manifests] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-manifests\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44

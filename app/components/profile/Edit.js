@@ -19,6 +19,7 @@ import AvatarUser from "./AvatarUser";
 import { api } from "@/app/api/api";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import * as ImageManipulator from "expo-image-manipulator";
 
 import { AuthContext } from "../../auth/AuthContext"; // Import useAuth hook
 
@@ -57,19 +58,29 @@ const Edit = ({ route, navigation }) => {
 
     let avatarUrl = selectedAvatar;
 
-    // Nếu ảnh là URI, chuyển đổi sang base64 và thêm tiền tố
+    // Nếu ảnh là URI, giảm kích thước và chuyển đổi sang base64
     if (selectedAvatar && selectedAvatar.startsWith("file://")) {
       try {
-        // Đọc tệp ảnh và chuyển đổi sang base64
-        const base64Image = await FileSystem.readAsStringAsync(selectedAvatar, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
+        // Giảm kích thước ảnh
+        const manipulatedImage = await ImageManipulator.manipulateAsync(
+          selectedAvatar,
+          [{ resize: { width: 800 } }], // Resize ảnh về chiều rộng 800px
+          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG } // Nén ảnh
+        );
+
+        // Chuyển đổi ảnh đã giảm kích thước sang base64
+        const base64Image = await FileSystem.readAsStringAsync(
+          manipulatedImage.uri,
+          {
+            encoding: FileSystem.EncodingType.Base64,
+          }
+        );
 
         // Thêm tiền tố `data:image/jpeg;base64,` để phù hợp với yêu cầu của backend
         const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
 
         // Log base64 để kiểm tra
-        console.log("Base64 của ảnh:", imageBase64);
+        console.log("Base64 của ảnh (sau khi giảm kích thước):", imageBase64);
 
         // Gọi API uploadImage để tải ảnh lên
         const uploadResponse = await api.uploadImage(imageBase64);
