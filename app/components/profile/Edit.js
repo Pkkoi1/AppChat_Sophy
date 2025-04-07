@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -25,6 +26,7 @@ const Edit = ({ route, navigation }) => {
   );
   const [selectedIndex, setIndex] = useState(userInfo?.isMale ? 0 : 1);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // State để quản lý trạng thái loading
 
   if (!isReady) {
     return <Text>Loading...</Text>;
@@ -36,8 +38,9 @@ const Edit = ({ route, navigation }) => {
   };
 
   const handleSave = async () => {
+    setIsLoading(true);
     const params = {
-      //   fullname,
+      fullname,
       birthday: birthday.toISOString().split("T")[0],
       isMale: selectedIndex === 0,
     };
@@ -45,9 +48,17 @@ const Edit = ({ route, navigation }) => {
     try {
       const updatedUser = await api.updateUser(userInfo.userId, params);
       Alert.alert("Thành công", "Thông tin người dùng đã được cập nhật.");
-      navigation.goBack(); // Quay lại màn hình trước
+
+      console.log("Dữ liệu truyền về Personal:", { ...userInfo, ...params });
+
+      navigation.navigate("Personal", {
+        userInfo: { ...userInfo, ...params },
+      });
     } catch (error) {
+      console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
       Alert.alert("Lỗi", "Cập nhật thông tin thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -148,8 +159,16 @@ const Edit = ({ route, navigation }) => {
           </View>
         </View>
       </View>
-      <TouchableOpacity style={styles.editButton} onPress={handleSave}>
-        <Text style={styles.editButtonText}>Lưu</Text>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={handleSave}
+        disabled={isLoading} // Vô hiệu hóa nút khi đang loading
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#fff" /> // Hiển thị loading spinner
+        ) : (
+          <Text style={styles.editButtonText}>Lưu</Text>
+        )}
       </TouchableOpacity>
     </View>
   );

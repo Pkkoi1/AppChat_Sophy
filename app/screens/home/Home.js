@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { TabView } from "@rneui/themed";
 import ListInbox from "../inbox/ListInbox";
 import Profile from "../profile/Profile";
@@ -10,6 +10,8 @@ import HeadView from "../header/Header";
 import Footer from "../footer/Footer";
 import HomeStyle from "./HomeStyle";
 import { api } from "@/app/api/api";
+import Loading from "@/app/components/loading/Loading";
+import { useFocusEffect } from "@react-navigation/native";
 
 const Home = ({ route }) => {
   const { userId, userName, phone } = route.params;
@@ -59,8 +61,14 @@ const Home = ({ route }) => {
   };
 
   const fetchUserInfo = async () => {
+    if (Object.keys(userInfo).length > 0) {
+      console.log("User info already loaded, skipping API call.");
+      return; // Nếu đã có dữ liệu, không gọi lại API
+    }
+
     try {
       const response = await api.getUserById(userId);
+      console.log("API Response:", response.data); // Log dữ liệu trả về từ API
       if (response && response.data) {
         setUserInfo(response.data);
       } else {
@@ -75,22 +83,29 @@ const Home = ({ route }) => {
   };
 
   // Gọi hàm fetchUserInfo khi component được mount
-  useEffect(() => {
-    fetchUserInfo(); // Gọi hàm để lấy thông tin người dùng
-  }, []); // Chỉ gọi một lần khi component được mount
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserInfo(); // Gọi lại API khi màn hình được focus
+    }, [])
+  );
 
   return (
     <View style={HomeStyle.homeContainer}>
-      <HeadView page={screens[index].name} userInfo={userInfo} />
-
-      <TabView value={index} onChange={setIndex} animationType="spring">
-        {screens.map((screen, idx) => (
-          <TabView.Item key={idx} style={{ width: "100%" }}>
-            {screen.component}
-          </TabView.Item>
-        ))}
-      </TabView>
-      <Footer setCurrentScreen={setCurrentScreen} />
+      {Object.keys(userInfo).length === 0 ? ( // Kiểm tra nếu userInfo rỗng
+        <Loading /> // Hiển thị giao diện loading
+      ) : (
+        <>
+          <HeadView page={screens[index].name} userInfo={userInfo} />
+          <TabView value={index} onChange={setIndex} animationType="spring">
+            {screens.map((screen, idx) => (
+              <TabView.Item key={idx} style={{ width: "100%" }}>
+                {screen.component}
+              </TabView.Item>
+            ))}
+          </TabView>
+          <Footer setCurrentScreen={setCurrentScreen} />
+        </>
+      )}
     </View>
   );
 };

@@ -237,13 +237,16 @@ export const api = {
   // /update-user/info
   updateUser: async (userId, params) => {
     try {
-      const response = await http.put(
-        `/users/update-user/info/${userId}`,
-        params
-      );
+      const response = await http.put(`/users/mobile/update-info`, {
+        userId,
+        ...params, // Truyền các trường cần cập nhật từ params
+      });
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
+      console.error(
+        "Lỗi khi cập nhật thông tin người dùng:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
