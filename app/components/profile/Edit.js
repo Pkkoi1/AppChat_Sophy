@@ -18,6 +18,7 @@ import Color from "../colors/Color";
 import AvatarUser from "./AvatarUser";
 import { api } from "@/app/api/api";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 import { AuthContext } from "../../auth/AuthContext"; // Import useAuth hook
 
@@ -56,20 +57,22 @@ const Edit = ({ route, navigation }) => {
 
     let avatarUrl = selectedAvatar;
 
-    // Nếu ảnh là URI, chuyển đổi sang base64 và tải lên
+    // Nếu ảnh là URI, chuyển đổi sang base64 và thêm tiền tố
     if (selectedAvatar && selectedAvatar.startsWith("file://")) {
       try {
-        const response = await fetch(selectedAvatar);
-        const blob = await response.blob();
-        const reader = new FileReader();
-
-        const base64Image = await new Promise((resolve) => {
-          reader.onloadend = () => resolve(reader.result.split(",")[1]); // Lấy phần base64
-          reader.readAsDataURL(blob);
+        // Đọc tệp ảnh và chuyển đổi sang base64
+        const base64Image = await FileSystem.readAsStringAsync(selectedAvatar, {
+          encoding: FileSystem.EncodingType.Base64,
         });
 
+        // Thêm tiền tố `data:image/jpeg;base64,` để phù hợp với yêu cầu của backend
+        const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
+
+        // Log base64 để kiểm tra
+        console.log("Base64 của ảnh:", imageBase64);
+
         // Gọi API uploadImage để tải ảnh lên
-        const uploadResponse = await api.uploadImage(base64Image);
+        const uploadResponse = await api.uploadImage(imageBase64);
         avatarUrl = uploadResponse.urlavatar; // Lấy URL ảnh từ phản hồi API
       } catch (error) {
         console.error("Lỗi khi tải ảnh lên:", error.message);
