@@ -4,12 +4,12 @@ import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const OptionHeader = ({ title, previousScreen, params }) => {
+const OptionHeader = ({ title, previousScreen }) => {
   const navigation = useNavigation();
 
   const handleGoBack = () => {
     if (previousScreen) {
-      navigation.navigate(previousScreen, params); // Quay lại màn hình trước với dữ liệu
+      navigation.navigate(previousScreen); // Quay lại màn hình trước với dữ liệu
     } else {
       navigation.goBack(); // Quay lại màn hình trước mặc định
     }

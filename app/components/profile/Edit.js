@@ -1,5 +1,5 @@
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   View,
   Text,
@@ -17,9 +17,12 @@ import Feather from "@expo/vector-icons/Feather";
 import Color from "../colors/Color";
 import AvatarUser from "./AvatarUser";
 import { api } from "@/app/api/api";
+import { AuthContext } from "../../auth/AuthContext"; // Import useAuth hook
 
 const Edit = ({ route, navigation }) => {
-  const { userInfo, isReady = true } = route.params || {};
+  const { isReady = true } = route.params || {};
+  const { userInfo, updateUserInfo } = useContext(AuthContext);
+
   const [fullname, setFullname] = useState(userInfo?.fullname || "");
   const [birthday, setBirthday] = useState(
     new Date(userInfo?.birthday || "2000-01-01")
@@ -50,10 +53,8 @@ const Edit = ({ route, navigation }) => {
       Alert.alert("Thành công", "Thông tin người dùng đã được cập nhật.");
 
       console.log("Dữ liệu truyền về Personal:", { ...userInfo, ...params });
-
-      navigation.navigate("Personal", {
-        userInfo: { ...userInfo, ...params },
-      });
+      updateUserInfo({ ...userInfo, ...params });
+      navigation.navigate("Personal");
     } catch (error) {
       console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
       Alert.alert("Lỗi", "Cập nhật thông tin thất bại. Vui lòng thử lại.");

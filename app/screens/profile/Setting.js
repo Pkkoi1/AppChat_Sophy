@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import { api } from "@/app/api/api";
+import { AuthContext } from "@/app/auth/AuthContext"; // Import useAuth hook
 
 const settings = [
   {
@@ -31,27 +32,10 @@ const settings = [
   { id: "13", title: "Chuyển tài khoản", icon: "swap-horizontal" },
 ];
 
-const Setting = ({ route, navigation }) => {
-  const [userInfo, setUserInfo] = useState(route.params?.userInfo || {});
+const Setting = ({ navigation }) => {
+  const { userInfo } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (!userInfo || Object.keys(userInfo).length === 0) {
-      fetchUserInfo(); // Lấy thông tin người dùng nếu chưa có
-    }
-  }, []);
-
-  const fetchUserInfo = async () => {
-    try {
-      const response = await api.getUserById(route.params?.userId);
-      if (response && response.data) {
-        setUserInfo(response.data);
-      } else {
-        console.error("Không tìm thấy thông tin người dùng.");
-      }
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin người dùng:", error);
-    }
-  };
+  // const [userInfo, setUserInfo] = useState(route.params?.userInfo || {});
 
   const handleLogout = async () => {
     try {
@@ -102,11 +86,7 @@ const Setting = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <OptionHeader
-        title={"Cài đặt"}
-        previousScreen="Home"
-        params={{ userId: userInfo?.userId }}
-      />
+      <OptionHeader title={"Cài đặt"} previousScreen="Home" />
 
       <FlatList
         data={settings}
