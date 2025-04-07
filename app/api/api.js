@@ -91,6 +91,10 @@ export const api = {
         // Lưu accessToken và refreshToken vào AsyncStorage
         await AsyncStorage.setItem("authToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
+        await AsyncStorage.setItem(
+          "userInfo",
+          JSON.stringify(response.data.user)
+        );
       }
 
       return response;
@@ -181,6 +185,7 @@ export const api = {
       // Xóa token khỏi AsyncStorage
       await AsyncStorage.removeItem("authToken");
       await AsyncStorage.removeItem("refreshToken");
+      await AsyncStorage.removeItem("userInfo");
     } catch (error) {
       console.error("Lỗi khi gọi API logout:", error);
     }

@@ -35,6 +35,7 @@ import CreateNewPassword from "./screens/login/CreateNewPassword";
 import AccountAndSecurityScreen from "./screens/profile/accountAndSecurity/AccountAndSecurityScreen";
 import Personal from "./screens/profile/personal/Personal";
 import Edit from "./components/profile/Edit";
+import AuthLoading from "./auth/AuthLoading";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +48,8 @@ function RootLayout() {
           animation: "fade", // Tắt hoạt ảnh chuyển cảnh
         }}
       >
+        <Stack.Screen name="AuthLoading" component={AuthLoading} />
+
         <Stack.Screen name="Main" component={Main} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
