@@ -8,6 +8,7 @@ import { useState } from "react";
 import Color from "@/app/components/colors/Color";
 import { LinearGradient } from "expo-linear-gradient";
 import Account from "./account/Account";
+import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 
 const AccountAndSecurityScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -25,17 +26,13 @@ const AccountAndSecurityScreen = ({ route }) => {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >
-        <View style={styles.header}>
-          <Ionicons
-            name="arrow-back"
-            size={24}
-            color="white"
-            onPress={() => navigation.goBack()}
-          />
-          <Text style={styles.headerTitle}>
-            Tài khoản và bảo mật
-          </Text>
-        </View>
+        <OptionHeader
+          title={"Tài khoản và bảo mật"}
+          previousScreen={"Setting"}
+          params={{
+            userInfo: userInfo,
+          }}
+        />
       </LinearGradient>
       <ScrollView>
         <Account userInfo={userInfo} navigation={navigation} />

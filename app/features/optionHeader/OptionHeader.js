@@ -1,10 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native"; // Thay thế expo-routerimport React from "react";
+import { useNavigation } from "@react-navigation/native";
+import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-const OptionHeader = ({ title }) => {
+const OptionHeader = ({ title, previousScreen, params }) => {
   const navigation = useNavigation();
+
+  const handleGoBack = () => {
+    if (previousScreen) {
+      navigation.navigate(previousScreen, params); // Quay lại màn hình trước với dữ liệu
+    } else {
+      navigation.goBack(); // Quay lại màn hình trước mặc định
+    }
+  };
+
   return (
     <LinearGradient
       colors={["#1f7bff", "#12bcfa"]}
@@ -16,7 +26,7 @@ const OptionHeader = ({ title }) => {
           name="arrow-back"
           size={24}
           color="white"
-          onPress={() => navigation.goBack()}
+          onPress={handleGoBack}
         />
         <Text style={styles.headerTitle}>{title}</Text>
       </View>

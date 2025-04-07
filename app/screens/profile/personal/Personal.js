@@ -1,6 +1,6 @@
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -16,7 +16,21 @@ import Octicons from "@expo/vector-icons/Octicons";
 import Color from "@/app/components/colors/Color";
 
 const Personal = ({ route, navigation }) => {
-  const { userInfo, isReady = true } = route.params || {};
+  const [userInfo, setUserInfo] = useState(route.params?.userInfo || {});
+  const { isReady = true } = route.params || {};
+  const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
+
+  useEffect(() => {
+    if (route.params?.userInfo) {
+      setIsLoading(true); // Bắt đầu loading
+      setUserInfo(route.params.userInfo);
+      setIsLoading(false); // Kết thúc loading
+    }
+  }, [route.params?.userInfo]);
+
+  if (isLoading) {
+    return <Text>Loading...</Text>; // Hiển thị trạng thái loading
+  }
 
   const info = [
     {
@@ -59,7 +73,13 @@ const Personal = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <OptionHeader title={"Thông tin cá nhân"} />
+      <OptionHeader
+        title={"Thông tin cá nhân"}
+        previousScreen="AccountAndSecurity" // Tên màn hình trước
+        params={{
+          userInfo: userInfo, // Dữ liệu cần truyền về
+        }}
+      />
       <View style={styles.content}>
         <View style={styles.avatar}>
           {userInfo?.urlavatar ? (
