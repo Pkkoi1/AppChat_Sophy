@@ -54,46 +54,38 @@ const Edit = ({ route, navigation }) => {
 
   const handleSave = async () => {
     setIsLoading(true);
-
-    let avatarUrl = selectedAvatar;
-
-    // Nếu ảnh là URI, chuyển đổi sang base64 và thêm tiền tố
-    if (selectedAvatar && selectedAvatar.startsWith("file://")) {
-      try {
-        // Đọc tệp ảnh và chuyển đổi sang base64
+    let pesoudoAvatar = null;
+    try {
+      // Nếu có ảnh mới được chọn, tải ảnh lên trước
+      if (selectedAvatar && selectedAvatar.startsWith("file://")) {
         const base64Image = await FileSystem.readAsStringAsync(selectedAvatar, {
           encoding: FileSystem.EncodingType.Base64,
         });
 
         // Thêm tiền tố `data:image/jpeg;base64,` để phù hợp với yêu cầu của backend
         const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
+        const responeAVT = await api.uploadImage(imageBase64);
 
-        // Log base64 để kiểm tra
-        console.log("Base64 của ảnh:", imageBase64);
-
-        // Gọi API uploadImage để tải ảnh lên
-        const uploadResponse = await api.uploadImage(imageBase64);
-        avatarUrl = uploadResponse.urlavatar; // Lấy URL ảnh từ phản hồi API
-      } catch (error) {
-        console.error("Lỗi khi tải ảnh lên:", error.message);
-        Alert.alert("Lỗi", "Không thể tải ảnh lên. Vui lòng thử lại.");
-        setIsLoading(false);
-        return;
+        pesoudoAvatar = responeAVT.user.urlavatar;
       }
-    }
 
-    // Cập nhật thông tin người dùng với URL ảnh
-    const params = {
-      fullname,
-      birthday: birthday.toISOString().split("T")[0],
-      isMale: selectedIndex === 0,
-      urlavatar: avatarUrl, // Sử dụng URL ảnh từ API
-    };
+      // Cập nhật thông tin người dùng (không bao gồm hình ảnh)
+      const params = {
+        fullname,
+        birthday: birthday.toISOString().split("T")[0],
+        isMale: selectedIndex === 0,
+      };
 
-    try {
-      const updatedUser = await api.updateUser(userInfo.userId, params);
+      const pesoudoParams = {
+        fullname: fullname,
+        birthday: birthday.toISOString().split("T")[0],
+        isMale: selectedIndex === 0,
+        urlavatar: pesoudoAvatar || userInfo.urlavatar, // Sử dụng avatar mới nếu có
+      };
+
+      await api.updateUser(userInfo.userId, params);
       Alert.alert("Thành công", "Thông tin người dùng đã được cập nhật.");
-      updateUserInfo({ ...userInfo, ...params });
+      updateUserInfo({ ...userInfo, ...pesoudoParams });
       navigation.navigate("Personal");
     } catch (error) {
       console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
