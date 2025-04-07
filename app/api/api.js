@@ -93,6 +93,7 @@ export const api = {
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
+          
           JSON.stringify(response.data.user)
         );
       }
