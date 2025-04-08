@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import { api } from "@/app/api/api";
@@ -17,6 +18,7 @@ const UpdatePassword = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
   const { authToken, logout, userInfo, login } = useContext(AuthContext);
 
   const handlePasswordUpdate = async () => {
@@ -25,53 +27,57 @@ const UpdatePassword = ({ navigation }) => {
       return;
     }
 
-    if (newPassword === confirmPassword && newPassword.length >= 6) {
-      try {
-        const response = await api.changePassword(
-          (userId = userInfo.userId),
-          currentPassword,
-          newPassword
-        );
-        if (response.message === "Password changed successfully") {
-          // Đăng nhập lại với mật khẩu mới
-          try {
-            await logout();
-            await login({
-              phone: userInfo.phone,
-              password: newPassword,
-            });
+    if (newPassword !== confirmPassword) {
+      setErrorMessage("Mật khẩu mới không khớp.");
+      return;
+    }
 
-            Alert.alert("Thành công", "Mật khẩu đã được cập nhật thành công!");
-            navigation.goBack();
-          } catch (loginError) {
-            console.error("Lỗi khi đăng nhập lại:", loginError);
-            Alert.alert("Lỗi", "Không thể đăng nhập lại. Vui lòng thử lại.");
-          }
-        } else {
-          setErrorMessage(
-            response.message || "Không thể cập nhật mật khẩu. Vui lòng thử lại."
-          );
+    if (newPassword.length < 6) {
+      setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
+      return;
+    }
+
+    setIsLoading(true); // Bắt đầu loading
+    try {
+      const response = await api.changePassword(
+        userInfo.userId,
+        currentPassword,
+        newPassword
+      );
+
+      if (response.message === "Password changed successfully") {
+        try {
+          await logout();
+          await login({
+            phone: userInfo.phone,
+            password: newPassword,
+          });
+
+          Alert.alert("Thành công", "Mật khẩu đã được cập nhật thành công!");
+          navigation.navigate("AccountAndSecurity");
+        } catch (loginError) {
+          console.error("Lỗi khi đăng nhập lại:", loginError);
+          Alert.alert("Lỗi", "Không thể đăng nhập lại. Vui lòng thử lại.");
         }
-      } catch (error) {
-        if (
-          error.message === "Không tìm thấy authToken. Yêu cầu đăng nhập lại."
-        ) {
-          Alert.alert("Phiên đăng nhập hết hạn", "Vui lòng đăng nhập lại.", [
-            { text: "OK", onPress: () => logout() },
-          ]);
-        }
+      } else {
         setErrorMessage(
-          error.message || "Có lỗi xảy ra khi cập nhật mật khẩu."
+          response.message || "Không thể cập nhật mật khẩu. Vui lòng thử lại."
         );
       }
-    } else {
-      if (newPassword !== confirmPassword) {
-        setErrorMessage("Mật khẩu mới không khớp.");
-      } else {
-        setErrorMessage("Mật khẩu phải có ít nhất 6 ký tự.");
+    } catch (error) {
+      if (
+        error.message === "Không tìm thấy authToken. Yêu cầu đăng nhập lại."
+      ) {
+        Alert.alert("Phiên đăng nhập hết hạn", "Vui lòng đăng nhập lại.", [
+          { text: "OK", onPress: () => logout() },
+        ]);
       }
+      setErrorMessage(error.message || "Có lỗi xảy ra khi cập nhật mật khẩu.");
+    } finally {
+      setIsLoading(false); // Kết thúc loading
     }
   };
+
   return (
     <View style={styles.container}>
       <OptionHeader
@@ -126,18 +132,22 @@ const UpdatePassword = ({ navigation }) => {
       {errorMessage ? (
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       ) : null}
-      <TouchableOpacity
-        style={[
-          styles.updateButton,
-          currentPassword && newPassword && confirmPassword
-            ? styles.updateButtonEnabled
-            : null,
-        ]}
-        onPress={handlePasswordUpdate}
-        disabled={!currentPassword || !newPassword || !confirmPassword}
-      >
-        <Text style={styles.updateButtonText}>CẬP NHẬT</Text>
-      </TouchableOpacity>
+      {isLoading ? ( // Hiển thị loading khi đang xử lý
+        <ActivityIndicator size="large" color="#007AFF" />
+      ) : (
+        <TouchableOpacity
+          style={[
+            styles.updateButton,
+            currentPassword && newPassword && confirmPassword
+              ? styles.updateButtonEnabled
+              : null,
+          ]}
+          onPress={handlePasswordUpdate}
+          disabled={!currentPassword || !newPassword || !confirmPassword}
+        >
+          <Text style={styles.updateButtonText}>CẬP NHẬT</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -150,19 +160,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     color: "#6C757D",
-    textAlign: "center",
-    marginBottom: 15,
-    backgroundColor: "#F0F4F3",
-    width: "100%",
-    height: 40,
-    lineHeight: 40,
-  },
-  inputContainer: {
-    width: "100%",
-  },
-  inputLabelContainer: {
-    flexDirection: "row",
-    alignItems: "center",
     textAlign: "center",
     marginBottom: 15,
     backgroundColor: "#F0F4F3",

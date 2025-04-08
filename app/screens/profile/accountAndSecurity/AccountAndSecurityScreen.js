@@ -40,7 +40,7 @@ const AccountAndSecurityScreen = ({ route }) => {
         />
       </LinearGradient>
       <ScrollView>
-        <Account userInfo={userInfo} navigation={navigation} />
+        <Account navigation={navigation} />
         <Security navigation={navigation} />
         <Login navigation={navigation} />
       </ScrollView>
@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontWeight: "500",
   },
-  
 });
 
 export default AccountAndSecurityScreen;

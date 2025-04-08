@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import AvatarUser from "@/app/components/profile/AvatarUser"; // Đường dẫn đến AvatarUser
 import Color from "@/app/components/colors/Color";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-const Account = ({ userInfo, navigation }) => {
+import { AuthContext } from "@/app/auth/AuthContext";
+
+const Account = ({ navigation }) => {
+  const { userInfo } = useContext(AuthContext); // Lấy thông tin người dùng từ AuthContext
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>Tài khoản</Text>
@@ -48,7 +51,7 @@ const Account = ({ userInfo, navigation }) => {
         <AntDesign name="phone" size={24} color="grey" style={styles.icon} />
         <View style={styles.textContainer}>
           <Text style={styles.infoText}>Số điện thoại</Text>
-          <Text style={styles.infoValue}>(+84) 792 764 303</Text>
+          <Text style={styles.infoValue}>{userInfo?.phone}</Text>
         </View>
         <AntDesign name="right" size={20} color="grey" />
       </TouchableOpacity>
