@@ -10,7 +10,7 @@ import {
 import auth from "@react-native-firebase/auth";
 
 const VerifyOTPCode = ({ route, navigation }) => {
-  const { phoneNumber, otpass } = route.params; // Nhận verificationId từ route.params
+  const { phoneNumber, otpass, otpId } = route.params; // Nhận verificationId từ route.params
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
 
@@ -58,15 +58,27 @@ const VerifyOTPCode = ({ route, navigation }) => {
     const enteredOtp = otp.join(""); // Ghép các số OTP thành chuỗi
     if (enteredOtp.length === 6) {
       try {
-        // Xác thực OTP bằng verificationId và mã OTP
-        // const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
-        // await auth().signInWithCredential(credential);
+        // if (enteredOtp == otpass) {
+        //   Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
+        //   navigation.navigate("EnterName", {
+        //     phoneNumber,
+        //   });
+        // }
+        //---------------
+        Alert.alert("Đang xử lý", "Vui lòng chờ trong giây lát...");
 
-        if (enteredOtp == otpass) {
+        // Xác thực OTP bằng verificationId và mã OTP
+        const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
+        await auth().signInWithCredential(credential);
+
+        // Kiểm tra mã OTP với mã được gửi
+        if (enteredOtp === otpass) {
           Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
           navigation.navigate("EnterName", {
             phoneNumber,
           });
+        } else {
+          Alert.alert("Lỗi", "Mã OTP không khớp. Vui lòng thử lại.");
         }
       } catch (error) {
         console.error("Error verifying OTP:", error.message);
