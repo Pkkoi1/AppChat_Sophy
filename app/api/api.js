@@ -144,6 +144,9 @@ export const api = {
       return newAccessToken;
     } catch (error) {
       console.error("Lỗi khi làm mới token:", error.message);
+      if (error.response && error.response.status === 404) {
+        throw new Error("Không tìm thấy tài nguyên làm mới token. Vui lòng đăng nhập lại.");
+      }
       throw error;
     }
   },
@@ -310,9 +313,20 @@ export const api = {
         throw new Error(errorMessage);
       }
 
+      if (response.data && response.data.newRefreshToken && response.data.newAccessToken) {
+        await AsyncStorage.setItem("refreshToken", response.data.newRefreshToken);
+        await AsyncStorage.setItem("authToken", response.data.newAccessToken);
+      } else {
+        console.warn("New refresh token or access token not found in response.data");
+       
+      }
+
       return { message: "Password changed successfully" , data: response.data};
     } catch (error) {
       console.error("Lỗi khi thay đổi mật khẩu:", error.message);
+      if (error.response && error.response.status === 404) {
+        throw new Error("Không tìm thấy tài nguyên thay đổi mật khẩu. Vui lòng đăng nhập lại.");
+      }
       throw error;
     }
   },
