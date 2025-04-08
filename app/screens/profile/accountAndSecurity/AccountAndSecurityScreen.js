@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import React from "react";
+import React, { useContext } from "react";
 import { FlatList, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -8,11 +8,15 @@ import { useState } from "react";
 import Color from "@/app/components/colors/Color";
 import { LinearGradient } from "expo-linear-gradient";
 import Account from "./account/Account";
+import OptionHeader from "@/app/features/optionHeader/OptionHeader";
+import { AuthContext } from "@/app/auth/AuthContext"; // Import useAuth hook
 
 const AccountAndSecurityScreen = ({ route }) => {
   const navigation = useNavigation();
   // const route = useRoute();
-  const { userInfo } = route.params;
+  // const { userInfo } = route.params;
+  const { userInfo } = useContext(AuthContext);
+
   const [user, setUser] = useState({});
   const [userId, setUserId] = useState(null);
   const [avatar, setAvatar] = useState(null);
@@ -25,17 +29,13 @@ const AccountAndSecurityScreen = ({ route }) => {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
       >
-        <View style={styles.header}>
-          <Ionicons
-            name="arrow-back"
-            size={24}
-            color="white"
-            onPress={() => navigation.goBack()}
-          />
-          <Text style={styles.headerTitle}>
-            Tài khoản và bảo mật
-          </Text>
-        </View>
+        <OptionHeader
+          title={"Tài khoản và bảo mật"}
+          previousScreen={"Setting"}
+          params={{
+            userInfo: userInfo,
+          }}
+        />
       </LinearGradient>
       <ScrollView>
         <Account userInfo={userInfo} navigation={navigation} />

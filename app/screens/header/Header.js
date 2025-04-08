@@ -99,7 +99,9 @@ const HeadView = ({ page, userInfo }) => {
     >
       {page === "Setting" ? (
         <>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Profile", { userInfo })}
+          >
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <Text style={HeaderStyle().setting}>Cài đặt</Text>

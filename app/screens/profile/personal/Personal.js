@@ -1,6 +1,6 @@
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
-import React from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   StyleSheet,
@@ -9,14 +9,21 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-
-const { height: screenHeight, width: screenWidth } = Dimensions.get("window"); // Lấy chiều cao và chiều rộng màn hình
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Octicons from "@expo/vector-icons/Octicons";
 import Color from "@/app/components/colors/Color";
+import { AuthContext } from "../../../auth/AuthContext"; // Import useAuth hook
 
-const Personal = ({ route, navigation }) => {
-  const { userInfo, isReady = true } = route.params || {};
+const { height: screenHeight, width: screenWidth } = Dimensions.get("window"); // Lấy chiều cao và chiều rộng màn hình
+
+const Personal = ({ navigation }) => {
+  // Lấy userInfo từ AuthContext
+  const { userInfo } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
+
+  if (isLoading) {
+    return <Text>Loading...</Text>; // Hiển thị trạng thái loading
+  }
 
   const info = [
     {
@@ -53,13 +60,13 @@ const Personal = ({ route, navigation }) => {
     },
   ];
 
-  if (!isReady) {
-    return <Text>Loading...</Text>;
-  }
-
   return (
     <View style={styles.container}>
-      <OptionHeader title={"Thông tin cá nhân"} />
+      <OptionHeader
+        title={"Thông tin cá nhân"}
+        previousScreen={"AccountAndSecurity"}
+        navigation={navigation}
+      />
       <View style={styles.content}>
         <View style={styles.avatar}>
           {userInfo?.urlavatar ? (
@@ -95,9 +102,7 @@ const Personal = ({ route, navigation }) => {
         <TouchableOpacity
           style={styles.editButton}
           onPress={() => {
-            navigation.navigate("Edit", {
-              userInfo: userInfo,
-            });
+            navigation.navigate("Edit");
           }}
         >
           <MaterialCommunityIcons
@@ -163,7 +168,6 @@ const styles = StyleSheet.create({
   },
   infoName: {
     fontSize: 16,
-    // fontWeight: "bold",
     color: Color.gray,
   },
   infoValue: {

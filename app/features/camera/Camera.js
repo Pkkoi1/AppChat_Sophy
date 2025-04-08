@@ -8,7 +8,7 @@ import { useMediaLibraryPermissions } from "expo-image-picker";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "expo-router";
 
-const CameraScreen = () => {
+const CameraScreen = ({ navigation }) => {
   const cameraRef = useRef(null);
   const [cameraPermission, setCameraPermission] = useCameraPermissions(null);
   const [mediaLibraryPermission, setMediaLibraryPermission] =
@@ -21,7 +21,7 @@ const CameraScreen = () => {
   };
 
   const toggleExit = () => {
-    // navigation.goBack();
+    navigation.goBack();
     console.log("Exit camera");
   };
   useEffect(() => {
@@ -57,6 +57,12 @@ const CameraScreen = () => {
       setPhoto(newPhoto);
     }
   };
+  const usePicture = () => {
+    if (photo) {
+      console.log(photo.uri);
+      navigation.navigate("Edit", { photoUri: photo.uri }); // Truyền URI ảnh về Edit
+    }
+  };
 
   const sharePicture = async () => {
     if (photo) {
@@ -88,6 +94,9 @@ const CameraScreen = () => {
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setPhoto(null)} style={styles.button}>
           <Text style={styles.buttonText}>Chụp lại</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={usePicture} style={styles.button}>
+          <Text style={styles.buttonText}>Sử dụng ảnh</Text>
         </TouchableOpacity>
       </View>
     );

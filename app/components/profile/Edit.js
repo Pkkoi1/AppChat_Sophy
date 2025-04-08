@@ -1,5 +1,5 @@
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { CheckBox } from "@rneui/themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -16,19 +17,35 @@ import Feather from "@expo/vector-icons/Feather";
 import Color from "../colors/Color";
 import AvatarUser from "./AvatarUser";
 import { api } from "@/app/api/api";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+
+import { AuthContext } from "../../auth/AuthContext"; // Import useAuth hook
 
 const Edit = ({ route, navigation }) => {
-  const { userInfo, isReady = true } = route.params || {};
+  const { isReady = true } = route.params || {};
+  const { userInfo, updateUserInfo } = useContext(AuthContext);
+  const { photoUri } = route.params || {}; // Nhận URI ảnh từ CameraScreen
+
   const [fullname, setFullname] = useState(userInfo?.fullname || "");
   const [birthday, setBirthday] = useState(
     new Date(userInfo?.birthday || "2000-01-01")
   );
+  const [selectedAvatar, setSelectedAvatar] = useState(
+    userInfo?.urlavatar || null
+  );
   const [selectedIndex, setIndex] = useState(userInfo?.isMale ? 0 : 1);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // State để quản lý trạng thái loading
 
   if (!isReady) {
     return <Text>Loading...</Text>;
   }
+  useEffect(() => {
+    if (photoUri) {
+      setSelectedAvatar(photoUri); // Cập nhật avatar khi nhận ảnh từ CameraScreen
+    }
+  }, [photoUri]);
 
   const onDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
@@ -36,18 +53,93 @@ const Edit = ({ route, navigation }) => {
   };
 
   const handleSave = async () => {
-    const params = {
-      //   fullname,
-      birthday: birthday.toISOString().split("T")[0],
-      isMale: selectedIndex === 0,
-    };
-
+    setIsLoading(true);
+    let pesoudoAvatar = null;
     try {
-      const updatedUser = await api.updateUser(userInfo.userId, params);
+      // Nếu có ảnh mới được chọn, tải ảnh lên trước
+      if (selectedAvatar && selectedAvatar.startsWith("file://")) {
+        const base64Image = await FileSystem.readAsStringAsync(selectedAvatar, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        // Thêm tiền tố `data:image/jpeg;base64,` để phù hợp với yêu cầu của backend
+        const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
+        const responeAVT = await api.uploadImage(imageBase64);
+
+        pesoudoAvatar = responeAVT.user.urlavatar;
+      }
+
+      // Cập nhật thông tin người dùng (không bao gồm hình ảnh)
+      const params = {
+        fullname,
+        birthday: birthday.toISOString().split("T")[0],
+        isMale: selectedIndex === 0,
+      };
+
+      const pesoudoParams = {
+        fullname: fullname,
+        birthday: birthday.toISOString().split("T")[0],
+        isMale: selectedIndex === 0,
+        urlavatar: pesoudoAvatar || userInfo.urlavatar, // Sử dụng avatar mới nếu có
+      };
+
+      await api.updateUser(userInfo.userId, params);
       Alert.alert("Thành công", "Thông tin người dùng đã được cập nhật.");
-      navigation.goBack(); // Quay lại màn hình trước
+      updateUserInfo({ ...userInfo, ...pesoudoParams });
+      navigation.navigate("Personal");
     } catch (error) {
+      console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
       Alert.alert("Lỗi", "Cập nhật thông tin thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleCameraPress = async () => {
+    Alert.alert(
+      "Chọn ảnh",
+      "Bạn muốn thực hiện hành động nào?",
+      [
+        {
+          text: "Chụp hình",
+          onPress: () => openCamera(),
+        },
+        {
+          text: "Chọn từ thư viện",
+          onPress: () => openImageLibrary(),
+        },
+        {
+          text: "Hủy",
+          style: "cancel",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const openCamera = async () => {
+    navigation.navigate("CameraScreen");
+  };
+
+  const openImageLibrary = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert(
+        "Quyền truy cập bị từ chối",
+        "Ứng dụng cần quyền truy cập thư viện ảnh."
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedAvatar(result.assets[0].uri); // Cập nhật avatar với URI ảnh
     }
   };
 
@@ -58,9 +150,9 @@ const Edit = ({ route, navigation }) => {
         {/* Cột 1: Avatar */}
         <View style={styles.columnAvatar}>
           <View style={styles.avatar}>
-            {userInfo?.urlavatar ? (
+            {selectedAvatar ? (
               <Image
-                source={{ uri: userInfo.urlavatar }}
+                source={{ uri: selectedAvatar }}
                 style={styles.avatarImage}
               />
             ) : (
@@ -74,7 +166,10 @@ const Edit = ({ route, navigation }) => {
               />
             )}
           </View>
-          <TouchableOpacity style={styles.changeAvatarButton}>
+          <TouchableOpacity
+            style={styles.changeAvatarButton}
+            onPress={handleCameraPress} // Gọi hàm xử lý camera
+          >
             <Text style={styles.changeAvatarText}>
               <Feather name="camera" size={24} color="black" />
             </Text>
@@ -120,7 +215,10 @@ const Edit = ({ route, navigation }) => {
                 value={birthday}
                 mode="date"
                 display="default"
-                onChange={onDateChange}
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) setBirthday(selectedDate);
+                }}
               />
             )}
           </View>
@@ -148,13 +246,20 @@ const Edit = ({ route, navigation }) => {
           </View>
         </View>
       </View>
-      <TouchableOpacity style={styles.editButton} onPress={handleSave}>
-        <Text style={styles.editButtonText}>Lưu</Text>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={handleSave}
+        disabled={isLoading} // Vô hiệu hóa nút khi đang loading
+      >
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#fff" /> // Hiển thị loading spinner
+        ) : (
+          <Text style={styles.editButtonText}>Lưu</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

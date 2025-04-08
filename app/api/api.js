@@ -91,6 +91,11 @@ export const api = {
         // Lưu accessToken và refreshToken vào AsyncStorage
         await AsyncStorage.setItem("authToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
+        await AsyncStorage.setItem(
+          "userInfo",
+
+          JSON.stringify(response.data.user)
+        );
       }
 
       return response;
@@ -181,6 +186,7 @@ export const api = {
       // Xóa token khỏi AsyncStorage
       await AsyncStorage.removeItem("authToken");
       await AsyncStorage.removeItem("refreshToken");
+      await AsyncStorage.removeItem("userInfo");
     } catch (error) {
       console.error("Lỗi khi gọi API logout:", error);
     }
@@ -237,13 +243,30 @@ export const api = {
   // /update-user/info
   updateUser: async (userId, params) => {
     try {
-      const response = await http.put(
-        `/users/update-user/info/${userId}`,
-        params
-      );
+      const response = await http.put(`/users/mobile/update-info`, {
+        userId,
+        ...params, // Truyền các trường cần cập nhật từ params
+      });
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
+      console.error(
+        "Lỗi khi cập nhật thông tin người dùng:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  uploadImage: async (imageBase64) => {
+    try {
+      const response = await http.put("/users/mobile/update-avatar", {
+        imageBase64, // Gửi ảnh dưới dạng base64
+      });
+      return response.data; // Trả về dữ liệu từ API
+    } catch (error) {
+      console.error(
+        "Lỗi khi tải ảnh lên:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },

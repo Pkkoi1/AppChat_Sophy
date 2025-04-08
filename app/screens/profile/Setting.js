@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -7,10 +7,9 @@ import {
   StyleSheet,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import HeadView from "../header/Header";
-
+import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import { api } from "@/app/api/api";
-import { useNavigation } from "expo-router";
+import { AuthContext } from "@/app/auth/AuthContext"; // Import useAuth hook
 
 const settings = [
   {
@@ -33,19 +32,18 @@ const settings = [
   { id: "13", title: "Chuyển tài khoản", icon: "swap-horizontal" },
 ];
 
-const Setting = ({ route, navigation }) => {
-  const { userInfo } = route.params; // Lấy userInfo từ route.params
+const Setting = ({ navigation }) => {
+  const { userInfo } = useContext(AuthContext);
+
+  // const [userInfo, setUserInfo] = useState(route.params?.userInfo || {});
 
   const handleLogout = async () => {
     try {
-      // Gọi API để đăng xuất
       await api.logout();
       console.log("Đăng xuất thành công");
-
-      // Chuyển hướng người dùng về màn hình đăng nhập
       navigation.reset({
         index: 0,
-        routes: [{ name: "Login" }], // Thay "LoginScreen" bằng tên màn hình đăng nhập của bạn
+        routes: [{ name: "Login" }],
       });
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
@@ -69,10 +67,7 @@ const Setting = ({ route, navigation }) => {
           navigation.navigate(item.screen, { userInfo }); // Truyền userInfo
         } else if (item.id === "12") {
           navigation.navigate("Support");
-        } else if (item.id === "1") {
-          navigation.navigate("AccountAndSecurity", { userInfo }); // Truyền userInfo
         }
-        console.log(userInfo); // Log the title of the clicked item}
       }}
     >
       <View style={styles.leftContainer}>
@@ -91,13 +86,13 @@ const Setting = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <HeadView page={"Setting"} />
+      <OptionHeader title={"Cài đặt"} previousScreen="Home" />
+
       <FlatList
         data={settings}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         style={styles.list}
-        // Add keyExtractor to give a unique key for each item
       />
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Ionicons name="log-out" size={20} color="#000" />
@@ -112,6 +107,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  userInfoText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginVertical: 10,
+  },
   list: {
     marginTop: 20,
   },
@@ -121,11 +122,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 15,
     paddingHorizontal: 20,
-    borderBottomWidth: 1, // Default border width
+    borderBottomWidth: 1,
     borderBottomColor: "#f0f2f5",
   },
   itemWithThickBorder: {
-    borderBottomWidth: 10, // Đặt borderBottomWidth lớn hơn cho các mục yêu cầu
+    borderBottomWidth: 10,
   },
   leftContainer: {
     flexDirection: "row",

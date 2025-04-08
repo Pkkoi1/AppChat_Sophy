@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   View,
   Text,
@@ -6,20 +6,15 @@ import {
   TouchableOpacity,
   Alert,
   SafeAreaView,
-  StyleSheet,
   StatusBar,
 } from "react-native";
 import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
-
-import { Button } from "@rneui/themed";
-import { api } from "@/app/api/api";
-
-// Đọc dữ liệu từ file user.json
-const users = require("../../../assets/objects/user.json"); // Điều chỉnh đường dẫn theo vị trí file user.json
+import { AuthContext } from "@/app/auth/AuthContext";
 
 function LoginScreen({ navigation }) {
+  const { login } = useContext(AuthContext); // Lấy hàm login từ AuthContext
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [secureTextEntry, setSecureTextEntry] = useState(true);
@@ -36,38 +31,16 @@ function LoginScreen({ navigation }) {
     }
 
     try {
-      // Gọi API đăng nhập
-      const response = await api.login({ phone, password });
-
-      if (response && response.data && response.data.user) {
-        const { user } = response.data; // Lấy thông tin người dùng từ response.data
-        Alert.alert("Đăng nhập thành công!", `Chào ${phone}!`);
-        navigation.navigate("Home", {
-          userId: user.userId,
-          userName: user.fullname,
-          phone: phone,
-        });
-      } else {
-        Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
-      }
+      // Gọi hàm login từ AuthContext
+      await login({ phone, password });
+      Alert.alert("Đăng nhập thành công!", `Chào ${phone}!`);
+      navigation.navigate("Home"); // Điều hướng đến màn hình chính
     } catch (error) {
-      if (error.message.includes("Network Error")) {
-        Alert.alert(
-          "Lỗi mạng",
-          "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng!"
-        );
-      } else {
-        Alert.alert("Đăng nhập thất bại!", "Có lỗi xảy ra, vui lòng thử lại!");
-      }
+      Alert.alert("Đăng nhập thất bại!", "Sai số điện thoại hoặc mật khẩu!");
       console.error("Lỗi đăng nhập:", error);
-      console.log("Lỗi đăng nhập:", error.message);
-      console.log("Chi tiết lỗi:", error.response?.data || error.message);
-      // console.log(
-      //   "Chi tiết lỗi khi đăng nhập:",
-      //   error.response?.data || error.message
-      // ); lại
     }
   };
+
   return (
     <SafeAreaView style={{ flex: 1 }} backgroundColor="#007AFF">
       <StatusBar barStyle="light-content" backgroundColor="#1b96fd" />

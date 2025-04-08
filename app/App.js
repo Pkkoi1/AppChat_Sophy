@@ -28,69 +28,78 @@ import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
 import EnterName from "./screens/register/enterProfile/EnterName";
 import EnterInfo from "./screens/register/enterProfile/EnterInfo";
 import CameraScreen from "./features/camera/Camera";
-// import CameraScreen from "@/components/camera/CameraScreen";
+// import CameraScreen from "@/components/camera/CameraScreen";>
 import ScanQR from "./screens/header/headerAction/ScanQR";
 import VerificationCode from "./screens/login/VerificationCode";
 import CreateNewPassword from "./screens/login/CreateNewPassword";
 import AccountAndSecurityScreen from "./screens/profile/accountAndSecurity/AccountAndSecurityScreen";
 import Personal from "./screens/profile/personal/Personal";
 import Edit from "./components/profile/Edit";
+import AuthLoading from "./auth/AuthLoading";
+import { AuthProvider } from "./auth/AuthContext";
 
 const Stack = createNativeStackNavigator();
 
 function RootLayout() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          animation: "fade", // Tắt hoạt ảnh chuyển cảnh
-        }}
-      >
-        <Stack.Screen name="Main" component={Main} />
-        <Stack.Screen name="Register" component={Register} />
-        <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
-        <Stack.Screen name="EnterName" component={EnterName} />
-        <Stack.Screen name="EnterInfo" component={EnterInfo} />
-        <Stack.Screen name="Login" component={Login} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-        <Stack.Screen
-          name="SocialNetworkTerms"
-          component={SocialNetworkTerms}
-        />
-        <Stack.Screen name="CameraScreen" component={CameraScreen} />
-        {/* <Stack.Screen name="TermsOfService" component={TermsOfService} /> */}
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Chat" component={Chat} />
-        <Stack.Screen name="Profile" component={Profile} />
-        <Stack.Screen name="Discover" component={Discover} />
-        <Stack.Screen name="Diary" component={Diary} />
-        <Stack.Screen name="MyProfile" component={MyProfile} />
-        <Stack.Screen name="Setting" component={Setting} />
-        <Stack.Screen
-          name="ReceivedFriendRequests"
-          component={ReceivedFriendRequests}
-        />
-        <Stack.Screen name="UserProfile" component={UserProfile} />
-        <Stack.Screen name="AddFriend" component={AddFriend} />
-        <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
-        <Stack.Screen
-          name="Options"
-          component={Options}
-          options={{ animation: "slide_from_right" }}
-        />
-        <Stack.Screen name="Verify" component={Verify} />
-        <Stack.Screen name="ScanQR" component={ScanQR} />
-        <Stack.Screen name="VerificationCode" component={VerificationCode} />
-        <Stack.Screen name="CreateNewPassword" component={CreateNewPassword} />
-        <Stack.Screen
-          name="AccountAndSecurity"
-          component={AccountAndSecurityScreen}
-        />
-        <Stack.Screen name="Personal" component={Personal} />
-        <Stack.Screen name="Edit" component={Edit} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: "fade", // Tắt hoạt ảnh chuyển cảnh
+          }}
+        >
+          <Stack.Screen name="AuthLoading" component={AuthLoading} />
+
+          <Stack.Screen name="Main" component={Main} />
+          <Stack.Screen name="Register" component={Register} />
+          <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
+          <Stack.Screen name="EnterName" component={EnterName} />
+          <Stack.Screen name="EnterInfo" component={EnterInfo} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+          <Stack.Screen
+            name="SocialNetworkTerms"
+            component={SocialNetworkTerms}
+          />
+          <Stack.Screen name="CameraScreen" component={CameraScreen} />
+          {/* <Stack.Screen name="TermsOfService" component={TermsOfService} /> */}
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="Chat" component={Chat} />
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Discover" component={Discover} />
+          <Stack.Screen name="Diary" component={Diary} />
+          <Stack.Screen name="MyProfile" component={MyProfile} />
+          <Stack.Screen name="Setting" component={Setting} />
+          <Stack.Screen
+            name="ReceivedFriendRequests"
+            component={ReceivedFriendRequests}
+          />
+          <Stack.Screen name="UserProfile" component={UserProfile} />
+          <Stack.Screen name="AddFriend" component={AddFriend} />
+          <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
+          <Stack.Screen
+            name="Options"
+            component={Options}
+            options={{ animation: "slide_from_right" }}
+          />
+          <Stack.Screen name="Verify" component={Verify} />
+          <Stack.Screen name="ScanQR" component={ScanQR} />
+          <Stack.Screen name="VerificationCode" component={VerificationCode} />
+          <Stack.Screen
+            name="CreateNewPassword"
+            component={CreateNewPassword}
+          />
+          <Stack.Screen
+            name="AccountAndSecurity"
+            component={AccountAndSecurityScreen}
+          />
+          <Stack.Screen name="Personal" component={Personal} />
+          <Stack.Screen name="Edit" component={Edit} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
   );
 }
 
