@@ -1,6 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const API = `http://${MY_IP}:3000/api` || DATABASE_API;
 
@@ -139,6 +140,11 @@ export const api = {
   conversations: async () => {
     return await http.get(`/conversations`);
   },
+  //Lấy thông tin cuộc trò chuyện theo ID
+  getConversationById: async (conversationId) => {
+    return await http.get(`/conversations/${conversationId}`);
+  },
+
   getConversationDetails: async (conversationId) => {
     return await http.get(`/conversations/${conversationId}`);
   },

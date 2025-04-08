@@ -62,11 +62,9 @@ const Edit = ({ route, navigation }) => {
           encoding: FileSystem.EncodingType.Base64,
         });
 
-        // Thêm tiền tố `data:image/jpeg;base64,` để phù hợp với yêu cầu của backend
         const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
-        const responeAVT = await api.uploadImage(imageBase64);
-
-        pesoudoAvatar = responeAVT.user.urlavatar;
+        const responseAVT = await api.uploadImage(imageBase64);
+        pesoudoAvatar = responseAVT.user.urlavatar;
       }
 
       // Cập nhật thông tin người dùng (không bao gồm hình ảnh)
@@ -135,7 +133,7 @@ const Edit = ({ route, navigation }) => {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 1,
+      quality: 0.5, // Giảm chất lượng ảnh (0.5 = 50%)
     });
 
     if (!result.canceled) {
