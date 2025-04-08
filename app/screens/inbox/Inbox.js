@@ -4,22 +4,24 @@ import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import RenderGroupAvatar from "@/app/components/group/RenderGroupAvatar";
 
-const Inbox = ({
-  name,
-  avatar,
-  message,
-  date,
-  conversation_id,
-  user_id,
-  groupName,
-  receiverId,
-}) => {
+const Inbox = ({ conversation, user_id }) => {
+  const {
+    groupName,
+    groupAvatarUrl,
+    lastMessage,
+    conversationId,
+    receiverId,
+    isGroup,
+    groupMembers,
+  } = conversation;
   const navigation = useNavigation();
   const [receiver, setReceiver] = useState({});
+  const [senderName, setSenderName] = useState("");
 
   const getTimeDifference = (date) => {
-    const validDate = moment(new Date(date)); // Chuyển đổi date thành đối tượng Date hợp lệ
+    const validDate = moment(new Date(date));
     if (!validDate.isValid()) {
       return "Ngày không hợp lệ";
     }
@@ -50,36 +52,87 @@ const Inbox = ({
     return message;
   };
 
+  const getMessageContent = () => {
+    if (!lastMessage) return "No messages yet";
+
+    // Xử lý các loại type
+    switch (lastMessage.type) {
+      case "ADD_MEMBER":
+        return `${senderName} đã thêm thành viên mới`;
+      case "REMOVE_MEMBER":
+        return `${senderName} đã xóa một thành viên`;
+      case "LEAVE_GROUP":
+        return `${senderName} đã rời nhóm`;
+      case "SET_OWNER":
+        return `${senderName} đã trở thành chủ nhóm`;
+      case "SET_CO_OWNER":
+        return `${senderName} đã trở thành đồng chủ nhóm`;
+      case "REMOVE_CO_OWNER":
+        return `${senderName} đã bị xóa quyền đồng chủ nhóm`;
+      case "UPDATE_GROUP_NAME":
+        return `${senderName} đã cập nhật tên nhóm`;
+      case "UPDATE_GROUP_AVATAR":
+        return `${senderName} đã cập nhật ảnh đại diện nhóm`;
+      case "UPDATE_GROUP_BACKGROUND":
+        return `${senderName} đã cập nhật ảnh nền nhóm`;
+      case "DELETE_GROUP":
+        return `${senderName} đã xóa nhóm`;
+      case "text":
+      default:
+        return truncateMessage(lastMessage.content || "No messages yet", 50);
+    }
+  };
+
   useEffect(() => {
     const getUserInfo = async () => {
       if (!groupName) {
-        // Chỉ gọi fetchUserInfo nếu groupName là null hoặc rỗng
         const data = await fetchUserInfo(receiverId);
         setReceiver(data);
       }
     };
 
+    const resolveSenderName = async () => {
+      if (!lastMessage?.senderId) {
+        setSenderName(""); // Không hiển thị tên nếu senderId là null
+        return;
+      }
+
+      if (lastMessage.senderId === user_id) {
+        setSenderName("Bạn");
+      } else {
+        const senderInfo = await fetchUserInfo(lastMessage.senderId);
+        setSenderName(senderInfo?.fullname || "Unknown");
+      }
+    };
+
     getUserInfo();
-  }, [receiverId, groupName]);
+    resolveSenderName();
+  }, [receiverId, groupName, lastMessage?.senderId]);
 
   return (
     <TouchableOpacity
       onPress={() =>
         navigation.navigate("Chat", {
-          conversation_id: conversation_id, // Truyền conversation_id vào params
-          user_id: user_id, // Truyền user_id vào params
-          receiverId: receiverId, // Truyền receiverId vào params
+          conversation_id: conversationId,
+          user_id: user_id,
+          receiverId: receiverId,
         })
       }
       activeOpacity={0.6}
       style={styles.container}
     >
       <View style={styles.avatarContainer}>
-        {avatar && avatar.uri && avatar.uri !== "null" ? (
-          <Image source={{ uri: avatar.uri }} style={styles.avatar} />
+        {isGroup ? (
+          groupAvatarUrl ? (
+            <Image source={{ uri: groupAvatarUrl }} style={styles.avatar} />
+          ) : (
+            <RenderGroupAvatar members={groupMembers} /> // Sử dụng RenderGroupAvatar
+          )
+        ) : receiver?.urlavatar ? (
+          <Image source={{ uri: receiver?.urlavatar }} style={styles.avatar} />
         ) : (
           <AvatarUser
-            fullName={receiver?.fullname || name}
+            fullName={receiver?.fullname || "User"}
             width={50}
             height={50}
             avtText={20}
@@ -90,11 +143,17 @@ const Inbox = ({
       </View>
       <View style={{ flex: 1 }}>
         <View style={styles.header}>
-          <Text style={styles.name}>{groupName || receiver?.fullname}</Text>
-          <Text style={styles.time}>{getTimeDifference(date)}</Text>
+          <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+            {groupName || receiver?.fullname}
+          </Text>
+          <Text style={styles.time}>
+            {getTimeDifference(lastMessage?.createdAt)}
+          </Text>
         </View>
         <Text style={styles.message} numberOfLines={1} ellipsizeMode="tail">
-          {truncateMessage(message, 50)}
+          {lastMessage?.senderId
+            ? `${senderName}: ${getMessageContent()}`
+            : lastMessage?.content || "No messages yet"}
         </Text>
       </View>
     </TouchableOpacity>
@@ -127,6 +186,8 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: "bold",
+    maxWidth: "70%",
+    flexShrink: 1,
   },
   time: {
     color: "gray",
@@ -136,7 +197,7 @@ const styles = StyleSheet.create({
     color: "gray",
     fontSize: 14,
     marginTop: 4,
-    maxWidth: "90%", // Giới hạn chiều rộng của tin nhắn
+    maxWidth: "90%",
   },
 });
 

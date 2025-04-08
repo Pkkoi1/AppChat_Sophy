@@ -5,6 +5,7 @@ import Inbox from "./Inbox";
 import { api } from "@/app/api/api";
 
 const ListInbox = ({ userId }) => {
+  // console.log("userId:", userId); // Log userId để kiểm tra giá trị
   const [refreshing, setRefreshing] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [users, setUsers] = useState([]); // Thêm state để lưu danh sách người dùng
@@ -12,20 +13,13 @@ const ListInbox = ({ userId }) => {
   const navigation = useNavigation();
 
   const getConversations = async () => {
+    // console.log("getConversations called"); // Kiểm tra xem hàm có được gọi không
+
     try {
       const response = await api.conversations();
       if (response && response.data) {
-        const allConversations = response.data || [];
-        setConversations(allConversations);
-
-        // Lọc danh sách receiverId từ các cuộc trò chuyện
-        const receiverIds = allConversations
-          .filter((conversation) => conversation.receiverId) // Chỉ lấy các cuộc trò chuyện có receiverId
-          .map((conversation) => conversation.receiverId);
-
-        // Lấy thông tin người dùng theo receiverId
-        const fetchedUsers = await getUsersByReceiverId(receiverIds);
-        setUsers(fetchedUsers); // Lưu danh sách người dùng vào state
+        // console.log("API Response:", response.data); // Kiểm tra phản hồi từ API
+        setConversations(response.data); // Lưu toàn bộ danh sách cuộc trò chuyện
       } else {
         console.error("No conversations found in the response.");
         setConversations([]);
@@ -36,37 +30,29 @@ const ListInbox = ({ userId }) => {
     }
   };
 
-  const getUsersByReceiverId = async (receiverIds) => {
-    try {
-      const userPromises = receiverIds.map((receiverId) =>
-        api.getUserById(receiverId)
-      );
-      const users = await Promise.all(userPromises);
-      return users.map((response) => response.data); // Trả về danh sách thông tin người dùng
-    } catch (error) {
-      console.error("Error fetching users by receiverId:", error);
-      return [];
-    }
-  };
-
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      getConversations();
-    });
-    return unsubscribe;
-  }, [navigation]);
+    console.log("Screen focused"); // Kiểm tra xem sự kiện focus có hoạt động không
+    getConversations();
+  }, []);
 
   const handlerRefresh = () => {
     setRefreshing(true);
     getConversations().finally(() => setRefreshing(false));
   };
-
-  // Lọc các cuộc trò chuyện mà userId nằm trong groupMembers
-  const filteredConversations = (conversations || []).filter(
-    (conversation) =>
-      Array.isArray(conversation.groupMembers) &&
-      conversation.creatorId.includes(userId)
-  );
+  const getConversation = async (conversationId) => {
+    try {
+      const response = await api.getConversationById(conversationId);
+      if (response && response.data) {
+        return response.data;
+      } else {
+        console.error("No conversation found in the response.");
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching conversation:", error);
+      return null;
+    }
+  };
 
   const renderGroupAvatar = (members) => {
     const avatarSize = 28; // Kích thước ảnh nhỏ
@@ -147,49 +133,14 @@ const ListInbox = ({ userId }) => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
         }
-        data={filteredConversations}
+        data={conversations} // Sử dụng toàn bộ danh sách cuộc trò chuyện
         keyExtractor={(item) => item.conversationId.toString()} // Đảm bảo conversationId là chuỗi
-        renderItem={({ item }) => {
-          const lastMessage = item.lastMessage || {
-            content: "No messages yet",
-            createdAt: null,
-          };
-
-          // Lấy thông tin người dùng từ danh sách users
-          const receiverInfo = item.receiverId
-            ? users.find((user) => user.userId === item.receiverId)
-            : null;
-
-          let avatar;
-          if (item.isGroup) {
-            avatar = item.groupAvatarUrl
-              ? { uri: item.groupAvatarUrl }
-              : renderGroupAvatar(item.groupMembers); // Render avatar nhóm
-          } else {
-            avatar = {
-              uri:
-                receiverInfo?.urlavatar ||
-                "null",
-            }; 
-          }
-
-          return (
-            <Inbox
-              name={
-                item.isGroup
-                  ? item.groupName
-                  : receiverInfo?.fullname || "Private Chat"
-              }
-              avatar={avatar}
-              message={lastMessage.content}
-              date={lastMessage.createdAt}
-              conversation_id={item.conversationId}
-              user_id={userId}
-              groupName={item.groupName}
-              receiverId={item.receiverId}
-            />
-          );
-        }}
+        renderItem={({ item }) => (
+          <Inbox
+            conversation={item} // Truyền toàn bộ đối tượng conversation
+            user_id={userId} // Truyền thêm userId nếu cần
+          />
+        )}
       />
     </View>
   );
