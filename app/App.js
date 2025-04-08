@@ -15,8 +15,8 @@ import Profile from "./screens/profile/Profile";
 import Discover from "./screens/discover/Discover";
 import Diary from "./screens/diary/Diary";
 import Main from "./screens/main/Main";
-import MyProfile from "./screens/profile/MyProfile";
-import Setting from "./screens/profile/Setting";
+import MyProfile from "./screens/profile/myProfile/MyProfile";
+import Setting from "./screens/profile/Setting/Setting";
 import ReceivedFriendRequests from "./screens/directory/friend/friendRequest/ReceivedFriendRequests";
 import UserProfile from "./screens/profile/userProfile/UserProfile"; // Đảm bảo đường dẫn đúng
 import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo đường dẫn đúng
@@ -37,6 +37,7 @@ import Personal from "./screens/profile/personal/Personal";
 import Edit from "./components/profile/Edit";
 import AuthLoading from "./auth/AuthLoading";
 import { AuthProvider } from "./auth/AuthContext";
+import UpdatePassword from "./screens/profile/accountAndSecurity/account/updatePassword/updatePassword";
 
 const Stack = createNativeStackNavigator();
 
@@ -97,6 +98,7 @@ function RootLayout() {
           />
           <Stack.Screen name="Personal" component={Personal} />
           <Stack.Screen name="Edit" component={Edit} />
+          <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

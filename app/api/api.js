@@ -107,14 +107,24 @@ export const api = {
       );
       console.error("Chi tiết lỗi đăng nhập 2:", error);
 
-      throw error;
+      if (axios.isAxiosError(error)) {
+        if (error.code === 'ERR_NETWORK') {
+          throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
+        } else if (error.response) {
+          throw new Error(`Lỗi ${error.response.status}: ${error.response.data.message || 'Yêu cầu không thành công'}`);
+        } else {
+          throw new Error(`Lỗi không xác định: ${error.message}`);
+        }
+      } else {
+        throw error;
+      }
     }
   },
   refreshToken: async () => {
     try {
       const refreshToken = await AsyncStorage.getItem("refreshToken");
       if (!refreshToken) {
-        throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
+        throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại. Lỗi tại api.refreshToken.");
       }
 
       const response = await http.post("/auth/refresh", null, {
@@ -267,6 +277,36 @@ export const api = {
         "Lỗi khi tải ảnh lên:",
         error.response?.data || error.message
       );
+      throw error;
+    }
+  },
+  changePassword: async (oldPassword, newPassword) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Không tìm thấy authToken. Yêu cầu đăng nhập lại.");
+      }
+      const response = await http.put("/auth/change-password", {
+        oldPassword,
+        newPassword,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        // Try to get the error message from the response data
+        let errorMessage = `Request failed with status code ${response.status}`;
+        if (response.response && response.response.data && response.response.data.message) {
+          errorMessage = response.response.data.message;
+        }
+        throw new Error(errorMessage);
+      }
+
+      return { message: "Password changed successfully" , data: response.data};
+    } catch (error) {
+      console.error("Lỗi khi thay đổi mật khẩu:", error.message);
       throw error;
     }
   },

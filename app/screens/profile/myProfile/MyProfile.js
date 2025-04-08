@@ -66,7 +66,7 @@ const ProfileScreen = () => {
       <View style={styles.container}>
         <View style={styles.coverContainer}>
           <Animated.Image
-            source={require("../../../assets/images/avt.jpg")}
+            source={require("@/assets/images/avt.jpg")}
             style={[styles.coverImage, { height: coverImageHeight }]}
           />
           <View style={styles.header}>
@@ -150,7 +150,7 @@ const ProfileScreen = () => {
           <View style={styles.statusContainer}>
             <View style={styles.statusIcons}>
               <Image
-                source={require("../../../assets/images/profile.jpg")}
+                source={require("@/assets/images/profile.jpg")}
                 style={styles.statusImage}
               />
             </View>

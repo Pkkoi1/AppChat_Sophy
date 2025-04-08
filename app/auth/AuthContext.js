@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       setUserInfo(response.data);
       await AsyncStorage.setItem("userInfo", JSON.stringify(response.data));
     } catch (error) {
-      console.error("Lỗi khi lấy thông tin người dùng:", error);
+      console.error("Lỗi khi lấy thông tin người dùng ở context:", error);
     }
   };
 
