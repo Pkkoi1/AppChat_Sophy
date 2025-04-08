@@ -109,10 +109,14 @@ export const api = {
       console.error("Chi tiết lỗi đăng nhập 2:", error);
 
       if (axios.isAxiosError(error)) {
-        if (error.code === 'ERR_NETWORK') {
+        if (error.code === "ERR_NETWORK") {
           throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
         } else if (error.response) {
-          throw new Error(`Lỗi ${error.response.status}: ${error.response.data.message || 'Yêu cầu không thành công'}`);
+          throw new Error(
+            `Lỗi ${error.response.status}: ${
+              error.response.data.message || "Yêu cầu không thành công"
+            }`
+          );
         } else {
           throw new Error(`Lỗi không xác định: ${error.message}`);
         }
@@ -125,7 +129,9 @@ export const api = {
     try {
       const refreshToken = await AsyncStorage.getItem("refreshToken");
       if (!refreshToken) {
-        throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại. Lỗi tại api.refreshToken.");
+        throw new Error(
+          "Không tìm thấy refreshToken. Yêu cầu đăng nhập lại. Lỗi tại api.refreshToken."
+        );
       }
 
       const response = await http.post("/auth/refresh", null, {
@@ -171,6 +177,7 @@ export const api = {
   checkPhone: async (phone) => {
     try {
       const resp = await http.post(`/auth/check-used-phone/${phone}`);
+
       if (
         resp.status === 200 &&
         resp.data.message === "Verification code generated."
@@ -179,19 +186,23 @@ export const api = {
           otpId: resp.data.otpId,
           otp: resp.data.otp,
           message: resp.data.message,
-        }; // Trả về dữ liệu nếu thành công
+        };
       }
+
+      // Trả về lỗi custom nếu không đúng format
       throw new Error("Phản hồi từ API không hợp lệ.");
     } catch (error) {
-      console.error("Lỗi khi kiểm tra số điện thoại:", error.message);
-      console.error(
-        "Chi tiết lỗi khi kiểm tra số điện thoại:",
-        error.response?.data || error.message
-      );
-      throw new Error(
-        "Lỗi khi kiểm tra số điện thoại tại api: " +
-          (error.response?.statusText || error.message)
-      );
+      // Ghi log chi tiết
+      console.error("Lỗi khi kiểm tra số điện thoại:", error?.message);
+      console.error("Chi tiết lỗi:", error?.response?.data || error);
+
+      // Nếu là lỗi từ Axios, giữ nguyên để xử lý ở ngoài
+      if (error.response) {
+        throw error;
+      }
+
+      // Ngược lại, ném lỗi bình thường
+      throw new Error("Lỗi không xác định khi kiểm tra số điện thoại.");
     }
   },
   logout: async () => {
@@ -292,25 +303,33 @@ export const api = {
       if (!token) {
         throw new Error("Không tìm thấy authToken. Yêu cầu đăng nhập lại.");
       }
-      const response = await http.put("/auth/change-password", {
-        oldPassword,
-        newPassword,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await http.put(
+        "/auth/change-password",
+        {
+          oldPassword,
+          newPassword,
         },
-      });
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status !== 200) {
         // Try to get the error message from the response data
         let errorMessage = `Request failed with status code ${response.status}`;
-        if (response.response && response.response.data && response.response.data.message) {
+        if (
+          response.response &&
+          response.response.data &&
+          response.response.data.message
+        ) {
           errorMessage = response.response.data.message;
         }
         throw new Error(errorMessage);
       }
 
-      return { message: "Password changed successfully" , data: response.data};
+      return { message: "Password changed successfully", data: response.data };
     } catch (error) {
       console.error("Lỗi khi thay đổi mật khẩu:", error.message);
       throw error;

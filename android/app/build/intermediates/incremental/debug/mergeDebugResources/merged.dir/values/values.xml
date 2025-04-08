@@ -2082,11 +2082,11 @@
     <string name="fallback_menu_item_copy_link">Copy link</string>
     <string name="fallback_menu_item_open_in_browser">Open in browser</string>
     <string name="fallback_menu_item_share_link">Share link</string>
-    <string name="gcm_defaultSenderId" translatable="false">719068932506</string>
-    <string name="google_api_key" translatable="false">AIzaSyBzIGvwZY9QZIXUaEKAWsMoypcfg641mls</string>
-    <string name="google_app_id" translatable="false">1:719068932506:android:c475f45b62644351863223</string>
-    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBzIGvwZY9QZIXUaEKAWsMoypcfg641mls</string>
-    <string name="google_storage_bucket" translatable="false">sophy-23b5b.firebasestorage.app</string>
+    <string name="gcm_defaultSenderId" translatable="false">899642822092</string>
+    <string name="google_api_key" translatable="false">AIzaSyC1VxTveTNjSgtw0Oi9NklmCbtiEjivq9k</string>
+    <string name="google_app_id" translatable="false">1:899642822092:android:d633b26c51bd0ee080e169</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyC1VxTveTNjSgtw0Oi9NklmCbtiEjivq9k</string>
+    <string name="google_storage_bucket" translatable="false">sophy-6564f.firebasestorage.app</string>
     <string description="heading to a page or section" name="header_description">Heading</string>
     <string name="hide_bottom_view_on_scroll_behavior" translatable="false">com.google.android.material.behavior.HideBottomViewOnScrollBehavior</string>
     <string name="ic_flip_24">Flip</string>
@@ -2222,7 +2222,7 @@
     <string name="pick_image_chooser_title">Select source</string>
     <string name="pick_image_gallery">Gallery</string>
     <string description="displays the progress status for tasks that take a long time" name="progressbar_description">Progress Bar</string>
-    <string name="project_id" translatable="false">sophy-23b5b</string>
+    <string name="project_id" translatable="false">sophy-6564f</string>
     <string description="a group of radio buttons" name="radiogroup_description">Radio Group</string>
     <string name="range_end">"Range end"</string>
     <string name="range_start">"Range start"</string>

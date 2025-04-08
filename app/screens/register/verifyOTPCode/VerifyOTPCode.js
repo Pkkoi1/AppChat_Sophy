@@ -65,21 +65,11 @@ const VerifyOTPCode = ({ route, navigation }) => {
         //   });
         // }
         //---------------
-        Alert.alert("Đang xử lý", "Vui lòng chờ trong giây lát...");
-
-        // Xác thực OTP bằng verificationId và mã OTP
         const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
         await auth().signInWithCredential(credential);
 
-        // Kiểm tra mã OTP với mã được gửi
-        if (enteredOtp === otpass) {
-          Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
-          navigation.navigate("EnterName", {
-            phoneNumber,
-          });
-        } else {
-          Alert.alert("Lỗi", "Mã OTP không khớp. Vui lòng thử lại.");
-        }
+        Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
+        navigation.navigate("EnterName", { phoneNumber });
       } catch (error) {
         console.error("Error verifying OTP:", error.message);
         Alert.alert("Lỗi", "Mã OTP không hợp lệ. Vui lòng thử lại.");
