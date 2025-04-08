@@ -10,6 +10,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import Account from "./account/Account";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import { AuthContext } from "@/app/auth/AuthContext"; // Import useAuth hook
+import Security from "./account/Security"; // Import Security
+import Login from "./account/Login"; // Import Login
 
 const AccountAndSecurityScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -39,6 +41,8 @@ const AccountAndSecurityScreen = ({ route }) => {
       </LinearGradient>
       <ScrollView>
         <Account userInfo={userInfo} navigation={navigation} />
+        <Security navigation={navigation} />
+        <Login navigation={navigation} />
       </ScrollView>
     </View>
   );
@@ -61,6 +65,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontWeight: "500",
   },
+  
 });
 
 export default AccountAndSecurityScreen;

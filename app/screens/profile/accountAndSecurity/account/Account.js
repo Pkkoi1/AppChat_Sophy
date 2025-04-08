@@ -4,7 +4,6 @@ import AvatarUser from "@/app/components/profile/AvatarUser"; // Đường dẫn
 import Color from "@/app/components/colors/Color";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-
 const Account = ({ userInfo, navigation }) => {
   return (
     <View style={styles.container}>
@@ -28,9 +27,9 @@ const Account = ({ userInfo, navigation }) => {
         ) : (
           <AvatarUser
             fullName={userInfo?.fullname || "Người dùng"}
-            width={60}
-            height={60}
-            avtText={24}
+            width={70}
+            height={70}
+            avtText={28}
             shadow={false}
             bordered={false}
           />
@@ -44,6 +43,42 @@ const Account = ({ userInfo, navigation }) => {
         </View>
         <AntDesign name="right" size={20} color="grey" />
       </TouchableOpacity>
+
+      <TouchableOpacity style={styles.infoRow} activeOpacity={0.8}>
+        <AntDesign name="phone" size={24} color="grey" style={styles.icon} />
+        <View style={styles.textContainer}>
+          <Text style={styles.infoText}>Số điện thoại</Text>
+          <Text style={styles.infoValue}>(+84) 792 764 303</Text>
+        </View>
+        <AntDesign name="right" size={20} color="grey" />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.infoRow} activeOpacity={0.8}>
+        <AntDesign name="mail" size={24} color="grey" style={styles.icon} />
+        <View style={styles.textContainer}>
+          <Text style={styles.infoText}>Email</Text>
+          <Text style={styles.infoValue}>Chưa liên kết</Text>
+        </View>
+        <AntDesign name="right" size={20} color="grey" />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.infoRow} activeOpacity={0.8}>
+        <AntDesign name="idcard" size={24} color="grey" style={styles.icon} />
+        <View style={styles.textContainer}>
+          <Text style={styles.infoText}>Định danh tài khoản</Text>
+          <Text style={styles.infoValue}>Chưa định danh</Text>
+        </View>
+        <AntDesign name="right" size={20} color="grey" />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.infoRow]} activeOpacity={0.8}>
+        <AntDesign name="qrcode" size={24} color="grey" style={styles.icon} />
+        <View style={styles.textContainer}>
+          <Text style={styles.infoText}>Mã QR của tôi</Text>
+        </View>
+        <AntDesign name="right" size={20} color="grey" />
+      </TouchableOpacity>
+      <View style={styles.lastInfoRow} />
     </View>
   );
 };
@@ -55,9 +90,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   headerTitle: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 15,
+    marginBottom: 20,
     color: Color.blueText2,
   },
   accountContainer: {
@@ -70,9 +105,9 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   avatarImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     borderWidth: 2,
     borderColor: "#ddd",
   },
@@ -81,14 +116,45 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fullName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
     color: "#000",
   },
   manageAccountText: {
-    fontSize: 15,
+    fontSize: 16,
     color: Color.gray,
     marginTop: 5,
+  },
+  additionalInfoContainer: {
+    marginTop: 20,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+  },
+  lastInfoRow: {
+    borderBottomWidth: 10,
+    borderBottomColor: "#eee",
+    marginHorizontal: -20,
+    marginTop: -1,
+  },
+  icon: {
+    width: 24, // Đảm bảo icon có kích thước cố định
+  },
+  infoText: {
+    fontSize: 16,
+    color: "#000",
+  },
+  infoValue: {
+    fontSize: 16,
+    color: "grey",
+  },
+  textContainer: {
+    flex: 1,
+    marginLeft: 15,
   },
 });
 
