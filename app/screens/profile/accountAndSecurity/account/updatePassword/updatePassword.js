@@ -1,5 +1,12 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  StyleSheet,
+} from "react-native";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import { api } from "@/app/api/api";
 import { AuthContext } from "@/app/auth/AuthContext";
@@ -10,7 +17,7 @@ const UpdatePassword = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { authToken, logout } = useContext(AuthContext);
+  const { authToken, logout, userInfo, login } = useContext(AuthContext);
 
   const handlePasswordUpdate = async () => {
     if (!authToken) {
@@ -20,20 +27,42 @@ const UpdatePassword = ({ navigation }) => {
 
     if (newPassword === confirmPassword && newPassword.length >= 6) {
       try {
-        const response = await api.changePassword(currentPassword, newPassword);
+        const response = await api.changePassword(
+          (userId = userInfo.userId),
+          currentPassword,
+          newPassword
+        );
         if (response.message === "Password changed successfully") {
-          Alert.alert("Thành công", "Mật khẩu đã được cập nhật thành công!");
-          navigation.goBack();
+          // Đăng nhập lại với mật khẩu mới
+          try {
+            await logout();
+            await login({
+              phone: userInfo.phone,
+              password: newPassword,
+            });
+
+            Alert.alert("Thành công", "Mật khẩu đã được cập nhật thành công!");
+            navigation.goBack();
+          } catch (loginError) {
+            console.error("Lỗi khi đăng nhập lại:", loginError);
+            Alert.alert("Lỗi", "Không thể đăng nhập lại. Vui lòng thử lại.");
+          }
         } else {
-          setErrorMessage(response.message || "Không thể cập nhật mật khẩu. Vui lòng thử lại.");
+          setErrorMessage(
+            response.message || "Không thể cập nhật mật khẩu. Vui lòng thử lại."
+          );
         }
       } catch (error) {
-        if (error.message === "Không tìm thấy authToken. Yêu cầu đăng nhập lại.") {
+        if (
+          error.message === "Không tìm thấy authToken. Yêu cầu đăng nhập lại."
+        ) {
           Alert.alert("Phiên đăng nhập hết hạn", "Vui lòng đăng nhập lại.", [
             { text: "OK", onPress: () => logout() },
           ]);
         }
-        setErrorMessage(error.message || "Có lỗi xảy ra khi cập nhật mật khẩu.");
+        setErrorMessage(
+          error.message || "Có lỗi xảy ra khi cập nhật mật khẩu."
+        );
       }
     } else {
       if (newPassword !== confirmPassword) {
@@ -43,19 +72,24 @@ const UpdatePassword = ({ navigation }) => {
       }
     }
   };
-
   return (
     <View style={styles.container}>
-      <OptionHeader title="Thay đổi mật khẩu" previousScreen="AccountAndSecurity" />
+      <OptionHeader
+        title="Thay đổi mật khẩu"
+        previousScreen="AccountAndSecurity"
+      />
       <Text style={styles.subtitle}>
-        Mật khẩu phải gồm chữ và số, không được chứa năm sinh, username và tên Zalo của bạn.
+        Mật khẩu phải gồm chữ và số, không được chứa năm sinh, username và tên
+        Zalo của bạn.
       </Text>
 
       <View style={[styles.inputContainer, { paddingHorizontal: 15 }]}>
         <View style={styles.inputLabelContainer}>
           <Text style={styles.inputLabel}>Mật khẩu hiện tại:</Text>
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Text style={styles.toggleText}>{showPassword ? "ẨN" : "HIỆN"}</Text>
+            <Text style={styles.toggleText}>
+              {showPassword ? "ẨN" : "HIỆN"}
+            </Text>
           </TouchableOpacity>
         </View>
         <TextInput
@@ -89,9 +123,16 @@ const UpdatePassword = ({ navigation }) => {
           onChangeText={setConfirmPassword}
         />
       </View>
-      {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
+      {errorMessage ? (
+        <Text style={styles.errorMessage}>{errorMessage}</Text>
+      ) : null}
       <TouchableOpacity
-        style={[styles.updateButton, currentPassword && newPassword && confirmPassword ? styles.updateButtonEnabled : null]}
+        style={[
+          styles.updateButton,
+          currentPassword && newPassword && confirmPassword
+            ? styles.updateButtonEnabled
+            : null,
+        ]}
         onPress={handlePasswordUpdate}
         disabled={!currentPassword || !newPassword || !confirmPassword}
       >
