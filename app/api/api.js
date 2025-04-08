@@ -26,7 +26,6 @@ http.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Thêm interceptor để xử lý lỗi 401 và làm mới token
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -50,14 +49,19 @@ http.interceptors.response.use(
         }
 
         // Gọi API làm mới token
-        const response = await axios.post(`${API}/auth/refresh`, null, {
+        const response = await http.post("/auth/refresh", null, {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
         });
 
+        // Kiểm tra phản hồi từ API
+        const newAccessToken = response.data?.accessToken;
+        if (!newAccessToken) {
+          throw new Error("API không trả về accessToken mới.");
+        }
+
         // Lưu accessToken mới vào AsyncStorage
-        const newAccessToken = response.data.accessToken;
         await AsyncStorage.setItem("authToken", newAccessToken);
 
         // Cập nhật header Authorization và gửi lại request ban đầu
@@ -65,11 +69,17 @@ http.interceptors.response.use(
         return http(originalRequest);
       } catch (refreshError) {
         console.error("Lỗi khi làm mới token:", refreshError);
+
         // Nếu refreshToken hết hạn, yêu cầu đăng nhập lại
         await AsyncStorage.removeItem("authToken");
         await AsyncStorage.removeItem("refreshToken");
         throw refreshError;
       }
+    }
+
+    // Xử lý các lỗi khác
+    if (error.code === "ERR_NETWORK") {
+      console.error("Lỗi mạng:", error.message);
     }
 
     return Promise.reject(error);
@@ -129,9 +139,7 @@ export const api = {
     try {
       const refreshToken = await AsyncStorage.getItem("refreshToken");
       if (!refreshToken) {
-        throw new Error(
-          "Không tìm thấy refreshToken. Yêu cầu đăng nhập lại. Lỗi tại api.refreshToken."
-        );
+        throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
       }
 
       const response = await http.post("/auth/refresh", null, {
@@ -140,8 +148,7 @@ export const api = {
         },
       });
 
-      // Lưu accessToken mới vào AsyncStorage
-      const newAccessToken = response.data.accessToken;
+      const newAccessToken = response.data?.accessToken;
       if (!newAccessToken) {
         throw new Error("API không trả về accessToken mới.");
       }
@@ -150,9 +157,6 @@ export const api = {
       return newAccessToken;
     } catch (error) {
       console.error("Lỗi khi làm mới token:", error.message);
-      if (error.response && error.response.status === 404) {
-        throw new Error("Không tìm thấy tài nguyên làm mới token. Vui lòng đăng nhập lại.");
-      }
       throw error;
     }
   },
@@ -210,15 +214,16 @@ export const api = {
   },
   logout: async () => {
     try {
+      // Gọi API logout nếu cần
       const response = await http.post("/auth/logout");
       console.log("Đăng xuất thành công:", response.data);
-
+    } catch (error) {
+      console.error("Lỗi khi gọi API logout:", error.message);
+    } finally {
       // Xóa token khỏi AsyncStorage
       await AsyncStorage.removeItem("authToken");
       await AsyncStorage.removeItem("refreshToken");
       await AsyncStorage.removeItem("userInfo");
-    } catch (error) {
-      console.error("Lỗi khi gọi API logout:", error);
     }
   },
   verifyPhoneOTP: async (phone, otp, otpId) => {
@@ -300,15 +305,17 @@ export const api = {
       throw error;
     }
   },
-  changePassword: async (oldPassword, newPassword) => {
+  changePassword: async (userId, oldPassword, newPassword) => {
     try {
       const token = await AsyncStorage.getItem("authToken");
       if (!token) {
         throw new Error("Không tìm thấy authToken. Yêu cầu đăng nhập lại.");
       }
+
       const response = await http.put(
         "/auth/change-password",
         {
+          userId, // Truyền userId vào body
           oldPassword,
           newPassword,
         },
@@ -320,31 +327,22 @@ export const api = {
       );
 
       if (response.status !== 200) {
-        // Try to get the error message from the response data
-        let errorMessage = `Request failed with status code ${response.status}`;
-        if (
-          response.response &&
-          response.response.data &&
-          response.response.data.message
-        ) {
-          errorMessage = response.response.data.message;
-        }
-        throw new Error(errorMessage);
+        throw new Error(
+          response.data?.message ||
+            `Request failed with status code ${response.status}`
+        );
       }
 
-      if (response.data && response.data.newRefreshToken && response.data.newAccessToken) {
-        await AsyncStorage.setItem("refreshToken", response.data.newRefreshToken);
-        await AsyncStorage.setItem("authToken", response.data.newAccessToken);
-      } else {
-        console.warn("New refresh token or access token not found in response.data");
-       
+      // Nếu backend trả về token mới, lưu lại
+      const { accessToken, refreshToken } = response.data.token || {};
+      if (accessToken && refreshToken) {
+        await AsyncStorage.setItem("authToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
       }
-      return { message: "Password changed successfully" , data: response.data};
+
+      return { message: "Password changed successfully", data: response.data };
     } catch (error) {
       console.error("Lỗi khi thay đổi mật khẩu:", error.message);
-      if (error.response && error.response.status === 404) {
-        throw new Error("Không tìm thấy tài nguyên thay đổi mật khẩu. Vui lòng đăng nhập lại.");
-      }
       throw error;
     }
   },

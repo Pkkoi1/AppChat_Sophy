@@ -10,27 +10,28 @@ export const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Load dữ liệu từ AsyncStorage khi app khởi chạy
   useEffect(() => {
-    const loadFromStorage = async () => {
+    const loadStorage = async () => {
       try {
-        const token = await AsyncStorage.getItem("authToken");
-        const refresh = await AsyncStorage.getItem("refreshToken");
-        const user = await AsyncStorage.getItem("userInfo");
+        const [token, refresh, user] = await AsyncStorage.multiGet([
+          "authToken",
+          "refreshToken",
+          "userInfo",
+        ]);
 
-        if (token && refresh && user) {
-          setAuthToken(token);
-          setRefreshToken(refresh);
-          setUserInfo(JSON.parse(user));
+        if (token[1] && refresh[1] && user[1]) {
+          setAuthToken(token[1]);
+          setRefreshToken(refresh[1]);
+          setUserInfo(JSON.parse(user[1]));
         }
       } catch (err) {
-        console.error("Lỗi khi load auth context:", err);
+        console.error("Error loading storage:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadFromStorage();
+    loadStorage();
   }, []);
 
   const login = async (params) => {
@@ -40,39 +41,35 @@ export const AuthProvider = ({ children }) => {
     setAuthToken(accessToken);
     setRefreshToken(refreshToken);
 
-    // Sau khi đăng nhập thành công, gọi getUserInfoById để lấy thông tin chi tiết người dùng
     await getUserInfoById(response.data.user.userId);
-
-    await AsyncStorage.setItem("authToken", accessToken);
-    await AsyncStorage.setItem("refreshToken", refreshToken);
   };
 
   const logout = async () => {
-    await api.logout();
+    try {
+      await api.logout();
+    } catch (error) {
+      console.error("Lỗi khi logout:", error.message);
+    } finally {
+      setAuthToken(null);
+      setRefreshToken(null);
+      setUserInfo(null);
+    }
+  };
 
-    setAuthToken(null);
-    setRefreshToken(null);
-    setUserInfo(null);
-
-    await AsyncStorage.removeItem("authToken");
-    await AsyncStorage.removeItem("refreshToken");
-    await AsyncStorage.removeItem("userInfo");
+  const getUserInfoById = async (id) => {
+    try {
+      const res = await api.getUserById(id);
+      setUserInfo(res.data);
+      await AsyncStorage.setItem("userInfo", JSON.stringify(res.data));
+    } catch (err) {
+      console.error("Error fetching user info:", err);
+    }
   };
 
   const updateUserInfo = async (newInfo) => {
     const updated = { ...userInfo, ...newInfo };
     setUserInfo(updated);
     await AsyncStorage.setItem("userInfo", JSON.stringify(updated));
-  };
-
-  const getUserInfoById = async (id) => {
-    try {
-      const response = await api.getUserById(id || userInfo.userId); // Nếu không có id, sử dụng userId hiện tại
-      setUserInfo(response.data);
-      await AsyncStorage.setItem("userInfo", JSON.stringify(response.data));
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin người dùng ở context:", error);
-    }
   };
 
   return (
@@ -85,8 +82,8 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         updateUserInfo,
-        getUserInfoById, // Cung cấp hàm getUserInfoById cho các thành phần sử dụng
-        setUserInfo, // Nếu muốn cập nhật toàn bộ userInfo
+        getUserInfoById,
+        setUserInfo,
       }}
     >
       {children}
