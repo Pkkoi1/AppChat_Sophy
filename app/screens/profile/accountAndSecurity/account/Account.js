@@ -21,7 +21,7 @@ const Account = ({ userInfo, navigation }) => {
       >
         {userInfo?.urlavatar ? (
           <Image
-            source={{ uri: userInfo.urlavatar }}
+            source={{ uri: userInfo?.urlavatar }}
             style={styles.avatarImage}
           />
         ) : (
