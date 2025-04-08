@@ -25,45 +25,34 @@ const VerifyPhoneNumber = ({ phoneNumber, otpass, otpId, onCancel }) => {
   };
 
   const sendOTP = async () => {
-    // setIsLoading(true);
+    setIsLoading(true);
+    try {
+      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
 
-    // try {
-    //   // Định dạng số điện thoại
-    //   const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+      // Gửi OTP qua Firebase
+      const confirmation = await auth().signInWithPhoneNumber(
+        formattedPhoneNumber
+      );
 
-    //   // Gửi OTP qua Firebase Authentication
-    //   const confirmation = await auth().signInWithPhoneNumber(
-    //     formattedPhoneNumber
-    //   );
+      Alert.alert("Thành công", "Mã OTP đã được gửi qua SMS.");
 
-    //   // Lấy verificationId từ confirmation
-    //   const verificationId = confirmation.verificationId;
-
-    //   if (!verificationId) {
-    //     throw new Error("Không thể lấy mã xác thực. Vui lòng thử lại.");
-    //   }
-
-    //   // Hiển thị thông báo thành công và điều hướng đến màn hình nhập OTP
-    //   Alert.alert("Thành công", "Mã OTP đã được gửi qua SMS.");
-    //   navigation.navigate("VerifyOTPCode", {
-    //     phoneNumber: phoneNumber,
-    //     otpId: verificationId, // Chỉ truyền verificationId
-    //   });
-    // } catch (error) {
-    //   console.error("Error sending OTP:", error.message);
-
-    //   // Xử lý lỗi nếu không gửi được OTP
-    //   Alert.alert(
-    //     "Lỗi",
-    //     error.message || "Không thể gửi mã OTP. Vui lòng thử lại."
-    //   );
-    // } finally {
-    //   setIsLoading(false);
-    // }
-    navigation.navigate("VerifyOTPCode", {
-      phoneNumber: phoneNumber,
-      otpass: otpass,
-    });
+      navigation.navigate("VerifyOTPCode", {
+        phoneNumber,
+        otpId: confirmation.verificationId, // <-- gửi đúng cái này thôi
+      });
+    } catch (error) {
+      console.error("Error sending OTP:", error.message);
+      Alert.alert(
+        "Lỗi",
+        error.message || "Không thể gửi mã OTP. Vui lòng thử lại."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+    // navigation.navigate("VerifyOTPCode", {
+    //   phoneNumber: phoneNumber,
+    //   otpass: otpass,
+    // });
   };
 
   return (
