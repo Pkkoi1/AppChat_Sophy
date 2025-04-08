@@ -143,6 +143,7 @@ const Register = () => {
       <View style={RegisterStyle({ width, height }).submit}>
         <TouchableOpacity
           onPress={handleContinue} // Gọi hàm kiểm tra số điện thoại
+          disabled={!isSelected1 || !isSelected2} // Vô hiệu hóa nếu chưa chọn cả hai ô
           style={
             isSelected1 && isSelected2
               ? RegisterStyle({ width, height }).button_checked
