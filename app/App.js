@@ -42,6 +42,8 @@ import UpdatePassword from "./screens/profile/accountAndSecurity/account/updateP
 import EnterAvatar from "./screens/register/enterAvatar/EnterAvatar";
 
 import LoginByQR from "./screens/login/LoginByQR";
+import { SocketProvider } from "./screens/socket/SocketContext";
+
 
 
 const Stack = createNativeStackNavigator();
@@ -49,6 +51,7 @@ const Stack = createNativeStackNavigator();
 function RootLayout() {
   return (
     <AuthProvider>
+      <SocketProvider>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -114,6 +117,7 @@ function RootLayout() {
 
         </Stack.Navigator>
       </NavigationContainer>
+      </SocketProvider>
     </AuthProvider>
   );
 }

@@ -83,7 +83,7 @@ function LoginScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => navigation.navigate("LoginByQR")}>
+        <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
           <Text style={styles.forgotPassword}>Lấy lại mật khẩu</Text>
         </TouchableOpacity>
 
