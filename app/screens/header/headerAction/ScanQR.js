@@ -6,8 +6,11 @@ import {
   TouchableOpacity,
   Linking,
   Dimensions,
+  Alert
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useNavigation } from '@react-navigation/native';
+import { api } from '../../../api/api'; // Import your API
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,12 +18,41 @@ export default function ScanQR() {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [qrData, setQrData] = useState(null);
+  const navigation = useNavigation(); // Khởi tạo navigation
 
   useEffect(() => {
     if (!permission?.granted) {
       requestPermission();
     }
   }, [permission]);
+
+  
+  useEffect(() => {
+    if (scanned && qrData) {
+      // Verify the QR code data with your backend
+      const verifyQrCode = async () => {
+        try {
+          const qrInfo = JSON.parse(qrData);
+          const response = await api.verifyQrToken(qrInfo.token); // Call your API
+
+          if (response.message === "QR token verified successfully") {
+            navigation.navigate("LoginByQR", { qrData: qrData });
+          } else {
+            Alert.alert("Lỗi", "Mã QR không hợp lệ.");
+            setScanned(true); // Allow rescanning
+            setQrData(null);
+          }
+        } catch (error) {
+          console.error("Error verifying QR token:", error);
+          Alert.alert("Lỗi", "Không thể xác minh mã QR. Vui lòng thử lại.");
+          setScanned(true);
+          setQrData(null);
+        }
+      };
+
+      verifyQrCode();
+    }
+  }, [scanned, qrData, navigation]);
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
@@ -62,21 +94,7 @@ export default function ScanQR() {
           <View style={styles.bottomRightCorner} />
         </View>
       </CameraView>
-      {scanned && qrData && (
-        <View style={styles.bottomContainer}>
-          <Text style={styles.text}>Đã quét mã QR:</Text>
-          {isValidUrl(qrData) ? (
-            <TouchableOpacity onPress={handleLinkPress}>
-              <Text style={styles.linkText}>{qrData}</Text>
-            </TouchableOpacity>
-          ) : (
-            <Text style={styles.text}>{qrData}</Text>
-          )}
-          <TouchableOpacity style={styles.button} onPress={() => { setScanned(false); setQrData(null); }}>
-            <Text style={styles.buttonText}>Quét lại</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+     
     </View>
   );
 }

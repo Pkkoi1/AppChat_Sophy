@@ -156,7 +156,7 @@ export const api = {
       await AsyncStorage.setItem("authToken", newAccessToken);
       return newAccessToken;
     } catch (error) {
-      console.error("Lỗi khi làm mới token:", error.message);
+      console.error("Lỗi khi làm mới token 2:", error.message);
       throw error;
     }
   },
@@ -327,10 +327,17 @@ export const api = {
       );
 
       if (response.status !== 200) {
-        throw new Error(
-          response.data?.message ||
-            `Request failed with status code ${response.status}`
-        );
+        let errorMessage = "Yêu cầu không thành công"; // Default error message
+        if (response.status === 400) {
+          errorMessage = response.data?.message || "Mật khẩu hiện tại không đúng.";
+        } else if (response.status === 401) {
+          errorMessage = response.data?.message || "Không có quyền thực hiện hành động này.";
+        } else if (response.status === 404) {
+          errorMessage = response.data?.message || "Không tìm thấy người dùng.";
+        } else {
+          errorMessage = `Lỗiiii ${response.status}: ${response.data?.message || "Yêu cầu không thành công"}`;
+        }
+        throw new Error(errorMessage);
       }
 
       // Nếu backend trả về token mới, lưu lại
@@ -342,7 +349,35 @@ export const api = {
 
       return { message: "Password changed successfully", data: response.data };
     } catch (error) {
-      console.error("Lỗi khi thay đổi mật khẩu:", error.message);
+      console.error("Lỗi đổi mật khẩu:", error.message);
+      throw error;
+    }
+  },
+
+  verifyQrToken: async (qrToken) => {
+    try {
+      const response = await http.post("/auth/verify-qr-token", { qrToken });
+      if (response.status === 200) {
+        return { message: "QR token verified successfully", data: response.data };
+      } else {
+        throw new Error(`Lỗi ${response.status}: ${response.data?.message || "Yêu cầu không thành công"}`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi xác minh QR token:", error.message);
+      throw error;
+    }
+  },
+
+  confirmQrLogin: async (qrToken) => {
+    try {
+      const response = await http.post("/auth/confirm-qr-login", { qrToken });
+      if (response.status === 200) {
+        return { message: "QR login confirmed successfully", data: response.data };
+      } else {
+        throw new Error(`Lỗi ${response.status}: ${response.data?.message || "Yêu cầu không thành công"}`);
+      }
+    } catch (error) {
+      console.error("Lỗi khi xác nhận QR login:", error.message);
       throw error;
     }
   },

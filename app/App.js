@@ -38,7 +38,11 @@ import Edit from "./components/profile/Edit";
 import AuthLoading from "./auth/AuthLoading";
 import { AuthProvider } from "./auth/AuthContext";
 import UpdatePassword from "./screens/profile/accountAndSecurity/account/updatePassword/updatePassword";
+
 import EnterAvatar from "./screens/register/enterAvatar/EnterAvatar";
+
+import LoginByQR from "./screens/login/LoginByQR";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -105,6 +109,9 @@ function RootLayout() {
             component={EnterAvatar}
             options={{ animation: "slide_from_right" }}
           />
+          <Stack.Screen name="LoginByQR" component={LoginByQR} />
+
+
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
