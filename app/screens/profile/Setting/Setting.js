@@ -1,15 +1,16 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import { api } from "@/app/api/api";
-import { AuthContext } from "@/app/auth/AuthContext"; // Import useAuth hook
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const settings = [
   {
@@ -35,20 +36,34 @@ const settings = [
 const Setting = ({ navigation }) => {
   const { userInfo } = useContext(AuthContext);
 
-  // const [userInfo, setUserInfo] = useState(route.params?.userInfo || {});
-
   const handleLogout = async () => {
-    try {
-      await api.logout();
-      console.log("Đăng xuất thành công");
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "Login" }],
-      });
-    } catch (error) {
-      console.error("Lỗi khi đăng xuất:", error);
-      Alert.alert("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
-    }
+    Alert.alert(
+      "Xác nhận đăng xuất",
+      "Bạn có chắc chắn muốn đăng xuất không?",
+      [
+        {
+          text: "Không",
+          onPress: () => Alert.alert("Thông báo", "Đã hủy đăng xuất."),
+          style: "cancel",
+        },
+        {
+          text: "Có",
+          onPress: async () => {
+            try {
+              await api.logout();
+              Alert.alert("Thông báo", "Đăng xuất thành công.");
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "Login" }],
+              });
+            } catch (error) {
+              console.error("Lỗi khi đăng xuất:", error);
+              Alert.alert("Lỗi", "Không thể đăng xuất. Vui lòng thử lại.");
+            }
+          },
+        },
+      ]
+    );
   };
 
   const renderItem = ({ item }) => (

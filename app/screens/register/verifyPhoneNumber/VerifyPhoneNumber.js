@@ -14,6 +14,7 @@ import auth from "@react-native-firebase/auth";
 const VerifyPhoneNumber = ({ phoneNumber, otpass, otpId, onCancel }) => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Trạng thái hiển thị giao diện
   const [code, setCode] = useState(otpass);
 
   const formatPhoneNumber = (phoneNumber) => {
@@ -36,6 +37,9 @@ const VerifyPhoneNumber = ({ phoneNumber, otpass, otpId, onCancel }) => {
 
       Alert.alert("Thành công", "Mã OTP đã được gửi qua SMS.");
 
+      // Tắt giao diện sau khi gửi OTP thành công
+      setIsVisible(false);
+
       navigation.navigate("VerifyOTPCode", {
         phoneNumber,
         otpId: confirmation.verificationId, // <-- gửi đúng cái này thôi
@@ -54,6 +58,10 @@ const VerifyPhoneNumber = ({ phoneNumber, otpass, otpId, onCancel }) => {
     //   otpass: otpass,
     // });
   };
+
+  if (!isVisible) {
+    return null; // Không hiển thị giao diện nếu `isVisible` là false
+  }
 
   return (
     <View style={styles.container}>
