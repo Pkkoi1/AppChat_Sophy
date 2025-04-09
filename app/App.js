@@ -38,6 +38,7 @@ import Edit from "./components/profile/Edit";
 import AuthLoading from "./auth/AuthLoading";
 import { AuthProvider } from "./auth/AuthContext";
 import UpdatePassword from "./screens/profile/accountAndSecurity/account/updatePassword/updatePassword";
+import LoginByQR from "./screens/login/LoginByQR";
 
 const Stack = createNativeStackNavigator();
 
@@ -99,6 +100,8 @@ function RootLayout() {
           <Stack.Screen name="Personal" component={Personal} />
           <Stack.Screen name="Edit" component={Edit} />
           <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
+          <Stack.Screen name="LoginByQR" component={LoginByQR} />
+
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
