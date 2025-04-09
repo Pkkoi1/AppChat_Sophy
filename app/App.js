@@ -39,12 +39,15 @@ import AuthLoading from "./auth/AuthLoading";
 import { AuthProvider } from "./auth/AuthContext";
 import UpdatePassword from "./screens/profile/accountAndSecurity/account/updatePassword/updatePassword";
 import LoginByQR from "./screens/login/LoginByQR";
+import { SocketProvider } from "./screens/socket/SocketContext";
+
 
 const Stack = createNativeStackNavigator();
 
 function RootLayout() {
   return (
     <AuthProvider>
+      <SocketProvider>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -104,6 +107,7 @@ function RootLayout() {
 
         </Stack.Navigator>
       </NavigationContainer>
+      </SocketProvider>
     </AuthProvider>
   );
 }

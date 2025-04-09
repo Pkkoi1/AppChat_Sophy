@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,16 @@ import {
 import { MaterialIcons } from "@expo/vector-icons";
 import { api } from "../../api/api";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
+import { AuthContext } from "@/app/auth/AuthContext"; // Import AuthContext
+import { SocketContext } from "../socket/SocketContext";
+
+
 
 const LoginByQR = ({ route, navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const { qrData } = route.params || {};
+  const { login } = useContext(AuthContext); // Get login function from context
+  const socket = useContext(SocketContext);
 
   const handleLogin = async () => {
     if (!isChecked) {
@@ -25,7 +31,16 @@ const LoginByQR = ({ route, navigation }) => {
       const response = await api.confirmQrLogin(qrInfo.token);
 
       if (response.status.code === 200) {
+        if (socket) {
+          socket.emit("confirmQrLogin", {
+            qrToken: qrInfo.token,
+            confirmed: true,
+            token: response.data.token, // Assuming the token is in response.data.token
+          });
+        }
+        await login({ qrToken: qrInfo.token });
         Alert.alert("Thành công", "Bạn đã đăng nhập thành công!");
+        navigation.navigate("Home");
         // TODO: Navigate to the main app screen
         // navigation.navigate('MainApp'); // Replace 'MainApp' with your main screen name
       } else {
@@ -52,6 +67,13 @@ const LoginByQR = ({ route, navigation }) => {
   };
 
   const handleReject = () => {
+    if (socket) {
+      const qrInfo = JSON.parse(qrData);
+      socket.emit("confirmQrLogin", {
+        qrToken: qrInfo.token,
+        confirmed: false,
+      });
+    }
     Alert.alert("Thông báo", "Bạn đã từ chối đăng nhập.");
     navigation.goBack(); // Navigate back to the previous screen
   };
