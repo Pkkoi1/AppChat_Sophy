@@ -3,7 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const API = `http://192.168.1.8:3000/api` || DATABASE_API;
+const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+// const API = `http://192.168.1.8:3000/api` || DATABASE_API;
 
 const http = axios.create({
   baseURL: API,
@@ -329,13 +330,17 @@ export const api = {
       if (response.status !== 200) {
         let errorMessage = "Yêu cầu không thành công"; // Default error message
         if (response.status === 400) {
-          errorMessage = response.data?.message || "Mật khẩu hiện tại không đúng.";
+          errorMessage =
+            response.data?.message || "Mật khẩu hiện tại không đúng.";
         } else if (response.status === 401) {
-          errorMessage = response.data?.message || "Không có quyền thực hiện hành động này.";
+          errorMessage =
+            response.data?.message || "Không có quyền thực hiện hành động này.";
         } else if (response.status === 404) {
           errorMessage = response.data?.message || "Không tìm thấy người dùng.";
         } else {
-          errorMessage = `Lỗiiii ${response.status}: ${response.data?.message || "Yêu cầu không thành công"}`;
+          errorMessage = `Lỗiiii ${response.status}: ${
+            response.data?.message || "Yêu cầu không thành công"
+          }`;
         }
         throw new Error(errorMessage);
       }
@@ -358,9 +363,16 @@ export const api = {
     try {
       const response = await http.post("/auth/verify-qr-token", { qrToken });
       if (response.status === 200) {
-        return { message: "QR token verified successfully", data: response.data };
+        return {
+          message: "QR token verified successfully",
+          data: response.data,
+        };
       } else {
-        throw new Error(`Lỗi ${response.status}: ${response.data?.message || "Yêu cầu không thành công"}`);
+        throw new Error(
+          `Lỗi ${response.status}: ${
+            response.data?.message || "Yêu cầu không thành công"
+          }`
+        );
       }
     } catch (error) {
       console.error("Lỗi khi xác minh QR token:", error.message);
@@ -372,9 +384,16 @@ export const api = {
     try {
       const response = await http.post("/auth/confirm-qr-login", { qrToken });
       if (response.status === 200) {
-        return { message: "QR login confirmed successfully", data: response.data };
+        return {
+          message: "QR login confirmed successfully",
+          data: response.data,
+        };
       } else {
-        throw new Error(`Lỗi ${response.status}: ${response.data?.message || "Yêu cầu không thành công"}`);
+        throw new Error(
+          `Lỗi ${response.status}: ${
+            response.data?.message || "Yêu cầu không thành công"
+          }`
+        );
       }
     } catch (error) {
       console.error("Lỗi khi xác nhận QR login:", error.message);
