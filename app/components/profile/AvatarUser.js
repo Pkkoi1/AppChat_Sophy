@@ -74,7 +74,7 @@ const AvatarUser = ({
   const getColorForInitial = (initial) => {
     const englishInitial = convertToEnglish(initial);
     const charCode = englishInitial.charCodeAt(0);
-    if (charCode >= 65 && charCode <= 69) return ["#FF5733", "#FF8D1A"]; // A-E
+    if (charCode >= 65 && charCode <= 69) return ["#fb8137", "#fbc398"]; // A-E
     if (charCode >= 70 && charCode <= 74) return ["#00cc00", "#1AFF8D"]; // F-J
     if (charCode >= 75 && charCode <= 79) return ["#3357FF", "#1A8DFF"]; // K-O
     if (charCode >= 80 && charCode <= 84) return ["#8D33FF", "#D91AFF"]; // P-T

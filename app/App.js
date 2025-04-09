@@ -38,6 +38,7 @@ import Edit from "./components/profile/Edit";
 import AuthLoading from "./auth/AuthLoading";
 import { AuthProvider } from "./auth/AuthContext";
 import UpdatePassword from "./screens/profile/accountAndSecurity/account/updatePassword/updatePassword";
+import EnterAvatar from "./screens/register/enterAvatar/EnterAvatar";
 
 const Stack = createNativeStackNavigator();
 
@@ -99,6 +100,11 @@ function RootLayout() {
           <Stack.Screen name="Personal" component={Personal} />
           <Stack.Screen name="Edit" component={Edit} />
           <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
+          <Stack.Screen
+            name="EnterAvatar"
+            component={EnterAvatar}
+            options={{ animation: "slide_from_right" }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>
