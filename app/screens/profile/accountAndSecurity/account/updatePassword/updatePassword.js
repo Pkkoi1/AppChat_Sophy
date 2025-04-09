@@ -18,10 +18,19 @@ const UpdatePassword = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [currentPasswordError, setCurrentPasswordError] = useState(""); // Thêm trạng thái lỗi cho mật khẩu hiện tại
   const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
   const { authToken, logout, userInfo, login } = useContext(AuthContext);
 
   const handlePasswordUpdate = async () => {
+    setErrorMessage("");
+    setCurrentPasswordError(""); // Reset lỗi mật khẩu hiện tại
+
+    if (!currentPassword) {
+      setCurrentPasswordError("Vui lòng nhập mật khẩu hiện tại.");
+      return;
+    }
+
     if (!authToken) {
       setErrorMessage("Không tìm thấy token. Vui lòng đăng nhập lại.");
       return;
@@ -60,19 +69,28 @@ const UpdatePassword = ({ navigation }) => {
           Alert.alert("Lỗi", "Không thể đăng nhập lại. Vui lòng thử lại.");
         }
       } else {
-        setErrorMessage(
-          response.message || "Không thể cập nhật mật khẩu. Vui lòng thử lại."
-        );
+        // Cập nhật để trả về thông báo lỗi từ backend
+        setErrorMessage(response.message);
       }
     } catch (error) {
-      if (
-        error.message === "Không tìm thấy authToken. Yêu cầu đăng nhập lại."
-      ) {
-        Alert.alert("Phiên đăng nhập hết hạn", "Vui lòng đăng nhập lại.", [
-          { text: "OK", onPress: () => logout() },
-        ]);
+      // Cập nhật để trả về thông báo lỗi từ backend
+      if (error.message === 'Invalid password') {
+        setCurrentPasswordError('Mật khẩu hiện tại không đúng.');
+      } else if (error.response?.status === 400) {
+        // Lỗi từ backend do mật khẩu mới không đủ mạnh
+        setErrorMessage(error.response.data.message || "Mật khẩu mới không hợp lệ.");
       }
-      setErrorMessage(error.message || "Có lỗi xảy ra khi cập nhật mật khẩu.");
+       else if (error.response?.status === 401) {
+        // Lỗi từ backend do mật khẩu hiện tại không đúng
+        setCurrentPasswordError(error.response.data.message || "Mật khẩu hiện tại không đúng.");
+      }
+      else if (error.response?.status === 404) {
+        // Lỗi từ backend do không tìm thấy user
+        setErrorMessage(error.response.data.message || "Không tìm thấy người dùng.");
+      }
+       else {
+        setErrorMessage(error.message);
+      }
     } finally {
       setIsLoading(false); // Kết thúc loading
     }
@@ -105,6 +123,9 @@ const UpdatePassword = ({ navigation }) => {
           value={currentPassword}
           onChangeText={setCurrentPassword}
         />
+        {currentPasswordError ? (
+          <Text style={styles.errorText}>{currentPasswordError}</Text>
+        ) : null}
       </View>
 
       <View style={[styles.inputContainer, { paddingHorizontal: 15 }]}>
@@ -216,6 +237,14 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
     textAlign: "center",
+  },
+  errorText: {
+    fontSize: 14,
+    color: "red",
+    marginTop: -10,
+    marginBottom: 10,
+    textAlign: "left",
+    paddingHorizontal: 10,
   },
 });
 
