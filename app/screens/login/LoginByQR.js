@@ -28,9 +28,10 @@ const LoginByQR = ({ route, navigation }) => {
     }
     try {
       const qrInfo = JSON.parse(qrData);
+      console.log("Confirm qrInfo.token:", qrInfo.token);
       const response = await api.confirmQrLogin(qrInfo.token);
 
-      if (response.status.code === 200) {
+      if (response.message === "QR login confirmed successfully") {
         if (socket) {
           socket.emit("confirmQrLogin", {
             qrToken: qrInfo.token,
@@ -38,14 +39,14 @@ const LoginByQR = ({ route, navigation }) => {
             token: response.data.token, // Assuming the token is in response.data.token
           });
         }
-        await login({ qrToken: qrInfo.token });
+        // await login({ qrToken: qrInfo.token });
         Alert.alert("Thành công", "Bạn đã đăng nhập thành công!");
         navigation.navigate("Home");
         // TODO: Navigate to the main app screen
         // navigation.navigate('MainApp'); // Replace 'MainApp' with your main screen name
       } else {
         Alert.alert(
-          "Lỗi",
+          "Lỗi 2",
           response.message || "Không thể xác nhận đăng nhập. Vui lòng thử lại."
         );
       }
@@ -54,14 +55,12 @@ const LoginByQR = ({ route, navigation }) => {
       if (error.response?.status === 404) {
         Alert.alert("Lỗi", "QR token không tồn tại hoặc đã hết hạn.");
       } else if (
-        error.response?.status === 400 &&
-        error.response?.data?.message === "QR token chưa được quét"
-      ) {
+        error.response?.status === 400 ) {
         Alert.alert("Lỗi", "QR token chưa được quét.");
       } else if (error.response?.status === 403) {
         Alert.alert("Lỗi", "Không có quyền xác nhận QR token này.");
       } else {
-        Alert.alert("Lỗi", "Không thể xác nhận đăng nhập. Vui lòng thử lại.");
+        Alert.alert("Lỗi 3", "Không thể xác nhận đăng nhập. Vui lòng thử lại.");
       }
     }
   };
