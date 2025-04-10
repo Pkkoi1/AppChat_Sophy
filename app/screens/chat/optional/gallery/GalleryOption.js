@@ -6,10 +6,10 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 const images = [
-  require("../../../../assets/images/hinh1.jpg"),
-  require("../../../../assets/images/hinh2.jpg"),
-  require("../../../../assets/images/hinh3.jpg"),
-  require("../../../../assets/images/hinh4.jpg"),
+  require("../../../../../assets/images/hinh1.jpg"),
+  require("../../../../../assets/images/hinh2.jpg"),
+  require("../../../../../assets/images/hinh3.jpg"),
+  require("../../../../../assets/images/hinh4.jpg"),
 ];
 
 const groupOptions = [

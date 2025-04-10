@@ -6,7 +6,7 @@ import {
 } from "@expo/vector-icons";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import Colors from "../../../components/colors/Color";
+import Colors from "../../../../components/colors/Color";
 
 const options = [
   {
