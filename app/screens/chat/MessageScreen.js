@@ -11,8 +11,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import ChatHeader from "./header/ChatHeader";
 import ChatFooter from "./footer/ChatFooter";
-import SearchHeader from "../optional/name/searchMessage/SearchHeader";
-import SearchFooter from "../optional/name/searchMessage/SearchFooter";
+import SearchHeader from "./optional/name/searchMessage/SearchHeader";
+import SearchFooter from "./optional/name/searchMessage/SearchFooter";
 import Conversation from "./message/Conversation";
 import MessageScreenStyle from "./MessageScreenStyle";
 import Fuse from "fuse.js";

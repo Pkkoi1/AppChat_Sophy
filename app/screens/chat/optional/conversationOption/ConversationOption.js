@@ -5,8 +5,8 @@ import {
 } from "@expo/vector-icons";
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import ToggleSwitch from "../../../components/toggle/ToggleSwitch";
-import Colors from "../../../components/colors/Color";
+import ToggleSwitch from "../../../../components/toggle/ToggleSwitch";
+import Colors from "../../../../components/colors/Color";
 
 const options = [
   {

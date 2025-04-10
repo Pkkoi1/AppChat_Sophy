@@ -21,7 +21,7 @@ import ReceivedFriendRequests from "./screens/directory/friend/friendRequest/Rec
 import UserProfile from "./screens/profile/userProfile/UserProfile"; // Đảm bảo đường dẫn đúng
 import AddFriend from "./screens/profile/userProfile/AddFriend"; // Đảm bảo đường dẫn đúng
 import AcceptFriend from "./screens/profile/userProfile/AcceptFriend"; // Đảm bảo đường dẫn đúng
-import Options from "./screens/optional/OptionalScreen";
+import Options from "./screens/chat/optional/OptionalScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import Verify from "./screens/register/Verify";
 import VerifyOTPCode from "./screens/register/verifyOTPCode/VerifyOTPCode";
@@ -44,14 +44,12 @@ import EnterAvatar from "./screens/register/enterAvatar/EnterAvatar";
 import LoginByQR from "./screens/login/LoginByQR";
 import { SocketProvider } from "./screens/socket/SocketContext";
 
-
-
 const Stack = createNativeStackNavigator();
 
 function RootLayout() {
   return (
+    <SocketProvider>
     <AuthProvider>
-      <SocketProvider>
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -117,8 +115,9 @@ function RootLayout() {
 
         </Stack.Navigator>
       </NavigationContainer>
-      </SocketProvider>
     </AuthProvider>
+      </SocketProvider>
+
   );
 }
 
