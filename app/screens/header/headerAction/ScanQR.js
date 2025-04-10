@@ -32,28 +32,33 @@ export default function ScanQR() {
     }
   }, [permission]);
 
-  useEffect(() => {
+ useEffect(() => {
     if (scanned && qrData && userInfo && authToken) {
-      // Verify the QR code data with your backend
       const verifyQrCode = async () => {
         try { 
           const qrInfo = JSON.parse(qrData);
           console.log("Scanned qrInfo.token:", qrInfo.token);
-          const response = await api.verifyQrToken(qrInfo.token); // Call your API
+          const response = await api.verifyQrToken(qrInfo.token);
 
           if (response.message === "QR token verified successfully") {
             console.log("QR token verified successfully:", response.data);
             if (socket) {
+              console.log("Socket is connected:", socket.connected);
+              // Modified socket emit to match server expectations
               socket.emit("scanQrLogin", {
                 qrToken: qrInfo.token,
-                userId: userInfo.userId,
-                accessToken: authToken,
+                userId: userInfo.userId
+              });
+              
+              // Add socket response listener
+              socket.on('qrScanned', (data) => {
+                console.log('QR scan acknowledged by server:', data);
               });
             }
             navigation.navigate("LoginByQR", { qrData: qrData });
           } else {
             Alert.alert("Lỗi", "Mã QR không hợp lệ.");
-            setScanned(false); // Allow rescanning
+            setScanned(false);
             setQrData(null);
           }
         } catch (error) {

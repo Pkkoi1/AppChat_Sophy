@@ -50,8 +50,9 @@ const Stack = createNativeStackNavigator();
 
 function RootLayout() {
   return (
+    <SocketProvider>
     <AuthProvider>
-      <SocketProvider>
+      
       <NavigationContainer>
         <Stack.Navigator
           screenOptions={{
@@ -117,8 +118,9 @@ function RootLayout() {
 
         </Stack.Navigator>
       </NavigationContainer>
-      </SocketProvider>
     </AuthProvider>
+      </SocketProvider>
+
   );
 }
 
