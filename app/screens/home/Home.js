@@ -12,7 +12,7 @@ import HomeStyle from "./HomeStyle";
 import { AuthContext } from "../../auth/AuthContext"; // Import useAuth hook
 import Loading from "@/app/components/loading/Loading";
 
-const Home = () => {
+const Home = ({ route }) => {
   const { userInfo } = useContext(AuthContext);
   // Lấy thông tin người dùng từ AuthContext
   const [index, setIndex] = useState(0);
@@ -64,11 +64,13 @@ const Home = () => {
     if (userInfo) {
       setIsLoading(false); // Nếu có user info, không cần loading
     }
-  }, [userInfo]);
 
-  if (isLoading || !userInfo) {
-    return <Loading />; // Hiển thị loading nếu không có thông tin người dùng hoặc đang tải
-  }
+    // Kiểm tra nếu có tham số `screen` được truyền
+    const initialScreen = route.params?.screen;
+    if (initialScreen) {
+      setCurrentScreen(initialScreen);
+    }
+  }, [userInfo, route.params]);
 
   return (
     <View style={HomeStyle.homeContainer}>
