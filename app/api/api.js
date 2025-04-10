@@ -361,7 +361,7 @@ export const api = {
 
   verifyQrToken: async (qrToken) => {
     try {
-      const response = await http.post("/auth/verify-qr-token", { qrToken });
+      const response = await http.post("/auth/verify-qr-token", {"qrToken": qrToken });
       if (response.status === 200) {
         return {
           message: "QR token verified successfully",
