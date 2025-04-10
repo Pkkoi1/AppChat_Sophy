@@ -1,15 +1,13 @@
-
-
 {
   "project_info": {
-    "project_number": "899642822092",
-    "project_id": "sophy-6564f",
-    "storage_bucket": "sophy-6564f.firebasestorage.app"
+    "project_number": "1010969527968",
+    "project_id": "sophy-e19fb",
+    "storage_bucket": "sophy-e19fb.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:899642822092:android:d633b26c51bd0ee080e169",
+        "mobilesdk_app_id": "1:1010969527968:android:129a4b61a1ce96bba8abc5",
         "android_client_info": {
           "package_name": "com.anonymous.ChatApp_Sophy"
         }
@@ -17,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC1VxTveTNjSgtw0Oi9NklmCbtiEjivq9k"
+          "current_key": "AIzaSyAGDCN-PFRi0s4xeVin0_JFGbu4lLH-omQ"
         }
       ],
       "services": {
