@@ -10,12 +10,12 @@
     <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
     <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
     <string name="expo_system_ui_user_interface_style" translatable="false">automatic</string>
-    <string name="gcm_defaultSenderId" translatable="false">899642822092</string>
-    <string name="google_api_key" translatable="false">AIzaSyC1VxTveTNjSgtw0Oi9NklmCbtiEjivq9k</string>
-    <string name="google_app_id" translatable="false">1:899642822092:android:d633b26c51bd0ee080e169</string>
-    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyC1VxTveTNjSgtw0Oi9NklmCbtiEjivq9k</string>
-    <string name="google_storage_bucket" translatable="false">sophy-6564f.firebasestorage.app</string>
-    <string name="project_id" translatable="false">sophy-6564f</string>
+    <string name="gcm_defaultSenderId" translatable="false">1010969527968</string>
+    <string name="google_api_key" translatable="false">AIzaSyAGDCN-PFRi0s4xeVin0_JFGbu4lLH-omQ</string>
+    <string name="google_app_id" translatable="false">1:1010969527968:android:129a4b61a1ce96bba8abc5</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAGDCN-PFRi0s4xeVin0_JFGbu4lLH-omQ</string>
+    <string name="google_storage_bucket" translatable="false">sophy-e19fb.firebasestorage.app</string>
+    <string name="project_id" translatable="false">sophy-e19fb</string>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="android:textColor">@android:color/black</item>
     <item name="android:editTextStyle">@style/ResetEditText</item>
