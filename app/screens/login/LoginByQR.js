@@ -13,8 +13,6 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { AuthContext } from "@/app/auth/AuthContext"; // Import AuthContext
 import { SocketContext } from "../socket/SocketContext";
 
-
-
 const LoginByQR = ({ route, navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const { qrData } = route.params || {};
@@ -26,27 +24,38 @@ const LoginByQR = ({ route, navigation }) => {
       Alert.alert("Thông báo", "Vui lòng xác nhận đây là thiết bị của bạn.");
       return;
     }
+
     try {
       const qrInfo = JSON.parse(qrData);
       console.log("Confirm qrInfo.token:", qrInfo.token);
+
+      // Gọi API để xác nhận QR login
       const response = await api.confirmQrLogin(qrInfo.token);
 
       if (response.message === "QR login confirmed successfully") {
-        if (socket) {
+        // Kiểm tra socket và gửi sự kiện confirmQrLogin
+        if (socket && socket.connected) {
           socket.emit("confirmQrLogin", {
             qrToken: qrInfo.token,
             confirmed: true,
-            token: response.data.token, // Assuming the token is in response.data.token
+            token: response.data.token, // Token từ API response
           });
+          console.log(
+            "Socket event 'confirmQrLogin' emitted with token:",
+            response.data.token
+          );
+        } else {
+          console.error("Socket is not connected!");
+          Alert.alert("Lỗi", "Không thể kết nối đến server. Vui lòng thử lại.");
+          return;
         }
-        // await login({ qrToken: qrInfo.token });
+
+        // Thông báo thành công và chuyển hướng
         Alert.alert("Thành công", "Bạn đã đăng nhập thành công!");
-        navigation.navigate("Home");
-        // TODO: Navigate to the main app screen
-        // navigation.navigate('MainApp'); // Replace 'MainApp' with your main screen name
+        // navigation.navigate("Home");
       } else {
         Alert.alert(
-          "Lỗi 2",
+          "Lỗi",
           response.message || "Không thể xác nhận đăng nhập. Vui lòng thử lại."
         );
       }
@@ -54,13 +63,12 @@ const LoginByQR = ({ route, navigation }) => {
       console.error("Error confirming QR login:", error);
       if (error.response?.status === 404) {
         Alert.alert("Lỗi", "QR token không tồn tại hoặc đã hết hạn.");
-      } else if (
-        error.response?.status === 400 ) {
+      } else if (error.response?.status === 400) {
         Alert.alert("Lỗi", "QR token chưa được quét.");
       } else if (error.response?.status === 403) {
         Alert.alert("Lỗi", "Không có quyền xác nhận QR token này.");
       } else {
-        Alert.alert("Lỗi 3", "Không thể xác nhận đăng nhập. Vui lòng thử lại.");
+        Alert.alert("Lỗi", "Không thể xác nhận đăng nhập. Vui lòng thử lại.");
       }
     }
   };
@@ -88,9 +96,16 @@ const LoginByQR = ({ route, navigation }) => {
       </View>
 
       <View style={styles.iconContainer}>
-        <MaterialIcons name="computer" size={100} color="#000" style={styles.icon} />
+        <MaterialIcons
+          name="computer"
+          size={100}
+          color="#000"
+          style={styles.icon}
+        />
       </View>
-      <Text style={styles.title}>Đăng nhập Zalo Web bằng mã QR trên thiết bị lạ?</Text>
+      <Text style={styles.title}>
+        Đăng nhập Zalo Web bằng mã QR trên thiết bị lạ?
+      </Text>
 
       {/* Warning */}
       <View style={styles.warningContainer}>
@@ -127,7 +142,11 @@ const LoginByQR = ({ route, navigation }) => {
           unfillColor="#FFFFFF"
           text="Tôi đã kiểm tra kỹ thông tin và xác nhận đây là thiết bị của tôi"
           iconStyle={{ borderColor: "#007bff" }}
-          textStyle={{ fontFamily: "JosefinSans-Regular", fontSize: 14, color: "#495057" }}
+          textStyle={{
+            fontFamily: "JosefinSans-Regular",
+            fontSize: 14,
+            color: "#495057",
+          }}
           onPress={(isChecked) => {
             setIsChecked(isChecked);
           }}
@@ -137,7 +156,10 @@ const LoginByQR = ({ route, navigation }) => {
       {/* Buttons */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.button, isChecked ? styles.loginButton : styles.disabledButton]}
+          style={[
+            styles.button,
+            isChecked ? styles.loginButton : styles.disabledButton,
+          ]}
           onPress={handleLogin}
           disabled={!isChecked}
         >
