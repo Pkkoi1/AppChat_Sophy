@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Text,
   View,
@@ -6,8 +6,13 @@ import {
   TouchableOpacity,
   Linking,
   Dimensions,
+  Alert
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { useNavigation } from '@react-navigation/native';
+import { api } from '../../../api/api'; // Import your API
+import { AuthContext } from '../../../auth/AuthContext';
+import { SocketContext } from '../../socket/SocketContext';
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,6 +20,11 @@ export default function ScanQR() {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [qrData, setQrData] = useState(null);
+  const navigation = useNavigation(); // Khởi tạo navigation
+
+  // Kiểm tra context trước khi sử dụng
+  const { userInfo, authToken } = useContext(AuthContext) || {};
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     if (!permission?.granted) {
@@ -22,13 +32,53 @@ export default function ScanQR() {
     }
   }, [permission]);
 
+  useEffect(() => {
+    if (scanned && qrData && userInfo && authToken) {
+      // Verify the QR code data with your backend
+      const verifyQrCode = async () => {
+        try { 
+          const qrInfo = JSON.parse(qrData);
+          console.log("Scanned qrInfo.token:", qrInfo.token);
+          const response = await api.verifyQrToken(qrInfo.token); // Call your API
+
+          if (response.message === "QR token verified successfully") {
+            console.log("QR token verified successfully:", response.data);
+            if (socket) {
+              socket.emit("scanQrLogin", {
+                qrToken: qrInfo.token,
+                userId: userInfo.userId,
+                accessToken: authToken,
+              });
+            }
+            navigation.navigate("LoginByQR", { qrData: qrData });
+          } else {
+            Alert.alert("Lỗi", "Mã QR không hợp lệ.");
+            setScanned(false); // Allow rescanning
+            setQrData(null);
+          }
+        } catch (error) {
+          console.error("Error verifying QR token:", error);
+          Alert.alert("Lỗi", "Không thể xác minh mã QR. Vui lòng thử lại.");
+          setScanned(false);
+          setQrData(null);
+        }
+      };
+
+      verifyQrCode();
+    }
+  }, [scanned, qrData, navigation, socket, userInfo, authToken]);
+
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
     setQrData(data);
   };
 
   const handleLinkPress = () => {
-    Linking.openURL(qrData);
+    if (isValidUrl(qrData)) {
+      Linking.openURL(qrData);
+    } else {
+      Alert.alert("Lỗi", "Địa chỉ không hợp lệ.");
+    }
   };
 
   if (!permission) {
@@ -62,21 +112,6 @@ export default function ScanQR() {
           <View style={styles.bottomRightCorner} />
         </View>
       </CameraView>
-      {scanned && qrData && (
-        <View style={styles.bottomContainer}>
-          <Text style={styles.text}>Đã quét mã QR:</Text>
-          {isValidUrl(qrData) ? (
-            <TouchableOpacity onPress={handleLinkPress}>
-              <Text style={styles.linkText}>{qrData}</Text>
-            </TouchableOpacity>
-          ) : (
-            <Text style={styles.text}>{qrData}</Text>
-          )}
-          <TouchableOpacity style={styles.button} onPress={() => { setScanned(false); setQrData(null); }}>
-            <Text style={styles.buttonText}>Quét lại</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }

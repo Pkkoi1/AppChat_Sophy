@@ -1,8 +1,10 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+const API = `http://192.168.1.240:3000/api` || DATABASE_API;
 
 const http = axios.create({
   baseURL: API,
@@ -25,7 +27,6 @@ http.interceptors.request.use(async (config) => {
   return config;
 });
 
-// Thêm interceptor để xử lý lỗi 401 và làm mới token
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -49,14 +50,19 @@ http.interceptors.response.use(
         }
 
         // Gọi API làm mới token
-        const response = await axios.post(`${API}/auth/refresh`, null, {
+        const response = await http.post("/auth/refresh", null, {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
         });
 
+        // Kiểm tra phản hồi từ API
+        const newAccessToken = response.data?.accessToken;
+        if (!newAccessToken) {
+          throw new Error("API không trả về accessToken mới.");
+        }
+
         // Lưu accessToken mới vào AsyncStorage
-        const newAccessToken = response.data.accessToken;
         await AsyncStorage.setItem("authToken", newAccessToken);
 
         // Cập nhật header Authorization và gửi lại request ban đầu
@@ -64,11 +70,17 @@ http.interceptors.response.use(
         return http(originalRequest);
       } catch (refreshError) {
         console.error("Lỗi khi làm mới token:", refreshError);
+
         // Nếu refreshToken hết hạn, yêu cầu đăng nhập lại
         await AsyncStorage.removeItem("authToken");
         await AsyncStorage.removeItem("refreshToken");
         throw refreshError;
       }
+    }
+
+    // Xử lý các lỗi khác
+    if (error.code === "ERR_NETWORK") {
+      console.error("Lỗi mạng:", error.message);
     }
 
     return Promise.reject(error);
@@ -107,7 +119,21 @@ export const api = {
       );
       console.error("Chi tiết lỗi đăng nhập 2:", error);
 
-      throw error;
+      if (axios.isAxiosError(error)) {
+        if (error.code === "ERR_NETWORK") {
+          throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
+        } else if (error.response) {
+          throw new Error(
+            `Lỗi ${error.response.status}: ${
+              error.response.data.message || "Yêu cầu không thành công"
+            }`
+          );
+        } else {
+          throw new Error(`Lỗi không xác định: ${error.message}`);
+        }
+      } else {
+        throw error;
+      }
     }
   },
   refreshToken: async () => {
@@ -123,8 +149,7 @@ export const api = {
         },
       });
 
-      // Lưu accessToken mới vào AsyncStorage
-      const newAccessToken = response.data.accessToken;
+      const newAccessToken = response.data?.accessToken;
       if (!newAccessToken) {
         throw new Error("API không trả về accessToken mới.");
       }
@@ -132,13 +157,18 @@ export const api = {
       await AsyncStorage.setItem("authToken", newAccessToken);
       return newAccessToken;
     } catch (error) {
-      console.error("Lỗi khi làm mới token:", error.message);
+      console.error("Lỗi khi làm mới token 2:", error.message);
       throw error;
     }
   },
   conversations: async () => {
     return await http.get(`/conversations`);
   },
+  //Lấy thông tin cuộc trò chuyện theo ID
+  getConversationById: async (conversationId) => {
+    return await http.get(`/conversations/${conversationId}`);
+  },
+
   getConversationDetails: async (conversationId) => {
     return await http.get(`/conversations/${conversationId}`);
   },
@@ -155,6 +185,7 @@ export const api = {
   checkPhone: async (phone) => {
     try {
       const resp = await http.post(`/auth/check-used-phone/${phone}`);
+
       if (
         resp.status === 200 &&
         resp.data.message === "Verification code generated."
@@ -163,32 +194,37 @@ export const api = {
           otpId: resp.data.otpId,
           otp: resp.data.otp,
           message: resp.data.message,
-        }; // Trả về dữ liệu nếu thành công
+        };
       }
+
+      // Trả về lỗi custom nếu không đúng format
       throw new Error("Phản hồi từ API không hợp lệ.");
     } catch (error) {
-      console.error("Lỗi khi kiểm tra số điện thoại:", error.message);
-      console.error(
-        "Chi tiết lỗi khi kiểm tra số điện thoại:",
-        error.response?.data || error.message
-      );
-      throw new Error(
-        "Lỗi khi kiểm tra số điện thoại tại api: " +
-          (error.response?.statusText || error.message)
-      );
+      // Ghi log chi tiết
+      console.error("Lỗi khi kiểm tra số điện thoại:", error?.message);
+      console.error("Chi tiết lỗi:", error?.response?.data || error);
+
+      // Nếu là lỗi từ Axios, giữ nguyên để xử lý ở ngoài
+      if (error.response) {
+        throw error;
+      }
+
+      // Ngược lại, ném lỗi bình thường
+      throw new Error("Lỗi không xác định khi kiểm tra số điện thoại.");
     }
   },
   logout: async () => {
     try {
+      // Gọi API logout nếu cần
       const response = await http.post("/auth/logout");
       console.log("Đăng xuất thành công:", response.data);
-
+    } catch (error) {
+      console.error("Lỗi khi gọi API logout:", error.message);
+    } finally {
       // Xóa token khỏi AsyncStorage
       await AsyncStorage.removeItem("authToken");
       await AsyncStorage.removeItem("refreshToken");
       await AsyncStorage.removeItem("userInfo");
-    } catch (error) {
-      console.error("Lỗi khi gọi API logout:", error);
     }
   },
   verifyPhoneOTP: async (phone, otp, otpId) => {
@@ -267,6 +303,100 @@ export const api = {
         "Lỗi khi tải ảnh lên:",
         error.response?.data || error.message
       );
+      throw error;
+    }
+  },
+  changePassword: async (userId, oldPassword, newPassword) => {
+    try {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        throw new Error("Không tìm thấy authToken. Yêu cầu đăng nhập lại.");
+      }
+
+      const response = await http.put(
+        "/auth/change-password",
+        {
+          userId, // Truyền userId vào body
+          oldPassword,
+          newPassword,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status !== 200) {
+        let errorMessage = "Yêu cầu không thành công"; // Default error message
+        if (response.status === 400) {
+          errorMessage =
+            response.data?.message || "Mật khẩu hiện tại không đúng.";
+        } else if (response.status === 401) {
+          errorMessage =
+            response.data?.message || "Không có quyền thực hiện hành động này.";
+        } else if (response.status === 404) {
+          errorMessage = response.data?.message || "Không tìm thấy người dùng.";
+        } else {
+          errorMessage = `Lỗiiii ${response.status}: ${
+            response.data?.message || "Yêu cầu không thành công"
+          }`;
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Nếu backend trả về token mới, lưu lại
+      const { accessToken, refreshToken } = response.data.token || {};
+      if (accessToken && refreshToken) {
+        await AsyncStorage.setItem("authToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
+      }
+
+      return { message: "Password changed successfully", data: response.data };
+    } catch (error) {
+      console.error("Lỗi đổi mật khẩu:", error.message);
+      throw error;
+    }
+  },
+
+  verifyQrToken: async (qrToken) => {
+    try {
+      const response = await http.post("/auth/verify-qr-token", { qrToken });
+      if (response.status === 200) {
+        return {
+          message: "QR token verified successfully",
+          data: response.data,
+        };
+      } else {
+        throw new Error(
+          `Lỗi ${response.status}: ${
+            response.data?.message || "Yêu cầu không thành công"
+          }`
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi xác minh QR token:", error.message);
+      throw error;
+    }
+  },
+
+  confirmQrLogin: async (qrToken) => {
+    try {
+      const response = await http.post("/auth/confirm-qr-login", {"qrToken": qrToken});
+      if (response.status === 200) {
+        return {
+          message: "QR login confirmed successfully",
+          data: response.data,
+        };
+      } else {
+        throw new Error(
+          `Lỗi ${response.status}: ${
+            response.data?.message || "Yêu cầu không thành công"
+          }`
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi xác nhận QR login:", error.message);
       throw error;
     }
   },

@@ -73,11 +73,26 @@ const Register = () => {
       }
     } catch (error) {
       console.error("Lỗi khi kiểm tra số điện thoại:", error);
-      console.error(
-        "Phản hồi từ API kiểm tra số điện thoại không hợp lệ.",
-        error.response.data
-      );
-      Alert.alert("Lỗi", "Số điện thoại đã được sử dụng.\nVui lòng thử lại.");
+
+      if (
+        error.response?.status === 400 &&
+        error.response?.data?.message === "Phone number is already used"
+      ) {
+        Alert.alert(
+          "Lỗi",
+          "Số điện thoại đã được sử dụng. Vui lòng thử số khác."
+        );
+      } else if (error.response?.status === 429) {
+        Alert.alert(
+          "Gửi quá nhiều lần",
+          "Bạn đã gửi mã OTP quá nhiều lần. Vui lòng chờ vài phút trước khi thử lại."
+        );
+      } else {
+        Alert.alert(
+          "Lỗi",
+          "Không thể kiểm tra số điện thoại. Vui lòng thử lại sau."
+        );
+      }
     }
   };
   return (
@@ -128,6 +143,7 @@ const Register = () => {
       <View style={RegisterStyle({ width, height }).submit}>
         <TouchableOpacity
           onPress={handleContinue} // Gọi hàm kiểm tra số điện thoại
+          disabled={!isSelected1 || !isSelected2} // Vô hiệu hóa nếu chưa chọn cả hai ô
           style={
             isSelected1 && isSelected2
               ? RegisterStyle({ width, height }).button_checked

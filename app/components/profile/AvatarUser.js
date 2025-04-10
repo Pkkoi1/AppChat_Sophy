@@ -9,6 +9,9 @@ const AvatarUser = ({
   avtText,
   shadow = true,
   bordered = true,
+  borderWidth = 4,
+  style = {}, // Nhận style từ bên ngoài
+  keyProp, // Nhận key từ bên ngoài
 }) => {
   const getInitials = (name) => {
     if (!name) return "";
@@ -71,7 +74,7 @@ const AvatarUser = ({
   const getColorForInitial = (initial) => {
     const englishInitial = convertToEnglish(initial);
     const charCode = englishInitial.charCodeAt(0);
-    if (charCode >= 65 && charCode <= 69) return ["#FF5733", "#FF8D1A"]; // A-E
+    if (charCode >= 65 && charCode <= 69) return ["#fb8137", "#fbc398"]; // A-E
     if (charCode >= 70 && charCode <= 74) return ["#00cc00", "#1AFF8D"]; // F-J
     if (charCode >= 75 && charCode <= 79) return ["#3357FF", "#1A8DFF"]; // K-O
     if (charCode >= 80 && charCode <= 84) return ["#8D33FF", "#D91AFF"]; // P-T
@@ -83,14 +86,14 @@ const AvatarUser = ({
   const colors = getColorForInitial(initials.charAt(0));
 
   return (
-    <View style={styles.avatarContainer}>
+    <View style={[styles.avatarContainer, style]} key={keyProp || null}>
       <LinearGradient
         colors={colors}
         style={[
           styles.avatar,
           { width, height, borderRadius: width / 2 },
           shadow && styles.shadow, // Thêm bóng nếu `shadow` là true
-          bordered && styles.bordered, // Thêm viền nếu `bordered` là true
+          bordered && { borderWidth, borderColor: "#fff" }, // Sử dụng borderWidth nếu `bordered` là true
         ]}
       >
         <Text style={[styles.avatarText, { fontSize: avtText }]}>
@@ -116,10 +119,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  bordered: {
-    borderWidth: 4,
-    borderColor: "#fff",
-  },
+
   avatarText: {
     color: "#fff",
     fontWeight: "bold",

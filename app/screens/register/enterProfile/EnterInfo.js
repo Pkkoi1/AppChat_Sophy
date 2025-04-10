@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,14 +12,19 @@ import {
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
+  Image,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import { MaterialIcons } from "@expo/vector-icons"; // Import icon lịch
 import Color from "../../../components/colors/Color";
 import { api } from "@/app/api/api";
+import { AuthContext } from "@/app/auth/AuthContext";
+import { Icon, Overlay } from "@rneui/themed";
 
 const EnterInfo = ({ route, navigation }) => {
+  const { login } = useContext(AuthContext);
+
   const { phoneNumber, fullname } = route.params || {
     phoneNumber: "0123456789",
     fullname: "Nguyễn Văn A",
@@ -46,8 +51,10 @@ const EnterInfo = ({ route, navigation }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false); // Theo dõi trạng thái bàn phím
+  const [success, setSuccess] = useState(false); // Trạng thái hiển thị thông báo thành công
 
   const sanitizedPhoneNumber = phoneNumber.replace(/\s+/g, "");
+  const [visible, setVisible] = useState(true);
 
   const validatePassword = (password) => {
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,}$/;
@@ -93,30 +100,27 @@ const EnterInfo = ({ route, navigation }) => {
       // Gửi yêu cầu đăng ký
       await api.registerAccount(payload);
 
-      // Sau khi đăng ký thành công, tự động đăng nhập
-      const loginPayload = {
+      // Đăng nhập tự động sau khi đăng ký thành công
+      await login({
         phone: sanitizedPhoneNumber,
         password,
-      };
-
-      const loginResponse = await api.login(loginPayload);
+      });
 
       setLoading(false);
+      setSuccess(true); // Hiển thị thông báo thành công
 
-      if (loginResponse && loginResponse.data) {
-        // Điều hướng đến màn hình chính hoặc màn hình phù hợp
-        navigation.navigate("Home", {
-          userId: loginResponse.data.user.userId,
-        });
-        console.log("Đăng nhập thành công:", loginResponse.data.user.userId);
-      } else {
-        Alert.alert("Lỗi", "Đăng nhập tự động thất bại. Vui lòng thử lại.");
-      }
+      // Chuyển sang trang EnterAvatar sau 3 giây
+      setTimeout(() => {
+        navigation.navigate("EnterAvatar");
+      }, 2000);
     } catch (error) {
       setLoading(false);
       console.error("Lỗi đăng ký hoặc đăng nhập:", error);
 
-      Alert.alert("Lỗi", "Đăng ký tài khoản thất bại. Vui lòng thử lại.");
+      Alert.alert(
+        "Lỗi",
+        error.message || "Đăng ký tài khoản thất bại. Vui lòng thử lại."
+      );
     }
   };
 
@@ -141,6 +145,26 @@ const EnterInfo = ({ route, navigation }) => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
+  if (success) {
+    return (
+      <Overlay
+        isVisible={visible}
+        onBackdropPress={() => setVisible(false)}
+        overlayStyle={{
+          borderRadius: 10,
+          padding: 20,
+          backgroundColor: "white",
+          alignItems: "center",
+        }}
+      >
+        <Icon name="check-circle" type="feather" color="green" size={30} />
+        <Text style={{ marginTop: 10, textAlign: "center" }}>
+          Tạo tài khoản mới thành công
+        </Text>
+      </Overlay>
+    );
+  }
 
   return (
     <KeyboardAvoidingView
@@ -307,6 +331,22 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#fff",
     fontSize: 16,
+  },
+  successContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  successIcon: {
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+  },
+  successText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "green",
   },
 });
 

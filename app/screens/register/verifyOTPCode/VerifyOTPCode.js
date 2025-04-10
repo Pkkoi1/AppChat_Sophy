@@ -10,7 +10,7 @@ import {
 import auth from "@react-native-firebase/auth";
 
 const VerifyOTPCode = ({ route, navigation }) => {
-  const { phoneNumber, otpass } = route.params; // Nhận verificationId từ route.params
+  const { phoneNumber, otpass, otpId } = route.params; // Nhận verificationId từ route.params
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const inputRefs = useRef([]);
 
@@ -58,16 +58,18 @@ const VerifyOTPCode = ({ route, navigation }) => {
     const enteredOtp = otp.join(""); // Ghép các số OTP thành chuỗi
     if (enteredOtp.length === 6) {
       try {
-        // Xác thực OTP bằng verificationId và mã OTP
-        // const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
-        // await auth().signInWithCredential(credential);
+        // if (enteredOtp == otpass) {
+        //   Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
+        //   navigation.navigate("EnterName", {
+        //     phoneNumber,
+        //   });
+        // }
+        //---------------
+        const credential = auth.PhoneAuthProvider.credential(otpId, enteredOtp);
+        await auth().signInWithCredential(credential);
 
-        if (enteredOtp == otpass) {
-          Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
-          navigation.navigate("EnterName", {
-            phoneNumber,
-          });
-        }
+        Alert.alert("Thành công", "Xác thực số điện thoại thành công!");
+        navigation.navigate("EnterName", { phoneNumber });
       } catch (error) {
         console.error("Error verifying OTP:", error.message);
         Alert.alert("Lỗi", "Mã OTP không hợp lệ. Vui lòng thử lại.");
