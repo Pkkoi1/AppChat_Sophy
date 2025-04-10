@@ -46,7 +46,7 @@ const ConversationName = ({
   user_id,
 }) => {
   const navigation = useNavigation();
-  const defaultGroupAvatar = require("../../../../assets/images/default-group-avatar.jpg");
+  const defaultGroupAvatar = require("../../../../../assets/images/default-group-avatar.jpg");
 
   const handlePress = (option) => {
     if (option.action === "searchMessages") {
