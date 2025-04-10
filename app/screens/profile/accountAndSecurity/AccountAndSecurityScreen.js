@@ -26,19 +26,7 @@ const AccountAndSecurityScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={["#1f7bff", "#12bcfa"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-      >
-        <OptionHeader
-          title={"Tài khoản và bảo mật"}
-          previousScreen={"Setting"}
-          params={{
-            userInfo: userInfo,
-          }}
-        />
-      </LinearGradient>
+      <OptionHeader title={"Tài khoản và bảo mật"} />
       <ScrollView>
         <Account navigation={navigation} />
         <Security navigation={navigation} />

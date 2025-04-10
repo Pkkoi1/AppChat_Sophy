@@ -20,6 +20,7 @@ const OptionHeader = ({ title, previousScreen }) => {
       colors={["#1f7bff", "#12bcfa"]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
+      style={styles.gradient}
     >
       <View style={styles.header}>
         <Ionicons
@@ -35,10 +36,17 @@ const OptionHeader = ({ title, previousScreen }) => {
 };
 
 const styles = StyleSheet.create({
+  gradient: {},
   header: {
     flexDirection: "row",
     alignItems: "center",
     padding: 13,
+    shadowColor: "#000", // Màu của bóng
+    shadowOffset: { width: 0, height: 2 }, // Độ lệch của bóng
+    shadowOpacity: 0.2, // Độ mờ của bóng
+    shadowRadius: 4, // Bán kính của bóng
+    elevation: 5, // Độ cao (chỉ dành cho Android)
+    zIndex: 20, // Đảm bảo gradient nằm trên các thành phần khác
   },
   headerTitle: {
     fontSize: 15,

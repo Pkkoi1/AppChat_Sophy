@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,8 +12,11 @@ import {
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import { AuthContext } from "@/app/auth/AuthContext";
 
-const UserProfileScreen = ({ userInfo }) => {
+const UserProfileScreen = () => {
+  const { userInfo } = useContext(AuthContext);
+
   const [refreshing, setRefreshing] = useState(false);
   const scrollY = useState(new Animated.Value(0))[0];
   const navigation = useNavigation();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; // Import useEffect
+import React, { useState, useEffect, useContext } from "react"; // Added useContext
 import {
   View,
   Text,
@@ -17,23 +17,17 @@ import {
 } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import { AuthContext } from "@/app/auth/AuthContext"; // Import AuthContext
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const { userInfo } = useContext(AuthContext); // Retrieve userInfo from AuthContext
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
-  const [userInfo, setUserInfo] = useState({});
   const [randomImageId, setRandomImageId] = useState(
     Math.floor(Math.random() * 1000) // Tạo ID ngẫu nhiên ban đầu
   );
-
-  useEffect(() => {
-    // Lấy userInfo từ route.params
-    if (route.params && route.params.userInfo) {
-      setUserInfo(route.params.userInfo);
-    }
-  }, [route.params]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -82,12 +76,16 @@ const ProfileScreen = () => {
                 color="#fff"
                 style={styles.headerIcon}
               />
-              <Icon
-                name="more-horiz"
-                size={24}
-                color="#fff"
-                style={styles.headerIcon}
-              />
+              <TouchableOpacity
+                onPress={() => navigation.navigate("MyProfileSetting")}
+              >
+                <Icon
+                  name="more-horiz"
+                  size={24}
+                  color="#fff"
+                  style={styles.headerIcon}
+                />
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -102,8 +100,8 @@ const ProfileScreen = () => {
             ) : (
               <AvatarUser
                 fullName={userInfo.fullname}
-                width={100}
-                height={100}
+                width={120}
+                height={120}
                 avtText={40}
                 shadow={true}
                 bordered={true}
@@ -157,7 +155,7 @@ const ProfileScreen = () => {
               />
             </View>
             <Text style={styles.statusText}>
-              Hôm nay Thành Nghiêm có gì vui?{"\n"}
+              Hôm nay {userInfo.fullname} có gì vui?{"\n"}
               Đây là Nhất ký của bạn - Hãy làm ngày Nhất ký vui{"\n"}
               hơn nữa nhé, cuộc đời và ký niệm đang chờ nhé!
             </Text>
@@ -293,6 +291,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 30,
     flex: 1,
+    paddingHorizontal: 40,
   },
   postButton: {
     backgroundColor: "#0066cc",
