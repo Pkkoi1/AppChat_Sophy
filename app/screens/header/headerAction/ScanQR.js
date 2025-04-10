@@ -36,11 +36,13 @@ export default function ScanQR() {
     if (scanned && qrData && userInfo && authToken) {
       // Verify the QR code data with your backend
       const verifyQrCode = async () => {
-        try {
+        try { 
           const qrInfo = JSON.parse(qrData);
+          console.log("Scanned qrInfo.token:", qrInfo.token);
           const response = await api.verifyQrToken(qrInfo.token); // Call your API
 
           if (response.message === "QR token verified successfully") {
+            console.log("QR token verified successfully:", response.data);
             if (socket) {
               socket.emit("scanQrLogin", {
                 qrToken: qrInfo.token,
