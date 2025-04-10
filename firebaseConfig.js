@@ -3,7 +3,7 @@ import { getAnalytics } from "firebase/analytics";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyAGDCN-PFRi0s4xeVin0_JFGbu4lLH-omQ",
   authDomain: "sophy-e19fb.firebaseapp.com",
   databaseURL: "https://sophy-e19fb.firebaseio.com",
@@ -16,9 +16,3 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
-
-// Initialize Firebase Authentication with persistence
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage),
-});
