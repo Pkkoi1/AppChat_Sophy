@@ -11,17 +11,12 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import {
-  AntDesign,
-  Feather,
   MaterialIcons,
-  FontAwesome5,
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AvatarUser from "@/app/components/profile/AvatarUser";
-// import { userInfo } from "os"; // Xóa import này
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -29,6 +24,9 @@ const ProfileScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
   const [userInfo, setUserInfo] = useState({});
+  const [randomImageId, setRandomImageId] = useState(
+    Math.floor(Math.random() * 1000) // Tạo ID ngẫu nhiên ban đầu
+  );
 
   useEffect(() => {
     // Lấy userInfo từ route.params
@@ -39,7 +37,8 @@ const ProfileScreen = () => {
 
   const onRefresh = () => {
     setRefreshing(true);
-    // Simulate a refresh
+    // Tạo ID ngẫu nhiên mới khi làm mới
+    setRandomImageId(Math.floor(Math.random() * 1000));
     setTimeout(() => {
       setRefreshing(false);
     }, 2000); // Giả lập thời gian làm mới 2 giây
@@ -66,8 +65,11 @@ const ProfileScreen = () => {
       <View style={styles.container}>
         <View style={styles.coverContainer}>
           <Animated.Image
-            source={require("@/assets/images/avt.jpg")}
+            source={{
+              uri: `https://picsum.photos/id/${randomImageId}/800/400`,
+            }}
             style={[styles.coverImage, { height: coverImageHeight }]}
+            resizeMode="cover" // Đảm bảo ảnh được cắt vừa khung
           />
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -178,8 +180,9 @@ const styles = StyleSheet.create({
     height: 200, // Chiều cao mặc định của ảnh bìa
   },
   coverImage: {
-    width: "100%",
-    resizeMode: "cover",
+    width: "100%", // Đảm bảo ảnh chiếm toàn bộ chiều rộng container
+    height: 200, // Chiều cao mặc định
+    resizeMode: "cover", // Cắt ảnh vừa khung
   },
   header: {
     position: "absolute",
@@ -205,12 +208,12 @@ const styles = StyleSheet.create({
   avatarContainer: {
     alignItems: "center",
     paddingTop: 20,
-    marginTop: -50,
+    marginTop: -90,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
     backgroundColor: "#00cc00",
     justifyContent: "center",
     alignItems: "center",
