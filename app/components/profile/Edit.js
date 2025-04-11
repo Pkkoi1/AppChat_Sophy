@@ -14,6 +14,7 @@ import { CheckBox } from "@rneui/themed";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Feather from "@expo/vector-icons/Feather";
+import { AntDesign } from "@expo/vector-icons"; // Import AntDesign icon
 import Color from "../colors/Color";
 import AvatarUser from "./AvatarUser";
 import { api } from "@/app/api/api";
@@ -37,6 +38,72 @@ const Edit = ({ route, navigation }) => {
   const [selectedIndex, setIndex] = useState(userInfo?.isMale ? 0 : 1);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // State để quản lý trạng thái loading
+  const [error, setError] = useState(""); // State để quản lý lỗi
+  const [isSaveEnabled, setIsSaveEnabled] = useState(false); // State to manage save button enable/disable
+  const [showEditIcon, setShowEditIcon] = useState(true); // State to toggle edit icon visibility
+
+  const validateDateOfBirth = (date) => {
+    const today = new Date();
+    const minDate = new Date(
+      today.getFullYear() - 100,
+      today.getMonth(),
+      today.getDate()
+    );
+    const maxDate = new Date(
+      today.getFullYear() - 13,
+      today.getMonth(),
+      today.getDate()
+    );
+    return date >= minDate && date <= maxDate;
+  };
+
+  const onDateChange = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      if (!validateDateOfBirth(selectedDate)) {
+        Alert.alert("Lỗi", "Ngày sinh phải từ đủ 13 đến 100 tuổi.");
+      } else {
+        setBirthday(selectedDate);
+      }
+    }
+  };
+
+  const handleFullnameChange = (value) => {
+    setShowEditIcon(false); // Hide edit icon when typing
+    // Trim excess whitespace
+    const trimmedValue = value.trim();
+    setFullname(trimmedValue); // Keep the entered value
+
+    if (trimmedValue.length === 0) {
+      setError("Tên không được để trống."); // Show error if empty
+      return;
+    }
+
+    const regex =
+      /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưĂ-ỹ][a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯàáâãèéêìíòóôõùúăđĩũơưĂ-ỹ\s]{1,39}$/;
+
+    // Validate only if the length is greater than 1 character
+    if (trimmedValue.length > 1 && !regex.test(trimmedValue)) {
+      setError(
+        "Tên phải bắt đầu bằng chữ cái viết hoa, không chứa số và dài từ 2 đến 40 ký tự."
+      );
+    } else {
+      setError(""); // Clear error if valid
+    }
+  };
+
+  useEffect(() => {
+    // Enable save button if any field is changed and name is not empty
+    const hasChanges =
+      fullname.trim().length > 0 &&
+      (fullname !== userInfo?.fullname ||
+        birthday.toISOString().split("T")[0] !==
+          new Date(userInfo?.birthday || "2000-01-01").toISOString().split("T")[0] ||
+        selectedIndex !== (userInfo?.isMale ? 0 : 1) ||
+        selectedAvatar !== userInfo?.urlavatar);
+
+    setIsSaveEnabled(hasChanges);
+  }, [fullname, birthday, selectedIndex, selectedAvatar]);
 
   if (!isReady) {
     return <Text>Loading...</Text>;
@@ -46,11 +113,6 @@ const Edit = ({ route, navigation }) => {
       setSelectedAvatar(photoUri); // Cập nhật avatar khi nhận ảnh từ CameraScreen
     }
   }, [photoUri]);
-
-  const onDateChange = (event, selectedDate) => {
-    setShowDatePicker(false);
-    if (selectedDate) setBirthday(selectedDate);
-  };
 
   const handleSave = async () => {
     setIsLoading(true);
@@ -84,7 +146,7 @@ const Edit = ({ route, navigation }) => {
       await api.updateUser(userInfo.userId, params);
       Alert.alert("Thành công", "Thông tin người dùng đã được cập nhật.");
       updateUserInfo({ ...userInfo, ...pesoudoParams });
-      // navigation.navigate("Personal");
+      navigation.goBack();
     } catch (error) {
       console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
       Alert.alert("Lỗi", "Cập nhật thông tin thất bại. Vui lòng thử lại.");
@@ -181,16 +243,38 @@ const Edit = ({ route, navigation }) => {
             <TextInput
               style={styles.input}
               value={fullname}
-              onChangeText={setFullname}
+              onChangeText={handleFullnameChange}
               placeholder="Nhập tên"
+              onFocus={() => setShowEditIcon(false)} // Hide edit icon when input is focused
             />
-            <MaterialCommunityIcons
-              name="pencil-outline"
-              size={24}
-              color="black"
-              style={styles.icon}
-            />
+            {showEditIcon && (
+              <TouchableOpacity
+                onPress={() => {
+                  setFullname(""); // Clear all values in the field
+                  setError(""); // Clear error
+                  setShowEditIcon(false); // Hide edit icon
+                }}
+              >
+                <AntDesign name="edit" size={24} color="black" />
+              </TouchableOpacity>
+            )}
+            {(fullname !== userInfo?.fullname || fullname.length === 0) && (
+              <TouchableOpacity
+                onPress={() => {
+                  setFullname(userInfo?.fullname || ""); // Reset name
+                  setError(""); // Clear error
+                  setShowEditIcon(true); // Show edit icon
+                }}
+              >
+                <MaterialCommunityIcons
+                  name="close-circle"
+                  size={24}
+                  color="red"
+                />
+              </TouchableOpacity>
+            )}
           </View>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           {/* Nhập ngày sinh */}
           <View style={styles.inputGroup}>
@@ -206,17 +290,13 @@ const Edit = ({ route, navigation }) => {
               name="calendar-outline"
               size={24}
               color="black"
-              style={styles.icon}
             />
             {showDatePicker && (
               <DateTimePicker
                 value={birthday}
                 mode="date"
                 display="default"
-                onChange={(event, selectedDate) => {
-                  setShowDatePicker(false);
-                  if (selectedDate) setBirthday(selectedDate);
-                }}
+                onChange={onDateChange}
               />
             )}
           </View>
@@ -245,9 +325,12 @@ const Edit = ({ route, navigation }) => {
         </View>
       </View>
       <TouchableOpacity
-        style={styles.editButton}
+        style={[
+          styles.editButton,
+          { backgroundColor: !isSaveEnabled || isLoading ? "#ccc" : Color.sophy }, // Faded color when disabled
+        ]}
         onPress={handleSave}
-        disabled={isLoading} // Vô hiệu hóa nút khi đang loading
+        disabled={!isSaveEnabled || isLoading} // Enable button only if changes exist, name is not empty, and not loading
       >
         {isLoading ? (
           <ActivityIndicator size="small" color="#fff" /> // Hiển thị loading spinner
@@ -355,6 +438,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 13,
+    marginTop: 5,
   },
 });
 

@@ -3,8 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
-const API = `http://192.168.1.239:3000/api` || DATABASE_API;
+const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+// const API = `http://192.168.1.240:3000/api` || DATABASE_API;
 
 const http = axios.create({
   baseURL: API,
@@ -15,19 +15,33 @@ const http = axios.create({
 });
 
 // Thêm interceptor để tự động thêm token vào header
+http.interceptors.request.use(async (config) => {
+  try {
+    const token = await AsyncStorage.getItem("authToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy token từ AsyncStorage:", error);
+  }
+  return config;
+});
+
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
+    // Kiểm tra nếu lỗi là 401 và chưa thử refresh token
     if (
       error.response &&
-      (error.response.status === 401 || error.response.status === 400) &&
+      error.response.status === 401 &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
 
       try {
+        // Lấy refreshToken từ AsyncStorage
         const refreshToken = await AsyncStorage.getItem("refreshToken");
         if (!refreshToken) {
           throw new Error(
@@ -35,53 +49,40 @@ http.interceptors.response.use(
           );
         }
 
-        console.log("Attempting to refresh token with:", refreshToken);
-
-        const response = await http.post("/auth/refresh", null, {
+        // Gọi API làm mới token
+        const response = await http.patch("/auth/refresh", null, {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
         });
 
-        const newAccessToken = response.data?.token?.accessToken;
-        if (!newAccessToken) {
+        // Kiểm tra phản hồi từ API
+        const newAccessToken = response.data?.accessToken;
+        const newRefreshToken = response.data?.refreshToken;
+        if (!newAccessToken || !newRefreshToken) {
           throw new Error("API không trả về accessToken mới.");
         }
 
-        console.log("New accessToken:", newAccessToken);
+        // Lưu accessToken mới vào AsyncStorage
         await AsyncStorage.setItem("authToken", newAccessToken);
+        await AsyncStorage.setItem("refreshToken", newRefreshToken);
+
+        // Cập nhật header Authorization và gửi lại request ban đầu
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
-        console.error("Lỗi khi làm mới token:", {
-          message: refreshError.message,
-          response: refreshError.response?.data,
-        });
+        console.error("Lỗi khi làm mới token:", refreshError);
 
+        // Nếu refreshToken hết hạn, yêu cầu đăng nhập lại
         await AsyncStorage.removeItem("authToken");
         await AsyncStorage.removeItem("refreshToken");
-        await AsyncStorage.removeItem("userInfo");
-
-        // Điều hướng đến màn hình đăng nhập
-        // Ví dụ: sử dụng react-navigation
-        // navigation.navigate("Main");
-
-        throw new Error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+        throw refreshError;
       }
     }
 
-    console.error("API error:", {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
-
-    if (error.response?.status === 400) {
-      throw new Error(error.response.data.message || "Yêu cầu không hợp lệ.");
-    }
-
+    // Xử lý các lỗi khác
     if (error.code === "ERR_NETWORK") {
-      throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
+      console.error("Lỗi mạng:", error.message);
     }
 
     return Promise.reject(error);
@@ -144,7 +145,7 @@ export const api = {
         throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
       }
 
-      const response = await http.post("/auth/refresh", null, {
+      const response = await http.patch("/auth/refresh", null, {
         headers: {
           Authorization: `Bearer ${refreshToken}`,
         },
@@ -156,6 +157,7 @@ export const api = {
       }
 
       await AsyncStorage.setItem("authToken", newAccessToken);
+
       return newAccessToken;
     } catch (error) {
       console.error("Lỗi khi làm mới token 2:", error.message);
@@ -180,7 +182,31 @@ export const api = {
     return await http.get(`/users/get-user-by-id/${userId}`);
   },
   registerAccount: async (params) => {
-    return await http.post("/auth/register", params);
+    try {
+      const response = await http.post("/auth/register", params);
+      console.log("Phản hồi từ API Đăng ký:", response.data);
+
+      if (response && response.data) {
+        const { accessToken, refreshToken } = response.data.token; // Lấy token từ phản hồi
+
+        if (!accessToken || !refreshToken) {
+          throw new Error("API không trả về accessToken hoặc refreshToken");
+        }
+
+        // Lưu accessToken và refreshToken vào AsyncStorage
+        await AsyncStorage.setItem("authToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
+        await AsyncStorage.setItem(
+          "userInfo",
+          JSON.stringify(response.data.user)
+        );
+      }
+
+      return response.data; // Trả về dữ liệu từ API
+    } catch (error) {
+      console.error("Lỗi khi đăng ký tài khoản:", error.message);
+      throw error;
+    }
   },
   //Check số dien thoại đã tồn tại hay chưa
   checkPhone: async (phone) => {
