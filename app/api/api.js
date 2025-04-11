@@ -15,33 +15,19 @@ const http = axios.create({
 });
 
 // Thêm interceptor để tự động thêm token vào header
-http.interceptors.request.use(async (config) => {
-  try {
-    const token = await AsyncStorage.getItem("authToken");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  } catch (error) {
-    console.error("Lỗi khi lấy token từ AsyncStorage:", error);
-  }
-  return config;
-});
-
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Kiểm tra nếu lỗi là 401 và chưa thử refresh token
     if (
       error.response &&
-      error.response.status === 401 &&
+      (error.response.status === 401 || error.response.status === 400) &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
 
       try {
-        // Lấy refreshToken từ AsyncStorage
         const refreshToken = await AsyncStorage.getItem("refreshToken");
         if (!refreshToken) {
           throw new Error(
@@ -49,38 +35,53 @@ http.interceptors.response.use(
           );
         }
 
-        // Gọi API làm mới token
+        console.log("Attempting to refresh token with:", refreshToken);
+
         const response = await http.post("/auth/refresh", null, {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
         });
 
-        // Kiểm tra phản hồi từ API
-        const newAccessToken = response.data?.accessToken;
+        const newAccessToken = response.data?.token?.accessToken;
         if (!newAccessToken) {
           throw new Error("API không trả về accessToken mới.");
         }
 
-        // Lưu accessToken mới vào AsyncStorage
+        console.log("New accessToken:", newAccessToken);
         await AsyncStorage.setItem("authToken", newAccessToken);
-
-        // Cập nhật header Authorization và gửi lại request ban đầu
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
-        console.error("Lỗi khi làm mới token:", refreshError);
+        console.error("Lỗi khi làm mới token:", {
+          message: refreshError.message,
+          response: refreshError.response?.data,
+        });
 
-        // Nếu refreshToken hết hạn, yêu cầu đăng nhập lại
         await AsyncStorage.removeItem("authToken");
         await AsyncStorage.removeItem("refreshToken");
-        throw refreshError;
+        await AsyncStorage.removeItem("userInfo");
+
+        // Điều hướng đến màn hình đăng nhập
+        // Ví dụ: sử dụng react-navigation
+        // navigation.navigate("Main");
+
+        throw new Error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
       }
     }
 
-    // Xử lý các lỗi khác
+    console.error("API error:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    });
+
+    if (error.response?.status === 400) {
+      throw new Error(error.response.data.message || "Yêu cầu không hợp lệ.");
+    }
+
     if (error.code === "ERR_NETWORK") {
-      console.error("Lỗi mạng:", error.message);
+      throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
     }
 
     return Promise.reject(error);
@@ -361,7 +362,9 @@ export const api = {
 
   verifyQrToken: async (qrToken) => {
     try {
-      const response = await http.post("/auth/verify-qr-token", {"qrToken": qrToken });
+      const response = await http.post("/auth/verify-qr-token", {
+        qrToken: qrToken,
+      });
       if (response.status === 200) {
         return {
           message: "QR token verified successfully",
@@ -382,7 +385,9 @@ export const api = {
 
   confirmQrLogin: async (qrToken) => {
     try {
-      const response = await http.post("/auth/confirm-qr-login", {"qrToken": qrToken});
+      const response = await http.post("/auth/confirm-qr-login", {
+        qrToken: qrToken,
+      });
       if (response.status === 200) {
         return {
           message: "QR login confirmed successfully",

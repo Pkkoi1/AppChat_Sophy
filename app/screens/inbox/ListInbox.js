@@ -129,19 +129,27 @@ const ListInbox = ({ userId }) => {
 
   return (
     <View style={{ flex: 1, width: "100%" }}>
-      <FlatList
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
-        }
-        data={conversations} // Sử dụng toàn bộ danh sách cuộc trò chuyện
-        keyExtractor={(item) => item.conversationId.toString()} // Đảm bảo conversationId là chuỗi
-        renderItem={({ item }) => (
-          <Inbox
-            conversation={item} // Truyền toàn bộ đối tượng conversation
-            user_id={userId} // Truyền thêm userId nếu cần
-          />
-        )}
-      />
+      {conversations.length === 0 ? (
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ fontSize: 16, color: "#666" }}>
+            Bạn chưa có tin nhắn nào.
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
+          }
+          data={conversations} // Sử dụng toàn bộ danh sách cuộc trò chuyện
+          keyExtractor={(item) => item.conversationId.toString()} // Đảm bảo conversationId là chuỗi
+          renderItem={({ item }) => (
+            <Inbox
+              conversation={item} // Truyền toàn bộ đối tượng conversation
+              user_id={userId} // Truyền thêm userId nếu cần
+            />
+          )}
+        />
+      )}
     </View>
   );
 };
