@@ -130,7 +130,7 @@ import styles from "./Login.style";
 import Icon from "react-native-vector-icons/Ionicons";
 import { AntDesign } from "@expo/vector-icons";
 import { AuthContext } from "@/app/auth/AuthContext";
-import { SocketContext } from "../socket/SocketContext"; // Import SocketContext
+import { SocketContext } from "../../socket/SocketContext"; // Import SocketContext
 
 function LoginScreen({ navigation }) {
   const { login } = useContext(AuthContext); // Lấy hàm login từ AuthContext

@@ -11,7 +11,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { api } from "../../api/api";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { AuthContext } from "@/app/auth/AuthContext"; // Import AuthContext
-import { SocketContext } from "../socket/SocketContext";
+import { SocketContext } from "../../socket/SocketContext";
 
 const LoginByQR = ({ route, navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
