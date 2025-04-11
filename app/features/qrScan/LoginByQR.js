@@ -52,7 +52,7 @@ const LoginByQR = ({ route, navigation }) => {
 
         // Thông báo thành công và chuyển hướng
         Alert.alert("Thành công", "Bạn đã đăng nhập thành công!");
-        // navigation.navigate("Home");
+        navigation.navigate("Home");
       } else {
         Alert.alert(
           "Lỗi",
