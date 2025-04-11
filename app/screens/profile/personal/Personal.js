@@ -62,11 +62,7 @@ const Personal = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <OptionHeader
-        title={"Thông tin cá nhân"}
-        previousScreen={"AccountAndSecurity"}
-        navigation={navigation}
-      />
+      <OptionHeader title={"Thông tin cá nhân"} />
       <View style={styles.content}>
         <View style={styles.avatar}>
           {userInfo?.urlavatar ? (

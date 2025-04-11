@@ -84,7 +84,7 @@ const Edit = ({ route, navigation }) => {
       await api.updateUser(userInfo.userId, params);
       Alert.alert("Thành công", "Thông tin người dùng đã được cập nhật.");
       updateUserInfo({ ...userInfo, ...pesoudoParams });
-      navigation.navigate("Personal");
+      // navigation.navigate("Personal");
     } catch (error) {
       console.error("Lỗi khi cập nhật thông tin người dùng:", error.message);
       Alert.alert("Lỗi", "Cập nhật thông tin thất bại. Vui lòng thử lại.");
