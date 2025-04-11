@@ -42,7 +42,7 @@ const LoginByQR = ({ route, navigation }) => {
           });
           console.log(
             "Socket event 'confirmQrLogin' emitted with token:",
-            response.data.token
+            qrInfo.token
           );
         } else {
           console.error("Socket is not connected!");

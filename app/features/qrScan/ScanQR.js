@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { useNavigation } from '@react-navigation/native';
-import { api } from '../../../api/api'; // Import your API
-import { AuthContext } from '../../../auth/AuthContext';
-import { SocketContext } from '../../socket/SocketContext';
+import { api } from "../../../api/api";
+import { AuthContext } from '../../auth/AuthContext';
+import { SocketContext } from '../../screens/socket/SocketContext';
 
 const { width, height } = Dimensions.get('window');
 
