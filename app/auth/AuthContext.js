@@ -91,7 +91,6 @@
 //   );
 // };
 
-
 import React, { createContext, useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
@@ -130,7 +129,8 @@ export const AuthProvider = ({ children }) => {
     loadStorage();
   }, []);
 
-  const login = async (params) => { // Modified to accept socket
+  const login = async (params) => {
+    // Modified to accept socket
     const response = await api.login(params);
     const { accessToken, refreshToken } = response.data.token;
 
@@ -139,11 +139,17 @@ export const AuthProvider = ({ children }) => {
 
     await getUserInfoById(response.data.user.userId);
     console.log("Sockettttttttt: ", socket);
-    console.log("Emitteddd 'authenticate' event with userId:", response.data.user.userId);
+    console.log(
+      "Emitteddd 'authenticate' event with userId:",
+      response.data.user.userId
+    );
     // Emit the 'authenticate' event after successful login
     if (socket && response.data.user.userId) {
       socket.emit("authenticate", response.data.user.userId);
-      console.log("Emitted 'authenticate' event with userId:", response.data.user.userId);
+      console.log(
+        "Emitted 'authenticate' event with userId:",
+        response.data.user.userId
+      );
     }
     ////////////////////////////////////////////////////////
   };
@@ -157,6 +163,7 @@ export const AuthProvider = ({ children }) => {
       setAuthToken(null);
       setRefreshToken(null);
       setUserInfo(null);
+      navigation.replace("Main"); // Chuyển hướng đến màn hình đăng nhập
     }
   };
 
