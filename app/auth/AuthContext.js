@@ -95,7 +95,7 @@
 import React, { createContext, useState, useEffect, useContext } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
-import { SocketContext } from "../screens/socket/SocketContext"; // Import SocketContext
+import { SocketContext } from "../socket/SocketContext"; // Import SocketContext
 
 export const AuthContext = createContext();
 

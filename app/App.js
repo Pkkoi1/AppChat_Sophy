@@ -29,7 +29,7 @@ import EnterName from "./screens/register/enterProfile/EnterName";
 import EnterInfo from "./screens/register/enterProfile/EnterInfo";
 import CameraScreen from "./features/camera/Camera";
 // import CameraScreen from "@/components/camera/CameraScreen";>
-import ScanQR from "./features/qrScan/ScanQR
+import ScanQR from "./features/qrScan/ScanQR";
 import VerificationCode from "./screens/login/VerificationCode";
 import CreateNewPassword from "./screens/login/CreateNewPassword";
 import AccountAndSecurityScreen from "./screens/profile/accountAndSecurity/AccountAndSecurityScreen";
@@ -41,8 +41,8 @@ import UpdatePassword from "./screens/profile/accountAndSecurity/account/updateP
 
 import EnterAvatar from "./screens/register/enterAvatar/EnterAvatar";
 
-import LoginByQR from "./features/qrScan/LoginByQRQR";
-import { SocketProvider } from "./screens/socket/SocketContext";
+import LoginByQR from "./features/qrScan/LoginByQR";
+import { SocketProvider } from "./socket/SocketContext";
 
 const Stack = createNativeStackNavigator();
 
