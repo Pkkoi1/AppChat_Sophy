@@ -154,6 +154,17 @@ export const AuthProvider = ({ children }) => {
     ////////////////////////////////////////////////////////
   };
 
+  const register = async (params) => {
+    const response = await api.registerAccount(params);
+    console.log("Register response ổ auth:", response);
+    const { accessToken, refreshToken } = response.token;
+
+    setAuthToken(accessToken);
+    setRefreshToken(refreshToken);
+
+    await getUserInfoById(response.user.userId);
+  };
+
   const logout = async () => {
     try {
       await api.logout();
@@ -163,7 +174,6 @@ export const AuthProvider = ({ children }) => {
       setAuthToken(null);
       setRefreshToken(null);
       setUserInfo(null);
-      navigation.replace("Main"); // Chuyển hướng đến màn hình đăng nhập
     }
   };
 
@@ -190,6 +200,7 @@ export const AuthProvider = ({ children }) => {
         refreshToken,
         userInfo,
         isLoading,
+        register,
         login,
         logout,
         updateUserInfo,
