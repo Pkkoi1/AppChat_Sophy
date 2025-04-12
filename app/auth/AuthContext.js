@@ -138,6 +138,7 @@ export const AuthProvider = ({ children }) => {
     setRefreshToken(refreshToken);
 
     await getUserInfoById(response.data.user.userId);
+    console.log("Login response:", response.data);
     console.log("Sockettttttttt: ", socket);
     console.log(
       "Emitteddd 'authenticate' event with userId:",
