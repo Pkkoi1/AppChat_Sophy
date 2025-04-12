@@ -44,6 +44,8 @@ import LoginByQR from "./features/qrScan/LoginByQR";
 import { SocketProvider } from "./socket/SocketContext";
 import MyProfileSetting from "./screens/profile/myProfile/Option/MyProfileSetting";
 import Infomation from "./screens/profile/myProfile/Option/infomation/Infomation";
+import ZaloFAQScreen from "./screens/login/ZaloFAQScreen";
+
 
 const Stack = createNativeStackNavigator();
 
@@ -72,7 +74,7 @@ function RootLayout() {
               component={SocialNetworkTerms}
             />
             <Stack.Screen name="CameraScreen" component={CameraScreen} />
-            {/* <Stack.Screen name="TermsOfService" component={TermsOfService} /> */}
+            <Stack.Screen name="TermsOfService" component={TermsOfService} />
             <Stack.Screen name="Home" component={Home} />
             <Stack.Screen name="Chat" component={Chat} />
             <Stack.Screen name="Profile" component={Profile} />
@@ -121,6 +123,7 @@ function RootLayout() {
               component={MyProfileSetting}
             />
             <Stack.Screen name="Infomation" component={Infomation} />
+            <Stack.Screen name="ZaloFAQScreen" component={ZaloFAQScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </AuthProvider>
