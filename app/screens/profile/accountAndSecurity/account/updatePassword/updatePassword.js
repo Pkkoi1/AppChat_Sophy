@@ -56,11 +56,12 @@ const UpdatePassword = ({ navigation }) => {
 
       if (response.message === "Password changed successfully") {
         try {
-          await logout();
-          await login({
-            phone: userInfo.phone,
-            password: newPassword,
-          });
+          // await logout();
+          // await login({
+          //   phone: userInfo.phone,
+          //   password: newPassword,
+          // });
+          
 
           Alert.alert("Thành công", "Mật khẩu đã được cập nhật thành công!");
           navigation.navigate("AccountAndSecurity");
