@@ -52,7 +52,7 @@ const MessageScreen = ({ route, navigation }) => {
     };
 
     setMessages((prev) => {
-      const updatedMessages = [...prev, newMessage].sort(
+      const updatedMessages = [...(prev || []), newMessage].sort(
         (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
       );
       return updatedMessages;
@@ -67,13 +67,15 @@ const MessageScreen = ({ route, navigation }) => {
     const fetchMessages = async () => {
       try {
         const response = await api.getMessages(conversation?.conversationId);
-        const sortedMessages = response.data?.sort(
-          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-        );
-        setMessages(sortedMessages.reverse() || []);
+        const { messages, nextCursor, hasMore } = response; // Extract messages, nextCursor, and hasMore
+
+        setMessages(messages || []); // Ensure messages is always an array
+        // console.log("Tin nhắn:", messages);
+        // console.log("Next cursor:", nextCursor);
+        // console.log("Has more:", hasMore);
       } catch (error) {
         console.error("Lỗi lấy tin nhắn:", error);
-        setMessages([]);
+        setMessages([]); // Fallback to an empty array on error
       }
     };
     fetchMessages();
@@ -168,7 +170,7 @@ const MessageScreen = ({ route, navigation }) => {
             {receiver?.fullname || "Người dùng không xác định"}
           </Text>
         </View> */}
-        {messages.length > 0 ? (
+        {messages?.length > 0 ? (
           <Conversation
             conversation={{ messages }}
             senderId={userInfo.userId}
@@ -186,7 +188,7 @@ const MessageScreen = ({ route, navigation }) => {
       <ChatFooter
         onSendMessage={(message) => {
           setMessages((prev) => [
-            ...prev,
+            ...(prev || []),
             { ...message, messageDetailId: `msg_${Date.now()}` },
           ]);
         }}

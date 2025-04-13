@@ -30,7 +30,7 @@ const MessageItemStyle = StyleSheet.create({
     alignSelf: "flex-start",
   },
   receiverWithAvatar: {
-    marginLeft: 40, // Để hộp tin nhắn không quá sát avatar
+    // marginLeft: 45, // Để hộp tin nhắn không quá sát avatar
   },
   timestamp: {
     fontSize: 12,
@@ -45,7 +45,7 @@ const MessageItemStyle = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 15,
-    position: "absolute",
+    // position: "absolute",
     top: 0,
     zIndex: 5, // Để avatar nằm trên hộp tin nhắn
     marginLeft: 5,

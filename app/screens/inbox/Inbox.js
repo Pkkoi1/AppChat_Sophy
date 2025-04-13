@@ -3,9 +3,9 @@ import { Text, View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
-import AvatarUser from "@/app/components/profile/AvatarUser";
 import RenderGroupAvatar from "@/app/components/group/RenderGroupAvatar";
 import { AuthContext } from "@/app/auth/AuthContext";
+import AvatarUser from "@/app/components/profile/AvatarUser";
 
 const DEFAULT_AVATAR = "https://example.com/default-avatar.png"; // Replace with actual default avatar URL
 
@@ -159,7 +159,7 @@ const Inbox = ({ conversation }) => {
       onPress={() =>
         navigation.navigate("Chat", {
           conversation: conversation,
-          receiver: isGroup ? conversation.groupMembers : receiver,
+          receiver: isGroup ? null : receiver,
         })
       }
       activeOpacity={0.6}

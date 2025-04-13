@@ -186,8 +186,38 @@ export const api = {
   getConversationDetails: async (conversationId) => {
     return await http.get(`/conversations/${conversationId}`);
   },
-  getMessages: async (conversationId) => {
-    return await http.get(`/messages/${conversationId}`);
+  getMessages: async (conversationId, lastMessageTime = null, direction = 'before', limit = 20) => {
+    try {
+      const query = { conversationId };
+
+      // Handle both directions of message loading
+      if (lastMessageTime) {
+        query.createdAt =
+          direction === 'before'
+            ? { $lt: new Date(lastMessageTime).toISOString() }
+            : { $gt: new Date(lastMessageTime).toISOString() };
+      }
+
+      const response = await http.get(`/messages/${conversationId}`, {
+        params: {
+          lastMessageTime,
+          direction,
+          limit,
+        },
+      });
+
+      const { messages, nextCursor, hasMore } = response.data;
+
+      return {
+        messages: direction === 'before' ? messages : messages.reverse(),
+        nextCursor,
+        hasMore,
+        direction,
+      };
+    } catch (error) {
+      console.error("Error fetching messages:", error.message);
+      throw error;
+    }
   },
   getUserById: async (userId) => {
     return await http.get(`/users/get-user-by-id/${userId}`);

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { View, Text, Image } from "react-native";
 import moment from "moment";
 import MessageItemStyle from "./MessageItemStyle";
 import HighlightText from "../../../components/highlightText/HighlightText"; // Import HighlightText
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import AvatarUser from "@/app/components/profile/AvatarUser";
 
 const MessageItem = ({
   message,
@@ -12,58 +13,60 @@ const MessageItem = ({
   isHighlighted,
   receiver,
 }) => {
-  const [members, setMembers] = useState([]);
   const formattedTimestamp = moment(message.createdAt).format(
     "DD/MM/YYYY HH:mm"
   );
 
-  const isGroup = Array.isArray(receiver); // Check if the receiver is a group
+  const isGroup = !receiver; // Check if receiver is null, indicating a group
 
-  useEffect(() => {
-    const fetchGroupMembers = async () => {
-      if (isGroup && members.length === 0) {
-        try {
-          const membersData = await Promise.all(
-            receiver.map(async (id) => {
-              const response = await fetchUserInfo(id);
-              return response?.data || null;
-            })
-          );
-          setMembers(membersData.filter((member) => member !== null)); // Filter out null values
-        } catch (error) {
-          console.error("Error fetching group members:", error);
-          setMembers([]); // Set to an empty array on error
-        }
-      }
-    };
-
-    fetchGroupMembers();
-  }, [isGroup, receiver, members.length]);
-
-  const renderAvatars = () => {
+  const renderAvatar = async () => {
     if (isGroup) {
-      // For groups, find the avatar of the sender
-      const sender = members.find((member) => member === message.senderId);
-      return (
+      try {
+        const response = await fetchUserInfo(message.senderId); // Fetch sender info using senderId
+        // console.log("Thông tin người gửi:", response);
+        const sender = response;
+        return sender?.urlavatar ? (
+          <Image
+            source={{ uri: sender.urlavatar }}
+            style={MessageItemStyle.avatar}
+          />
+        ) : (
+          <AvatarUser
+            fullName={sender?.fullname || "User"}
+            width={32}
+            height={32}
+            avtText={12}
+            shadow={false}
+            bordered={false}
+          />
+        );
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin người gửi:", error);
+        return (
+          <AvatarUser
+            fullName="User"
+            width={32}
+            height={32}
+            avtText={12}
+            shadow={false}
+            bordered={false}
+          />
+        );
+      }
+    } else {
+      return receiver?.urlavatar ? (
         <Image
-          source={{
-            uri:
-              sender?.urlavatar ||
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s", // Default avatar
-          }}
+          source={{ uri: receiver.urlavatar }}
           style={MessageItemStyle.avatar}
         />
-      );
-    } else {
-      // For individual chats, use the receiver's avatar
-      return (
-        <Image
-          source={{
-            uri:
-              receiver?.urlavatar ||
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s", // Default avatar
-          }}
-          style={MessageItemStyle.avatar}
+      ) : (
+        <AvatarUser
+          fullName={receiver?.fullname || "User"}
+          width={50}
+          height={50}
+          avtText={20}
+          shadow={false}
+          bordered={false}
         />
       );
     }
@@ -80,7 +83,7 @@ const MessageItem = ({
       ]}
     >
       {!isSender && (
-        <View style={MessageItemStyle.avatarContainer}>{renderAvatars()}</View>
+        <View style={MessageItemStyle.avatarContainer}>{renderAvatar()}</View>
       )}
       <View
         style={[
