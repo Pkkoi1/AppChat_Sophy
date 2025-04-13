@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   Image,
   SafeAreaView,
@@ -11,6 +11,8 @@ import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
+import { AuthContext } from "@/app/auth/AuthContext";
+import AvatarUser from "@/app/components/profile/AvatarUser";
 
 const options = [
   {
@@ -38,39 +40,51 @@ const options = [
   },
 ];
 
-const ConversationName = ({
-  receiver,
-  groupName,
-  participants,
-  conversation_id,
-  user_id,
-}) => {
+const ConversationName = ({ receiver, conversation }) => {
   const navigation = useNavigation();
   const defaultGroupAvatar = require("../../../../../assets/images/default-group-avatar.jpg");
+  const { userInfo } = useContext(AuthContext);
+
+  const avatarSource = conversation?.isGroup
+    ? conversation.groupAvatarUrl
+      ? { uri: conversation.groupAvatarUrl }
+      : defaultGroupAvatar
+    : receiver?.urlavatar
+    ? { uri: receiver.urlavatar }
+    : null;
 
   const handlePress = (option) => {
-    if (option.action === "searchMessages") {
-      navigation.navigate("Chat", {
-        conversation_id,
-        user_id,
-        startSearch: true,
-        receiver,
-      });
-    }
+    // Handle option actions here
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        style={styles.avatar}
-        source={groupName ? defaultGroupAvatar : { uri: receiver?.avatar }}
-      />
-      <Text style={styles.name}>{groupName || receiver?.name}</Text>
+      {conversation?.isGroup ? (
+        <Image source={avatarSource} style={styles.avatar} resizeMode="cover" />
+      ) : receiver?.urlavatar ? (
+        <Image
+          source={{ uri: receiver.urlavatar }}
+          style={styles.avatar}
+          resizeMode="cover"
+        />
+      ) : (
+        <AvatarUser
+          fullName={receiver?.fullname || "Người dùng không xác định"}
+          width={90}
+          height={90}
+          avtText={30}
+          shadow={false}
+          bordered={false}
+        />
+      )}
+      <Text style={styles.name}>
+        {conversation?.isGroup ? conversation.groupName : receiver?.fullname}
+      </Text>
       <View style={styles.optionsContainer}>
         {options.map((option, index) => {
           if (
-            (groupName && option.showIfGroup === false) ||
-            (!groupName && option.showIfGroup === true)
+            (conversation?.isGroup && option.showIfGroup === false) ||
+            (!conversation?.isGroup && option.showIfGroup === true)
           ) {
             return null;
           }

@@ -15,8 +15,9 @@ const MessageItemStyle = StyleSheet.create({
   messageBox: {
     padding: 10,
     borderRadius: 10,
-    marginLeft: 45,
     maxWidth: "80%",
+    marginVertical: 2,
+    marginHorizontal: 10,
     position: "relative", // Để avatar có thể nằm trên
   },
   sender: {

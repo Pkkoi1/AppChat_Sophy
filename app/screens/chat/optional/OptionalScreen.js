@@ -13,14 +13,7 @@ import Colors from "../../../components/colors/Color";
 const OptionalScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const {
-    receiver,
-    groupName,
-    participants,
-    isGroup,
-    conversation_id,
-    user_id,
-  } = route.params;
+  const { receiver, conversation } = route.params;
 
   return (
     <View style={styles.container}>
@@ -34,14 +27,8 @@ const OptionalScreen = () => {
         <Text style={styles.headerTitle}>Tùy chọn</Text>
       </View>
       <ScrollView>
-        <ConversationName
-          receiver={receiver}
-          groupName={groupName}
-          participants={participants}
-          conversation_id={conversation_id}
-          user_id={user_id}
-        />
-        <Description isGroup={isGroup} />
+        <ConversationName receiver={receiver} conversation={conversation} />
+        {/* <Description isGroup={isGroup} />
         <GalleryOption isGroup={isGroup} />
         <GroupOption
           isGroup={isGroup}
@@ -49,7 +36,7 @@ const OptionalScreen = () => {
           participants={participants}
         />
         <ConversationOption isGroup={isGroup} receiver={receiver} />
-        <BanAndRemoveOption isGroup={isGroup} receiver={receiver} />
+        <BanAndRemoveOption isGroup={isGroup} receiver={receiver} /> */}
       </ScrollView>
     </View>
   );

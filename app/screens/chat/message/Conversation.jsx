@@ -12,7 +12,7 @@ const Conversation = ({
   highlightedMessageId,
   searchQuery = "",
   flatListRef,
-  receiverId,
+  receiver,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -73,7 +73,7 @@ const Conversation = ({
               <Pressable onLongPress={() => handleLongPress(item)}>
                 <MessageItem
                   message={item}
-                  receiverId={receiverId}
+                  receiver={receiver}
                   isSender={item.senderId === senderId}
                   avatar=""
                   isHighlighted={item.messageDetailId === highlightedMessageId}
