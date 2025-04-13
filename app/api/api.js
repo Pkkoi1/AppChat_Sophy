@@ -32,16 +32,14 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Kiểm tra nếu lỗi là 401 và chưa thử refresh token
     if (
       error.response &&
-      error.response.status === 401 &&
+      (error.response.status === 401 || error.response.status === 400) &&
       !originalRequest._retry
     ) {
       originalRequest._retry = true;
 
       try {
-        // Lấy refreshToken từ AsyncStorage
         const refreshToken = await AsyncStorage.getItem("refreshToken");
         if (!refreshToken) {
           throw new Error(
@@ -49,40 +47,53 @@ http.interceptors.response.use(
           );
         }
 
-        // Gọi API làm mới token
-        const response = await http.patch("/auth/refresh", null, {
+        console.log("Attempting to refresh token with:", refreshToken);
+
+        const response = await http.post("/auth/refresh", null, {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
         });
 
-        // Kiểm tra phản hồi từ API
-        const newAccessToken = response.data?.accessToken;
-        const newRefreshToken = response.data?.refreshToken;
-        if (!newAccessToken || !newRefreshToken) {
+        const newAccessToken = response.data?.token?.accessToken;
+        if (!newAccessToken) {
           throw new Error("API không trả về accessToken mới.");
         }
 
-        // Lưu accessToken mới vào AsyncStorage
+        console.log("New accessToken:", newAccessToken);
         await AsyncStorage.setItem("authToken", newAccessToken);
-        await AsyncStorage.setItem("refreshToken", newRefreshToken);
-
-        // Cập nhật header Authorization và gửi lại request ban đầu
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
-        console.error("Lỗi khi làm mới token:", refreshError);
+        console.error("Lỗi khi làm mới token:", {
+          message: refreshError.message,
+          response: refreshError.response?.data,
+        });
 
-        // Nếu refreshToken hết hạn, yêu cầu đăng nhập lại
         await AsyncStorage.removeItem("authToken");
         await AsyncStorage.removeItem("refreshToken");
-        throw refreshError;
+        await AsyncStorage.removeItem("userInfo");
+
+        // Điều hướng đến màn hình đăng nhập
+        // Ví dụ: sử dụng react-navigation
+        // navigation.navigate("Main");
+
+        throw new Error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
       }
     }
 
-    // Xử lý các lỗi khác
+    console.error("API error:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    });
+
+    if (error.response?.status === 400) {
+      throw new Error(error.response.data.message || "Yêu cầu không hợp lệ.");
+    }
+
     if (error.code === "ERR_NETWORK") {
-      console.error("Lỗi mạng:", error.message);
+      throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
     }
 
     return Promise.reject(error);
@@ -175,8 +186,38 @@ export const api = {
   getConversationDetails: async (conversationId) => {
     return await http.get(`/conversations/${conversationId}`);
   },
-  getMessages: async (conversationId) => {
-    return await http.get(`/messages/${conversationId}`);
+  getMessages: async (conversationId, lastMessageTime = null, direction = 'before', limit = 20) => {
+    try {
+      const query = { conversationId };
+
+      // Handle both directions of message loading
+      if (lastMessageTime) {
+        query.createdAt =
+          direction === 'before'
+            ? { $lt: new Date(lastMessageTime).toISOString() }
+            : { $gt: new Date(lastMessageTime).toISOString() };
+      }
+
+      const response = await http.get(`/messages/${conversationId}`, {
+        params: {
+          lastMessageTime,
+          direction,
+          limit,
+        },
+      });
+
+      const { messages, nextCursor, hasMore } = response.data;
+
+      return {
+        messages: direction === 'before' ? messages : messages.reverse(),
+        nextCursor,
+        hasMore,
+        direction,
+      };
+    } catch (error) {
+      console.error("Error fetching messages:", error.message);
+      throw error;
+    }
   },
   getUserById: async (userId) => {
     return await http.get(`/users/get-user-by-id/${userId}`);

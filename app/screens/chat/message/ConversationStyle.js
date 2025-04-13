@@ -5,7 +5,7 @@ const ConversationStyle = StyleSheet.create({
   conversationContainer: {
     flexGrow: 1,
     justifyContent: "flex-end", // Đảm bảo các tin nhắn được hiển thị từ dưới lên
-    marginBottom: 50,
+    marginBottom: 30,
   },
   timestampContainer: {
     backgroundColor: "#d3d3d3",

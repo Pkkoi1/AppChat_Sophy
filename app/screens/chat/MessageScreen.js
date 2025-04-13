@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   SafeAreaView,
   View,
@@ -10,16 +10,19 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import ChatHeader from "./header/ChatHeader";
-import ChatFooter from "./footer/ChatFooter";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
 import SearchFooter from "./optional/name/searchMessage/SearchFooter";
+import ChatFooter from "./footer/ChatFooter";
 import Conversation from "./message/Conversation";
 import MessageScreenStyle from "./MessageScreenStyle";
 import Fuse from "fuse.js";
 import { api } from "@/app/api/api";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const MessageScreen = ({ route, navigation }) => {
-  const { conversation_id, user_id, startSearch, receiverId } = route.params;
+  const { userInfo } = useContext(AuthContext);
+
+  const { conversation, startSearch, receiver } = route.params;
 
   const [messages, setMessages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,6 +32,18 @@ const MessageScreen = ({ route, navigation }) => {
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const flatListRef = useRef(null);
 
+  const calculateLastActive = (lastActive) => {
+    const now = new Date();
+    const lastActiveDate = new Date(lastActive);
+    const diffInMinutes = Math.floor((now - lastActiveDate) / (1000 * 60));
+
+    if (diffInMinutes < 2) return "Đang hoạt động";
+    if (diffInMinutes < 60) return `Truy cập ${diffInMinutes} phút trước`;
+    if (diffInMinutes < 1440)
+      return `Truy cập ${Math.floor(diffInMinutes / 60)} giờ trước`;
+    return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
+  };
+
   const handleSendMessage = (message) => {
     const newMessage = {
       ...message,
@@ -37,7 +52,7 @@ const MessageScreen = ({ route, navigation }) => {
     };
 
     setMessages((prev) => {
-      const updatedMessages = [...prev, newMessage].sort(
+      const updatedMessages = [...(prev || []), newMessage].sort(
         (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
       );
       return updatedMessages;
@@ -51,18 +66,20 @@ const MessageScreen = ({ route, navigation }) => {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await api.getMessages(conversation_id);
-        const sortedMessages = response.data?.sort(
-          (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-        );
-        setMessages(sortedMessages.reverse() || []);
+        const response = await api.getMessages(conversation?.conversationId);
+        const { messages, nextCursor, hasMore } = response; // Extract messages, nextCursor, and hasMore
+
+        setMessages(messages || []); // Ensure messages is always an array
+        // console.log("Tin nhắn:", messages);
+        // console.log("Next cursor:", nextCursor);
+        // console.log("Has more:", hasMore);
       } catch (error) {
         console.error("Lỗi lấy tin nhắn:", error);
-        setMessages([]);
+        setMessages([]); // Fallback to an empty array on error
       }
     };
     fetchMessages();
-  }, [conversation_id]);
+  }, [conversation?.conversationId]);
 
   useEffect(() => {
     if (!searchQuery.trim()) {
@@ -118,78 +135,86 @@ const MessageScreen = ({ route, navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ebecf0" }}>
-      {isSearching ? (
-        <SearchHeader
-          onCancel={() => {
-            setIsSearching(false);
-            setSearchQuery("");
-            setHighlightedMessageIds([]);
-            setHighlightedMessageId(null);
+      <ChatHeader
+        navigation={navigation}
+        receiver={receiver}
+        conversation={conversation}
+        lastActiveStatus={calculateLastActive(receiver?.lastActive)}
+      />
+      {isSearching && (
+        <View style={StyleSheet.absoluteFill}>
+          <SearchHeader
+            onCancel={() => {
+              setIsSearching(false);
+              setSearchQuery("");
+              setHighlightedMessageIds([]);
+              setHighlightedMessageId(null);
 
-            // 🔥 Chờ một chút để đảm bảo React cập nhật state trước khi render lại header
-            setTimeout(() => {
-              navigation.setParams({ receiverId }); // Đảm bảo receiverId vẫn tồn tại
-            }, 100);
-          }}
-          onSearch={setSearchQuery}
-        />
-      ) : (
-        <ChatHeader
-          navigation={navigation}
-          receiver={receiverId}
-          user_id={user_id}
-          conversation_id={conversation_id}
-        />
+              // 🔥 Chờ một chút để đảm bảo React cập nhật state trước khi render lại header
+              setTimeout(() => {
+                navigation.setParams({ receiver }); // Đảm bảo receiverId vẫn tồn tại
+              }, 100);
+            }}
+            onSearch={setSearchQuery}
+          />
+        </View>
       )}
-
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         style={{ flex: 1 }}
       >
-        {messages.length > 0 ? (
+        {/* <View style={MessageScreenStyle.container}>
+          <Text style={MessageScreenStyle.title}>Tin nhắn</Text>
+          <Text style={MessageScreenStyle.subtitle}>
+            {receiver?.fullname || "Người dùng không xác định"}
+          </Text>
+        </View> */}
+        {messages?.length > 0 ? (
           <Conversation
             conversation={{ messages }}
-            senderId={user_id}
+            senderId={userInfo.userId}
             highlightedMessageIds={highlightedMessageIds}
             highlightedMessageId={highlightedMessageId}
             searchQuery={searchQuery}
             flatListRef={flatListRef}
+            receiver={receiver}
           />
         ) : (
           <Text style={styles.emptyText}>Không có tin nhắn nào.</Text>
         )}
       </KeyboardAvoidingView>
 
-      {!isSearching ? (
-        <ChatFooter
-          onSendMessage={(message) => {
-            setMessages((prev) => [
-              ...prev,
-              { ...message, messageDetailId: `msg_${Date.now()}` },
-            ]);
-          }}
-        />
-      ) : (
-        <SearchFooter
-          resultCount={highlightedMessageIds.length}
-          currentIndex={currentSearchIndex}
-          onNext={() => {
-            setCurrentSearchIndex((prev) => {
-              const nextIndex =
-                prev + 1 < highlightedMessageIds.length ? prev + 1 : prev; // Không xuống nếu là tin nhắn cuối
-              scrollToMessage(nextIndex);
-              return nextIndex;
-            });
-          }}
-          onPrevious={() => {
-            setCurrentSearchIndex((prev) => {
-              const prevIndex = prev - 1 >= 0 ? prev - 1 : prev; // Không lên nếu là tin nhắn đầu
-              scrollToMessage(prevIndex);
-              return prevIndex;
-            });
-          }}
-        />
+      <ChatFooter
+        onSendMessage={(message) => {
+          setMessages((prev) => [
+            ...(prev || []),
+            { ...message, messageDetailId: `msg_${Date.now()}` },
+          ]);
+        }}
+      />
+      {isSearching && (
+        <View style={StyleSheet.absoluteFill}>
+          <SearchFooter
+            resultCount={highlightedMessageIds.length}
+            currentIndex={currentSearchIndex}
+            onNext={() => {
+              setCurrentSearchIndex((prev) => {
+                const nextIndex =
+                  prev + 1 < highlightedMessageIds.length ? prev + 1 : prev; // Không xuống nếu là tin nhắn cuối
+                scrollToMessage(nextIndex);
+                return nextIndex;
+              });
+            }}
+            onPrevious={() => {
+              setCurrentSearchIndex((prev) => {
+                const prevIndex = prev - 1 >= 0 ? prev - 1 : prev; // Không lên nếu là tin nhắn đầu
+                scrollToMessage(prevIndex);
+                return prevIndex;
+              });
+            }}
+          />
+        </View>
       )}
     </SafeAreaView>
   );
