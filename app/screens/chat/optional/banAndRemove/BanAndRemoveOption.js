@@ -46,12 +46,12 @@ const options = [
   },
 ];
 
-const BanAndRemoveOption = ({ isGroup, receiver }) => {
+const BanAndRemoveOption = ({ conversation, receiver }) => {
   return (
     <View style={styles.container}>
       {options
-        .filter((option) => option.includeGroup || !isGroup)
-        .filter((option) => option.name !== "Rời nhóm" || isGroup)
+        .filter((option) => option.includeGroup || !conversation?.isGroup)
+        .filter((option) => option.name !== "Rời nhóm" || conversation?.isGroup)
         .map((option, index) => (
           <TouchableOpacity style={styles.optionButton} key={index}>
             <View style={styles.iconContainer}>{option.icon}</View>

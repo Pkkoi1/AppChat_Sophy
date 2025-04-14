@@ -53,7 +53,7 @@ const options = [
   },
 ];
 
-const ConversationOption = ({ isGroup, receiver }) => {
+const ConversationOption = ({ conversation, receiver }) => {
   const [toggleStates, setToggleStates] = useState({});
 
   const toggleSwitch = (index) => {
@@ -66,7 +66,7 @@ const ConversationOption = ({ isGroup, receiver }) => {
   return (
     <View style={styles.container}>
       {options
-        .filter((option) => option.includeGroup || !isGroup)
+        .filter((option) => option.includeGroup || !conversation?.isGroup)
         .map((option, index) => (
           <TouchableOpacity
             style={styles.optionButton}

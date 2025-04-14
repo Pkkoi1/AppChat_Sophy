@@ -43,7 +43,10 @@ const Conversation = ({
   };
 
   return (
-    <View style={ConversationStyle.conversationContainer}>
+    <View
+      style={ConversationStyle.conversationContainer}
+      onStartShouldSetResponder={() => false} // Prevent View from stealing focus
+    >
       <FlatList
         ref={flatListRef}
         data={conversation.messages}
@@ -90,6 +93,8 @@ const Conversation = ({
           );
         }}
         inverted={true}
+        contentContainerStyle={{ paddingBottom: 60 }} // Add padding to avoid overlapping with footer
+        keyboardShouldPersistTaps="always" // Ensure taps don't dismiss the keyboard
       />
       <MessagePopup
         popupVisible={popupVisible}

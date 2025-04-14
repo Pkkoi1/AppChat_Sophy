@@ -160,16 +160,10 @@ const MessageScreen = ({ route, navigation }) => {
         </View>
       )}
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === "ios" ? "padding" : "padding"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
         style={{ flex: 1 }}
       >
-        {/* <View style={MessageScreenStyle.container}>
-          <Text style={MessageScreenStyle.title}>Tin nhắn</Text>
-          <Text style={MessageScreenStyle.subtitle}>
-            {receiver?.fullname || "Người dùng không xác định"}
-          </Text>
-        </View> */}
         {messages?.length > 0 ? (
           <Conversation
             conversation={{ messages }}
@@ -179,12 +173,12 @@ const MessageScreen = ({ route, navigation }) => {
             searchQuery={searchQuery}
             flatListRef={flatListRef}
             receiver={receiver}
+            keyboardShouldPersistTaps="handled" // Ensure taps don't dismiss the keyboard
           />
         ) : (
           <Text style={styles.emptyText}>Không có tin nhắn nào.</Text>
         )}
       </KeyboardAvoidingView>
-
       <ChatFooter
         onSendMessage={(message) => {
           setMessages((prev) => [

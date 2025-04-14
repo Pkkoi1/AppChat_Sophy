@@ -32,12 +32,20 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Thêm giới hạn số lần thử làm mới token
+    if (!originalRequest._retryCount) {
+      originalRequest._retryCount = 0;
+    }
+
+    // Kiểm tra nếu đã thử làm mới token quá 3 lần
     if (
       error.response &&
       (error.response.status === 401 || error.response.status === 400) &&
-      !originalRequest._retry
+      originalRequest._retryCount < 3 &&
+      !originalRequest._isRefreshing
     ) {
-      originalRequest._retry = true;
+      originalRequest._retryCount += 1;
+      originalRequest._isRefreshing = true;
 
       try {
         const refreshToken = await AsyncStorage.getItem("refreshToken");
@@ -49,51 +57,53 @@ http.interceptors.response.use(
 
         console.log("Attempting to refresh token with:", refreshToken);
 
-        const response = await http.post("/auth/refresh", null, {
-          headers: {
-            Authorization: `Bearer ${refreshToken}`,
-          },
-        });
+        // Gửi yêu cầu làm mới token mà không cần body
+        const response = await http.post(
+          "/auth/refresh",
+          undefined, // Không gửi body
+          {
+            headers: {
+              Authorization: `Bearer ${refreshToken}`,
+            },
+          }
+        );
 
-        const newAccessToken = response.data?.token?.accessToken;
-        if (!newAccessToken) {
+        const { accessToken, refreshToken: newRefreshToken } =
+          response.data.token;
+        if (!accessToken) {
           throw new Error("API không trả về accessToken mới.");
         }
 
-        console.log("New accessToken:", newAccessToken);
-        await AsyncStorage.setItem("authToken", newAccessToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        console.log("New accessToken:", accessToken);
+        console.log("New refreshToken:", newRefreshToken);
+
+        // Lưu accessToken và refreshToken mới
+        await AsyncStorage.setItem("authToken", accessToken);
+        if (newRefreshToken) {
+          await AsyncStorage.setItem("refreshToken", newRefreshToken);
+        }
+
+        // Cập nhật userInfo nếu backend trả về
+        if (response.data.user) {
+          await AsyncStorage.setItem(
+            "userInfo",
+            JSON.stringify(response.data.user)
+          );
+        }
+
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        originalRequest._isRefreshing = false;
         return http(originalRequest);
       } catch (refreshError) {
-        console.error("Lỗi khi làm mới token:", {
-          message: refreshError.message,
-          response: refreshError.response?.data,
-        });
+        console.error("Lỗi khi làm mới token:", refreshError.message);
 
+        // Xóa token và yêu cầu đăng nhập lại
         await AsyncStorage.removeItem("authToken");
         await AsyncStorage.removeItem("refreshToken");
         await AsyncStorage.removeItem("userInfo");
 
-        // Điều hướng đến màn hình đăng nhập
-        // Ví dụ: sử dụng react-navigation
-        // navigation.navigate("Main");
-
         throw new Error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
       }
-    }
-
-    console.error("API error:", {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
-
-    if (error.response?.status === 400) {
-      throw new Error(error.response.data.message || "Yêu cầu không hợp lệ.");
-    }
-
-    if (error.code === "ERR_NETWORK") {
-      throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
     }
 
     return Promise.reject(error);
@@ -156,20 +166,36 @@ export const api = {
         throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
       }
 
-      const response = await http.patch("/auth/refresh", null, {
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      });
+      const response = await http.post(
+        "/auth/refresh",
+        undefined, // Không gửi body
+        {
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+          },
+        }
+      );
 
-      const newAccessToken = response.data?.accessToken;
-      if (!newAccessToken) {
+      const { accessToken, refreshToken: newRefreshToken } =
+        response.data.token;
+      if (!accessToken) {
         throw new Error("API không trả về accessToken mới.");
       }
 
-      await AsyncStorage.setItem("authToken", newAccessToken);
+      await AsyncStorage.setItem("authToken", accessToken);
+      if (newRefreshToken) {
+        await AsyncStorage.setItem("refreshToken", newRefreshToken);
+      }
 
-      return newAccessToken;
+      // Cập nhật userInfo nếu có
+      if (response.data.user) {
+        await AsyncStorage.setItem(
+          "userInfo",
+          JSON.stringify(response.data.user)
+        );
+      }
+
+      return accessToken;
     } catch (error) {
       console.error("Lỗi khi làm mới token 2:", error.message);
       throw error;
@@ -186,14 +212,19 @@ export const api = {
   getConversationDetails: async (conversationId) => {
     return await http.get(`/conversations/${conversationId}`);
   },
-  getMessages: async (conversationId, lastMessageTime = null, direction = 'before', limit = 20) => {
+  getMessages: async (
+    conversationId,
+    lastMessageTime = null,
+    direction = "before",
+    limit = 20
+  ) => {
     try {
       const query = { conversationId };
 
       // Handle both directions of message loading
       if (lastMessageTime) {
         query.createdAt =
-          direction === 'before'
+          direction === "before"
             ? { $lt: new Date(lastMessageTime).toISOString() }
             : { $gt: new Date(lastMessageTime).toISOString() };
       }
@@ -209,7 +240,7 @@ export const api = {
       const { messages, nextCursor, hasMore } = response.data;
 
       return {
-        messages: direction === 'before' ? messages : messages.reverse(),
+        messages: direction === "before" ? messages : messages.reverse(),
         nextCursor,
         hasMore,
         direction,

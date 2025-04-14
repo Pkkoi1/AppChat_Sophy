@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -14,6 +14,7 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 const ChatFooter = ({ onSendMessage }) => {
   const [message, setMessage] = useState("");
+  const textInputRef = useRef(null); // Ref for TextInput
 
   const handleSend = () => {
     if (message.trim()) {
@@ -45,10 +46,14 @@ const ChatFooter = ({ onSendMessage }) => {
         />
       </TouchableOpacity>
       <TextInput
+        ref={textInputRef} // Attach ref to TextInput
         placeholder="Nhập tin nhắn"
         style={ChatFooterStyle.text}
         value={message}
         onChangeText={setMessage}
+        onFocus={() => console.log("TextInput focused", Date.now())} // Debug focus behavior
+        onBlur={() => console.log("TextInput blurred", Date.now())} // Debug blur behavior
+        keyboardShouldPersistTaps="handled" // Ensure keyboard stays open
       />
       {message.trim() ? (
         <TouchableOpacity
@@ -84,11 +89,10 @@ const ChatFooterStyle = StyleSheet.create({
     alignItems: "center",
     margin: 0,
     width: "100%",
-    paddingVertical: 3,
+    paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: "#fff",
-    position: "absolute",
-    bottom: 0,
+    marginBottom: 0, // Remove extra margin
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
