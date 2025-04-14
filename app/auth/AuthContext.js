@@ -5,7 +5,7 @@
 // export const AuthContext = createContext();
 
 // export const AuthProvider = ({ children }) => {
-//   const [authToken, setAuthToken] = useState(null);
+//   const [accessToken, setaccessToken] = useState(null);
 //   const [refreshToken, setRefreshToken] = useState(null);
 //   const [userInfo, setUserInfo] = useState(null);
 //   const [isLoading, setIsLoading] = useState(true);
@@ -14,13 +14,13 @@
 //     const loadStorage = async () => {
 //       try {
 //         const [token, refresh, user] = await AsyncStorage.multiGet([
-//           "authToken",
+//           "accessToken",
 //           "refreshToken",
 //           "userInfo",
 //         ]);
 
 //         if (token[1] && refresh[1] && user[1]) {
-//           setAuthToken(token[1]);
+//           setaccessToken(token[1]);
 //           setRefreshToken(refresh[1]);
 //           setUserInfo(JSON.parse(user[1]));
 //         }
@@ -38,7 +38,7 @@
 //     const response = await api.login(params);
 //     const { accessToken, refreshToken } = response.data.token;
 
-//     setAuthToken(accessToken);
+//     setaccessToken(accessToken);
 //     setRefreshToken(refreshToken);
 
 //     await getUserInfoById(response.data.user.userId);
@@ -50,7 +50,7 @@
 //     } catch (error) {
 //       console.error("Lỗi khi logout:", error.message);
 //     } finally {
-//       setAuthToken(null);
+//       setaccessToken(null);
 //       setRefreshToken(null);
 //       setUserInfo(null);
 //     }
@@ -75,7 +75,7 @@
 //   return (
 //     <AuthContext.Provider
 //       value={{
-//         authToken,
+//         accessToken,
 //         refreshToken,
 //         userInfo,
 //         isLoading,
@@ -99,7 +99,7 @@ import { SocketContext } from "../socket/SocketContext"; // Import SocketContext
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [authToken, setAuthToken] = useState(null);
+  const [accessToken, setaccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,13 +109,13 @@ export const AuthProvider = ({ children }) => {
     const loadStorage = async () => {
       try {
         const [token, refresh, user] = await AsyncStorage.multiGet([
-          "authToken",
+          "accessToken",
           "refreshToken",
           "userInfo",
         ]);
 
         if (token[1] && refresh[1] && user[1]) {
-          setAuthToken(token[1]);
+          setaccessToken(token[1]);
           setRefreshToken(refresh[1]);
           setUserInfo(JSON.parse(user[1]));
         }
@@ -134,7 +134,7 @@ export const AuthProvider = ({ children }) => {
     const response = await api.login(params);
     const { accessToken, refreshToken } = response.data.token;
 
-    setAuthToken(accessToken);
+    setaccessToken(accessToken);
     setRefreshToken(refreshToken);
 
     await getUserInfoById(response.data.user.userId);
@@ -160,7 +160,7 @@ export const AuthProvider = ({ children }) => {
     console.log("Register response ổ auth:", response);
     const { accessToken, refreshToken } = response.token;
 
-    setAuthToken(accessToken);
+    setaccessToken(accessToken);
     setRefreshToken(refreshToken);
 
     await getUserInfoById(response.user.userId);
@@ -172,7 +172,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Lỗi khi logout:", error.message);
     } finally {
-      setAuthToken(null);
+      setaccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
     }
@@ -197,7 +197,7 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        authToken,
+        accessToken,
         refreshToken,
         userInfo,
         isLoading,

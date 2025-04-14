@@ -6,6 +6,9 @@ import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 const API = `http://${MY_IP}:3000/api` || DATABASE_API;
 // const API = `http://192.168.1.240:3000/api` || DATABASE_API;
 
+let isRefreshing = false;
+let failedQueue = [];
+
 const http = axios.create({
   baseURL: API,
   headers: {
@@ -14,10 +17,21 @@ const http = axios.create({
   },
 });
 
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 // Thêm interceptor để tự động thêm token vào header
 http.interceptors.request.use(async (config) => {
   try {
-    const token = await AsyncStorage.getItem("authToken");
+    const token = await AsyncStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -32,77 +46,31 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Thêm giới hạn số lần thử làm mới token
-    if (!originalRequest._retryCount) {
-      originalRequest._retryCount = 0;
-    }
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return http(originalRequest);
+          })
+          .catch((err) => Promise.reject(err));
+      }
 
-    // Kiểm tra nếu đã thử làm mới token quá 3 lần
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 400) &&
-      originalRequest._retryCount < 3 &&
-      !originalRequest._isRefreshing
-    ) {
-      originalRequest._retryCount += 1;
-      originalRequest._isRefreshing = true;
+      originalRequest._retry = true;
+      isRefreshing = true;
 
       try {
-        const refreshToken = await AsyncStorage.getItem("refreshToken");
-        if (!refreshToken) {
-          throw new Error(
-            "Không tìm thấy refreshToken. Yêu cầu đăng nhập lại."
-          );
-        }
-
-        console.log("Attempting to refresh token with:", refreshToken);
-
-        // Gửi yêu cầu làm mới token mà không cần body
-        const response = await http.patch(
-          "/auth/refresh",
-          undefined, // Không gửi body
-          {
-            headers: {
-              Authorization: `Bearer ${refreshToken}`,
-            },
-          }
-        );
-
-        const { accessToken, refreshToken: newRefreshToken } =
-          response.data.token;
-        if (!accessToken) {
-          throw new Error("API không trả về accessToken mới.");
-        }
-
-        console.log("New accessToken:", accessToken);
-        console.log("New refreshToken:", newRefreshToken);
-
-        // Lưu accessToken và refreshToken mới
-        await AsyncStorage.setItem("authToken", accessToken);
-        if (newRefreshToken) {
-          await AsyncStorage.setItem("refreshToken", newRefreshToken);
-        }
-
-        // Cập nhật userInfo nếu backend trả về
-        if (response.data.user) {
-          await AsyncStorage.setItem(
-            "userInfo",
-            JSON.stringify(response.data.user)
-          );
-        }
-
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        originalRequest._isRefreshing = false;
+        const newToken = await refreshaccessToken();
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        processQueue(null, newToken);
         return http(originalRequest);
       } catch (refreshError) {
-        console.error("Lỗi khi làm mới token:", refreshError.message);
-
-        // Xóa token và yêu cầu đăng nhập lại
-        await AsyncStorage.removeItem("authToken");
-        await AsyncStorage.removeItem("refreshToken");
-        await AsyncStorage.removeItem("userInfo");
-
-        throw new Error("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+        processQueue(refreshError);
+        throw refreshError;
+      } finally {
+        isRefreshing = false;
       }
     }
 
@@ -110,6 +78,50 @@ http.interceptors.response.use(
   }
 );
 
+const refreshaccessToken = async () => {
+  try {
+    const refreshToken = await AsyncStorage.getItem("refreshToken");
+    if (!refreshToken) {
+      console.log("No refreshToken found in AsyncStorage.");
+      throw new Error("Refresh token not found.");
+    }
+
+    console.log("Refreshing token with:", refreshToken);
+
+    const response = await http.patch("/auth/refresh", undefined, {
+      headers: { Authorization: `Bearer ${refreshToken}` },
+    });
+
+    console.log("Response from /auth/refresh:", response.data);
+
+    const { accessToken, refreshToken: newRefreshToken } = response.data.token;
+    if (!accessToken) {
+      console.log("No accessToken returned from API.");
+      throw new Error("No accessToken returned from API.");
+    }
+
+    await AsyncStorage.setItem("accessToken", accessToken);
+    console.log("accessToken saved:", accessToken);
+
+    await AsyncStorage.setItem("refreshToken", newRefreshToken);
+    console.log("refreshToken saved:", newRefreshToken);
+
+    if (response.data.user) {
+      await AsyncStorage.setItem(
+        "userInfo",
+        JSON.stringify(response.data.user)
+      );
+      console.log("userInfo saved:", response.data.user);
+    }
+
+    console.log("Token refreshed successfully.");
+    return accessToken;
+  } catch (error) {
+    console.error("Error refreshing token:", error.message);
+    await AsyncStorage.multiRemove(["accessToken", "refreshToken", "userInfo"]);
+    throw new Error("Session expired. Please log in again.");
+  }
+};
 export const api = {
   login: async (params) => {
     try {
@@ -124,7 +136,7 @@ export const api = {
         }
 
         // Lưu accessToken và refreshToken vào AsyncStorage
-        await AsyncStorage.setItem("authToken", accessToken);
+        await AsyncStorage.setItem("accessToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
@@ -182,7 +194,7 @@ export const api = {
         throw new Error("API không trả về accessToken mới.");
       }
 
-      await AsyncStorage.setItem("authToken", accessToken);
+      await AsyncStorage.setItem("accessToken", accessToken);
       if (newRefreshToken) {
         await AsyncStorage.setItem("refreshToken", newRefreshToken);
       }
@@ -266,7 +278,7 @@ export const api = {
         }
 
         // Lưu accessToken và refreshToken vào AsyncStorage
-        await AsyncStorage.setItem("authToken", accessToken);
+        await AsyncStorage.setItem("accessToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
@@ -321,7 +333,7 @@ export const api = {
       console.error("Lỗi khi gọi API logout:", error.message);
     } finally {
       // Xóa token khỏi AsyncStorage
-      await AsyncStorage.removeItem("authToken");
+      await AsyncStorage.removeItem("accessToken");
       await AsyncStorage.removeItem("refreshToken");
       await AsyncStorage.removeItem("userInfo");
     }
@@ -407,9 +419,9 @@ export const api = {
   },
   changePassword: async (userId, oldPassword, newPassword) => {
     try {
-      const token = await AsyncStorage.getItem("authToken");
+      const token = await AsyncStorage.getItem("accessToken");
       if (!token) {
-        throw new Error("Không tìm thấy authToken. Yêu cầu đăng nhập lại.");
+        throw new Error("Không tìm thấy accessToken. Yêu cầu đăng nhập lại.");
       }
 
       const response = await http.put(
@@ -447,7 +459,7 @@ export const api = {
       // Nếu backend trả về token mới, lưu lại
       const { accessToken, refreshToken } = response.data.token || {};
       if (accessToken && refreshToken) {
-        await AsyncStorage.setItem("authToken", accessToken);
+        await AsyncStorage.setItem("accessToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
       }
 
