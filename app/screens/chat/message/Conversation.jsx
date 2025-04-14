@@ -13,6 +13,8 @@ const Conversation = ({
   searchQuery = "",
   flatListRef,
   receiver,
+  onLoadMoreMessages,
+  isLoadingMore,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -51,6 +53,16 @@ const Conversation = ({
         ref={flatListRef}
         data={conversation.messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
+        onEndReached={onLoadMoreMessages}
+        onEndReachedThreshold={0.1}
+        initialNumToRender={20}
+        ListFooterComponent={
+          isLoadingMore ? (
+            <View style={{ padding: 10, alignItems: "center" }}>
+              <Text style={{ color: "gray" }}>Đang tải thêm...</Text>
+            </View>
+          ) : null
+        }
         renderItem={({ item, index }) => {
           const prevMessage =
             index < conversation.messages.length - 1

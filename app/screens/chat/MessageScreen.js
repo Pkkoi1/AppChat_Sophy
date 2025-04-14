@@ -30,6 +30,10 @@ const MessageScreen = ({ route, navigation }) => {
   const [highlightedMessageIds, setHighlightedMessageIds] = useState([]);
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(true);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+
   const flatListRef = useRef(null);
 
   const calculateLastActive = (lastActive) => {
@@ -59,23 +63,19 @@ const MessageScreen = ({ route, navigation }) => {
     };
 
     setMessages((prev) => {
-      const updatedMessages = [...(prev || []), newMessage]
-        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-        .reverse(); // Sort messages by createdAt in descending order
+      const updatedMessages = [...(prev || []), newMessage].sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
+      // .reverse(); // Sort messages by createdAt in descending order
       return updatedMessages;
     });
-
-    // Scroll to the bottom after adding the new message
-    // setTimeout(() => {
-    //   flatListRef.current?.scrollToEnd({ animated: true });
-    // }, 100);
-
     // Send the message to the server
     api
       .sendMessage({
         conversationId: newMessage.conversationId,
         content: newMessage.content,
       })
+
       .catch((error) => {
         console.error("Lỗi gửi tin nhắn:", error);
 
@@ -102,15 +102,69 @@ const MessageScreen = ({ route, navigation }) => {
         const response = await api.getMessages(conversation.conversationId);
         const { messages, nextCursor, hasMore } = response;
 
-        setMessages(messages || []); // Ensure messages is always an array
+        setMessages(messages || []);
+        setNextCursor(true);
+        setHasMoreMessages(true);
       } catch (error) {
         console.error("Lỗi lấy tin nhắn:", error);
-        setMessages([]); // Fallback to an empty array on error
+        setMessages([]);
       }
     };
+
     fetchMessages();
   }, [conversation?.conversationId]);
 
+  const loadMoreMessages = async () => {
+    // setMessages([]);
+    // if (isLoadingMore || !hasMoreMessages || !nextCursor) {
+    //   console.log("Không thể tải thêm tin nhắn:");
+    //   console.log("isLoadingMore:", isLoadingMore);
+    //   console.log("hasMoreMessages:", hasMoreMessages);
+    //   console.log("nextCursor:", nextCursor);
+    //   return;
+    // }
+
+    console.log("Bắt đầu tải thêm tin nhắn...");
+    setIsLoadingMore(true);
+
+    // Lấy thời gian của tin nhắn cũ nhất
+    const lastMessageTime = messages[0]?.createdAt;
+    console.log("Thời gian của tin nhắn cũ nhất:", lastMessageTime);
+
+    try {
+      console.log("Gửi yêu cầu API với nextCursor:", nextCursor);
+      const response = await api.getMessages(
+        conversation.conversationId,
+        lastMessageTime,
+        "before", // load thêm tin cũ
+        20
+      );
+
+      const {
+        messages: moreMessages,
+        nextCursor: newCursor,
+        hasMore,
+      } = response;
+
+      console.log("Tin nhắn mới tải:", moreMessages);
+      console.log("nextCursor mới:", newCursor);
+      console.log("hasMore từ API:", hasMore);
+
+      setMessages((prev) => {
+        const updatedMessages = [...moreMessages, ...prev];
+        console.log("Danh sách tin nhắn sau khi cập nhật:", updatedMessages);
+        return updatedMessages;
+      });
+
+      setNextCursor(newCursor);
+      setHasMoreMessages(hasMore);
+    } catch (error) {
+      console.error("Lỗi tải thêm tin nhắn:", error);
+    } finally {
+      setIsLoadingMore(false);
+      console.log("Hoàn thành tải thêm tin nhắn.");
+    }
+  };
   useEffect(() => {
     if (!searchQuery.trim()) {
       setHighlightedMessageIds([]);
@@ -204,6 +258,8 @@ const MessageScreen = ({ route, navigation }) => {
             flatListRef={flatListRef}
             receiver={receiver}
             keyboardShouldPersistTaps="handled" // Ensure taps don't dismiss the keyboard
+            onLoadMoreMessages={loadMoreMessages}
+            isLoadingMore={isLoadingMore}
           />
         ) : (
           <Text style={styles.emptyText}>Không có tin nhắn nào.</Text>

@@ -31,7 +31,7 @@ const processQueue = (error, token = null) => {
 // Thêm interceptor để tự động thêm token vào header
 http.interceptors.request.use(async (config) => {
   try {
-    const token = await AsyncStorage.getItem("accessToken");
+    const token = await AsyncStorage.getItem("acc");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -62,7 +62,7 @@ http.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const newToken = await refreshaccessToken();
+        const newToken = await refreshacc();
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         processQueue(null, newToken);
         return http(originalRequest);
@@ -78,7 +78,7 @@ http.interceptors.response.use(
   }
 );
 
-const refreshaccessToken = async () => {
+const refreshacc = async () => {
   try {
     const refreshToken = await AsyncStorage.getItem("refreshToken");
     if (!refreshToken) {
@@ -100,8 +100,8 @@ const refreshaccessToken = async () => {
       throw new Error("No accessToken returned from API.");
     }
 
-    await AsyncStorage.setItem("accessToken", accessToken);
-    console.log("accessToken saved:", accessToken);
+    await AsyncStorage.setItem("acc", accessToken);
+    console.log("acc saved:", accessToken);
 
     await AsyncStorage.setItem("refreshToken", newRefreshToken);
     console.log("refreshToken saved:", newRefreshToken);
@@ -118,7 +118,7 @@ const refreshaccessToken = async () => {
     return accessToken;
   } catch (error) {
     console.error("Error refreshing token:", error.message);
-    await AsyncStorage.multiRemove(["accessToken", "refreshToken", "userInfo"]);
+    await AsyncStorage.multiRemove(["acc", "refreshToken", "userInfo"]);
     throw new Error("Session expired. Please log in again.");
   }
 };
@@ -136,7 +136,7 @@ export const api = {
         }
 
         // Lưu accessToken và refreshToken vào AsyncStorage
-        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("acc", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
@@ -194,7 +194,7 @@ export const api = {
         throw new Error("API không trả về accessToken mới.");
       }
 
-      await AsyncStorage.setItem("accessToken", accessToken);
+      await AsyncStorage.setItem("acc", accessToken);
       if (newRefreshToken) {
         await AsyncStorage.setItem("refreshToken", newRefreshToken);
       }
@@ -278,7 +278,7 @@ export const api = {
         }
 
         // Lưu accessToken và refreshToken vào AsyncStorage
-        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("acc", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
@@ -333,7 +333,7 @@ export const api = {
       console.error("Lỗi khi gọi API logout:", error.message);
     } finally {
       // Xóa token khỏi AsyncStorage
-      await AsyncStorage.removeItem("accessToken");
+      await AsyncStorage.removeItem("acc");
       await AsyncStorage.removeItem("refreshToken");
       await AsyncStorage.removeItem("userInfo");
     }
@@ -419,9 +419,9 @@ export const api = {
   },
   changePassword: async (userId, oldPassword, newPassword) => {
     try {
-      const token = await AsyncStorage.getItem("accessToken");
+      const token = await AsyncStorage.getItem("acc");
       if (!token) {
-        throw new Error("Không tìm thấy accessToken. Yêu cầu đăng nhập lại.");
+        throw new Error("Không tìm thấy acc. Yêu cầu đăng nhập lại.");
       }
 
       const response = await http.put(
@@ -459,7 +459,7 @@ export const api = {
       // Nếu backend trả về token mới, lưu lại
       const { accessToken, refreshToken } = response.data.token || {};
       if (accessToken && refreshToken) {
-        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("acc", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
       }
 
