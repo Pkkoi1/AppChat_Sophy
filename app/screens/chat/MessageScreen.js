@@ -45,34 +45,64 @@ const MessageScreen = ({ route, navigation }) => {
   };
 
   const handleSendMessage = (message) => {
+    if (!conversation?.conversationId) {
+      alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
+      return;
+    }
+
     const newMessage = {
-      ...message,
+      conversationId: conversation.conversationId, // Include conversationId
+      content: message.content, // Include content
       messageDetailId: `msg_${Date.now()}`,
-      createdAt: new Date().toISOString(), // Gán thời gian gửi
+      createdAt: new Date().toISOString(),
+      senderId: userInfo.userId,
     };
 
     setMessages((prev) => {
-      const updatedMessages = [...(prev || []), newMessage].sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-      );
+      const updatedMessages = [...(prev || []), newMessage]
+        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+        .reverse(); // Sort messages by createdAt in descending order
       return updatedMessages;
     });
 
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: true });
-    }, 100);
+    // Scroll to the bottom after adding the new message
+    // setTimeout(() => {
+    //   flatListRef.current?.scrollToEnd({ animated: true });
+    // }, 100);
+
+    // Send the message to the server
+    api
+      .sendMessage({
+        conversationId: newMessage.conversationId,
+        content: newMessage.content,
+      })
+      .catch((error) => {
+        console.error("Lỗi gửi tin nhắn:", error);
+
+        // Handle specific error cases
+        if (error.message.includes("Conversation not found or access denied")) {
+          alert(
+            "Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại hoặc bạn không có quyền truy cập."
+          );
+        } else {
+          alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
+        }
+      });
   };
 
   useEffect(() => {
+    if (!conversation?.conversationId) {
+      console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
+      setMessages([]); // Clear messages if conversation is invalid
+      return;
+    }
+
     const fetchMessages = async () => {
       try {
-        const response = await api.getMessages(conversation?.conversationId);
-        const { messages, nextCursor, hasMore } = response; // Extract messages, nextCursor, and hasMore
+        const response = await api.getMessages(conversation.conversationId);
+        const { messages, nextCursor, hasMore } = response;
 
         setMessages(messages || []); // Ensure messages is always an array
-        // console.log("Tin nhắn:", messages);
-        // console.log("Next cursor:", nextCursor);
-        // console.log("Has more:", hasMore);
       } catch (error) {
         console.error("Lỗi lấy tin nhắn:", error);
         setMessages([]); // Fallback to an empty array on error
@@ -179,14 +209,7 @@ const MessageScreen = ({ route, navigation }) => {
           <Text style={styles.emptyText}>Không có tin nhắn nào.</Text>
         )}
       </KeyboardAvoidingView>
-      <ChatFooter
-        onSendMessage={(message) => {
-          setMessages((prev) => [
-            ...(prev || []),
-            { ...message, messageDetailId: `msg_${Date.now()}` },
-          ]);
-        }}
-      />
+      <ChatFooter onSendMessage={handleSendMessage} />
       {isSearching && (
         <View style={StyleSheet.absoluteFill}>
           <SearchFooter

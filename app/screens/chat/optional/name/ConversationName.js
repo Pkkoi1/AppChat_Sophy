@@ -58,7 +58,7 @@ const ConversationName = ({ receiver, conversation }) => {
       navigation.navigate("Chat", {
         startSearch: true, // Kích hoạt tìm kiếm trên MessageScreen
         conversation,
-        receiver,
+        receiver: receiver,
       });
     }
   };

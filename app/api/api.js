@@ -58,7 +58,7 @@ http.interceptors.response.use(
         console.log("Attempting to refresh token with:", refreshToken);
 
         // Gửi yêu cầu làm mới token mà không cần body
-        const response = await http.post(
+        const response = await http.patch(
           "/auth/refresh",
           undefined, // Không gửi body
           {
@@ -166,7 +166,7 @@ export const api = {
         throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
       }
 
-      const response = await http.post(
+      const response = await http.patch(
         "/auth/refresh",
         undefined, // Không gửi body
         {
@@ -501,6 +501,43 @@ export const api = {
     } catch (error) {
       console.error("Lỗi khi xác nhận QR login:", error.message);
       throw error;
+    }
+  },
+  sendMessage: async ({ conversationId, content }) => {
+    try {
+      const response = await http.post("/messages/send", {
+        conversationId,
+        content,
+      });
+
+      if (response.status === 201) {
+        return response.data; // Return the created message data
+      } else {
+        throw new Error(
+          `Lỗi ${response.status}: ${
+            response.data?.message || "Yêu cầu không thành công"
+          }`
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi tin nhắn:",
+        error.response?.data || error.message
+      );
+
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          throw new Error(
+            `Lỗi ${error.response.status}: ${
+              error.response.data?.message || "Yêu cầu không thành công"
+            }`
+          );
+        } else if (error.code === "ERR_NETWORK") {
+          throw new Error("Lỗi mạng: Không thể kết nối đến máy chủ.");
+        }
+      }
+
+      throw new Error("Lỗi không xác định khi gửi tin nhắn.");
     }
   },
 };
