@@ -23,38 +23,6 @@ const ChatHeader = ({
       ...(conversation?.isGroup ? { conversation } : { receiver }),
     });
   };
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     if (!receiver) {
-  //       console.warn("Receiver không hợp lệ.");
-  //       setReceiverName("Người dùng không xác định");
-  //       return;
-  //     }
-
-  //     try {
-  //       const response = await api.getUserById(receiver);
-  //       if (response && response.data) {
-  //         setReceiverName(
-  //           response.data.fullname || "Người dùng không xác định"
-  //         );
-  //       } else {
-  //         setReceiverName("Người dùng không xác định");
-  //       }
-  //     } catch (error) {
-  //       if (error.response?.status === 404) {
-  //         console.warn("Không tìm thấy người dùng:", receiver);
-  //         setReceiverName("Người dùng không xác định");
-  //       } else {
-  //         console.error("Lỗi khi lấy thông tin người dùng:", error);
-  //         setReceiverName("Lỗi tải thông tin");
-  //       }
-  //     }
-  //   };
-
-  //   fetchUser();
-  // }, [receiver]);
-
   return (
     <LinearGradient
       colors={["#1f7bff", "#12bcfa"]}

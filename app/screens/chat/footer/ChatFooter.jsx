@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
-import { View } from "react-native";
+import React, { useState, useRef } from "react";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -14,11 +8,13 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 const ChatFooter = ({ onSendMessage }) => {
   const [message, setMessage] = useState("");
+  const textInputRef = useRef(null);
 
   const handleSend = () => {
     if (message.trim()) {
       onSendMessage({ type: "text", content: message });
-      setMessage("");
+      setMessage(""); // Xóa nội dung ngay lập tức
+      // Không gọi focus() hay setTimeout, để bàn phím tự nhiên giữ mở
     }
   };
 
@@ -36,7 +32,7 @@ const ChatFooter = ({ onSendMessage }) => {
   };
 
   return (
-    <SafeAreaView style={ChatFooterStyle.container}>
+    <View style={ChatFooterStyle.container}>
       <TouchableOpacity>
         <MaterialCommunityIcons
           name="sticker-emoji"
@@ -45,10 +41,16 @@ const ChatFooter = ({ onSendMessage }) => {
         />
       </TouchableOpacity>
       <TextInput
+        ref={textInputRef}
         placeholder="Nhập tin nhắn"
         style={ChatFooterStyle.text}
         value={message}
         onChangeText={setMessage}
+        multiline
+        autoFocus={false}
+        onFocus={() => console.log("TextInput focused", Date.now())}
+        onBlur={() => console.log("TextInput blurred", Date.now())}
+        keyboardShouldPersistTaps="handled"
       />
       {message.trim() ? (
         <TouchableOpacity
@@ -74,7 +76,7 @@ const ChatFooter = ({ onSendMessage }) => {
           </TouchableOpacity>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -82,27 +84,18 @@ const ChatFooterStyle = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    margin: 0,
-    width: "100%",
-    paddingVertical: 3,
+    paddingVertical: 10,
     paddingHorizontal: 15,
     backgroundColor: "#fff",
-    position: "absolute",
-    bottom: 0,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: -5,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
   },
   text: {
     flex: 1,
     fontSize: 16,
     color: "#000",
     paddingHorizontal: 10,
+    paddingVertical: 8,
   },
   sendButton: {
     paddingHorizontal: 10,

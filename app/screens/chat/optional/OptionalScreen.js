@@ -28,15 +28,11 @@ const OptionalScreen = () => {
       </View>
       <ScrollView>
         <ConversationName receiver={receiver} conversation={conversation} />
-        {/* <Description isGroup={isGroup} />
-        <GalleryOption isGroup={isGroup} />
-        <GroupOption
-          isGroup={isGroup}
-          receiver={receiver}
-          participants={participants}
-        />
-        <ConversationOption isGroup={isGroup} receiver={receiver} />
-        <BanAndRemoveOption isGroup={isGroup} receiver={receiver} /> */}
+        <Description isGroup={conversation?.isGroup} />
+        <GalleryOption isGroup={conversation?.isGroup} />
+        <GroupOption receiver={receiver} conversation={conversation} />
+        <ConversationOption conversation={conversation} receiver={receiver} />
+        <BanAndRemoveOption  conversation={conversation} receiver={receiver} />
       </ScrollView>
     </View>
   );

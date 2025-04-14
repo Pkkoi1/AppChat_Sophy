@@ -54,7 +54,13 @@ const ConversationName = ({ receiver, conversation }) => {
     : null;
 
   const handlePress = (option) => {
-    // Handle option actions here
+    if (option.action === "searchMessages") {
+      navigation.navigate("Chat", {
+        startSearch: true, // Kích hoạt tìm kiếm trên MessageScreen
+        conversation,
+        receiver: receiver,
+      });
+    }
   };
 
   return (

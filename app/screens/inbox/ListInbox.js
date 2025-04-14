@@ -20,8 +20,14 @@ const ListInbox = () => {
     try {
       const response = await api.conversations();
       if (response && response.data) {
-        // console.log("API Response:", response.data); // Kiểm tra phản hồi từ API
-        setConversations(response.data); // Lưu toàn bộ danh sách cuộc trò chuyện
+        // Sort conversations by lastChange (descending) and createdAt (descending)
+        const sortedConversations = response.data.sort((a, b) => {
+          const lastChangeDiff =
+            new Date(b.lastChange) - new Date(a.lastChange);
+          if (lastChangeDiff !== 0) return lastChangeDiff;
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+        setConversations(sortedConversations); // Lưu danh sách đã sắp xếp
       } else {
         console.error("No conversations found in the response.");
         setConversations([]);

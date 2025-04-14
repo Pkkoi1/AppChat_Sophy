@@ -3,9 +3,8 @@ import { StyleSheet } from "react-native";
 
 const ConversationStyle = StyleSheet.create({
   conversationContainer: {
-    flexGrow: 1,
-    justifyContent: "flex-end", // Đảm bảo các tin nhắn được hiển thị từ dưới lên
-    marginBottom: 30,
+    flex: 1, // Ensure the container takes up available space
+    // marginBottom: 60, // Add space for the footer
   },
   timestampContainer: {
     backgroundColor: "#d3d3d3",
