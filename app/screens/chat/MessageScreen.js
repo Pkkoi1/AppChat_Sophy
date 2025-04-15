@@ -1,14 +1,12 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import {
-  SafeAreaView,
-  View,
-  Text,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Keyboard,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  useCallback,
+} from "react";
+import { SafeAreaView, View, Text, Platform, StyleSheet } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
 import SearchFooter from "./optional/name/searchMessage/SearchFooter";
@@ -31,6 +29,10 @@ const MessageScreen = ({ route, navigation }) => {
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const flatListRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
+
+  const [oldCursor, setOldCursor] = useState(null);
+  const [newCursor, setNewCursor] = useState(null);
 
   const calculateLastActive = (lastActive) => {
     const now = new Date();
@@ -44,51 +46,70 @@ const MessageScreen = ({ route, navigation }) => {
     return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
 
-  const handleSendMessage = (message) => {
-    if (!conversation?.conversationId) {
-      alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
-      return;
+  // Hàm lưu tin nhắn vào AsyncStorage
+  const saveMessagesToStorage = async (messages) => {
+    try {
+      await AsyncStorage.setItem(
+        `messages_${conversation.conversationId}`,
+        JSON.stringify(messages)
+      );
+      console.log("Tin nhắn đã được lưu vào AsyncStorage.");
+      console.log("Tin nhắn đã được lưu:", messages);
+    } catch (error) {
+      console.error("Lỗi khi lưu tin nhắn vào AsyncStorage:", error);
     }
-
-    const newMessage = {
-      conversationId: conversation.conversationId, // Include conversationId
-      content: message.content, // Include content
-      messageDetailId: `msg_${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      senderId: userInfo.userId,
-    };
-
-    setMessages((prev) => {
-      const updatedMessages = [...(prev || []), newMessage]
-        .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-        .reverse(); // Sort messages by createdAt in descending order
-      return updatedMessages;
-    });
-
-    // Scroll to the bottom after adding the new message
-    // setTimeout(() => {
-    //   flatListRef.current?.scrollToEnd({ animated: true });
-    // }, 100);
-
-    // Send the message to the server
-    api
-      .sendMessage({
-        conversationId: newMessage.conversationId,
-        content: newMessage.content,
-      })
-      .catch((error) => {
-        console.error("Lỗi gửi tin nhắn:", error);
-
-        // Handle specific error cases
-        if (error.message.includes("Conversation not found or access denied")) {
-          alert(
-            "Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại hoặc bạn không có quyền truy cập."
-          );
-        } else {
-          alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
-        }
-      });
   };
+
+  // Hàm lấy tin nhắn từ AsyncStorage
+  const loadMessagesFromStorage = async () => {
+    try {
+      const storedMessages = await AsyncStorage.getItem(
+        `messages_${conversation.conversationId}`
+      );
+      if (storedMessages) {
+        const parsed = JSON.parse(storedMessages);
+        // console.log("Tin nhắn được load từ AsyncStorage:", parsed);
+        setMessages(parsed);
+      } else {
+        console.log("Không tìm thấy tin nhắn trong AsyncStorage.");
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error("Lỗi khi load tin nhắn từ AsyncStorage:", error);
+    }
+  };
+
+  const handleSendMessage = useCallback(
+    (message) => {
+      if (!conversation?.conversationId) {
+        alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+
+      const newMessage = {
+        conversationId: conversation.conversationId,
+        content: message.content,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+      };
+
+      setMessages((prev) => [newMessage, ...(prev || [])]);
+      api
+        .sendMessage({
+          conversationId: newMessage.conversationId,
+          content: newMessage.content,
+        })
+        .catch((error) => {
+          console.error("Lỗi gửi tin nhắn:", error);
+          alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
+        });
+    },
+    [conversation, userInfo.userId]
+  );
+
+  // Trong render
+  <ChatFooter onSendMessage={handleSendMessage} />;
 
   useEffect(() => {
     if (!conversation?.conversationId) {
@@ -97,18 +118,26 @@ const MessageScreen = ({ route, navigation }) => {
       return;
     }
 
-    const fetchMessages = async () => {
+    const fetchAndStoreMessages = async () => {
       try {
-        const response = await api.getMessages(conversation.conversationId);
-        const { messages, nextCursor, hasMore } = response;
+        setIsLoading(true); // Bật loading
 
-        setMessages(messages || []); // Ensure messages is always an array
+        const response = await api.getMessages(conversation.conversationId);
+        const { messages: fetchedMessages } = response;
+
+        console.log("Tin nhắn được lấy từ API:", fetchedMessages);
+
+        await saveMessagesToStorage(fetchedMessages || []);
       } catch (error) {
         console.error("Lỗi lấy tin nhắn:", error);
-        setMessages([]); // Fallback to an empty array on error
+        await saveMessagesToStorage([]); // Lưu mảng rỗng nếu lỗi
+      } finally {
+        await loadMessagesFromStorage(); // Load từ storage để hiển thị
+        setIsLoading(false); // Tắt loading
       }
     };
-    fetchMessages();
+
+    fetchAndStoreMessages();
   }, [conversation?.conversationId]);
 
   useEffect(() => {
@@ -171,7 +200,7 @@ const MessageScreen = ({ route, navigation }) => {
         conversation={conversation}
         lastActiveStatus={calculateLastActive(receiver?.lastActive)}
       />
-      {isSearching && (
+      {/* {isSearching && (
         <View style={StyleSheet.absoluteFill}>
           <SearchHeader
             onCancel={() => {
@@ -180,7 +209,6 @@ const MessageScreen = ({ route, navigation }) => {
               setHighlightedMessageIds([]);
               setHighlightedMessageId(null);
 
-              // 🔥 Chờ một chút để đảm bảo React cập nhật state trước khi render lại header
               setTimeout(() => {
                 navigation.setParams({ receiver }); // Đảm bảo receiverId vẫn tồn tại
               }, 100);
@@ -188,29 +216,18 @@ const MessageScreen = ({ route, navigation }) => {
             onSearch={setSearchQuery}
           />
         </View>
-      )}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "padding"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-        style={{ flex: 1 }}
-      >
-        {messages?.length > 0 ? (
-          <Conversation
-            conversation={{ messages }}
-            senderId={userInfo.userId}
-            highlightedMessageIds={highlightedMessageIds}
-            highlightedMessageId={highlightedMessageId}
-            searchQuery={searchQuery}
-            flatListRef={flatListRef}
-            receiver={receiver}
-            keyboardShouldPersistTaps="handled" // Ensure taps don't dismiss the keyboard
-          />
-        ) : (
-          <Text style={styles.emptyText}>Không có tin nhắn nào.</Text>
-        )}
-      </KeyboardAvoidingView>
+      )} */}
+      <Conversation
+        conversation={{ messages }}
+        senderId={userInfo.userId}
+        highlightedMessageIds={highlightedMessageIds}
+        highlightedMessageId={highlightedMessageId}
+        searchQuery={searchQuery}
+        flatListRef={flatListRef}
+        receiver={receiver}
+      />
       <ChatFooter onSendMessage={handleSendMessage} />
-      {isSearching && (
+      {/* {isSearching && (
         <View style={StyleSheet.absoluteFill}>
           <SearchFooter
             resultCount={highlightedMessageIds.length}
@@ -218,26 +235,35 @@ const MessageScreen = ({ route, navigation }) => {
             onNext={() => {
               setCurrentSearchIndex((prev) => {
                 const nextIndex =
-                  prev + 1 < highlightedMessageIds.length ? prev + 1 : prev; // Không xuống nếu là tin nhắn cuối
+                  prev + 1 < highlightedMessageIds.length ? prev + 1 : prev;
                 scrollToMessage(nextIndex);
                 return nextIndex;
               });
             }}
             onPrevious={() => {
               setCurrentSearchIndex((prev) => {
-                const prevIndex = prev - 1 >= 0 ? prev - 1 : prev; // Không lên nếu là tin nhắn đầu
+                const prevIndex = prev - 1 >= 0 ? prev - 1 : prev;
                 scrollToMessage(prevIndex);
                 return prevIndex;
               });
             }}
           />
         </View>
-      )}
+      )} */}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 18,
+    color: "gray",
+  },
   emptyText: {
     textAlign: "center",
     marginTop: 20,

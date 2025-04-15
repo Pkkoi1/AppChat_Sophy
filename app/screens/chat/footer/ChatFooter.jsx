@@ -46,11 +46,11 @@ const ChatFooter = ({ onSendMessage }) => {
         style={ChatFooterStyle.text}
         value={message}
         onChangeText={setMessage}
-        multiline
-        autoFocus={false}
+        multiline // Hỗ trợ nhập nhiều dòng, giúp bàn phím ổn định hơn
+        blurOnSubmit={false} // Ngăn bàn phím đóng khi nhấn Enter
+        returnKeyType="default" // Đảm bảo hành vi bàn phím tự nhiên
         onFocus={() => console.log("TextInput focused", Date.now())}
         onBlur={() => console.log("TextInput blurred", Date.now())}
-        keyboardShouldPersistTaps="handled"
       />
       {message.trim() ? (
         <TouchableOpacity
@@ -102,4 +102,4 @@ const ChatFooterStyle = StyleSheet.create({
   },
 });
 
-export default ChatFooter;
+export default React.memo(ChatFooter);

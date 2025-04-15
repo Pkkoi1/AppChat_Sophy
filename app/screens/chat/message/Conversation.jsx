@@ -43,14 +43,12 @@ const Conversation = ({
   };
 
   return (
-    <View
-      style={ConversationStyle.conversationContainer}
-      onStartShouldSetResponder={() => false} // Prevent View from stealing focus
-    >
+    <View style={ConversationStyle.conversationContainer}>
       <FlatList
         ref={flatListRef}
         data={conversation.messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
+        onEndReachedThreshold={0.1}
         renderItem={({ item, index }) => {
           const prevMessage =
             index < conversation.messages.length - 1
@@ -94,7 +92,7 @@ const Conversation = ({
         }}
         inverted={true}
         contentContainerStyle={{ paddingBottom: 60 }} // Add padding to avoid overlapping with footer
-        keyboardShouldPersistTaps="always" // Ensure taps don't dismiss the keyboard
+        // keyboardShouldPersistTaps="always"
       />
       <MessagePopup
         popupVisible={popupVisible}
