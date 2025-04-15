@@ -31,7 +31,7 @@ const processQueue = (error, token = null) => {
 // Thêm interceptor để tự động thêm token vào header
 http.interceptors.request.use(async (config) => {
   try {
-    const token = await AsyncStorage.getItem("acc");
+    const token = await AsyncStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -100,7 +100,7 @@ const refreshacc = async () => {
       throw new Error("No accessToken returned from API.");
     }
 
-    await AsyncStorage.setItem("acc", accessToken);
+    await AsyncStorage.setItem("accessToken", accessToken);
     console.log("acc saved:", accessToken);
 
     await AsyncStorage.setItem("refreshToken", newRefreshToken);
@@ -118,7 +118,7 @@ const refreshacc = async () => {
     return accessToken;
   } catch (error) {
     console.error("Error refreshing token:", error.message);
-    await AsyncStorage.multiRemove(["acc", "refreshToken", "userInfo"]);
+    await AsyncStorage.multiRemove(["accessToken", "refreshToken", "userInfo"]);
     throw new Error("Session expired. Please log in again.");
   }
 };
@@ -136,7 +136,7 @@ export const api = {
         }
 
         // Lưu accessToken và refreshToken vào AsyncStorage
-        await AsyncStorage.setItem("acc", accessToken);
+        await AsyncStorage.setItem("accessToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
@@ -194,7 +194,7 @@ export const api = {
         throw new Error("API không trả về accessToken mới.");
       }
 
-      await AsyncStorage.setItem("acc", accessToken);
+      await AsyncStorage.setItem("accessToken", accessToken);
       if (newRefreshToken) {
         await AsyncStorage.setItem("refreshToken", newRefreshToken);
       }
@@ -228,7 +228,7 @@ export const api = {
     conversationId,
     lastMessageTime = null,
     direction = "before",
-    limit = 20
+    limit = 100000
   ) => {
     try {
       const query = { conversationId };

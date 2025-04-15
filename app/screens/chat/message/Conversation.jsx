@@ -13,8 +13,6 @@ const Conversation = ({
   searchQuery = "",
   flatListRef,
   receiver,
-  onLoadMoreMessages,
-  isLoadingMore,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -45,24 +43,12 @@ const Conversation = ({
   };
 
   return (
-    <View
-      style={ConversationStyle.conversationContainer}
-      onStartShouldSetResponder={() => false} // Prevent View from stealing focus
-    >
+    <View style={ConversationStyle.conversationContainer}>
       <FlatList
         ref={flatListRef}
         data={conversation.messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
-        onEndReached={onLoadMoreMessages}
         onEndReachedThreshold={0.1}
-        initialNumToRender={20}
-        ListFooterComponent={
-          isLoadingMore ? (
-            <View style={{ padding: 10, alignItems: "center" }}>
-              <Text style={{ color: "gray" }}>Đang tải thêm...</Text>
-            </View>
-          ) : null
-        }
         renderItem={({ item, index }) => {
           const prevMessage =
             index < conversation.messages.length - 1
@@ -106,7 +92,7 @@ const Conversation = ({
         }}
         inverted={true}
         contentContainerStyle={{ paddingBottom: 60 }} // Add padding to avoid overlapping with footer
-        keyboardShouldPersistTaps="always" // Ensure taps don't dismiss the keyboard
+        // keyboardShouldPersistTaps="always"
       />
       <MessagePopup
         popupVisible={popupVisible}
