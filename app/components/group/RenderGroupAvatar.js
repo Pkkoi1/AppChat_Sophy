@@ -72,10 +72,37 @@ const RenderGroupAvatar = ({ members }) => {
   }, [members]);
 
   const displayedAvatars = memberDetails.slice(0, 4).map((member, index) => {
-    const position = positions[memberDetails.length]?.[index] || {
+    const position = positions[Math.min(memberDetails.length, 4)]?.[index] || {
       left: containerSize / 4,
       top: containerSize / 4,
     }; // Lấy vị trí theo số lượng thành viên
+
+    if (index === 3 && members.length > 4) {
+      // Correctly calculate the remaining count for "+X"
+      const remainingCount = members.length - 3;
+      return (
+        <View
+          key={index}
+          style={{
+            width: avatarSize,
+            height: avatarSize,
+            borderRadius: avatarSize / 2,
+            position: "absolute",
+            ...position,
+            backgroundColor: "#ccc", // Background for "+X"
+            justifyContent: "center",
+            alignItems: "center",
+            borderWidth: borderWidth,
+            borderColor: "#fff",
+          }}
+        >
+          <Text style={{ color: "#fff", fontSize: 10, fontWeight: "bold" }}>
+            +{remainingCount}
+          </Text>
+        </View>
+      );
+    }
+
     return member?.urlavatar ? (
       <Image
         key={index}

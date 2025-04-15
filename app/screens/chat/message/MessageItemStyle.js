@@ -35,7 +35,8 @@ const MessageItemStyle = StyleSheet.create({
   timestamp: {
     fontSize: 12,
     color: "#999",
-    marginBottom: 5,
+    marginTop: 5, // Add spacing above the timestamp
+    alignSelf: "flex-start", // Align timestamp to the left
   },
   content: {
     fontSize: 16,
@@ -55,6 +56,45 @@ const MessageItemStyle = StyleSheet.create({
     backgroundColor: "#d1e7ff", // Màu nền xanh nhạt
     borderRadius: 8, // Bo góc
     padding: 5, // Thêm khoảng cách bên trong
+  },
+  senderName: {
+    fontSize: 12,
+    fontWeight: "450",
+    color: "#555",
+    marginBottom: 4,
+  },
+  image: {
+    width: 250,
+    height: 180,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignSelf: "center", // Center the image outside the bubble
+  },
+  fileContainer: {
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  fileName: {
+    fontSize: 14,
+    color: "#007bff",
+  },
+  video: {
+    width: 200,
+    height: 150,
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  videoLabel: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 5,
+  },
+  unsupported: {
+    fontSize: 14,
+    color: "#999",
+    fontStyle: "italic",
   },
 });
 

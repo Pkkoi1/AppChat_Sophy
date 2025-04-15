@@ -1,5 +1,11 @@
-import React, { useState, useRef } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Keyboard,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -8,7 +14,22 @@ import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 
 const ChatFooter = ({ onSendMessage }) => {
   const [message, setMessage] = useState("");
-  const textInputRef = useRef(null);
+  // const textInputRef = useRef(null);
+
+  const handleFocus = () => {
+    console.log("TextInput được focus");
+    // textInputRef.current?.focus();
+  };
+
+  const handleBlur = () => {
+    console.log("TextInput bị blur");
+    // Không gọi focus() hay setTimeout, để bàn phím tự nhiên giữ mở
+
+    // textInputRef.current?.focus(); // Không cần gọi focus() ở đây
+    // setTimeout(() => {
+    //   textInputRef.current?.focus(); // Không cần gọi focus() ở đây
+    // }, 0); // Không cần gọi focus() ở đây
+  };
 
   const handleSend = () => {
     if (message.trim()) {
@@ -41,16 +62,12 @@ const ChatFooter = ({ onSendMessage }) => {
         />
       </TouchableOpacity>
       <TextInput
-        ref={textInputRef}
         placeholder="Nhập tin nhắn"
         style={ChatFooterStyle.text}
         value={message}
         onChangeText={setMessage}
-        multiline // Hỗ trợ nhập nhiều dòng, giúp bàn phím ổn định hơn
-        blurOnSubmit={false} // Ngăn bàn phím đóng khi nhấn Enter
-        returnKeyType="default" // Đảm bảo hành vi bàn phím tự nhiên
-        onFocus={() => console.log("TextInput focused", Date.now())}
-        onBlur={() => console.log("TextInput blurred", Date.now())}
+        onFocus={handleFocus}
+        onBlur={handleBlur} // Ghi lại sự kiện blur
       />
       {message.trim() ? (
         <TouchableOpacity
@@ -96,6 +113,8 @@ const ChatFooterStyle = StyleSheet.create({
     color: "#000",
     paddingHorizontal: 10,
     paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: "#f0f0f0",
   },
   sendButton: {
     paddingHorizontal: 10,

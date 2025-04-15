@@ -64,7 +64,6 @@ const Inbox = ({ conversation }) => {
   const getMessageContent = () => {
     if (!lastMessage) return "No messages yet";
 
-    // Xử lý các loại type
     switch (lastMessage.type) {
       case "ADD_MEMBER":
         return `${senderName} đã thêm thành viên mới`;
@@ -87,8 +86,23 @@ const Inbox = ({ conversation }) => {
       case "DELETE_GROUP":
         return `${senderName} đã xóa nhóm`;
       case "text":
-      default:
         return truncateMessage(lastMessage.content || "No messages yet", 50);
+      case "text-with-image":
+        return `[Hình ảnh]`;
+      case "file":
+        return `[Tệp tin]`;
+      case "video":
+        return `[Video]`;
+      case "image":
+        return `[Hình ản]`;
+      case "audio":
+        return `[Tin nhắn thoại]`;
+      case "sticker":
+        return `đã gửi một nhãn dán`;
+      case "location":
+        return `đã chia sẻ vị trí`;
+      default:
+        return "Tin nhắn không được hỗ trợ";
     }
   };
 

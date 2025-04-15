@@ -18,6 +18,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { AuthContext } from "@/app/auth/AuthContext"; // Import AuthContext
+import FullScreenImageViewer from "@/app/features/fullImages/FullScreenImageViewer"; // Import FullScreenImageViewer
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
@@ -28,6 +29,8 @@ const ProfileScreen = () => {
   const [randomImageId, setRandomImageId] = useState(
     Math.floor(Math.random() * 1000) // Tạo ID ngẫu nhiên ban đầu
   );
+
+  const coverImageUrl = `https://picsum.photos/id/${randomImageId}/800/400`; // Define cover image URL
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -58,13 +61,21 @@ const ProfileScreen = () => {
     >
       <View style={styles.container}>
         <View style={styles.coverContainer}>
-          <Animated.Image
-            source={{
-              uri: `https://picsum.photos/id/${randomImageId}/800/400`,
-            }}
-            style={[styles.coverImage, { height: coverImageHeight }]}
-            resizeMode="cover" // Đảm bảo ảnh được cắt vừa khung
-          />
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: coverImageUrl,
+              })
+            }
+          >
+            <Animated.Image
+              source={{
+                uri: coverImageUrl,
+              }}
+              style={[styles.coverImage, { height: coverImageHeight }]}
+              resizeMode="cover" // Đảm bảo ảnh được cắt vừa khung
+            />
+          </TouchableOpacity>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back-ios" size={24} color="#fff" />
@@ -92,21 +103,30 @@ const ProfileScreen = () => {
 
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
-            {userInfo?.urlavatar ? (
-              <Image
-                source={{ uri: userInfo.urlavatar }}
-                style={styles.avatar}
-              />
-            ) : (
-              <AvatarUser
-                fullName={userInfo.fullname}
-                width={120}
-                height={120}
-                avtText={40}
-                shadow={true}
-                bordered={true}
-              />
-            )}
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("FullScreenImageViewer", {
+                  imageUrl: userInfo?.urlavatar || null,
+                  fallbackText: userInfo?.fullname || "User",
+                })
+              }
+            >
+              {userInfo?.urlavatar ? (
+                <Image
+                  source={{ uri: userInfo.urlavatar }}
+                  style={styles.avatar}
+                />
+              ) : (
+                <AvatarUser
+                  fullName={userInfo.fullname}
+                  width={120}
+                  height={120}
+                  avtText={40}
+                  shadow={true}
+                  bordered={true}
+                />
+              )}
+            </TouchableOpacity>
 
             <Text style={styles.name}>{userInfo.fullname}</Text>
             <TouchableOpacity>
