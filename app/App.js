@@ -45,7 +45,7 @@ import { SocketProvider } from "./socket/SocketContext";
 import MyProfileSetting from "./screens/profile/myProfile/Option/MyProfileSetting";
 import Infomation from "./screens/profile/myProfile/Option/infomation/Infomation";
 import ZaloFAQScreen from "./screens/login/ZaloFAQScreen";
-
+import FullScreenImageViewer from "./features/fullImages/FullScreenImageViewer";
 
 const Stack = createNativeStackNavigator();
 
@@ -124,6 +124,11 @@ function RootLayout() {
             />
             <Stack.Screen name="Infomation" component={Infomation} />
             <Stack.Screen name="ZaloFAQScreen" component={ZaloFAQScreen} />
+            <Stack.Screen
+              name="FullScreenImageViewer"
+              component={FullScreenImageViewer}
+              options={{ headerShown: false }} // Hide the header for full-screen view
+            />
           </Stack.Navigator>
         </NavigationContainer>
       </AuthProvider>

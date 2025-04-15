@@ -62,11 +62,12 @@ export const AuthProvider = ({ children }) => {
       setaccessToken(newAccessToken);
       await AsyncStorage.setItem("accessToken", newAccessToken);
       await AsyncStorage.setItem("refreshToken", newRefreshToken);
+      await getUserInfoById(response.data.user.userId);
 
       // Lấy thông tin người dùng sau khi refresh token
-      if (userInfo?.userId) {
-        await getUserInfoById(userInfo.userId);
-      }
+      // if (userInfo?.userId) {
+      //   await getUserInfoById(userInfo.userId);
+      // }
     } catch (error) {
       console.error("Error refreshing access token:", error);
       logout(); // Đăng xuất nếu refresh token không hợp lệ
@@ -89,6 +90,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (params) => {
     const response = await api.registerAccount(params);
+    console.log("Phan hoi tu register:", response.user);
     const { accessToken, refreshToken } = response.token;
 
     setaccessToken(accessToken);

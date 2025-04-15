@@ -7,6 +7,15 @@ const MessageScreenStyle = StyleSheet.create({
     // paddingBottom: 100,
     backgroundColor: "transparent",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 15,
+    color: "gray",
+  },
 });
 
 export default MessageScreenStyle;

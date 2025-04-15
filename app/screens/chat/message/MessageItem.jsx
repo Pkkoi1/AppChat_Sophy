@@ -1,10 +1,68 @@
-import React from "react";
-import { View, Text, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import moment from "moment";
+import { useNavigation } from "@react-navigation/native"; // Import navigation hook
 import MessageItemStyle from "./MessageItemStyle";
-import HighlightText from "../../../components/highlightText/HighlightText"; // Import HighlightText
-import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import HighlightText from "../../../components/highlightText/HighlightText";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import FullScreenImageViewer from "@/app/features/fullImages/FullScreenImageViewer";
+
+const errorImage =
+  "https://res.cloudinary.com/dyd5381vx/image/upload/v1744732824/z6509003496600_0f4526fe7c8ca476fea6dddff2b3bc91_d4nysj.jpg";
+const convertToEnglish = (char) => {
+  const vietnameseMap = {
+    Ă: "A",
+    Â: "A",
+    Á: "A",
+    À: "A",
+    Ả: "A",
+    Ã: "A",
+    Ạ: "A",
+    Đ: "D",
+    Ê: "E",
+    É: "E",
+    È: "E",
+    Ẻ: "E",
+    Ẽ: "E",
+    Ẹ: "E",
+    Í: "I",
+    Ì: "I",
+    Ỉ: "I",
+    Ĩ: "I",
+    Ị: "I",
+    Ô: "O",
+    Ơ: "O",
+    Ó: "O",
+    Ò: "O",
+    Ỏ: "O",
+    Õ: "O",
+    Ọ: "O",
+    Ú: "U",
+    Ù: "U",
+    Ủ: "U",
+    Ũ: "U",
+    Ụ: "U",
+    Ư: "U",
+    Ý: "Y",
+    Ỳ: "Y",
+    Ỷ: "Y",
+    Ỹ: "Y",
+    Ỵ: "Y",
+  };
+  return vietnameseMap[char] || char;
+};
+
+const getColorForInitial = (initial) => {
+  const englishInitial = convertToEnglish(initial);
+  const charCode = englishInitial.charCodeAt(0);
+  if (charCode >= 65 && charCode <= 69) return "#2e5389"; // A-E
+  if (charCode >= 70 && charCode <= 74) return "#2b7155"; // F-J
+  if (charCode >= 75 && charCode <= 79) return "#009688"; // K-O
+  if (charCode >= 80 && charCode <= 84) return "#3D2F00"; // P-T
+  if (charCode >= 85 && charCode <= 90) return "#AD8500"; // U-Z
+  return "#B0B0B0"; // Default color
+};
 
 const MessageItem = ({
   message,
@@ -13,38 +71,42 @@ const MessageItem = ({
   isHighlighted,
   receiver,
 }) => {
-  const formattedTimestamp = moment(message.createdAt).format(
-    "DD/MM/YYYY HH:mm"
-  );
+  const formattedTimestamp = moment(message.createdAt).format("HH:mm");
+  const [senders, setSenders] = useState([]);
+  const navigation = useNavigation(); // Initialize navigation
+  const isGroup = !receiver;
 
-  const isGroup = !receiver; // Check if receiver is null, indicating a group
+  const fetchSenders = async () => {
+    try {
+      const response = await fetchUserInfo(message.senderId);
+      if (response) {
+        setSenders((prevSenders) => [...prevSenders, response]);
+      }
+    } catch (error) {
+      console.error("Error fetching sender details:", error);
+    }
+  };
 
-  const renderAvatar = async () => {
+  useEffect(() => {
+    if (message.senderId) {
+      fetchSenders();
+    }
+  }, [message.senderId]);
+
+  const renderAvatar = () => {
     if (isGroup) {
-      try {
-        const response = await fetchUserInfo(message.senderId); // Fetch sender info using senderId
-        // console.log("Thông tin người gửi:", response);
-        const sender = response;
-        return sender?.urlavatar ? (
+      if (message.senderId) {
+        const fetchedSender = senders.find(
+          (sender) => sender.userId === message.senderId
+        );
+        return fetchedSender?.urlavatar ? (
           <Image
-            source={{ uri: sender.urlavatar }}
+            source={{ uri: fetchedSender.urlavatar }}
             style={MessageItemStyle.avatar}
           />
         ) : (
           <AvatarUser
-            fullName={sender?.fullname || "User"}
-            width={32}
-            height={32}
-            avtText={12}
-            shadow={false}
-            bordered={false}
-          />
-        );
-      } catch (error) {
-        console.error("Lỗi khi lấy thông tin người gửi:", error);
-        return (
-          <AvatarUser
-            fullName="User"
+            fullName={fetchedSender?.fullname || "User"}
             width={32}
             height={32}
             avtText={12}
@@ -53,6 +115,16 @@ const MessageItem = ({
           />
         );
       }
+      return (
+        <AvatarUser
+          fullName="User"
+          width={32}
+          height={32}
+          avtText={12}
+          shadow={false}
+          bordered={false}
+        />
+      );
     } else {
       return receiver?.urlavatar ? (
         <Image
@@ -69,6 +141,110 @@ const MessageItem = ({
           bordered={false}
         />
       );
+    }
+  };
+
+  const renderSenderName = () => {
+    if (isGroup && !isSender) {
+      const fetchedSender = senders.find(
+        (sender) => sender.userId === message.senderId
+      );
+      const senderName = fetchedSender?.fullname || "User";
+      const initial = senderName.charAt(0).toUpperCase();
+      const color = getColorForInitial(initial);
+      return (
+        <Text style={[MessageItemStyle.senderName, { color }]}>
+          {senderName}
+        </Text>
+      );
+    }
+    return null;
+  };
+
+  const renderMessageContent = () => {
+    switch (message.type) {
+      case "text":
+        return (
+          <HighlightText
+            text={message.content}
+            highlight={searchQuery}
+            style={MessageItemStyle.content}
+          />
+        );
+      case "text-with-image":
+        return (
+          <View>
+            <HighlightText
+              text={message.content}
+              highlight={searchQuery}
+              style={MessageItemStyle.content}
+            />
+            {message.attachments && message.attachments.length > 0 && (
+              <TouchableOpacity
+                onPress={() =>
+                  console.log("Image clicked:", message.attachments[0].url)
+                }
+              >
+                <Image
+                  source={{ uri: message.attachments[0].url }}
+                  style={MessageItemStyle.image}
+                />
+              </TouchableOpacity>
+            )}
+          </View>
+        );
+      case "image":
+        const imageUrl =
+          message.content || message.attachment?.url || errorImage;
+        return (
+          <View>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("FullScreenImageViewer", { imageUrl })
+              }
+            >
+              <Image
+                source={{ uri: imageUrl }}
+                style={MessageItemStyle.image}
+              />
+            </TouchableOpacity>
+            {message.sendStatus === "failed" && (
+              <Text style={MessageItemStyle.errorText}>
+                Không thể gửi tin nhắn
+              </Text>
+            )}
+          </View>
+        );
+      case "file":
+        return (
+          <View style={MessageItemStyle.fileContainer}>
+            <Text style={MessageItemStyle.fileName}>
+              {message.attachments?.[0]?.name ||
+                message.attachment?.name ||
+                "File"}
+            </Text>
+          </View>
+        );
+      case "video":
+        return (
+          <View>
+            <Text style={MessageItemStyle.videoLabel}>Video:</Text>
+            {message.attachments && message.attachments.length > 0 && (
+              <Video
+                source={{ uri: message.attachments[0].url }}
+                style={MessageItemStyle.video}
+                resizeMode="contain"
+                controls
+              />
+            )}
+          </View>
+        );
+      default:
+        return (
+          <Text style={MessageItemStyle.content}>
+            {message.content || "Unsupported message type"}
+          </Text>
+        );
     }
   };
 
@@ -89,15 +265,11 @@ const MessageItem = ({
         style={[
           MessageItemStyle.messageBox,
           isSender ? MessageItemStyle.sender : MessageItemStyle.receiver,
-          !isSender ? MessageItemStyle.receiverWithAvatar : {}, // Adjust if there are avatars
         ]}
       >
+        {renderSenderName()}
+        {renderMessageContent()}
         <Text style={MessageItemStyle.timestamp}>{formattedTimestamp}</Text>
-        <HighlightText
-          text={message.content}
-          highlight={searchQuery}
-          style={MessageItemStyle.content}
-        />
       </View>
     </View>
   );

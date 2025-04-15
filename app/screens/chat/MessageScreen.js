@@ -16,7 +16,6 @@ import {
   TextInput,
   StatusBar,
 } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
 import SearchFooter from "./optional/name/searchMessage/SearchFooter";
@@ -56,56 +55,23 @@ const MessageScreen = ({ route, navigation }) => {
     return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
 
-  // Hàm lưu tin nhắn vào AsyncStorage
-  const saveMessagesToStorage = async (messages) => {
-    try {
-      await AsyncStorage.setItem(
-        `messages_${conversation.conversationId}`,
-        JSON.stringify(messages)
-      );
-      console.log("Tin nhắn đã được lưu vào AsyncStorage.");
-      console.log("Tin nhắn đã được lưu:", messages);
-    } catch (error) {
-      console.error("Lỗi khi lưu tin nhắn vào AsyncStorage:", error);
-    }
-  };
-
-  // Hàm lấy tin nhắn từ AsyncStorage
-  const loadMessagesFromStorage = async () => {
-    try {
-      const storedMessages = await AsyncStorage.getItem(
-        `messages_${conversation.conversationId}`
-      );
-      if (storedMessages) {
-        const parsed = JSON.parse(storedMessages);
-        // console.log("Tin nhắn được load từ AsyncStorage:", parsed);
-        setMessages(parsed);
-      } else {
-        console.log("Không tìm thấy tin nhắn trong AsyncStorage.");
-        setMessages([]);
-      }
-    } catch (error) {
-      console.error("Lỗi khi load tin nhắn từ AsyncStorage:", error);
-    }
-  };
   const fetchAndStoreMessages = async () => {
     try {
       setIsLoading(true); // Bật loading
 
-      const response = await api.getMessages(conversation.conversationId);
-      const { messages: fetchedMessages } = response;
+      const response = await api.getAllMessages(conversation.conversationId);
 
       // console.log("Tin nhắn được lấy từ API:", response);
 
-      await saveMessagesToStorage(fetchedMessages || []);
+      setMessages(response.messages); // Cập nhật state messages
     } catch (error) {
       console.error("Lỗi lấy tin nhắn:", error);
-      await saveMessagesToStorage([]); // Lưu mảng rỗng nếu lỗi
+      setMessages([]); // Cập nhật state messages với mảng rỗng nếu lỗi
     } finally {
-      await loadMessagesFromStorage(); // Load từ storage để hiển thị
       setIsLoading(false); // Tắt loading
     }
   };
+
   const handleSendMessage = useCallback(
     (message) => {
       if (!conversation?.conversationId) {
@@ -121,7 +87,15 @@ const MessageScreen = ({ route, navigation }) => {
         senderId: userInfo.userId,
       };
 
-      setMessages((prev) => [newMessage, ...(prev || [])]);
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        content: message.content,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: message.type || "text",
+      };
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
       api
         .sendMessage({
           conversationId: newMessage.conversationId,
@@ -165,7 +139,7 @@ const MessageScreen = ({ route, navigation }) => {
         />
       ) : (
         <View style={MessageScreenStyle.loadingContainer}>
-          <Text style={MessageScreenStyle.loadingText}>Loading...</Text>
+          <Text style={MessageScreenStyle.loadingText}>Đang tải...</Text>
         </View>
       )}
       <ChatFooter onSendMessage={handleSendMessage} />
