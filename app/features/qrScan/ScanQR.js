@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext } from "react";
 import {
   Text,
   View,
@@ -6,15 +6,15 @@ import {
   TouchableOpacity,
   Linking,
   Dimensions,
-  Alert
-} from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
-import { useNavigation } from '@react-navigation/native';
-import { api } from '../../../api/api'; // Import your API
-import { AuthContext } from '../../../auth/AuthContext';
-import { SocketContext } from '../../socket/SocketContext';
+  Alert,
+} from "react-native";
+import { CameraView, useCameraPermissions } from "expo-camera";
+import { useNavigation } from "@react-navigation/native";
+import { api } from "../../api/api";
+import { AuthContext } from "../../auth/AuthContext";
+import { SocketContext } from "../../socket/SocketContext";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 export default function ScanQR() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -32,10 +32,10 @@ export default function ScanQR() {
     }
   }, [permission]);
 
- useEffect(() => {
+  useEffect(() => {
     if (scanned && qrData && userInfo && authToken) {
       const verifyQrCode = async () => {
-        try { 
+        try {
           const qrInfo = JSON.parse(qrData);
           console.log("Scanned qrInfo.token:", qrInfo.token);
           const response = await api.verifyQrToken(qrInfo.token);
@@ -47,12 +47,12 @@ export default function ScanQR() {
               // Modified socket emit to match server expectations
               socket.emit("scanQrLogin", {
                 qrToken: qrInfo.token,
-                userId: userInfo.userId
+                userId: userInfo.userId,
               });
-              
+
               // Add socket response listener
-              socket.on('qrScanned', (data) => {
-                console.log('QR scan acknowledged by server:', data);
+              socket.on("qrScanned", (data) => {
+                console.log("QR scan acknowledged by server:", data);
               });
             }
             navigation.navigate("LoginByQR", { qrData: qrData });
@@ -87,13 +87,17 @@ export default function ScanQR() {
   };
 
   if (!permission) {
-    return <Text style={styles.text}>Đang kiểm tra quyền truy cập camera...</Text>;
+    return (
+      <Text style={styles.text}>Đang kiểm tra quyền truy cập camera...</Text>
+    );
   }
 
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.text}>Ứng dụng cần quyền truy cập camera để quét mã QR.</Text>
+        <Text style={styles.text}>
+          Ứng dụng cần quyền truy cập camera để quét mã QR.
+        </Text>
         <TouchableOpacity style={styles.button} onPress={requestPermission}>
           <Text style={styles.buttonText}>Cho phép truy cập</Text>
         </TouchableOpacity>
@@ -107,7 +111,7 @@ export default function ScanQR() {
         style={StyleSheet.absoluteFillObject}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
         barcodeScannerSettings={{
-          barcodeTypes: ['qr'],
+          barcodeTypes: ["qr"],
         }}
       >
         <View style={styles.overlay}>
@@ -128,92 +132,92 @@ const isValidUrl = (string) => {
   } catch (_) {
     return false;
   }
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "black",
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
-    borderColor: '#fff',
+    width: "100%",
+    height: "100%",
+    borderColor: "#fff",
     borderWidth: 2,
   },
   topLeftCorner: {
-    position: 'absolute',
+    position: "absolute",
     top: 300,
     left: 100,
     width: 30,
     height: 30,
     borderTopWidth: 5,
     borderLeftWidth: 5,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   topRightCorner: {
-    position: 'absolute',
+    position: "absolute",
     top: 300,
     right: 100,
     width: 30,
     height: 30,
     borderTopWidth: 5,
     borderRightWidth: 5,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   bottomLeftCorner: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 300,
     left: 100,
     width: 30,
     height: 30,
     borderBottomWidth: 5,
     borderLeftWidth: 5,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   bottomRightCorner: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 300,
     right: 100,
     width: 30,
     height: 30,
     borderBottomWidth: 5,
     borderRightWidth: 5,
-    borderColor: '#fff',
+    borderColor: "#fff",
   },
   bottomContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
-    width: '100%',
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    width: "100%",
+    backgroundColor: "rgba(0,0,0,0.7)",
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   text: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 10,
   },
   linkText: {
-    color: '#42a5f5',
+    color: "#42a5f5",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 10,
   },
   button: {
-    backgroundColor: '#42a5f5',
+    backgroundColor: "#42a5f5",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

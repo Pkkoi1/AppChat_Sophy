@@ -11,7 +11,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { api } from "../../api/api";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { AuthContext } from "@/app/auth/AuthContext"; // Import AuthContext
-import { SocketContext } from "../socket/SocketContext";
+import { SocketContext } from "../../socket/SocketContext";
 
 const LoginByQR = ({ route, navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
@@ -42,7 +42,7 @@ const LoginByQR = ({ route, navigation }) => {
           });
           console.log(
             "Socket event 'confirmQrLogin' emitted with token:",
-            response.data.token
+            qrInfo.token
           );
         } else {
           console.error("Socket is not connected!");
@@ -52,7 +52,7 @@ const LoginByQR = ({ route, navigation }) => {
 
         // Thông báo thành công và chuyển hướng
         Alert.alert("Thành công", "Bạn đã đăng nhập thành công!");
-        // navigation.navigate("Home");
+        navigation.navigate("Home");
       } else {
         Alert.alert(
           "Lỗi",

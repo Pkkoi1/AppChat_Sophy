@@ -30,26 +30,31 @@ const VerifyOTPCode = ({ route, navigation }) => {
     const newOtp = [...otp];
 
     if (value === "") {
-      // Khi nhấn Backspace, xóa ô hiện tại và di chuyển về ô trước
+      // Clear the current field
       newOtp[index] = "";
       setOtp(newOtp);
-      if (index > 0) {
-        inputRefs.current[index - 1]?.focus();
-      }
     } else if (/^\d$/.test(value)) {
-      // Chỉ chấp nhận số (0-9)
+      // Accept only numeric input
       newOtp[index] = value;
       setOtp(newOtp);
-      if (index < otp.length - 1) {
-        inputRefs.current[index + 1]?.focus();
+
+      // Find the next empty field
+      const nextEmptyIndex = newOtp.findIndex((digit, i) => digit === "" && i > index);
+      if (nextEmptyIndex !== -1) {
+        inputRefs.current[nextEmptyIndex]?.focus(); // Move to the next empty field
+      } else if (index < otp.length - 1) {
+        inputRefs.current[index + 1]?.focus(); // Move to the next field if no empty field is found
       }
     }
   };
 
   const handleKeyPress = (event, index) => {
-    if (event.nativeEvent.key === "Backspace" && otp[index] === "") {
-      if (index > 0) {
-        inputRefs.current[index - 1]?.focus();
+    if (event.nativeEvent.key === "Backspace") {
+      if (otp[index] === "" && index > 0) {
+        const newOtp = [...otp];
+        newOtp[index - 1] = ""; // Clear the previous field
+        setOtp(newOtp);
+        inputRefs.current[index - 1]?.focus(); // Move to the previous field
       }
     }
   };

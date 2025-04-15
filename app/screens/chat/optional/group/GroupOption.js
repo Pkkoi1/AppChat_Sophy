@@ -29,10 +29,10 @@ const groupsOption = [
   },
 ];
 
-const GroupOption = ({ isGroup, receiver, participants }) => {
+const GroupOption = ({ conversation, receiver }) => {
   return (
     <View style={styles.container}>
-      {isGroup
+      {conversation?.isGroup
         ? groupsOption.map((option, index) => (
             <TouchableOpacity style={styles.groupButton} key={index}>
               <View style={styles.buttonIcon}>{option.icon}</View>
@@ -47,9 +47,9 @@ const GroupOption = ({ isGroup, receiver, participants }) => {
               <View style={styles.textBorder}>
                 <Text style={styles.buttonText}>
                   {option.name === "Thêm vào nhóm"
-                    ? `Thêm ${receiver?.name} vào nhóm`
+                    ? `Thêm ${receiver?.fullname} vào nhóm`
                     : option.name === "Tạo nhóm với "
-                    ? `${option.name}${receiver?.name}`
+                    ? `${option.name}${receiver?.fullname}`
                     : option.name}
                 </Text>
               </View>

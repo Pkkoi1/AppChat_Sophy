@@ -101,7 +101,7 @@ const Setting = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <OptionHeader title={"Cài đặt"} previousScreen="Home" />
+      <OptionHeader title={"Cài đặt"} />
 
       <FlatList
         data={settings}

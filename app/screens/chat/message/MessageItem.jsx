@@ -3,18 +3,74 @@ import { View, Text, Image } from "react-native";
 import moment from "moment";
 import MessageItemStyle from "./MessageItemStyle";
 import HighlightText from "../../../components/highlightText/HighlightText"; // Import HighlightText
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import AvatarUser from "@/app/components/profile/AvatarUser";
 
 const MessageItem = ({
   message,
   isSender,
-  avatar,
   searchQuery,
   isHighlighted,
-  receiverId,
+  receiver,
 }) => {
   const formattedTimestamp = moment(message.createdAt).format(
     "DD/MM/YYYY HH:mm"
   );
+
+  const isGroup = !receiver; // Check if receiver is null, indicating a group
+
+  const renderAvatar = async () => {
+    if (isGroup) {
+      try {
+        const response = await fetchUserInfo(message.senderId); // Fetch sender info using senderId
+        // console.log("Thông tin người gửi:", response);
+        const sender = response;
+        return sender?.urlavatar ? (
+          <Image
+            source={{ uri: sender.urlavatar }}
+            style={MessageItemStyle.avatar}
+          />
+        ) : (
+          <AvatarUser
+            fullName={sender?.fullname || "User"}
+            width={32}
+            height={32}
+            avtText={12}
+            shadow={false}
+            bordered={false}
+          />
+        );
+      } catch (error) {
+        console.error("Lỗi khi lấy thông tin người gửi:", error);
+        return (
+          <AvatarUser
+            fullName="User"
+            width={32}
+            height={32}
+            avtText={12}
+            shadow={false}
+            bordered={false}
+          />
+        );
+      }
+    } else {
+      return receiver?.urlavatar ? (
+        <Image
+          source={{ uri: receiver.urlavatar }}
+          style={MessageItemStyle.avatar}
+        />
+      ) : (
+        <AvatarUser
+          fullName={receiver?.fullname || "User"}
+          width={50}
+          height={50}
+          avtText={20}
+          shadow={false}
+          bordered={false}
+        />
+      );
+    }
+  };
 
   return (
     <View
@@ -27,26 +83,16 @@ const MessageItem = ({
       ]}
     >
       {!isSender && (
-        <Image
-          source={{
-            uri:
-              // avatar ||
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRbHfn_ap7TA8_f2b-QWEdQWRTtlI8U5strBQ&s", // Đường dẫn hình ảnh mặc định
-          }}
-          style={MessageItemStyle.avatar}
-        />
+        <View style={MessageItemStyle.avatarContainer}>{renderAvatar()}</View>
       )}
-
       <View
         style={[
           MessageItemStyle.messageBox,
           isSender ? MessageItemStyle.sender : MessageItemStyle.receiver,
-          !isSender && avatar ? MessageItemStyle.receiverWithAvatar : {}, // Điều chỉnh nếu có avatar
+          !isSender ? MessageItemStyle.receiverWithAvatar : {}, // Adjust if there are avatars
         ]}
       >
         <Text style={MessageItemStyle.timestamp}>{formattedTimestamp}</Text>
-        {/* <Text style={MessageItemStyle.timestamp}>{message.senderId}</Text> */}
-
         <HighlightText
           text={message.content}
           highlight={searchQuery}

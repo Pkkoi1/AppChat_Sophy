@@ -3,6 +3,7 @@ import io from "socket.io-client";
 import { DATABASE_API, MY_IP } from "@env";
 
 // Use your actual backend URL
+// const SOCKET_SERVER_URL = `http://192.168.1.239:3000` || DATABASE_API; // Replace with your local IP or production URL
 const SOCKET_SERVER_URL = `http://${MY_IP}:3000` || DATABASE_API; // Replace with your local IP or production URL
 
 export const SocketContext = createContext(null);

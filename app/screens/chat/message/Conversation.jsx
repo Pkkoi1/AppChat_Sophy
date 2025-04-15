@@ -12,7 +12,7 @@ const Conversation = ({
   highlightedMessageId,
   searchQuery = "",
   flatListRef,
-  receiverId,
+  receiver,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -48,6 +48,7 @@ const Conversation = ({
         ref={flatListRef}
         data={conversation.messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
+        onEndReachedThreshold={0.1}
         renderItem={({ item, index }) => {
           const prevMessage =
             index < conversation.messages.length - 1
@@ -55,11 +56,13 @@ const Conversation = ({
               : null;
 
           const shouldShowTimestamp =
-            !prevMessage ||
-            moment(item.createdAt).diff(
-              moment(prevMessage.createdAt),
-              "minutes"
-            ) >= 20;
+            !prevMessage || // Show timestamp if there is no previous message
+            moment(item.createdAt)
+              .startOf("minute")
+              .diff(
+                moment(prevMessage.createdAt).startOf("minute"),
+                "minutes"
+              ) >= 5; // Show timestamp if the time difference is 5 minutes or more
 
           return (
             <View>
@@ -73,7 +76,7 @@ const Conversation = ({
               <Pressable onLongPress={() => handleLongPress(item)}>
                 <MessageItem
                   message={item}
-                  receiverId={receiverId}
+                  receiver={receiver}
                   isSender={item.senderId === senderId}
                   avatar=""
                   isHighlighted={item.messageDetailId === highlightedMessageId}
@@ -88,6 +91,8 @@ const Conversation = ({
           );
         }}
         inverted={true}
+        contentContainerStyle={{ paddingBottom: 60 }} // Add padding to avoid overlapping with footer
+        // keyboardShouldPersistTaps="always"
       />
       <MessagePopup
         popupVisible={popupVisible}

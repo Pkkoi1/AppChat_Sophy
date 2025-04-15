@@ -56,11 +56,12 @@ const UpdatePassword = ({ navigation }) => {
 
       if (response.message === "Password changed successfully") {
         try {
-          await logout();
-          await login({
-            phone: userInfo.phone,
-            password: newPassword,
-          });
+          // await logout();
+          // await login({
+          //   phone: userInfo.phone,
+          //   password: newPassword,
+          // });
+          
 
           Alert.alert("Thành công", "Mật khẩu đã được cập nhật thành công!");
           navigation.navigate("AccountAndSecurity");
@@ -74,21 +75,24 @@ const UpdatePassword = ({ navigation }) => {
       }
     } catch (error) {
       // Cập nhật để trả về thông báo lỗi từ backend
-      if (error.message === 'Invalid password') {
-        setCurrentPasswordError('Mật khẩu hiện tại không đúng.');
+      if (error.message === "Invalid password") {
+        setCurrentPasswordError("Mật khẩu hiện tại không đúng.");
       } else if (error.response?.status === 400) {
         // Lỗi từ backend do mật khẩu mới không đủ mạnh
-        setErrorMessage(error.response.data.message || "Mật khẩu mới không hợp lệ.");
-      }
-       else if (error.response?.status === 401) {
+        setErrorMessage(
+          error.response.data.message || "Mật khẩu mới không hợp lệ."
+        );
+      } else if (error.response?.status === 401) {
         // Lỗi từ backend do mật khẩu hiện tại không đúng
-        setCurrentPasswordError(error.response.data.message || "Mật khẩu hiện tại không đúng.");
-      }
-      else if (error.response?.status === 404) {
+        setCurrentPasswordError(
+          error.response.data.message || "Mật khẩu hiện tại không đúng."
+        );
+      } else if (error.response?.status === 404) {
         // Lỗi từ backend do không tìm thấy user
-        setErrorMessage(error.response.data.message || "Không tìm thấy người dùng.");
-      }
-       else {
+        setErrorMessage(
+          error.response.data.message || "Không tìm thấy người dùng."
+        );
+      } else {
         setErrorMessage(error.message);
       }
     } finally {
@@ -98,10 +102,7 @@ const UpdatePassword = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <OptionHeader
-        title="Thay đổi mật khẩu"
-        previousScreen="AccountAndSecurity"
-      />
+      <OptionHeader title="Thay đổi mật khẩu" />
       <Text style={styles.subtitle}>
         Mật khẩu phải gồm chữ và số, không được chứa năm sinh, username và tên
         Zalo của bạn.
