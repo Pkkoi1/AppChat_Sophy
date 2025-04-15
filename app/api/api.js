@@ -80,31 +80,30 @@ http.interceptors.response.use(
 
 const refreshacc = async () => {
   try {
-    const refreshToken = await AsyncStorage.getItem("refreshToken");
-    if (!refreshToken) {
+    const callRefreshToken = await AsyncStorage.getItem("refreshToken");
+    if (!callRefreshToken) {
       console.log("No refreshToken found in AsyncStorage.");
       throw new Error("Refresh token not found.");
     }
 
-    console.log("Refreshing token with:", refreshToken);
+    console.log("Refreshing token with:", callRefreshToken);
 
     const response = await http.patch("/auth/refresh", undefined, {
-      headers: { Authorization: `Bearer ${refreshToken}` },
+      headers: { Authorization: `Bearer ${callRefreshToken}` },
     });
 
     console.log("Response from /auth/refresh:", response.data);
 
-    const { accessToken, refreshToken: newRefreshToken } = response.data.token;
+    const { accessToken, refreshToken } = response.data.token;
     if (!accessToken) {
       console.log("No accessToken returned from API.");
       throw new Error("No accessToken returned from API.");
     }
-
     await AsyncStorage.setItem("accessToken", accessToken);
     console.log("acc saved:", accessToken);
 
-    await AsyncStorage.setItem("refreshToken", newRefreshToken);
-    console.log("refreshToken saved:", newRefreshToken);
+    await AsyncStorage.setItem("refreshToken", refreshToken);
+    console.log("refreshToken saved:", refreshToken);
 
     if (response.data.user) {
       await AsyncStorage.setItem(
@@ -173,9 +172,11 @@ export const api = {
   },
   refreshToken: async () => {
     try {
-      const refreshToken = await AsyncStorage.getItem("refreshToken");
-      if (!refreshToken) {
-        throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
+      const callRefreshToken = await AsyncStorage.getItem("refreshToken");
+      if (!callRefreshToken) {
+        throw new Error(
+          "Không tìm thấy callRefreshToken. Yêu cầu đăng nhập lại."
+        );
       }
 
       const response = await http.patch(
@@ -183,20 +184,21 @@ export const api = {
         undefined, // Không gửi body
         {
           headers: {
-            Authorization: `Bearer ${refreshToken}`,
+            Authorization: `Bearer ${callRefreshToken}`,
           },
         }
       );
 
-      const { accessToken, refreshToken: newRefreshToken } =
-        response.data.token;
+      const { accessToken, refreshToken } = response.data.token;
+      console.log("Phản hồi từ API refreshToken:", response.data);
+
       if (!accessToken) {
         throw new Error("API không trả về accessToken mới.");
       }
 
       await AsyncStorage.setItem("accessToken", accessToken);
-      if (newRefreshToken) {
-        await AsyncStorage.setItem("refreshToken", newRefreshToken);
+      if (refreshToken) {
+        await AsyncStorage.setItem("refreshToken", refreshToken);
       }
 
       // Cập nhật userInfo nếu có
@@ -228,7 +230,7 @@ export const api = {
     conversationId,
     lastMessageTime = null,
     direction = "before",
-    limit = 100000
+    limit = 100
   ) => {
     try {
       const query = { conversationId };
@@ -550,6 +552,18 @@ export const api = {
       }
 
       throw new Error("Lỗi không xác định khi gửi tin nhắn.");
+    }
+  },
+  getAllMessages: async (conversationId) => {
+    try {
+      const response = await http.get(`/messages/all/${conversationId}`);
+      return { messages: response.data }; // trả về giống như BE: array
+    } catch (error) {
+      console.error(
+        "Lỗi khi gọi API getMessages:",
+        error.response?.data || error.message
+      );
+      throw error;
     }
   },
 };

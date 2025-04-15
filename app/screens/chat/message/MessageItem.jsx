@@ -62,9 +62,9 @@ const MessageItem = ({
       ) : (
         <AvatarUser
           fullName={receiver?.fullname || "User"}
-          width={50}
-          height={50}
-          avtText={20}
+          width={32}
+          height={32}
+          avtText={12}
           shadow={false}
           bordered={false}
         />

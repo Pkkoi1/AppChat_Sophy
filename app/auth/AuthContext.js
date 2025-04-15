@@ -37,17 +37,31 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const refreshAccessToken = async () => {
+    console.log("refreshAccessToken được gọi");
+    console.log("Giá trị refreshToken trong state:", refreshToken);
+    console.log("Giá trị userInfo trong state:", userInfo);
+    console.log("Giá trị accessToken trong state:", accessToken);
+
     try {
-      if (!refreshToken) {
+      // Lấy refreshToken từ AsyncStorage nếu không có trong state
+      const storedRefreshToken =
+        refreshToken || (await AsyncStorage.getItem("refreshToken"));
+
+      if (!storedRefreshToken) {
         console.error("No refresh token available");
         return;
       }
 
-      const response = await api.refreshToken({ refreshToken });
-      const { accessToken: newAccessToken } = response.data;
+      const response = await api.refreshToken({
+        refreshToken: storedRefreshToken,
+      });
+      const { accessToken: newAccessToken } = response.token;
+      const { refreshToken: newRefreshToken } = response.token;
+      console.log("Phan hoi tu refresh token ở context:", response);
 
       setaccessToken(newAccessToken);
       await AsyncStorage.setItem("accessToken", newAccessToken);
+      await AsyncStorage.setItem("refreshToken", newRefreshToken);
 
       // Lấy thông tin người dùng sau khi refresh token
       if (userInfo?.userId) {
@@ -128,7 +142,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         updateUserInfo,
         getUserInfoById,
-        refreshAccessToken, // Expose the refreshAccessToken function
+        // refreshAccessToken, // Expose the refreshAccessToken function
       }}
     >
       {children}
