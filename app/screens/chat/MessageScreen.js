@@ -25,6 +25,8 @@ import MessageScreenStyle from "./MessageScreenStyle";
 import Fuse from "fuse.js";
 import { api } from "@/app/api/api";
 import { AuthContext } from "@/app/auth/AuthContext";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 const MessageScreen = ({ route, navigation }) => {
   const { userInfo } = useContext(AuthContext);
@@ -39,9 +41,7 @@ const MessageScreen = ({ route, navigation }) => {
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const flatListRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
-
-  const [oldCursor, setOldCursor] = useState(null);
-  const [newCursor, setNewCursor] = useState(null);
+  const [imageUri, setImageUri] = useState(null); // Trạng thái lưu trữ URI hình ảnh đã chọn
 
   const calculateLastActive = (lastActive) => {
     const now = new Date();
@@ -79,14 +79,6 @@ const MessageScreen = ({ route, navigation }) => {
         return;
       }
 
-      const newMessage = {
-        conversationId: conversation.conversationId,
-        content: message.content,
-        messageDetailId: `msg_${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        senderId: userInfo.userId,
-      };
-
       const pseudoMessage = {
         conversationId: conversation.conversationId,
         content: message.content,
@@ -96,15 +88,126 @@ const MessageScreen = ({ route, navigation }) => {
         type: message.type || "text",
       };
       setMessages((prev) => [pseudoMessage, ...(prev || [])]);
-      api
-        .sendMessage({
-          conversationId: newMessage.conversationId,
-          content: newMessage.content,
-        })
-        .catch((error) => {
-          console.error("Lỗi gửi tin nhắn:", error);
-          alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
-        });
+
+      if (message.type === "text") {
+        api
+          .sendMessage({
+            conversationId: pseudoMessage.conversationId,
+            content: pseudoMessage.content,
+          })
+          .catch((error) => {
+            console.error("Lỗi gửi tin nhắn:", error);
+            alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
+          });
+      }
+    },
+    [conversation, userInfo.userId]
+  );
+
+  const handleSendImage = useCallback(
+    async (message) => {
+      if (!conversation?.conversationId) {
+        alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
+        console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+
+      console.log("Bắt đầu gửi ảnh...");
+
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: message.type || "image",
+        attachment: { url: message.attachment }, // Corrected syntax
+      };
+
+      console.log("Tạo pseudoMessage:", pseudoMessage);
+
+      setImageUri(message.attachment); // Set the image URI to state
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+
+      if (!message.attachment) {
+        console.error("Lỗi: Không có ảnh để gửi.");
+        alert("Không có ảnh để gửi.");
+        return;
+      }
+
+      try {
+        console.log("Đọc file ảnh từ URI:", message.attachment);
+
+        const base64Image = await FileSystem.readAsStringAsync(
+          message.attachment,
+          {
+            encoding: FileSystem.EncodingType.Base64,
+          }
+        );
+
+        const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
+        console.log("Chuyển đổi ảnh sang Base64 thành công.");
+
+        if (message.type === "image") {
+          console.log("Bắt đầu gửi ảnh qua API...");
+          await api.sendImageMessage({
+            conversationId: pseudoMessage.conversationId,
+            imageBase64: imageBase64,
+          });
+          console.log("Gửi ảnh thành công!");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gửi ảnh:", error);
+        alert("Đã xảy ra lỗi khi gửi ảnh. Vui lòng thử lại.");
+      }
+    },
+    [conversation, userInfo.userId]
+  );
+
+  const handleSendFile = useCallback(
+    async (message) => {
+      if (!conversation?.conversationId) {
+        alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
+        console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: message.type || "file",
+        attachment: { url: message.attachment }, // Corrected syntax
+      };
+
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+
+      if (message.type === "file") {
+        try {
+          console.log("Đọc file từ URI:", message.attachment);
+
+          const base64File = await FileSystem.readAsStringAsync(
+            message.attachment,
+            {
+              encoding: FileSystem.EncodingType.Base64,
+            }
+          );
+          const fileBase64 = `data:${message.mimeType};base64,${base64File}`;
+
+          console.log("Chuyển đổi file sang Base64 thành công.");
+
+          await api.sendFileMessage({
+            conversationId: pseudoMessage.conversationId,
+            fileBase64: fileBase64,
+            fileName: message.fileName,
+            fileType: message.mimeType,
+          });
+          console.log("Gửi file thành công!");
+        } catch (error) {
+          console.error("Lỗi khi gửi file:", error);
+          alert("Đã xảy ra lỗi khi gửi file. Vui lòng thử lại.");
+        }
+      }
     },
     [conversation, userInfo.userId]
   );
@@ -142,7 +245,11 @@ const MessageScreen = ({ route, navigation }) => {
           <Text style={MessageScreenStyle.loadingText}>Đang tải...</Text>
         </View>
       )}
-      <ChatFooter onSendMessage={handleSendMessage} />
+      <ChatFooter
+        onSendMessage={handleSendMessage}
+        onSendImage={handleSendImage}
+        onSendFile={handleSendFile}
+      />
     </View>
   );
 };

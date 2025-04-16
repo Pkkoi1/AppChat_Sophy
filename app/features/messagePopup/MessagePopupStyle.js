@@ -12,6 +12,7 @@ const MessagePopupStyle = StyleSheet.create({
   popupContainer: {
     width: SCREEN_WIDTH * 0.8,
     maxHeight: SCREEN_HEIGHT * 0.7,
+    justifyContent: "center",
   },
   messageSection: {
     backgroundColor: "white",
@@ -76,7 +77,7 @@ const MessagePopupStyle = StyleSheet.create({
     justifyContent: "flex-start",
   },
   columnWrapper: {
-    justifyContent: "flex-start",
+    justifyContent: "center",
     alignItems: "flex-start",
   },
   gridItem: {

@@ -33,6 +33,7 @@ MERGED from [:expo-constants] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modu
 MERGED from [:expo-dev-client] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-client\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-dev-launcher] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-32:12
 MERGED from [:expo-dev-menu] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-24:12
+MERGED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-20:12
 MERGED from [:expo-file-system] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-33:12
 MERGED from [:expo-font] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-font\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-haptics] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-haptics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-9:12
@@ -295,6 +296,8 @@ queries
 ADDED from D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\src\main\AndroidManifest.xml:10:3-16:13
 MERGED from [:expo-dev-launcher] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-9:15
 MERGED from [:expo-dev-launcher] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-9:15
+MERGED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-18:15
+MERGED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-18:15
 MERGED from [:expo-file-system] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:5-18:15
 MERGED from [:expo-file-system] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:5-18:15
 MERGED from [:expo-image-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:5-25:15
@@ -574,6 +577,8 @@ MERGED from [:expo-dev-launcher] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_m
 MERGED from [:expo-dev-launcher] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-dev-menu] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-dev-menu] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-file-system] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:6:5-44
 MERGED from [:expo-file-system] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:6:5-44
 MERGED from [:expo-font] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-font\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
@@ -1068,6 +1073,16 @@ ADDED from [:expo-dev-menu] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_module
 		ADDED from [:expo-dev-menu] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-64
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:expo-dev-menu
 ADDED from [:expo-dev-menu] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-20:29
+intent#action:name:android.intent.action.OPEN_DOCUMENT+category:name:android.intent.category.DEFAULT+category:name:android.intent.category.OPENABLE+data:mimeType:*/*
+ADDED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:9-17:18
+action#android.intent.action.OPEN_DOCUMENT
+ADDED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-74
+	android:name
+		ADDED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:21-71
+category#android.intent.category.OPENABLE
+ADDED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-73
+	android:name
+		ADDED from [:expo-document-picker] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:23-70
 intent#action:name:android.intent.action.OPEN_DOCUMENT_TREE
 ADDED from [:expo-file-system] D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-17:18
 action#android.intent.action.OPEN_DOCUMENT_TREE
@@ -1445,10 +1460,6 @@ action#android.intent.action.GET_CONTENT
 ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:11:13-72
 	android:name
 		ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:11:21-69
-category#android.intent.category.OPENABLE
-ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:13:13-73
-	android:name
-		ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:13:23-70
 provider#com.canhub.cropper.CropFileProvider
 ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:23:9-31:20
 	android:grantUriPermissions

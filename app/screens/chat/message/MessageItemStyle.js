@@ -15,7 +15,7 @@ const MessageItemStyle = StyleSheet.create({
   messageBox: {
     padding: 10,
     borderRadius: 10,
-    maxWidth: "80%",
+    maxWidth: "85%", // Increase maxWidth to ensure space for the sender's name
     marginVertical: 2,
     marginHorizontal: 10,
     position: "relative", // Để avatar có thể nằm trên
@@ -61,7 +61,7 @@ const MessageItemStyle = StyleSheet.create({
     fontSize: 12,
     fontWeight: "450",
     color: "#555",
-    marginBottom: 4,
+    width: "100%", // Ensure the sender's name does not overflow
   },
   image: {
     width: "100%", // Make the image width relative to the chat box
@@ -80,6 +80,11 @@ const MessageItemStyle = StyleSheet.create({
   fileName: {
     fontSize: 14,
     color: "#007bff",
+    marginLeft: 10, // Add spacing between icon and text
+    maxWidth: "80%", // Limit the width to prevent overflow
+    overflow: "hidden", // Hide overflowing text
+    textOverflow: "ellipsis", // Add ellipsis for long text
+    whiteSpace: "nowrap", // Prevent text wrapping
   },
   video: {
     width: 200,
@@ -111,6 +116,27 @@ const MessageItemStyle = StyleSheet.create({
     marginTop: 5, // Add spacing above the status text
     alignSelf: "flex-end", // Align to the right for sender messages
     marginRight: 10, // Add spacing from the right edge
+  },
+  downloadButton: {
+    marginTop: 5,
+    padding: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  downloadButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  recalledMessage: {
+    fontSize: 16,
+    fontStyle: "italic",
+    color: "#999",
+    textAlign: "center",
+    width: "100%",
+    paddingRight: 15,
+    justifyContent: "center",
   },
 });
 
