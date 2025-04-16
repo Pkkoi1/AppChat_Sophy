@@ -34,6 +34,7 @@ MERGED from [:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\e
 MERGED from [:expo-dev-client] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-client\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-32:12
 MERGED from [:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-24:12
+MERGED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-20:12
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-33:12
 MERGED from [:expo-font] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-font\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-haptics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-haptics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-9:12
@@ -306,6 +307,8 @@ MERGED from [:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\e
 MERGED from [:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-35:15
 MERGED from [:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-9:15
 MERGED from [:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-9:15
+MERGED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-18:15
+MERGED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-18:15
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:5-18:15
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:5-18:15
 MERGED from [:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:5-25:15
@@ -587,6 +590,8 @@ MERGED from [:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modul
 MERGED from [:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:6:5-44
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:6:5-44
 MERGED from [:expo-font] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-font\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
@@ -1103,6 +1108,16 @@ ADDED from [:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\ex
 		ADDED from [:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-64
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:expo-dev-menu
 ADDED from [:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-20:29
+intent#action:name:android.intent.action.OPEN_DOCUMENT+category:name:android.intent.category.DEFAULT+category:name:android.intent.category.OPENABLE+data:mimeType:*/*
+ADDED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:9-17:18
+action#android.intent.action.OPEN_DOCUMENT
+ADDED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-74
+	android:name
+		ADDED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:21-71
+category#android.intent.category.OPENABLE
+ADDED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-73
+	android:name
+		ADDED from [:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:23-70
 intent#action:name:android.intent.action.OPEN_DOCUMENT_TREE
 ADDED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-17:18
 action#android.intent.action.OPEN_DOCUMENT_TREE
@@ -1476,10 +1491,6 @@ action#android.intent.action.GET_CONTENT
 ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:11:13-72
 	android:name
 		ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:11:21-69
-category#android.intent.category.OPENABLE
-ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:13:13-73
-	android:name
-		ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:13:23-70
 provider#com.canhub.cropper.CropFileProvider
 ADDED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:23:9-31:20
 	android:grantUriPermissions
