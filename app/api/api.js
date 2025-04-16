@@ -4,7 +4,7 @@ import { DATABASE_API, MY_IP } from "@env";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const API = `http://${MY_IP}:3000/api` || DATABASE_API;
-// const API = `http://192.168.1.240:3000/api` || DATABASE_API;
+// const API = `http://192.168.1.17:3000/api`;
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -602,6 +602,7 @@ export const api = {
       throw error;
     }
   },
+  //Thêm mới vào đây
   getFriends: async () => {
     try {
       const response = await http.get("/users/friends"); // Assuming the endpoint is /users/friends based on backend router
@@ -617,12 +618,9 @@ export const api = {
   // Gửi lời mời kết bạn
   sendFriendRequest: async (userId, message = "") => {
     try {
-      const response = await http.post(
-        `/users/friend-requests/send-request/${userId}`,
-        {
-          message,
-        }
-      );
+      const response = await http.post(`/users/friend-requests/send-request/${userId}`, {
+        message
+      });
       return response.data;
     } catch (error) {
       console.error(
@@ -632,7 +630,7 @@ export const api = {
       throw error;
     }
   },
-
+  
   // Lấy danh sách lời mời kết bạn đã gửi
   getFriendRequestsSent: async () => {
     try {
@@ -646,7 +644,7 @@ export const api = {
       throw error;
     }
   },
-
+  
   // Lấy danh sách lời mời kết bạn đã nhận
   getFriendRequestsReceived: async () => {
     try {
@@ -660,13 +658,11 @@ export const api = {
       throw error;
     }
   },
-
+  
   // Thu hồi lời mời kết bạn
   retrieveFriendRequest: async (requestId) => {
     try {
-      const response = await http.delete(
-        `/users/friend-requests/retrieve-request/${requestId}`
-      );
+      const response = await http.delete(`/users/friend-requests/retrieve-request/${requestId}`);
       return response.data;
     } catch (error) {
       console.error(
@@ -676,13 +672,11 @@ export const api = {
       throw error;
     }
   },
-
+  
   // Chấp nhận lời mời kết bạn
   acceptFriendRequest: async (requestId) => {
     try {
-      const response = await http.put(
-        `/users/friend-requests/accept-request/${requestId}`
-      );
+      const response = await http.put(`/users/friend-requests/accept-request/${requestId}`);
       return response.data;
     } catch (error) {
       console.error(
@@ -692,13 +686,11 @@ export const api = {
       throw error;
     }
   },
-
+  
   // Từ chối lời mời kết bạn
   rejectFriendRequest: async (requestId) => {
     try {
-      const response = await http.put(
-        `/users/friend-requests/reject-request/${requestId}`
-      );
+      const response = await http.put(`/users/friend-requests/reject-request/${requestId}`);
       return response.data;
     } catch (error) {
       console.error(
@@ -708,4 +700,6 @@ export const api = {
       throw error;
     }
   },
+  
+
 };
