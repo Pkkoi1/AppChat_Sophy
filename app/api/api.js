@@ -3,8 +3,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const API = `http://${MY_IP}:3000/api` || DATABASE_API;
-// const API = `http://192.168.1.17:3000/api`;
+// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+const API = `http://192.168.1.17:3000/api`;
 
 let isRefreshing = false;
 let failedQueue = [];

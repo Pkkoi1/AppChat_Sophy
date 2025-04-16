@@ -12,6 +12,7 @@ import HeadView from "../../../header/Header";
 import receivedRequests from "../../../../../assets/objects/receivedRequests.json";
 import sentRequests from "../../../../../assets/objects/sentRequests.json";
 import Color from "../../../../components/colors/Color";
+import { api } from "../../../../api/api";
 
 const groupByTime = (data) => {
   const today = new Date("2025-03-15T00:00:00Z");
