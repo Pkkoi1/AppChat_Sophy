@@ -6,7 +6,10 @@ import {
   StyleSheet,
   Text,
   Dimensions,
+  Alert,
 } from "react-native";
+import CameraRoll from "@react-native-camera-roll/camera-roll"; // Import CameraRoll for saving images
+import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions"; // Import permissions API
 import AvatarUser from "@/app/components/profile/AvatarUser"; // Import AvatarUser for fallback
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
@@ -29,6 +32,39 @@ const FullScreenImageViewer = ({ route, navigation }) => {
     }
 
     setImageSize({ width: adjustedWidth, height: adjustedHeight });
+  };
+
+  const saveImageToDevice = async () => {
+    if (!imageUrl) {
+      Alert.alert("Lỗi", "Không có hình ảnh để lưu.");
+      return;
+    }
+
+    try {
+      const permission =
+        Platform.OS === "android"
+          ? PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE
+          : PERMISSIONS.IOS.PHOTO_LIBRARY;
+
+      const result = await check(permission);
+
+      if (result === RESULTS.DENIED) {
+        const requestResult = await request(permission);
+        if (requestResult !== RESULTS.GRANTED) {
+          Alert.alert("Quyền bị từ chối", "Không thể lưu hình ảnh.");
+          return;
+        }
+      } else if (result !== RESULTS.GRANTED) {
+        Alert.alert("Quyền bị từ chối", "Không thể lưu hình ảnh.");
+        return;
+      }
+
+      await CameraRoll.save(imageUrl, { type: "photo" });
+      Alert.alert("Thành công", "Hình ảnh đã được lưu vào thư viện.");
+    } catch (error) {
+      console.error("Error saving image:", error);
+      Alert.alert("Lỗi", "Không thể lưu hình ảnh.");
+    }
   };
 
   return (
@@ -61,6 +97,11 @@ const FullScreenImageViewer = ({ route, navigation }) => {
       >
         <Text style={styles.closeText}>Đóng</Text>
       </TouchableOpacity>
+      {imageUrl && (
+        <TouchableOpacity style={styles.saveButton} onPress={saveImageToDevice}>
+          <Text style={styles.saveText}>Lưu</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -84,6 +125,18 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   closeText: {
+    color: "black",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  saveButton: {
+    position: "absolute",
+    bottom: 40,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    padding: 10,
+    borderRadius: 20,
+  },
+  saveText: {
     color: "black",
     fontSize: 16,
     fontWeight: "bold",

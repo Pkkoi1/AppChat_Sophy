@@ -62,6 +62,10 @@ const Conversation = ({
                       ? searchQuery
                       : ""
                   }
+                  isFirstMessageFromSender={
+                    index === 0 ||
+                    conversation.messages[index - 1].senderId !== item.senderId
+                  }
                 />
               </Pressable>
             </View>

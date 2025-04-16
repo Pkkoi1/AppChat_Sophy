@@ -70,6 +70,7 @@ const MessageItem = ({
   searchQuery,
   isHighlighted,
   receiver,
+  isFirstMessageFromSender, // Thêm prop để xác định tin nhắn đầu tiên của người gửi
 }) => {
   const formattedTimestamp = moment(message.createdAt).format("HH:mm");
   const [senders, setSenders] = useState([]);
@@ -248,6 +249,37 @@ const MessageItem = ({
     }
   };
 
+  const renderMessageStatus = () => {
+    if (isSender && isFirstMessageFromSender) {
+      // Chỉ hiển thị trạng thái cho tin nhắn đầu tiên của người gửi
+      let statusText = "";
+      const isReceived =
+        receiver &&
+        message.readBy.some((user) => user.userId === receiver.userId);
+
+      if (isReceived) {
+        statusText = "Đã nhận";
+      } else {
+        switch (message.sendStatus) {
+          case "sending":
+            statusText = "Đang gửi...";
+            break;
+          case "sent":
+            statusText = "Đã gửi";
+            break;
+          case "seen":
+            statusText = "Đã xem";
+            break;
+          default:
+            statusText = "";
+        }
+      }
+
+      return <Text style={MessageItemStyle.statusText}>{statusText}</Text>;
+    }
+    return null;
+  };
+
   return (
     <View
       style={[
@@ -261,15 +293,18 @@ const MessageItem = ({
       {!isSender && (
         <View style={MessageItemStyle.avatarContainer}>{renderAvatar()}</View>
       )}
-      <View
-        style={[
-          MessageItemStyle.messageBox,
-          isSender ? MessageItemStyle.sender : MessageItemStyle.receiver,
-        ]}
-      >
-        {renderSenderName()}
-        {renderMessageContent()}
-        <Text style={MessageItemStyle.timestamp}>{formattedTimestamp}</Text>
+      <View>
+        <View
+          style={[
+            MessageItemStyle.messageBox,
+            isSender ? MessageItemStyle.sender : MessageItemStyle.receiver,
+          ]}
+        >
+          {renderSenderName()}
+          {renderMessageContent()}
+          <Text style={MessageItemStyle.timestamp}>{formattedTimestamp}</Text>
+        </View>
+        <View style={MessageItemStyle.newText}>{renderMessageStatus()}</View>
       </View>
     </View>
   );

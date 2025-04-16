@@ -68,6 +68,7 @@
     "react-native-action-sheet": "^2.2.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-bouncy-checkbox": "^4.1.2",
+    "react-native-camera-roll": "^0.0.29",
     "react-native-checkbox": "^2.0.0",
     "react-native-country-picker-modal": "^2.0.0",
     "react-native-dotenv": "^3.4.11",

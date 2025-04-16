@@ -96,6 +96,21 @@ const MessageItemStyle = StyleSheet.create({
     color: "#999",
     fontStyle: "italic",
   },
+  statusContainer: {
+    marginTop: 4,
+    alignItems: "flex-end",
+  },
+  statusText: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
+    alignItems: "flex-end",
+  },
+  newText: {
+    marginTop: 5, // Add spacing above the status text
+    alignSelf: "flex-end", // Align to the right for sender messages
+    marginRight: 10, // Add spacing from the right edge
+  },
 });
 
 export default MessageItemStyle;
