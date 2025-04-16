@@ -15,7 +15,7 @@ const MessageItemStyle = StyleSheet.create({
   messageBox: {
     padding: 10,
     borderRadius: 10,
-    maxWidth: "80%",
+    maxWidth: "85%", // Increase maxWidth to ensure space for the sender's name
     marginVertical: 2,
     marginHorizontal: 10,
     position: "relative", // Để avatar có thể nằm trên
@@ -35,7 +35,8 @@ const MessageItemStyle = StyleSheet.create({
   timestamp: {
     fontSize: 12,
     color: "#999",
-    marginBottom: 5,
+    marginTop: 5, // Add spacing above the timestamp
+    alignSelf: "flex-start", // Align timestamp to the left
   },
   content: {
     fontSize: 16,
@@ -55,6 +56,87 @@ const MessageItemStyle = StyleSheet.create({
     backgroundColor: "#d1e7ff", // Màu nền xanh nhạt
     borderRadius: 8, // Bo góc
     padding: 5, // Thêm khoảng cách bên trong
+  },
+  senderName: {
+    fontSize: 12,
+    fontWeight: "450",
+    color: "#555",
+    width: "100%", // Ensure the sender's name does not overflow
+  },
+  image: {
+    width: "100%", // Make the image width relative to the chat box
+    height: undefined, // Allow proportional scaling
+    aspectRatio: 4 / 3, // Maintain a 4:3 aspect ratio
+    borderRadius: 8,
+    marginVertical: 10,
+    alignSelf: "flex-start", // Align the image within the bubble
+  },
+  fileContainer: {
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  fileName: {
+    fontSize: 14,
+    color: "#007bff",
+    marginLeft: 10, // Add spacing between icon and text
+    maxWidth: "80%", // Limit the width to prevent overflow
+    overflow: "hidden", // Hide overflowing text
+    textOverflow: "ellipsis", // Add ellipsis for long text
+    whiteSpace: "nowrap", // Prevent text wrapping
+  },
+  video: {
+    width: 200,
+    height: 150,
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  videoLabel: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 5,
+  },
+  unsupported: {
+    fontSize: 14,
+    color: "#999",
+    fontStyle: "italic",
+  },
+  statusContainer: {
+    marginTop: 4,
+    alignItems: "flex-end",
+  },
+  statusText: {
+    fontSize: 12,
+    color: "#888",
+    marginTop: 4,
+    alignItems: "flex-end",
+  },
+  newText: {
+    marginTop: 5, // Add spacing above the status text
+    alignSelf: "flex-end", // Align to the right for sender messages
+    marginRight: 10, // Add spacing from the right edge
+  },
+  downloadButton: {
+    marginTop: 5,
+    padding: 10,
+    backgroundColor: "#007bff",
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  downloadButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  recalledMessage: {
+    fontSize: 16,
+    fontStyle: "italic",
+    color: "#999",
+    textAlign: "center",
+    width: "100%",
+    paddingRight: 15,
+    justifyContent: "center",
   },
 });
 

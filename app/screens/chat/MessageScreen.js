@@ -5,8 +5,17 @@ import React, {
   useContext,
   useCallback,
 } from "react";
-import { SafeAreaView, View, Text, Platform, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  Platform,
+  StyleSheet,
+  KeyboardAvoidingViewComponent,
+  KeyboardAvoidingView,
+  TextInput,
+  StatusBar,
+} from "react-native";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
 import SearchFooter from "./optional/name/searchMessage/SearchFooter";
@@ -16,6 +25,8 @@ import MessageScreenStyle from "./MessageScreenStyle";
 import Fuse from "fuse.js";
 import { api } from "@/app/api/api";
 import { AuthContext } from "@/app/auth/AuthContext";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 const MessageScreen = ({ route, navigation }) => {
   const { userInfo } = useContext(AuthContext);
@@ -30,9 +41,7 @@ const MessageScreen = ({ route, navigation }) => {
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const flatListRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
-
-  const [oldCursor, setOldCursor] = useState(null);
-  const [newCursor, setNewCursor] = useState(null);
+  const [imageUri, setImageUri] = useState(null); // Trạng thái lưu trữ URI hình ảnh đã chọn
 
   const calculateLastActive = (lastActive) => {
     const now = new Date();
@@ -46,36 +55,20 @@ const MessageScreen = ({ route, navigation }) => {
     return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
 
-  // Hàm lưu tin nhắn vào AsyncStorage
-  const saveMessagesToStorage = async (messages) => {
+  const fetchAndStoreMessages = async () => {
     try {
-      await AsyncStorage.setItem(
-        `messages_${conversation.conversationId}`,
-        JSON.stringify(messages)
-      );
-      console.log("Tin nhắn đã được lưu vào AsyncStorage.");
-      console.log("Tin nhắn đã được lưu:", messages);
-    } catch (error) {
-      console.error("Lỗi khi lưu tin nhắn vào AsyncStorage:", error);
-    }
-  };
+      setIsLoading(true); // Bật loading
 
-  // Hàm lấy tin nhắn từ AsyncStorage
-  const loadMessagesFromStorage = async () => {
-    try {
-      const storedMessages = await AsyncStorage.getItem(
-        `messages_${conversation.conversationId}`
-      );
-      if (storedMessages) {
-        const parsed = JSON.parse(storedMessages);
-        // console.log("Tin nhắn được load từ AsyncStorage:", parsed);
-        setMessages(parsed);
-      } else {
-        console.log("Không tìm thấy tin nhắn trong AsyncStorage.");
-        setMessages([]);
-      }
+      const response = await api.getAllMessages(conversation.conversationId);
+
+      // console.log("Tin nhắn được lấy từ API:", response);
+
+      setMessages(response.messages); // Cập nhật state messages
     } catch (error) {
-      console.error("Lỗi khi load tin nhắn từ AsyncStorage:", error);
+      console.error("Lỗi lấy tin nhắn:", error);
+      setMessages([]); // Cập nhật state messages với mảng rỗng nếu lỗi
+    } finally {
+      setIsLoading(false); // Tắt loading
     }
   };
 
@@ -86,30 +79,138 @@ const MessageScreen = ({ route, navigation }) => {
         return;
       }
 
-      const newMessage = {
+      const pseudoMessage = {
         conversationId: conversation.conversationId,
         content: message.content,
         messageDetailId: `msg_${Date.now()}`,
         createdAt: new Date().toISOString(),
         senderId: userInfo.userId,
+        type: message.type || "text",
       };
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
-      setMessages((prev) => [newMessage, ...(prev || [])]);
-      api
-        .sendMessage({
-          conversationId: newMessage.conversationId,
-          content: newMessage.content,
-        })
-        .catch((error) => {
-          console.error("Lỗi gửi tin nhắn:", error);
-          alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
-        });
+      if (message.type === "text") {
+        api
+          .sendMessage({
+            conversationId: pseudoMessage.conversationId,
+            content: pseudoMessage.content,
+          })
+          .catch((error) => {
+            console.error("Lỗi gửi tin nhắn:", error);
+            alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
+          });
+      }
     },
     [conversation, userInfo.userId]
   );
 
-  // Trong render
-  <ChatFooter onSendMessage={handleSendMessage} />;
+  const handleSendImage = useCallback(
+    async (message) => {
+      if (!conversation?.conversationId) {
+        alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
+        console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+
+      console.log("Bắt đầu gửi ảnh...");
+
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: message.type || "image",
+        attachment: { url: message.attachment }, // Corrected syntax
+      };
+
+      console.log("Tạo pseudoMessage:", pseudoMessage);
+
+      setImageUri(message.attachment); // Set the image URI to state
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+
+      if (!message.attachment) {
+        console.error("Lỗi: Không có ảnh để gửi.");
+        alert("Không có ảnh để gửi.");
+        return;
+      }
+
+      try {
+        console.log("Đọc file ảnh từ URI:", message.attachment);
+
+        const base64Image = await FileSystem.readAsStringAsync(
+          message.attachment,
+          {
+            encoding: FileSystem.EncodingType.Base64,
+          }
+        );
+
+        const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
+        console.log("Chuyển đổi ảnh sang Base64 thành công.");
+
+        if (message.type === "image") {
+          console.log("Bắt đầu gửi ảnh qua API...");
+          await api.sendImageMessage({
+            conversationId: pseudoMessage.conversationId,
+            imageBase64: imageBase64,
+          });
+          console.log("Gửi ảnh thành công!");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gửi ảnh:", error);
+        alert("Đã xảy ra lỗi khi gửi ảnh. Vui lòng thử lại.");
+      }
+    },
+    [conversation, userInfo.userId]
+  );
+
+  const handleSendFile = useCallback(
+    async (message) => {
+      if (!conversation?.conversationId) {
+        alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
+        console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: message.type || "file",
+        attachment: { url: message.attachment }, // Corrected syntax
+      };
+
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+
+      if (message.type === "file") {
+        try {
+          console.log("Đọc file từ URI:", message.attachment);
+
+          const base64File = await FileSystem.readAsStringAsync(
+            message.attachment,
+            {
+              encoding: FileSystem.EncodingType.Base64,
+            }
+          );
+          const fileBase64 = `data:${message.mimeType};base64,${base64File}`;
+
+          console.log("Chuyển đổi file sang Base64 thành công.");
+
+          await api.sendFileMessage({
+            conversationId: pseudoMessage.conversationId,
+            fileBase64: fileBase64,
+            fileName: message.fileName,
+            fileType: message.mimeType,
+          });
+          console.log("Gửi file thành công!");
+        } catch (error) {
+          console.error("Lỗi khi gửi file:", error);
+          alert("Đã xảy ra lỗi khi gửi file. Vui lòng thử lại.");
+        }
+      }
+    },
+    [conversation, userInfo.userId]
+  );
 
   useEffect(() => {
     if (!conversation?.conversationId) {
@@ -118,139 +219,38 @@ const MessageScreen = ({ route, navigation }) => {
       return;
     }
 
-    const fetchAndStoreMessages = async () => {
-      try {
-        setIsLoading(true); // Bật loading
-
-        const response = await api.getMessages(conversation.conversationId);
-        const { messages: fetchedMessages } = response;
-
-        console.log("Tin nhắn được lấy từ API:", fetchedMessages);
-
-        await saveMessagesToStorage(fetchedMessages || []);
-      } catch (error) {
-        console.error("Lỗi lấy tin nhắn:", error);
-        await saveMessagesToStorage([]); // Lưu mảng rỗng nếu lỗi
-      } finally {
-        await loadMessagesFromStorage(); // Load từ storage để hiển thị
-        setIsLoading(false); // Tắt loading
-      }
-    };
-
     fetchAndStoreMessages();
   }, [conversation?.conversationId]);
 
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setHighlightedMessageIds([]);
-      setHighlightedMessageId(null);
-      return;
-    }
-
-    const fuse = new Fuse(messages, {
-      keys: ["content"],
-      threshold: 0.6,
-      distance: 100,
-    });
-
-    const results = fuse.search(searchQuery).map((res) => res.item);
-
-    // Sắp xếp danh sách theo thời gian gửi
-    const sortedResults = results.sort(
-      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-    );
-
-    const messageIds = sortedResults.map((msg) => msg.messageDetailId);
-    setHighlightedMessageIds(messageIds);
-    setCurrentSearchIndex(messageIds.length - 1); // Mặc định chọn tin nhắn cuối
-
-    console.log("Danh sách ID tin nhắn tìm được:", messageIds);
-
-    if (messageIds.length > 0) {
-      scrollToMessage(messageIds.length - 1); // Cuộn đến tin nhắn cuối
-    }
-  }, [searchQuery, messages]);
-
-  // Cuộn đến tin nhắn
-  const scrollToMessage = (index) => {
-    if (index < 0 || index >= highlightedMessageIds.length) return;
-
-    const messageId = highlightedMessageIds[index];
-    const messageIndex = messages.findIndex(
-      (msg) => msg.messageDetailId === messageId
-    );
-
-    if (messageIndex !== -1) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToIndex({
-          index: messageIndex,
-          animated: true,
-          viewPosition: 0.5,
-        });
-        setHighlightedMessageId(messageId); // Đánh dấu tin nhắn này
-      }, 300);
-    }
-  };
-
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#ebecf0" }}>
+    <View style={{ flex: 1, backgroundColor: "#ebecf0" }}>
+      <StatusBar />
       <ChatHeader
         navigation={navigation}
         receiver={receiver}
         conversation={conversation}
         lastActiveStatus={calculateLastActive(receiver?.lastActive)}
       />
-      {/* {isSearching && (
-        <View style={StyleSheet.absoluteFill}>
-          <SearchHeader
-            onCancel={() => {
-              setIsSearching(false);
-              setSearchQuery("");
-              setHighlightedMessageIds([]);
-              setHighlightedMessageId(null);
-
-              setTimeout(() => {
-                navigation.setParams({ receiver }); // Đảm bảo receiverId vẫn tồn tại
-              }, 100);
-            }}
-            onSearch={setSearchQuery}
-          />
+      {messages.length > 0 ? (
+        <Conversation
+          conversation={{ messages }}
+          senderId={userInfo.userId}
+          highlightedMessageIds={highlightedMessageIds}
+          highlightedMessageId={highlightedMessageId}
+          searchQuery={searchQuery}
+          receiver={receiver}
+        />
+      ) : (
+        <View style={MessageScreenStyle.loadingContainer}>
+          <Text style={MessageScreenStyle.loadingText}>Đang tải...</Text>
         </View>
-      )} */}
-      <Conversation
-        conversation={{ messages }}
-        senderId={userInfo.userId}
-        highlightedMessageIds={highlightedMessageIds}
-        highlightedMessageId={highlightedMessageId}
-        searchQuery={searchQuery}
-        flatListRef={flatListRef}
-        receiver={receiver}
+      )}
+      <ChatFooter
+        onSendMessage={handleSendMessage}
+        onSendImage={handleSendImage}
+        onSendFile={handleSendFile}
       />
-      <ChatFooter onSendMessage={handleSendMessage} />
-      {/* {isSearching && (
-        <View style={StyleSheet.absoluteFill}>
-          <SearchFooter
-            resultCount={highlightedMessageIds.length}
-            currentIndex={currentSearchIndex}
-            onNext={() => {
-              setCurrentSearchIndex((prev) => {
-                const nextIndex =
-                  prev + 1 < highlightedMessageIds.length ? prev + 1 : prev;
-                scrollToMessage(nextIndex);
-                return nextIndex;
-              });
-            }}
-            onPrevious={() => {
-              setCurrentSearchIndex((prev) => {
-                const prevIndex = prev - 1 >= 0 ? prev - 1 : prev;
-                scrollToMessage(prevIndex);
-                return prevIndex;
-              });
-            }}
-          />
-        </View>
-      )} */}
-    </SafeAreaView>
+    </View>
   );
 };
 

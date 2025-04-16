@@ -72,7 +72,7 @@
     "react-native-country-picker-modal": "^2.0.0",
     "react-native-dotenv": "^3.4.11",
     "react-native-elements": "^3.4.3",
-    "react-native-gesture-handler": "^2.24.0",
+    "react-native-gesture-handler": "~2.20.2",
     "react-native-international-phone-number": "^0.9.1",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-network-info": "^5.2.1",
@@ -80,7 +80,7 @@
     "react-native-paper": "^5.13.1",
     "react-native-phone-number-input": "^2.1.0",
     "react-native-qrcode-scanner": "^1.5.5",
-    "react-native-reanimated": "^3.17.1",
+    "react-native-reanimated": "~3.16.1",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "~4.4.0",
     "react-native-sms": "^1.12.0",
@@ -90,7 +90,8 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "socket.io-client": "^4.8.1",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "expo-document-picker": "~13.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

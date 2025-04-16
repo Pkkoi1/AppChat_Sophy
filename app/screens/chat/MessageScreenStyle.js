@@ -4,12 +4,17 @@ import { Platform, StyleSheet } from "react-native";
 const MessageScreenStyle = StyleSheet.create({
   conversationContainer: {
     flex: 1,
-    paddingBottom: 100,
-    backgroundColor: "transparent", 
-  },
-  chatFooter: {
+    // paddingBottom: 100,
     backgroundColor: "transparent",
-    paddingBottom: Platform.OS === "ios" ? 10 : 0, // Đảm bảo Footer không bị che
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 15,
+    color: "gray",
   },
 });
 

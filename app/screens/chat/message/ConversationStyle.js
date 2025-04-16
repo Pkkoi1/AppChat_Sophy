@@ -3,9 +3,7 @@ import { StyleSheet } from "react-native";
 
 const ConversationStyle = StyleSheet.create({
   conversationContainer: {
-    flex: 1, // Ensure the container takes up available space
-    // marginBottom: 60, // Add space for the footer
-    position: "relative", // Allow absolute positioning of child elements
+    flex: 1,
   },
   timestampContainer: {
     backgroundColor: "#d3d3d3",

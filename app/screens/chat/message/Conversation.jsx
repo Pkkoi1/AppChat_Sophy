@@ -11,31 +11,11 @@ const Conversation = ({
   highlightedMessageIds = [],
   highlightedMessageId,
   searchQuery = "",
-  flatListRef,
   receiver,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
-
-  useEffect(() => {
-    if (!highlightedMessageIds.length || !flatListRef.current) return;
-
-    const lastHighlightedMessageId =
-      highlightedMessageIds[highlightedMessageIds.length - 1]; // Lấy tin nhắn cuối cùng tìm thấy
-
-    const messageIndex = conversation.messages.findIndex(
-      (msg) => msg.messageDetailId === lastHighlightedMessageId
-    );
-
-    if (messageIndex !== -1) {
-      flatListRef.current?.scrollToIndex({
-        index: messageIndex,
-        animated: true,
-        viewPosition: 0.5,
-      });
-    }
-  }, [highlightedMessageIds, conversation.messages]);
 
   const handleLongPress = (message) => {
     setSelectedMessage(message);
@@ -45,10 +25,8 @@ const Conversation = ({
   return (
     <View style={ConversationStyle.conversationContainer}>
       <FlatList
-        ref={flatListRef}
         data={conversation.messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
-        onEndReachedThreshold={0.1}
         renderItem={({ item, index }) => {
           const prevMessage =
             index < conversation.messages.length - 1
@@ -56,13 +34,13 @@ const Conversation = ({
               : null;
 
           const shouldShowTimestamp =
-            !prevMessage || // Show timestamp if there is no previous message
+            !prevMessage ||
             moment(item.createdAt)
               .startOf("minute")
               .diff(
                 moment(prevMessage.createdAt).startOf("minute"),
                 "minutes"
-              ) >= 5; // Show timestamp if the time difference is 5 minutes or more
+              ) >= 10;
 
           return (
             <View>
@@ -78,12 +56,15 @@ const Conversation = ({
                   message={item}
                   receiver={receiver}
                   isSender={item.senderId === senderId}
-                  avatar=""
                   isHighlighted={item.messageDetailId === highlightedMessageId}
                   searchQuery={
                     highlightedMessageIds.includes(item.messageDetailId)
                       ? searchQuery
                       : ""
+                  }
+                  isFirstMessageFromSender={
+                    index === 0 ||
+                    conversation.messages[index - 1].senderId !== item.senderId
                   }
                 />
               </Pressable>
@@ -91,8 +72,11 @@ const Conversation = ({
           );
         }}
         inverted={true}
-        contentContainerStyle={{ paddingBottom: 60 }} // Add padding to avoid overlapping with footer
-        // keyboardShouldPersistTaps="always"
+        initialNumToRender={10} // Render 10 tin nhắn ban đầu
+        maxToRenderPerBatch={10} // Render tối đa 10 tin nhắn mỗi lần
+        // windowSize={5} // Giữ ít item trong bộ nhớ
+        // removeClippedSubviews={true} // Loại bỏ item ngoài màn hình
+        keyboardShouldPersistTaps="always"
       />
       <MessagePopup
         popupVisible={popupVisible}

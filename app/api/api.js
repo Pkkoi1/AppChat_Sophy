@@ -41,87 +41,60 @@ http.interceptors.request.use(async (config) => {
   return config;
 });
 
+// Thêm interceptor để xử lý lỗi 401 và làm mới token
 http.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
-            return http(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
-      }
-
+    // Kiểm tra nếu lỗi là 401 và chưa thử refresh token
+    if (
+      error.response &&
+      error.response.status === 401 &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
-      isRefreshing = true;
 
       try {
-        const newToken = await refreshacc();
-        originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        processQueue(null, newToken);
+        // Lấy refreshToken từ AsyncStorage
+        const refreshToken = await AsyncStorage.getItem("refreshToken");
+        if (!refreshToken) {
+          throw new Error(
+            "Không tìm thấy refreshToken. Yêu cầu đăng nhập lại."
+          );
+        }
+
+        // Gọi API làm mới token
+        const response = await axios.patch(`${API}/auth/refresh`, undefined, {
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+          },
+        });
+
+        // Lưu accessToken mới vào AsyncStorage
+        const newAccessToken = response.data.token.accessToken;
+        const newRefreshToken = response.data.token.refreshToken; // Nếu có refreshToken mới
+        if (newRefreshToken) {
+          await AsyncStorage.setItem("refreshToken", newRefreshToken);
+        }
+        console.log("Phản hồi từ API refreshToken:", response.data);
+        await AsyncStorage.setItem("accessToken", newAccessToken);
+
+        // Cập nhật header Authorization và gửi lại request ban đầu
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError);
+        console.error("Lỗi khi làm mới token:", refreshError);
+        // Nếu refreshToken hết hạn, yêu cầu đăng nhập lại
+        await AsyncStorage.removeItem("accessToken");
+        await AsyncStorage.removeItem("refreshToken");
         throw refreshError;
-      } finally {
-        isRefreshing = false;
       }
     }
 
     return Promise.reject(error);
   }
 );
-
-const refreshacc = async () => {
-  try {
-    const refreshToken = await AsyncStorage.getItem("refreshToken");
-    if (!refreshToken) {
-      console.log("No refreshToken found in AsyncStorage.");
-      throw new Error("Refresh token not found.");
-    }
-
-    console.log("Refreshing token with:", refreshToken);
-
-    const response = await http.patch("/auth/refresh", undefined, {
-      headers: { Authorization: `Bearer ${refreshToken}` },
-    });
-
-    console.log("Response from /auth/refresh:", response.data);
-
-    const { accessToken, refreshToken: newRefreshToken } = response.data.token;
-    if (!accessToken) {
-      console.log("No accessToken returned from API.");
-      throw new Error("No accessToken returned from API.");
-    }
-
-    await AsyncStorage.setItem("accessToken", accessToken);
-    console.log("acc saved:", accessToken);
-
-    await AsyncStorage.setItem("refreshToken", newRefreshToken);
-    console.log("refreshToken saved:", newRefreshToken);
-
-    if (response.data.user) {
-      await AsyncStorage.setItem(
-        "userInfo",
-        JSON.stringify(response.data.user)
-      );
-      console.log("userInfo saved:", response.data.user);
-    }
-
-    console.log("Token refreshed successfully.");
-    return accessToken;
-  } catch (error) {
-    console.error("Error refreshing token:", error.message);
-    await AsyncStorage.multiRemove(["accessToken", "refreshToken", "userInfo"]);
-    throw new Error("Session expired. Please log in again.");
-  }
-};
 export const api = {
   login: async (params) => {
     try {
@@ -173,9 +146,11 @@ export const api = {
   },
   refreshToken: async () => {
     try {
-      const refreshToken = await AsyncStorage.getItem("refreshToken");
-      if (!refreshToken) {
-        throw new Error("Không tìm thấy refreshToken. Yêu cầu đăng nhập lại.");
+      const callRefreshToken = await AsyncStorage.getItem("refreshToken");
+      if (!callRefreshToken) {
+        throw new Error(
+          "Không tìm thấy callRefreshToken. Yêu cầu đăng nhập lại."
+        );
       }
 
       const response = await http.patch(
@@ -183,20 +158,21 @@ export const api = {
         undefined, // Không gửi body
         {
           headers: {
-            Authorization: `Bearer ${refreshToken}`,
+            Authorization: `Bearer ${callRefreshToken}`,
           },
         }
       );
 
-      const { accessToken, refreshToken: newRefreshToken } =
-        response.data.token;
+      const { accessToken, refreshToken } = response.data.token;
+      console.log("Phản hồi từ API refreshToken:", response.data);
+
       if (!accessToken) {
         throw new Error("API không trả về accessToken mới.");
       }
 
       await AsyncStorage.setItem("accessToken", accessToken);
-      if (newRefreshToken) {
-        await AsyncStorage.setItem("refreshToken", newRefreshToken);
+      if (refreshToken) {
+        await AsyncStorage.setItem("refreshToken", refreshToken);
       }
 
       // Cập nhật userInfo nếu có
@@ -228,7 +204,7 @@ export const api = {
     conversationId,
     lastMessageTime = null,
     direction = "before",
-    limit = 100000
+    limit = 100
   ) => {
     try {
       const query = { conversationId };
@@ -550,6 +526,80 @@ export const api = {
       }
 
       throw new Error("Lỗi không xác định khi gửi tin nhắn.");
+    }
+  },
+  getAllMessages: async (conversationId) => {
+    try {
+      const response = await http.get(`/messages/all/${conversationId}`);
+      return { messages: response.data }; // trả về giống như BE: array
+    } catch (error) {
+      console.error(
+        "Lỗi khi gọi API getMessages:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  sendImageMessage: async ({ conversationId, imageBase64 }) => {
+    try {
+      const response = await http.post("/messages/mobile/send-image", {
+        conversationId, // Include conversation ID
+        imageBase64, // Base64-encoded image
+        // content, // Optional text message
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi ảnh văn bản:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  sendFileMessage: async ({
+    conversationId,
+    fileBase64,
+    fileName,
+    fileType,
+  }) => {
+    try {
+      const response = await http.post("/messages/mobile/send-file", {
+        conversationId, // Include conversation ID
+        fileBase64, // Base64-encoded file
+        fileName,
+        fileType,
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi ảnh văn bản:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  recallMessage: async (messageId) => {
+    try {
+      const response = await http.put(`/messages/recall/${messageId}`);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi thu hồi tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  deleteMessage: async (messageId) => {
+    try {
+      const response = await http.put(`/messages/delete/${messageId}`);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi xóa tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
     }
   },
 };

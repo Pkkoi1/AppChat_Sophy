@@ -9,7 +9,7 @@ const AuthLoading = ({ navigation }) => {
     const checkLogin = async () => {
       try {
         // Làm mới token và lấy thông tin người dùng
-        await refreshAccessToken();
+        // await refreshAccessToken();
 
         if (userInfo) {
           navigation.replace("Home", {
@@ -25,7 +25,6 @@ const AuthLoading = ({ navigation }) => {
         navigation.replace("Main");
       }
     };
-
     checkLogin();
   }, [userInfo]); // Theo dõi userInfo để điều hướng chính xác
 

@@ -6,9 +6,11 @@ import {
   Modal,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Clipboard from "@react-native-clipboard/clipboard";
+import { api } from "@/app/api/api"; // Import the API module
 import MessagePopupStyle from "./MessagePopupStyle";
 
 const popupOptions = [
@@ -94,7 +96,7 @@ const MessagePopup = ({
 }) => {
   const handleEmojiPress = (emoji) => {
     if (selectedMessage) {
-      const messageId = selectedMessage.message_id;
+      const messageId = selectedMessage.messageDetailId;
       setMessageReactions((prevReactions) => {
         const currentReactions = prevReactions[messageId] || [];
         return {
@@ -106,54 +108,83 @@ const MessagePopup = ({
     }
   };
 
-  const handlePopupOptionPress = (action) => {
+  const handlePopupOptionPress = async (action) => {
     switch (action) {
       case "reply":
-        console.log("Trả lời tin nhắn:", selectedMessage.message_id);
+        console.log("Trả lời tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "forward":
-        console.log("Chuyển tiếp tin nhắn:", selectedMessage.message_id);
+        console.log("Chuyển tiếp tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "saveToCloud":
-        console.log("Lưu vào Cloud:", selectedMessage.message_id);
+        console.log("Lưu vào Cloud:", selectedMessage.messageDetailId);
         break;
       case "recall":
-        if (selectedMessage.sender_id === senderId) {
-          console.log("Thu hồi tin nhắn:", selectedMessage.message_id);
+        if (selectedMessage.senderId === senderId) {
+          try {
+            console.log("Thu hồi tin nhắn:", selectedMessage.messageDetailId);
+            const response = await api.recallMessage(
+              selectedMessage.messageDetailId
+            );
+            console.log("Tin nhắn đã được thu hồi:", response);
+          } catch (error) {
+            console.error(
+              "Lỗi khi thu hồi tin nhắn:",
+              error.response?.data || error.message
+            );
+            Alert.alert("Lỗi", "Không thể thu hồi tin nhắn. Vui lòng thử lại.");
+          }
         } else {
           console.log("Không thể thu hồi: Không phải người gửi");
+          Alert.alert("Thông báo", "Bạn không thể thu hồi tin nhắn này.");
         }
         break;
       case "copy":
         Clipboard.setStringAsync(selectedMessage.content);
-        console.log("Đã sao chép tin nhắn:", selectedMessage.message_id);
+        console.log("Đã sao chép tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "pin":
-        console.log("Ghim tin nhắn:", selectedMessage.message_id);
+        console.log("Ghim tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "reminder":
-        console.log("Đặt nhắc hẹn cho tin nhắn:", selectedMessage.message_id);
+        console.log(
+          "Đặt nhắc hẹn cho tin nhắn:",
+          selectedMessage.messageDetailId
+        );
         break;
       case "selectMultiple":
         console.log(
           "Chọn nhiều tin nhắn bắt đầu từ:",
-          selectedMessage.message_id
+          selectedMessage.messageDetailId
         );
         break;
       case "createQuickMessage":
-        console.log("Tạo tin nhắn nhanh từ:", selectedMessage.message_id);
+        console.log("Tạo tin nhắn nhanh từ:", selectedMessage.messageDetailId);
         break;
       case "translate":
-        console.log("Dịch tin nhắn:", selectedMessage.message_id);
+        console.log("Dịch tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "readText":
-        console.log("Đọc to tin nhắn:", selectedMessage.message_id);
+        console.log("Đọc to tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "details":
-        console.log("Xem chi tiết tin nhắn:", selectedMessage.message_id);
+        console.log("Xem chi tiết tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "delete":
-        console.log("Xóa tin nhắn:", selectedMessage.message_id);
+        try {
+          console.log("Xóa tin nhắn:", selectedMessage.messageDetailId);
+          const response = await api.deleteMessage(
+            selectedMessage.messageDetailId
+          );
+          console.log("Tin nhắn đã được xóa:", response);
+          Alert.alert("Thành công", "Tin nhắn đã được xóa.");
+        } catch (error) {
+          console.error(
+            "Lỗi khi xóa tin nhắn:",
+            error.response?.data || error.message
+          );
+          Alert.alert("Lỗi", "Không thể xóa tin nhắn. Vui lòng thử lại.");
+        }
         break;
       default:
         console.log("Hành động không xác định:", action);
@@ -161,6 +192,11 @@ const MessagePopup = ({
     }
     setPopupVisible(false);
   };
+
+  // Filter options based on whether the message is recalled
+  const filteredOptions = selectedMessage?.isRecall
+    ? popupOptions.filter((option) => option.action === "delete")
+    : popupOptions;
 
   return (
     <Modal
@@ -182,29 +218,33 @@ const MessagePopup = ({
             {selectedMessage && (
               <View style={MessagePopupStyle.selectedMessageContainer}>
                 <Text style={MessagePopupStyle.selectedMessageText}>
-                  {selectedMessage.content}
+                  {selectedMessage.isRecall
+                    ? "Tin nhắn đã được thu hồi"
+                    : selectedMessage.content}
                 </Text>
               </View>
             )}
           </View>
 
           <View style={MessagePopupStyle.emojiSection}>
-            <View style={MessagePopupStyle.emojiContainer}>
-              {["❤️", "👍", "😂", "😮", "😢", "😡"].map((emoji, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={MessagePopupStyle.emojiButton}
-                  onPress={() => handleEmojiPress(emoji)}
-                >
-                  <Text style={MessagePopupStyle.emojiText}>{emoji}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+            {!selectedMessage?.isRecall && (
+              <View style={MessagePopupStyle.emojiContainer}>
+                {["❤️", "👍", "😂", "😮", "😢", "😡"].map((emoji, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={MessagePopupStyle.emojiButton}
+                    onPress={() => handleEmojiPress(emoji)}
+                  >
+                    <Text style={MessagePopupStyle.emojiText}>{emoji}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
           </View>
 
           <View style={MessagePopupStyle.optionsSection}>
             <FlatList
-              data={popupOptions}
+              data={filteredOptions}
               keyExtractor={(item) => item.action}
               numColumns={4}
               columnWrapperStyle={MessagePopupStyle.columnWrapper}
