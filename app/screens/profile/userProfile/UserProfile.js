@@ -19,7 +19,8 @@ import postsData from "../../../../assets/objects/post.json";
 import usersData from "../../../../assets/objects/user.json";
 import AvatarUser from "../../../components/profile/AvatarUser";
 import { AuthContext } from "@/app/auth/AuthContext";
-import { api } from "../../../api/api"; // Import API
+import { api } from "../../../api/api"; 
+import FullScreenImageViewer from "@/app/features/fullImages/FullScreenImageViewer"; 
 
 const UserProfile = ({ route }) => {
   const navigation = useNavigation();
@@ -30,6 +31,15 @@ const UserProfile = ({ route }) => {
   const [posts, setPosts] = useState(postsData);
   const [userExists, setUserExists] = useState(false); // Kiểm tra id có tồn tại trong usersData không
   const [user, setUser] = useState(null); // Lưu thông tin user
+
+  // Thêm state cho ảnh bìa ngẫu nhiên
+  const [randomImageId, setRandomImageId] = useState(
+    Math.floor(Math.random() * 1000)
+  );
+  
+  // URL ảnh bìa từ picsum.photos
+  const coverImageUrl = `https://picsum.photos/id/${randomImageId}/800/400`;
+
 
   // Lấy id từ route.params
   const { friend, requestSent: initialRequestSent } = route.params || {};
@@ -67,8 +77,13 @@ const UserProfile = ({ route }) => {
     navigation.navigate("AcceptFriend", { user });
   };
 
+  // Cập nhật renderPostImages để có thể xem ảnh
   const renderPostImages = ({ item }) => (
-    <TouchableOpacity onPress={() => { }}>
+    <TouchableOpacity 
+      onPress={() => navigation.navigate("FullScreenImageViewer", {
+        imageUrl: require("../../../../assets/images/avt.jpg"),
+      })}
+    >
       <Image
         source={require("../../../../assets/images/avt.jpg")}
         style={styles.postImage}
@@ -90,10 +105,19 @@ const UserProfile = ({ route }) => {
     >
       <View style={styles.container}>
         <View style={styles.coverContainer}>
-          <Animated.Image
-            source={require("../../../../assets/images/avt.jpg")}
-            style={[styles.coverImage, { height: coverImageHeight }]}
-          />
+          {/* Ảnh bìa với TouchableOpacity để xem ảnh */}
+          <TouchableOpacity
+            onPress={() => 
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: coverImageUrl,
+              })
+            }
+          >
+            <Animated.Image
+              source={{ uri: coverImageUrl }}
+              style={[styles.coverImage, { height: coverImageHeight }]}
+            />
+          </TouchableOpacity>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back-ios" size={24} color="#fff" />
@@ -117,21 +141,31 @@ const UserProfile = ({ route }) => {
 
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
-            {friend?.urlavatar ? (
-              <Image
-                source={{ uri: friend.urlavatar }}
-                style={styles.avatar}
-              />
-            ) : (
-              <AvatarUser
-                fullName={friend?.fullname}
-                width={120}
-                height={120}
-                avtText={40}
-                shadow={true}
-                bordered={true}
-              />
-            )}
+            {/* TouchableOpacity cho avatar để xem ảnh */}
+            <TouchableOpacity
+              onPress={() => 
+                navigation.navigate("FullScreenImageViewer", {
+                  imageUrl: friend?.urlavatar || null,
+                  fallbackText: friend?.fullname || "User",
+                })
+              }
+            >
+              {friend?.urlavatar ? (
+                <Image
+                  source={{ uri: friend.urlavatar }}
+                  style={styles.avatar}
+                />
+              ) : (
+                <AvatarUser
+                  fullName={friend?.fullname}
+                  width={100}
+                  height={100}
+                  avtText={40}
+                  shadow={true}
+                  bordered={true}
+                />
+              )}
+            </TouchableOpacity>
           </View>
 
           {!userExists ? (
