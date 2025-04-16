@@ -540,4 +540,66 @@ export const api = {
       throw error;
     }
   },
+  sendImageMessage: async ({ conversationId, imageBase64 }) => {
+    try {
+      const response = await http.post("/messages/mobile/send-image", {
+        conversationId, // Include conversation ID
+        imageBase64, // Base64-encoded image
+        // content, // Optional text message
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi ảnh văn bản:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  sendFileMessage: async ({
+    conversationId,
+    fileBase64,
+    fileName,
+    fileType,
+  }) => {
+    try {
+      const response = await http.post("/messages/mobile/send-file", {
+        conversationId, // Include conversation ID
+        fileBase64, // Base64-encoded file
+        fileName,
+        fileType,
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi ảnh văn bản:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  recallMessage: async (messageId) => {
+    try {
+      const response = await http.put(`/messages/recall/${messageId}`);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi thu hồi tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  deleteMessage: async (messageId) => {
+    try {
+      const response = await http.put(`/messages/delete/${messageId}`);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi xóa tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

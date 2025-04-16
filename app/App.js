@@ -46,6 +46,7 @@ import MyProfileSetting from "./screens/profile/myProfile/Option/MyProfileSettin
 import Infomation from "./screens/profile/myProfile/Option/infomation/Infomation";
 import ZaloFAQScreen from "./screens/login/ZaloFAQScreen";
 import FullScreenImageViewer from "./features/fullImages/FullScreenImageViewer";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 
@@ -53,84 +54,87 @@ function RootLayout() {
   return (
     <SocketProvider>
       <AuthProvider>
-        <NavigationContainer>
-          <Stack.Navigator
-            screenOptions={{
-              headerShown: false,
-              animation: "fade", // Tắt hoạt ảnh chuyển cảnh
-            }}
-          >
-            <Stack.Screen name="AuthLoading" component={AuthLoading} />
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <Stack.Navigator
+              screenOptions={{
+                headerShown: false,
+                animation: "fade", // Tắt hoạt ảnh chuyển cảnh
+              }}
+            >
+              <Stack.Screen name="AuthLoading" component={AuthLoading} />
 
-            <Stack.Screen name="Main" component={Main} />
-            <Stack.Screen name="Register" component={Register} />
-            <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
-            <Stack.Screen name="EnterName" component={EnterName} />
-            <Stack.Screen name="EnterInfo" component={EnterInfo} />
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
-            <Stack.Screen
-              name="SocialNetworkTerms"
-              component={SocialNetworkTerms}
-            />
-            <Stack.Screen name="CameraScreen" component={CameraScreen} />
-            <Stack.Screen name="TermsOfService" component={TermsOfService} />
-            <Stack.Screen name="Home" component={Home} />
-            <Stack.Screen name="Chat" component={Chat} />
-            <Stack.Screen name="Profile" component={Profile} />
-            <Stack.Screen name="Discover" component={Discover} />
-            <Stack.Screen name="Diary" component={Diary} />
-            <Stack.Screen name="MyProfile" component={MyProfile} />
-            <Stack.Screen name="Setting" component={Setting} />
-            <Stack.Screen
-              name="ReceivedFriendRequests"
-              component={ReceivedFriendRequests}
-            />
-            <Stack.Screen name="UserProfile" component={UserProfile} />
-            <Stack.Screen name="AddFriend" component={AddFriend} />
-            <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
-            <Stack.Screen
-              name="Options"
-              component={Options}
-              options={{ animation: "slide_from_right" }}
-            />
-            <Stack.Screen name="Verify" component={Verify} />
-            <Stack.Screen name="ScanQR" component={ScanQR} />
-            <Stack.Screen
-              name="VerificationCode"
-              component={VerificationCode}
-            />
-            <Stack.Screen
-              name="CreateNewPassword"
-              component={CreateNewPassword}
-            />
-            <Stack.Screen
-              name="AccountAndSecurity"
-              component={AccountAndSecurityScreen}
-            />
-            <Stack.Screen name="Personal" component={Personal} />
-            <Stack.Screen name="Edit" component={Edit} />
-            <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
-            <Stack.Screen
-              name="EnterAvatar"
-              component={EnterAvatar}
-              options={{ animation: "slide_from_right" }}
-            />
-            <Stack.Screen name="LoginByQR" component={LoginByQR} />
+              <Stack.Screen name="Main" component={Main} />
+              <Stack.Screen name="Register" component={Register} />
+              <Stack.Screen name="VerifyOTPCode" component={VerifyOTPCode} />
+              <Stack.Screen name="EnterName" component={EnterName} />
+              <Stack.Screen name="EnterInfo" component={EnterInfo} />
+              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+              <Stack.Screen
+                name="SocialNetworkTerms"
+                component={SocialNetworkTerms}
+              />
+              <Stack.Screen name="CameraScreen" component={CameraScreen} />
+              <Stack.Screen name="TermsOfService" component={TermsOfService} />
+              <Stack.Screen name="Home" component={Home} />
+              <Stack.Screen name="Chat" component={Chat} />
+              <Stack.Screen name="Profile" component={Profile} />
+              <Stack.Screen name="Discover" component={Discover} />
+              <Stack.Screen name="Diary" component={Diary} />
+              <Stack.Screen name="MyProfile" component={MyProfile} />
+              <Stack.Screen name="Setting" component={Setting} />
+              <Stack.Screen
+                name="ReceivedFriendRequests"
+                component={ReceivedFriendRequests}
+              />
+              <Stack.Screen name="UserProfile" component={UserProfile} />
+              <Stack.Screen name="AddFriend" component={AddFriend} />
+              <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
+              <Stack.Screen
+                name="Options"
+                component={Options}
+                options={{ animation: "slide_from_right" }}
+              />
+              <Stack.Screen name="Verify" component={Verify} />
+              <Stack.Screen name="ScanQR" component={ScanQR} />
+              <Stack.Screen
+                name="VerificationCode"
+                component={VerificationCode}
+              />
+              <Stack.Screen
+                name="CreateNewPassword"
+                component={CreateNewPassword}
+              />
+              <Stack.Screen
+                name="AccountAndSecurity"
+                component={AccountAndSecurityScreen}
+              />
+              <Stack.Screen name="Personal" component={Personal} />
+              <Stack.Screen name="Edit" component={Edit} />
+              <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
+              <Stack.Screen
+                name="EnterAvatar"
+                component={EnterAvatar}
+                options={{ animation: "slide_from_right" }}
+              />
+              <Stack.Screen name="LoginByQR" component={LoginByQR} />
 
-            <Stack.Screen
-              name="MyProfileSetting"
-              component={MyProfileSetting}
-            />
-            <Stack.Screen name="Infomation" component={Infomation} />
-            <Stack.Screen name="ZaloFAQScreen" component={ZaloFAQScreen} />
-            <Stack.Screen
-              name="FullScreenImageViewer"
-              component={FullScreenImageViewer}
-              options={{ headerShown: false }} // Hide the header for full-screen view
-            />
-          </Stack.Navigator>
-        </NavigationContainer>
+              <Stack.Screen
+                name="MyProfileSetting"
+                component={MyProfileSetting}
+              />
+              <Stack.Screen name="Infomation" component={Infomation} />
+              <Stack.Screen name="ZaloFAQScreen" component={ZaloFAQScreen} />
+
+              <Stack.Screen
+                name="FullScreenImageViewer"
+                component={FullScreenImageViewer}
+                options={{ headerShown: false }} // Hide the header for full-screen view
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </GestureHandlerRootView>
       </AuthProvider>
     </SocketProvider>
   );
