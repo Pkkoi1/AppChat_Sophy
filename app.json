@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSContactsUsageDescription": "Cho phép ứng dụng truy cập danh bạ của bạn để hiển thị danh sách liên hệ."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -20,7 +23,8 @@
         "android.permission.RECORD_AUDIO",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.ACCESS_MEDIA_LOCATION"
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.READ_CONTACTS"
       ],
       "package": "com.anonymous.ChatApp_Sophy",
       "googleServicesFile": "./google-services.json"
@@ -58,6 +62,12 @@
           "savePhotosPermissionTitle": "Save Photos Permission",
           "savePhotosPermissionMessage": "This app would like to save photos to your library.",
           "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Cho phép ứng dụng truy cập danh bạ của bạn."
         }
       ],
       "@react-native-firebase/app",

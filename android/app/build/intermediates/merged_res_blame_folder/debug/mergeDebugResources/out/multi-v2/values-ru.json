@@ -4,41 +4,7 @@
             "outputFile": "com.anonymous.ChatApp_Sophy.app-mergeDebugResources-83:/values-ru/values-ru.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\32df52c1ec5176c652d99a5cf55c252e\\transformed\\play-services-basement-18.4.0\\res\\values-ru\\values.xml",
-                    "from": {
-                        "startLines": "4",
-                        "startColumns": "0",
-                        "startOffsets": "195",
-                        "endColumns": "152",
-                        "endOffsets": "347"
-                    },
-                    "to": {
-                        "startLines": "64",
-                        "startColumns": "4",
-                        "startOffsets": "6197",
-                        "endColumns": "156",
-                        "endOffsets": "6349"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\7299547a49d43bc4e1125332fc498a7a\\transformed\\react-android-0.76.7-debug\\res\\values-ru\\values-ru.xml",
-                    "from": {
-                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,129,218,292,367,456,525,592,669,748,837,934,1006,1090,1183,1258,1340,1423,1500,1572,1647,1732,1804,1884,1954",
-                        "endColumns": "73,88,73,74,88,68,66,76,78,88,96,71,83,92,74,81,82,76,71,74,84,71,79,69,84",
-                        "endOffsets": "124,213,287,362,451,520,587,664,743,832,929,1001,1085,1178,1253,1335,1418,1495,1567,1642,1727,1799,1879,1949,2034"
-                    },
-                    "to": {
-                        "startLines": "35,55,84,86,87,91,105,106,107,156,157,160,161,167,168,169,171,172,174,176,177,179,182,184,185",
-                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
-                        "startOffsets": "3148,5109,8433,8584,8659,8983,10029,10096,10173,14182,14271,14539,14611,15098,15191,15266,15424,15507,15662,15810,15885,16071,16297,16500,16570",
-                        "endColumns": "73,88,73,74,88,68,66,76,78,88,96,71,83,92,74,81,82,76,71,74,84,71,79,69,84",
-                        "endOffsets": "3217,5193,8502,8654,8743,9047,10091,10168,10247,14266,14363,14606,14690,15186,15261,15343,15502,15579,15729,15880,15965,16138,16372,16565,16650"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\47e645ade275d59f1162c888d5350b58\\transformed\\play-services-base-18.5.0\\res\\values-ru\\values.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\47e645ade275d59f1162c888d5350b58\\transformed\\play-services-base-18.5.0\\res\\values-ru\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
@@ -55,7 +21,41 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\4968e2c22c908c9bd400ae9fac8e1330\\transformed\\browser-1.6.0\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\7299547a49d43bc4e1125332fc498a7a\\transformed\\react-android-0.76.7-debug\\res\\values-ru\\values-ru.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,129,218,292,367,456,525,592,669,748,837,934,1006,1090,1183,1258,1340,1423,1500,1572,1647,1732,1804,1884,1954",
+                        "endColumns": "73,88,73,74,88,68,66,76,78,88,96,71,83,92,74,81,82,76,71,74,84,71,79,69,84",
+                        "endOffsets": "124,213,287,362,451,520,587,664,743,832,929,1001,1085,1178,1253,1335,1418,1495,1567,1642,1727,1799,1879,1949,2034"
+                    },
+                    "to": {
+                        "startLines": "35,55,84,86,87,91,105,106,107,156,157,160,161,167,168,169,171,172,174,176,177,179,182,184,185",
+                        "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
+                        "startOffsets": "3148,5109,8433,8584,8659,8983,10029,10096,10173,14182,14271,14539,14611,15098,15191,15266,15424,15507,15662,15810,15885,16071,16297,16500,16570",
+                        "endColumns": "73,88,73,74,88,68,66,76,78,88,96,71,83,92,74,81,82,76,71,74,84,71,79,69,84",
+                        "endOffsets": "3217,5193,8502,8654,8743,9047,10091,10168,10247,14266,14363,14606,14690,15186,15261,15343,15502,15579,15729,15880,15965,16138,16372,16565,16650"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\e78865b704c148ddd77bf829bab096e7\\transformed\\core-1.13.1\\res\\values-ru\\values-ru.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,153,255,356,457,562,665,782",
+                        "endColumns": "97,101,100,100,104,102,116,100",
+                        "endOffsets": "148,250,351,452,557,660,777,878"
+                    },
+                    "to": {
+                        "startLines": "43,44,45,46,47,48,49,178",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "3880,3978,4080,4181,4282,4387,4490,15970",
+                        "endColumns": "97,101,100,100,104,102,116,100",
+                        "endOffsets": "3973,4075,4176,4277,4382,4485,4602,16066"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\4968e2c22c908c9bd400ae9fac8e1330\\transformed\\browser-1.6.0\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
@@ -72,7 +72,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\52c05a671c237c38b8b4a73a46a72c2b\\transformed\\material-1.12.0\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\52c05a671c237c38b8b4a73a46a72c2b\\transformed\\material-1.12.0\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -91,7 +91,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\fbd3e0d2b970279fa0dc792ffc070f08\\transformed\\appcompat-1.7.0\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\fbd3e0d2b970279fa0dc792ffc070f08\\transformed\\appcompat-1.7.0\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -108,24 +108,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\ae2d027c49a5d615d242244850ef036a\\transformed\\credentials-1.2.0-rc01\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\32df52c1ec5176c652d99a5cf55c252e\\transformed\\play-services-basement-18.4.0\\res\\values-ru\\values.xml",
                     "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,165",
-                        "endColumns": "109,118",
-                        "endOffsets": "160,279"
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "195",
+                        "endColumns": "152",
+                        "endOffsets": "347"
                     },
                     "to": {
-                        "startLines": "36,37",
-                        "startColumns": "4,4",
-                        "startOffsets": "3222,3332",
-                        "endColumns": "109,118",
-                        "endOffsets": "3327,3446"
+                        "startLines": "64",
+                        "startColumns": "4",
+                        "startOffsets": "6197",
+                        "endColumns": "156",
+                        "endOffsets": "6349"
                     }
                 },
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\4447e548ac28018030ac9c2a5026ddb5\\transformed\\foundation-release\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\4447e548ac28018030ac9c2a5026ddb5\\transformed\\foundation-release\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",
@@ -142,24 +142,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\e78865b704c148ddd77bf829bab096e7\\transformed\\core-1.13.1\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\ae2d027c49a5d615d242244850ef036a\\transformed\\credentials-1.2.0-rc01\\res\\values-ru\\values-ru.xml",
                     "from": {
-                        "startLines": "2,3,4,5,6,7,8,9",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "55,153,255,356,457,562,665,782",
-                        "endColumns": "97,101,100,100,104,102,116,100",
-                        "endOffsets": "148,250,351,452,557,660,777,878"
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,165",
+                        "endColumns": "109,118",
+                        "endOffsets": "160,279"
                     },
                     "to": {
-                        "startLines": "43,44,45,46,47,48,49,178",
-                        "startColumns": "4,4,4,4,4,4,4,4",
-                        "startOffsets": "3880,3978,4080,4181,4282,4387,4490,15970",
-                        "endColumns": "97,101,100,100,104,102,116,100",
-                        "endOffsets": "3973,4075,4176,4277,4382,4485,4602,16066"
+                        "startLines": "36,37",
+                        "startColumns": "4,4",
+                        "startOffsets": "3222,3332",
+                        "endColumns": "109,118",
+                        "endOffsets": "3327,3446"
                     }
                 },
                 {
-                    "source": "C:\\Users\\h\\.gradle\\caches\\8.10.2\\transforms\\d9eda791f92ad15a388a97cccece36f8\\transformed\\ui-release\\res\\values-ru\\values-ru.xml",
+                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\d9eda791f92ad15a388a97cccece36f8\\transformed\\ui-release\\res\\values-ru\\values-ru.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
