@@ -602,4 +602,110 @@ export const api = {
       throw error;
     }
   },
+  getFriends: async () => {
+    try {
+      const response = await http.get("/users/friends"); // Assuming the endpoint is /users/friends based on backend router
+      return response.data; // Return the list of friends
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy danh sách bạn bè:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Gửi lời mời kết bạn
+  sendFriendRequest: async (userId, message = "") => {
+    try {
+      const response = await http.post(
+        `/users/friend-requests/send-request/${userId}`,
+        {
+          message,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Lấy danh sách lời mời kết bạn đã gửi
+  getFriendRequestsSent: async () => {
+    try {
+      const response = await http.get("/users/friend-requests-sent");
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy danh sách lời mời kết bạn đã gửi:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Lấy danh sách lời mời kết bạn đã nhận
+  getFriendRequestsReceived: async () => {
+    try {
+      const response = await http.get("/users/friend-requests-received");
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy danh sách lời mời kết bạn đã nhận:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Thu hồi lời mời kết bạn
+  retrieveFriendRequest: async (requestId) => {
+    try {
+      const response = await http.delete(
+        `/users/friend-requests/retrieve-request/${requestId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi thu hồi lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Chấp nhận lời mời kết bạn
+  acceptFriendRequest: async (requestId) => {
+    try {
+      const response = await http.put(
+        `/users/friend-requests/accept-request/${requestId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi chấp nhận lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Từ chối lời mời kết bạn
+  rejectFriendRequest: async (requestId) => {
+    try {
+      const response = await http.put(
+        `/users/friend-requests/reject-request/${requestId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi từ chối lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };
