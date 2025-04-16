@@ -6,15 +6,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import HeadView from "../../../header/Header";
-import receivedRequests from "../../../../../assets/objects/receivedRequests.json";
-import sentRequests from "../../../../../assets/objects/sentRequests.json";
 import Color from "../../../../components/colors/Color";
+// Import API
+import api from "../../../../api/api"; // Đảm bảo đường dẫn chính xác
 
 const groupByTime = (data) => {
-  const today = new Date("2025-03-15T00:00:00Z");
+  const today = new Date();
   const oneMonthAgo = new Date(today);
   oneMonthAgo.setDate(today.getDate() - 30);
 
@@ -62,120 +63,223 @@ const groupByTime = (data) => {
 };
 
 const ReceivedFriendRequests = ({ navigation }) => {
+  // Thêm state cho dữ liệu từ API
+  const [receivedRequests, setReceivedRequests] = useState([]);
+  const [sentRequests, setSentRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
-    { key: "received", title: `Đã nhận ${receivedRequests.length}` },
-    { key: "sent", title: `Đã gửi ${sentRequests.length}` },
+    { key: "received", title: "Đã nhận" },
+    { key: "sent", title: "Đã gửi" },
   ]);
 
+  // Fetch dữ liệu từ API
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const receivedData = await api.getFriendRequestsReceived();
+        const sentData = await api.getFriendRequestsSent();
+        
+        setReceivedRequests(receivedData);
+        setSentRequests(sentData);
+        
+        // Cập nhật routes với số lượng 
+        setRoutes([
+          { key: "received", title: `Đã nhận ${receivedData.length}` },
+          { key: "sent", title: `Đã gửi ${sentData.length}` },
+        ]);
+      } catch (err) {
+        console.error("Lỗi khi tải dữ liệu lời mời kết bạn:", err);
+        setError("Không thể tải dữ liệu lời mời kết bạn");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Debug
   useEffect(() => {
     console.log("Số lượng lời mời đã nhận:", receivedRequests.length);
     console.log("Số lượng lời mời đã gửi:", sentRequests.length);
-    console.log("Dữ liệu đã nhận:", receivedRequests);
-    console.log("Dữ liệu đã gửi:", sentRequests);
-  }, []);
+  }, [receivedRequests, sentRequests]);
 
   const handleRequestPress = (item, type) => {
     const requestSent = type === "received" ? "accepted" : "pending";
     navigation.navigate("UserProfile", { user: item, requestSent });
   };
 
-  const handleAccept = (item) => {
-    console.log(`Đồng ý kết bạn với ${item.name}`);
-    navigation.navigate("AcceptFriend", { user: item });
+  // Cập nhật xử lý sự kiện với API
+  const handleAccept = async (item) => {
+    try {
+      await api.acceptFriendRequest(item.id);
+      // Cập nhật UI sau khi thành công
+      setReceivedRequests(prevRequests => 
+        prevRequests.filter(request => request.id !== item.id)
+      );
+      console.log(`Đồng ý kết bạn với ${item.name}`);
+      navigation.navigate("AcceptFriend", { user: item });
+    } catch (err) {
+      console.error("Lỗi khi chấp nhận lời mời kết bạn:", err);
+    }
   };
 
-  const handleReject = (item) => {
-    console.log(`Từ chối kết bạn với ${item.name}`);
+  const handleReject = async (item) => {
+    try {
+      await api.rejectFriendRequest(item.id);
+      // Cập nhật UI sau khi thành công
+      setReceivedRequests(prevRequests => 
+        prevRequests.filter(request => request.id !== item.id)
+      );
+      console.log(`Từ chối kết bạn với ${item.name}`);
+    } catch (err) {
+      console.error("Lỗi khi từ chối lời mời kết bạn:", err);
+    }
   };
 
-  const ReceivedTab = () => (
-    <SectionList
-      sections={groupByTime(receivedRequests)}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.requestItem}
-          onPress={() => handleRequestPress(item, "received")}
-        >
-          <Image
-            source={require("../../../../../assets/images/avt.jpg")}
-            style={styles.avatar}
-          />
-          <View style={styles.infoWrapper}>
+  const handleWithdraw = async (item) => {
+    try {
+      await api.retrieveFriendRequest(item.id);
+      // Cập nhật UI sau khi thành công
+      setSentRequests(prevRequests => 
+        prevRequests.filter(request => request.id !== item.id)
+      );
+      console.log(`Đã thu hồi lời mời kết bạn với ${item.name}`);
+    } catch (err) {
+      console.error("Lỗi khi thu hồi lời mời kết bạn:", err);
+    }
+  };
+
+  const ReceivedTab = () => {
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
+        </View>
+      );
+    }
+    
+    if (error) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      );
+    }
+    
+    return (
+      <SectionList
+        sections={groupByTime(receivedRequests)}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.requestItem}
+            onPress={() => handleRequestPress(item, "received")}
+          >
+            <Image
+              source={require("../../../../../assets/images/avt.jpg")}
+              style={styles.avatar}
+            />
+            <View style={styles.infoWrapper}>
+              <View style={styles.infoContainer}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.status}>{item.status || "Muốn kết bạn"}</Text>
+              </View>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.rejectButton}
+                  onPress={() => handleReject(item)}
+                >
+                  <Text style={styles.rejectText}>TỪ CHỐI</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.acceptButton}
+                  onPress={() => handleAccept(item)}
+                >
+                  <Text style={styles.acceptText}>ĐỒNG Ý</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableOpacity>
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>{title}</Text>
+            <View style={styles.line} />
+          </View>
+        )}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
+          </View>
+        }
+        style={styles.list}
+      />
+    );
+  };
+
+  const SentTab = () => {
+    if (loading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
+        </View>
+      );
+    }
+    
+    if (error) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      );
+    }
+    
+    return (
+      <SectionList
+        sections={groupByTime(sentRequests)}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.requestItem}
+            onPress={() => handleRequestPress(item, "sent")}
+          >
+            <Image
+              source={require("../../../../../assets/images/avt.jpg")}
+              style={styles.avatar}
+            />
             <View style={styles.infoContainer}>
               <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.status}>{item.status || "Muốn kết bạn"}</Text>
+              <Text style={styles.status}>{item.status}</Text>
+              <Text style={styles.timeAgo}>{item.timeAgo}</Text>
             </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.rejectButton}
-                onPress={() => handleReject(item)}
-              >
-                <Text style={styles.rejectText}>TỪ CHỐI</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.acceptButton}
-                onPress={() => handleAccept(item)}
-              >
-                <Text style={styles.acceptText}>ĐỒNG Ý</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </TouchableOpacity>
-      )}
-      renderSectionHeader={({ section: { title } }) => (
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionHeaderText}>{title}</Text>
-          <View style={styles.line} />
-        </View>
-      )}
-      ListEmptyComponent={
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
-        </View>
-      }
-      style={styles.list}
-    />
-  );
-
-  const SentTab = () => (
-    <SectionList
-      sections={groupByTime(sentRequests)}
-      keyExtractor={(item) => item.id}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.requestItem}
-          onPress={() => handleRequestPress(item, "sent")}
-        >
-          <Image
-            source={require("../../../../../assets/images/avt.jpg")}
-            style={styles.avatar}
-          />
-          <View style={styles.infoContainer}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.status}>{item.status}</Text>
-            <Text style={styles.timeAgo}>{item.timeAgo}</Text>
-          </View>
-          <TouchableOpacity style={styles.withdrawButton}>
-            <Text style={styles.withdrawText}>THU HỒI</Text>
+            <TouchableOpacity 
+              style={styles.withdrawButton}
+              onPress={() => handleWithdraw(item)}
+            >
+              <Text style={styles.withdrawText}>THU HỒI</Text>
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
-      )}
-      renderSectionHeader={({ section: { title } }) => (
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionHeaderText}>{title}</Text>
-          <View style={styles.line} />
-        </View>
-      )}
-      ListEmptyComponent={
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>Không có lời mời đã gửi</Text>
-        </View>
-      }
-      style={styles.list}
-    />
-  );
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>{title}</Text>
+            <View style={styles.line} />
+          </View>
+        )}
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Không có lời mời đã gửi</Text>
+          </View>
+        }
+        style={styles.list}
+      />
+    );
+  };
 
   const renderScene = SceneMap({
     received: ReceivedTab,
@@ -341,6 +445,16 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 16,
     color: "gray",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

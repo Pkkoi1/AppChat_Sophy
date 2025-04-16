@@ -10,13 +10,14 @@ import {
   TextInput,
   RefreshControl,
   FlatList,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Color from "../../../components/colors/Color";
 import postsData from "../../../../assets/objects/post.json";
-import usersData from "../../../../assets/objects/user.json";
 import AvatarUser from "../../../components/profile/AvatarUser";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { api } from "../../../api/api"; // Import API
@@ -29,18 +30,27 @@ const UserProfile = ({ route }) => {
   const [requestSent, setRequestSent] = useState(null);
   const [posts, setPosts] = useState(postsData);
   const [userExists, setUserExists] = useState(false); // Kiểm tra id có tồn tại trong usersData không
-  const [user, setUser] = useState(null); // Lưu thông tin user
+  const [loading, setLoading] = useState(false);
+  const [requestId, setRequestId] = useState(null); // ID của lời mời kết bạn
+  const [friendRequestMessage, setFriendRequestMessage] = useState(""); // Tin nhắn kèm theo lời mời kết bạn
 
-  // Lấy id từ route.params
+  // Lấy friend và requestSent từ route.params
   const { friend, requestSent: initialRequestSent } = route.params || {};
 
+  // Add this effect to validate the friend data
   useEffect(() => {
-    if (initialRequestSent) {
-      setRequestSent(initialRequestSent);
+    // Check if friend data exists and has an ID
+    if (!friend || !friend._id) {
+      console.warn("UserProfile: Missing or invalid friend data", friend);
+      Alert.alert(
+        "Lỗi dữ liệu",
+        "Không thể tải thông tin người dùng. Vui lòng thử lại sau.",
+        [{ text: "Quay lại", onPress: () => navigation.goBack() }]
+      );
+    } else {
+      console.log("UserProfile: Valid friend data", friend._id);
     }
-  }, [initialRequestSent]);
-
-  
+  }, [friend]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -55,20 +65,211 @@ const UserProfile = ({ route }) => {
     extrapolate: "clamp",
   });
 
-  const handleAddFriend = () => {
-    navigation.navigate("AddFriend", { user });
+  // Xử lý gửi lời mời kết bạn
+  // Xử lý gửi lời mời kết bạn
+  const handleAddFriend = async () => {
+    if (!friend || !friend._id) {
+      Alert.alert(
+        "Lỗi",
+        "Không thể xác định người dùng để gửi lời mời kết bạn"
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Kiểm tra xem người dùng có tồn tại không trước khi gửi lời mời
+      try {
+        // Kiểm tra người dùng trước khi gửi lời mời
+        const userCheck = await api.getUserById(friend._id);
+        if (!userCheck || !userCheck.data) {
+          throw new Error("Không tìm thấy người dùng");
+        }
+      } catch (checkError) {
+        console.error("Lỗi khi kiểm tra người dùng:", checkError);
+        Alert.alert(
+          "Người dùng không tồn tại",
+          "Không thể tìm thấy người dùng này trong hệ thống"
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Nếu đã kiểm tra thành công, tiếp tục gửi lời mời
+      const response = await api.sendFriendRequest(
+        friend._id,
+        friendRequestMessage
+      );
+
+      // Cập nhật UI sau khi gửi thành công
+      setRequestSent("pending");
+      setRequestId(response._id); // Lưu ID của lời mời kết bạn nếu API trả về
+
+      Alert.alert("Thành công", "Đã gửi lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi gửi lời mời kết bạn:", error);
+
+      // Xử lý các trường hợp lỗi cụ thể
+      if (error.response) {
+        // Lỗi từ server với mã trạng thái
+        if (error.response.status === 404) {
+          Alert.alert(
+            "Không tìm thấy",
+            "Người dùng không tồn tại hoặc đã bị xóa"
+          );
+        } else if (
+          error.response.status === 400 &&
+          error.response.data.message.includes("already sent")
+        ) {
+          Alert.alert(
+            "Thông báo",
+            "Bạn đã gửi lời mời kết bạn cho người này rồi"
+          );
+          setRequestSent("pending");
+        } else if (
+          error.response.status === 400 &&
+          error.response.data.message.includes("already friends")
+        ) {
+          Alert.alert("Thông báo", "Hai bạn đã là bạn bè rồi");
+          setRequestSent("friend");
+        } else {
+          Alert.alert(
+            "Lỗi",
+            error.response.data.message ||
+              "Không thể gửi lời mời kết bạn. Vui lòng thử lại sau."
+          );
+        }
+      } else {
+        // Lỗi không liên quan đến phản hồi từ server
+        Alert.alert(
+          "Lỗi kết nối",
+          "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCancelRequest = () => {
-    setRequestSent(null);
+  // Xử lý hủy lời mời kết bạn đã gửi
+  const handleCancelRequest = async () => {
+    try {
+      setLoading(true);
+
+      // Nếu có requestId thì sử dụng, nếu không thì bạn cần tìm cách lấy ID của lời mời
+      if (!requestId) {
+        // Có thể lấy danh sách lời mời đã gửi và tìm ID tương ứng
+        const sentRequests = await api.getFriendRequestsSent();
+        const foundRequest = sentRequests.find(
+          (req) => req.receiver._id === friend._id
+        );
+
+        if (foundRequest) {
+          await api.retrieveFriendRequest(foundRequest._id);
+        } else {
+          throw new Error("Không tìm thấy lời mời kết bạn để hủy");
+        }
+      } else {
+        await api.retrieveFriendRequest(requestId);
+      }
+
+      // Cập nhật UI sau khi hủy thành công
+      setRequestSent(null);
+      setRequestId(null);
+
+      Alert.alert("Thành công", "Đã hủy lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi hủy lời mời kết bạn:", error);
+      Alert.alert(
+        "Lỗi",
+        error.message || "Không thể hủy lời mời kết bạn. Vui lòng thử lại sau."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAcceptRequest = () => {
-    navigation.navigate("AcceptFriend", { user });
+  // Xử lý chấp nhận lời mời kết bạn
+  const handleAcceptRequest = async () => {
+    try {
+      setLoading(true);
+
+      // Nếu có requestId thì sử dụng, nếu không thì bạn cần tìm cách lấy ID của lời mời
+      if (!requestId) {
+        // Có thể lấy danh sách lời mời đã nhận và tìm ID tương ứng
+        const receivedRequests = await api.getFriendRequestsReceived();
+        const foundRequest = receivedRequests.find(
+          (req) => req.sender._id === friend._id
+        );
+
+        if (foundRequest) {
+          await api.acceptFriendRequest(foundRequest._id);
+        } else {
+          throw new Error("Không tìm thấy lời mời kết bạn để chấp nhận");
+        }
+      } else {
+        await api.acceptFriendRequest(requestId);
+      }
+
+      // Cập nhật UI sau khi chấp nhận thành công
+      setRequestSent("friend");
+      setRequestId(null);
+
+      Alert.alert("Thành công", "Đã chấp nhận lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi chấp nhận lời mời kết bạn:", error);
+      Alert.alert(
+        "Lỗi",
+        error.message ||
+          "Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại sau."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Xử lý từ chối lời mời kết bạn
+  const handleRejectRequest = async () => {
+    try {
+      setLoading(true);
+
+      // Nếu có requestId thì sử dụng, nếu không thì bạn cần tìm cách lấy ID của lời mời
+      if (!requestId) {
+        // Có thể lấy danh sách lời mời đã nhận và tìm ID tương ứng
+        const receivedRequests = await api.getFriendRequestsReceived();
+        const foundRequest = receivedRequests.find(
+          (req) => req.sender._id === friend._id
+        );
+
+        if (foundRequest) {
+          await api.rejectFriendRequest(foundRequest._id);
+        } else {
+          throw new Error("Không tìm thấy lời mời kết bạn để từ chối");
+        }
+      } else {
+        await api.rejectFriendRequest(requestId);
+      }
+
+      // Cập nhật UI sau khi từ chối thành công
+      setRequestSent(null);
+      setRequestId(null);
+
+      Alert.alert("Thành công", "Đã từ chối lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi từ chối lời mời kết bạn:", error);
+      Alert.alert(
+        "Lỗi",
+        error.message ||
+          "Không thể từ chối lời mời kết bạn. Vui lòng thử lại sau."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderPostImages = ({ item }) => (
-    <TouchableOpacity onPress={() => { }}>
+    <TouchableOpacity onPress={() => {}}>
       <Image
         source={require("../../../../assets/images/avt.jpg")}
         style={styles.postImage}
@@ -118,13 +319,10 @@ const UserProfile = ({ route }) => {
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
             {friend?.urlavatar ? (
-              <Image
-                source={{ uri: friend.urlavatar }}
-                style={styles.avatar}
-              />
+              <Image source={{ uri: friend.urlavatar }} style={styles.avatar} />
             ) : (
               <AvatarUser
-                fullName={friend?.fullname}
+                fullName={friend?.fullname || ""}
                 width={120}
                 height={120}
                 avtText={40}
@@ -134,14 +332,25 @@ const UserProfile = ({ route }) => {
             )}
           </View>
 
+          <View style={styles.nameContainer}>
+            <Text style={styles.name}>{friend?.fullname || "Người dùng"}</Text>
+          </View>
+
           {!userExists ? (
+            // Neu la ban be
             <>
               {requestSent === "friend" ? (
                 <View style={styles.friendContainer}>
                   <>
-                    <Text style={styles.statusText}>Công ty cổ phần thép TVP</Text>
-                    <Text style={styles.statusText}>123456789</Text>
-                    <Text style={styles.statusText}>user@gmail.com</Text>
+                    <Text style={styles.statusText}>
+                      Công ty cổ phần thép TVP
+                    </Text>
+                    <Text style={styles.statusText}>
+                      {friend?.phone || "123456789"}
+                    </Text>
+                    <Text style={styles.statusText}>
+                      {friend?.email || "user@gmail.com"}
+                    </Text>
                   </>
                 </View>
               ) : (
@@ -149,10 +358,12 @@ const UserProfile = ({ route }) => {
                 <View style={styles.buttonContainer}>
                   <View style={styles.avatarContainer}>
                     <Text style={styles.editText}>
-                      Bạn chưa thể xem nhật ký của {friend?.fullname || "Thành Nghiêm"}{" "}
-                      khi chưa là bạn bè
+                      Bạn chưa thể xem nhật ký của{" "}
+                      {friend?.fullname || "Thành Nghiêm"} khi chưa là bạn bè
                     </Text>
                   </View>
+
+                  {/* Đang chờ mình đồng ý kết bạn */}
                   {requestSent === "accepted" ? (
                     <View style={styles.requestInfoContainer}>
                       <Text style={styles.requestTitle}>
@@ -183,19 +394,34 @@ const UserProfile = ({ route }) => {
                       </View>
                       <TextInput
                         style={styles.requestInput}
-                        value={`Xin chào, tôi là ${friend?.fullname || "Thủy Lê"}`}
+                        value={`Xin chào, tôi là ${
+                          friend?.fullname || "Thủy Lê"
+                        }`}
                         editable={false}
                       />
                       <View style={styles.actionButtons}>
-                        <TouchableOpacity style={styles.deniedButton}>
-                          <Text style={styles.deniedButtonText}>Từ chối</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={handleAcceptRequest}
-                          style={styles.acceptedButton}
-                        >
-                          <Text style={styles.acceptedButtonText}>Đồng ý</Text>
-                        </TouchableOpacity>
+                        {loading ? (
+                          <ActivityIndicator size="small" color="#007AFF" />
+                        ) : (
+                          <>
+                            <TouchableOpacity
+                              style={styles.deniedButton}
+                              onPress={handleRejectRequest}
+                            >
+                              <Text style={styles.deniedButtonText}>
+                                Từ chối
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              onPress={handleAcceptRequest}
+                              style={styles.acceptedButton}
+                            >
+                              <Text style={styles.acceptedButtonText}>
+                                Đồng ý
+                              </Text>
+                            </TouchableOpacity>
+                          </>
+                        )}
                       </View>
                     </View>
                   ) : (
@@ -209,20 +435,29 @@ const UserProfile = ({ route }) => {
                           />
                           <Text style={styles.messageButtonText}>Nhắn tin</Text>
                         </TouchableOpacity>
+
+                        {/* Đã gửi yêu cầu kết bạn */}
                         {requestSent === "pending" ? (
-                          <TouchableOpacity
-                            style={styles.removeFriendButton}
-                            onPress={handleCancelRequest}
-                          >
-                            <Ionicons
-                              name="person-remove-outline"
-                              size={20}
-                              color="#666"
-                            />
-                            <Text style={styles.removeFriendButtonText}>
-                              Hủy kết bạn
-                            </Text>
-                          </TouchableOpacity>
+                          loading ? (
+                            <ActivityIndicator size="small" color="#666" />
+                          ) : (
+                            <TouchableOpacity
+                              style={styles.removeFriendButton}
+                              onPress={handleCancelRequest}
+                            >
+                              <Ionicons
+                                name="person-remove-outline"
+                                size={20}
+                                color="#666"
+                              />
+                              <Text style={styles.removeFriendButtonText}>
+                                Hủy kết bạn
+                              </Text>
+                            </TouchableOpacity>
+                          )
+                        ) : // Chưa gửi yêu cầu kết bạn
+                        loading ? (
+                          <ActivityIndicator size="small" color="#666" />
                         ) : (
                           <TouchableOpacity
                             style={styles.addFriendButton}
@@ -233,7 +468,9 @@ const UserProfile = ({ route }) => {
                               size={20}
                               color="#666"
                             />
-                            <Text style={styles.addFriendButtonText}>Kết bạn</Text>
+                            <Text style={styles.addFriendButtonText}>
+                              Kết bạn
+                            </Text>
                           </TouchableOpacity>
                         )}
                       </View>
@@ -247,8 +484,12 @@ const UserProfile = ({ route }) => {
             // Tiểu sử
             <>
               <Text style={styles.statusText}>Công ty cổ phần thép TVP</Text>
-              <Text style={styles.statusText}>123456789</Text>
-              <Text style={styles.statusText}>user@gmail.com</Text>
+              <Text style={styles.statusText}>
+                {friend?.phone || "123456789"}
+              </Text>
+              <Text style={styles.statusText}>
+                {friend?.email || "user@gmail.com"}
+              </Text>
             </>
           )}
 
@@ -336,6 +577,8 @@ const UserProfile = ({ route }) => {
   );
 };
 
+// Styles remain the same
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -402,6 +645,7 @@ const styles = StyleSheet.create({
     color: "#000",
     marginVertical: 10,
     fontWeight: "bold",
+    textAlign: "center",
   },
   editText: {
     color: "#505050",
