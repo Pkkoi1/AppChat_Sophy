@@ -1,134 +1,134 @@
-com.anonymous.ChatApp_Sophy.app-profileinstaller-1.3.1-0 C:\Users\h\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\res
-com.anonymous.ChatApp_Sophy.app-emoji2-views-helper-1.3.0-1 C:\Users\h\.gradle\caches\8.10.2\transforms\0e668c47faea58e8355b295f4cf17083\transformed\emoji2-views-helper-1.3.0\res
-com.anonymous.ChatApp_Sophy.app-camera-mlkit-vision-1.5.0-alpha03-2 C:\Users\h\.gradle\caches\8.10.2\transforms\0fa64c69cd1b17e344c06fe86b2efb67\transformed\camera-mlkit-vision-1.5.0-alpha03\res
-com.anonymous.ChatApp_Sophy.app-fragment-1.6.1-3 C:\Users\h\.gradle\caches\8.10.2\transforms\15d87f72f4e3faa9e1d2d75b73750acc\transformed\fragment-1.6.1\res
-com.anonymous.ChatApp_Sophy.app-core-common-2.0.3-4 C:\Users\h\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\res
-com.anonymous.ChatApp_Sophy.app-cardview-1.0.0-5 C:\Users\h\.gradle\caches\8.10.2\transforms\179120b2100677012381121a40e9d737\transformed\cardview-1.0.0\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-runtime-release-6 C:\Users\h\.gradle\caches\8.10.2\transforms\192087c4d6926005059c51b80e769c60\transformed\lifecycle-runtime-release\res
-com.anonymous.ChatApp_Sophy.app-ui-graphics-release-7 C:\Users\h\.gradle\caches\8.10.2\transforms\1aee9d63299c0c3a953571f79d70b8b8\transformed\ui-graphics-release\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-livedata-core-2.8.7-8 C:\Users\h\.gradle\caches\8.10.2\transforms\20ef9aaa717b593a39dd3a4b44fbed2a\transformed\lifecycle-livedata-core-2.8.7\res
-com.anonymous.ChatApp_Sophy.app-runtime-saveable-release-9 C:\Users\h\.gradle\caches\8.10.2\transforms\2617098ff84bb801035bffc0a04c1db7\transformed\runtime-saveable-release\res
-com.anonymous.ChatApp_Sophy.app-constraintlayout-2.0.1-10 C:\Users\h\.gradle\caches\8.10.2\transforms\2b8b7c9130861c6905c05264e525a3b0\transformed\constraintlayout-2.0.1\res
-com.anonymous.ChatApp_Sophy.app-activity-1.8.0-11 C:\Users\h\.gradle\caches\8.10.2\transforms\3203fbb0e53c5377b413a0de4e714c51\transformed\activity-1.8.0\res
-com.anonymous.ChatApp_Sophy.app-appcompat-resources-1.7.0-12 C:\Users\h\.gradle\caches\8.10.2\transforms\3285d28d0a2a70aecb0e1588f1d60262\transformed\appcompat-resources-1.7.0\res
-com.anonymous.ChatApp_Sophy.app-play-services-basement-18.4.0-13 C:\Users\h\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\res
-com.anonymous.ChatApp_Sophy.app-viewpager2-1.1.0-14 C:\Users\h\.gradle\caches\8.10.2\transforms\33c25067dfe58cea2c2bfabc95d52448\transformed\viewpager2-1.1.0\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-livedata-2.8.7-15 C:\Users\h\.gradle\caches\8.10.2\transforms\343390b9b38823805e6c54594aa1c6b7\transformed\lifecycle-livedata-2.8.7\res
-com.anonymous.ChatApp_Sophy.app-datastore-release-16 C:\Users\h\.gradle\caches\8.10.2\transforms\3b3a68477f03164326dea5c20a60368b\transformed\datastore-release\res
-com.anonymous.ChatApp_Sophy.app-animation-core-release-17 C:\Users\h\.gradle\caches\8.10.2\transforms\3b5a9b62b6d0ef191aec91c2bcb6c06a\transformed\animation-core-release\res
-com.anonymous.ChatApp_Sophy.app-startup-runtime-1.1.1-18 C:\Users\h\.gradle\caches\8.10.2\transforms\3c9c605c665aed3b6fd25381e12d15f7\transformed\startup-runtime-1.1.1\res
-com.anonymous.ChatApp_Sophy.app-camera-camera2-1.5.0-alpha03-19 C:\Users\h\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\res
-com.anonymous.ChatApp_Sophy.app-tracing-ktx-1.2.0-20 C:\Users\h\.gradle\caches\8.10.2\transforms\3f3b3b113b0aeba59fe58a4caa0c5ed2\transformed\tracing-ktx-1.2.0\res
-com.anonymous.ChatApp_Sophy.app-swiperefreshlayout-1.1.0-21 C:\Users\h\.gradle\caches\8.10.2\transforms\42c033406d5381c14a120a740376030c\transformed\swiperefreshlayout-1.1.0\res
-com.anonymous.ChatApp_Sophy.app-fragment-ktx-1.6.1-22 C:\Users\h\.gradle\caches\8.10.2\transforms\43adc128e8c70bb7a1a3192ec18dcfec\transformed\fragment-ktx-1.6.1\res
-com.anonymous.ChatApp_Sophy.app-foundation-release-23 C:\Users\h\.gradle\caches\8.10.2\transforms\4447e548ac28018030ac9c2a5026ddb5\transformed\foundation-release\res
-com.anonymous.ChatApp_Sophy.app-play-services-auth-21.3.0-24 C:\Users\h\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\res
-com.anonymous.ChatApp_Sophy.app-play-services-base-18.5.0-25 C:\Users\h\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\res
-com.anonymous.ChatApp_Sophy.app-browser-1.6.0-26 C:\Users\h\.gradle\caches\8.10.2\transforms\4968e2c22c908c9bd400ae9fac8e1330\transformed\browser-1.6.0\res
-com.anonymous.ChatApp_Sophy.app-credentials-play-services-auth-1.2.0-rc01-27 C:\Users\h\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\res
-com.anonymous.ChatApp_Sophy.app-customview-poolingcontainer-1.0.0-28 C:\Users\h\.gradle\caches\8.10.2\transforms\4a655532b5a3c4bdfd5a4cc7d8eec11d\transformed\customview-poolingcontainer-1.0.0\res
-com.anonymous.ChatApp_Sophy.app-autofill-1.1.0-29 C:\Users\h\.gradle\caches\8.10.2\transforms\4b765197cf2d4f461058b1e9985cbf99\transformed\autofill-1.1.0\res
-com.anonymous.ChatApp_Sophy.app-animation-release-30 C:\Users\h\.gradle\caches\8.10.2\transforms\4f392c5ec21e6671ddffca0e257301db\transformed\animation-release\res
-com.anonymous.ChatApp_Sophy.app-material-1.12.0-31 C:\Users\h\.gradle\caches\8.10.2\transforms\52c05a671c237c38b8b4a73a46a72c2b\transformed\material-1.12.0\res
-com.anonymous.ChatApp_Sophy.app-tracing-1.2.0-32 C:\Users\h\.gradle\caches\8.10.2\transforms\56290dfe2fa9035483aee968f458f61d\transformed\tracing-1.2.0\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-viewmodel-ktx-2.8.7-33 C:\Users\h\.gradle\caches\8.10.2\transforms\5aca5b99cfd5043107c2ae38971608f4\transformed\lifecycle-viewmodel-ktx-2.8.7\res
-com.anonymous.ChatApp_Sophy.app-core-ktx-1.13.1-34 C:\Users\h\.gradle\caches\8.10.2\transforms\5c3522a3191b3be7fd2200eba2296c6c\transformed\core-ktx-1.13.1\res
-com.anonymous.ChatApp_Sophy.app-Android-Image-Cropper-4.3.1-35 C:\Users\h\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\res
-com.anonymous.ChatApp_Sophy.app-BlurView-version-2.0.6-36 C:\Users\h\.gradle\caches\8.10.2\transforms\60e14d59d0f29018bc4d0e98fb0aed84\transformed\BlurView-version-2.0.6\res
-com.anonymous.ChatApp_Sophy.app-savedstate-1.2.1-37 C:\Users\h\.gradle\caches\8.10.2\transforms\61bcca20459cf75c3e7fcf9e40cb5407\transformed\savedstate-1.2.1\res
-com.anonymous.ChatApp_Sophy.app-ui-text-release-38 C:\Users\h\.gradle\caches\8.10.2\transforms\65f6e2fbcadd60bd6d48076f52386a38\transformed\ui-text-release\res
-com.anonymous.ChatApp_Sophy.app-coordinatorlayout-1.2.0-39 C:\Users\h\.gradle\caches\8.10.2\transforms\66c57a9bba2c8f12f07431da5c644ec2\transformed\coordinatorlayout-1.2.0\res
-com.anonymous.ChatApp_Sophy.app-ui-util-release-40 C:\Users\h\.gradle\caches\8.10.2\transforms\6e73787b906329b8d489a836899aa8fc\transformed\ui-util-release\res
-com.anonymous.ChatApp_Sophy.app-emoji2-1.3.0-41 C:\Users\h\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-service-2.8.7-42 C:\Users\h\.gradle\caches\8.10.2\transforms\70342a1c2396cabf86843e5066f7fae3\transformed\lifecycle-service-2.8.7\res
-com.anonymous.ChatApp_Sophy.app-core-splashscreen-1.2.0-alpha02-43 C:\Users\h\.gradle\caches\8.10.2\transforms\71cd547f93f438ffaf1e84f2decc95c7\transformed\core-splashscreen-1.2.0-alpha02\res
-com.anonymous.ChatApp_Sophy.app-react-android-0.76.7-debug-44 C:\Users\h\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\res
-com.anonymous.ChatApp_Sophy.app-annotation-experimental-1.4.1-45 C:\Users\h\.gradle\caches\8.10.2\transforms\72e0a0ac7d42ea7cc975a9678401d894\transformed\annotation-experimental-1.4.1\res
-com.anonymous.ChatApp_Sophy.app-camera-lifecycle-1.5.0-alpha03-46 C:\Users\h\.gradle\caches\8.10.2\transforms\764daaaf806aa89157a0a02e94229a21\transformed\camera-lifecycle-1.5.0-alpha03\res
-com.anonymous.ChatApp_Sophy.app-graphics-path-1.0.1-47 C:\Users\h\.gradle\caches\8.10.2\transforms\8a29520ece16aa24f8cf1577aa6b3669\transformed\graphics-path-1.0.1\res
-com.anonymous.ChatApp_Sophy.app-foundation-layout-release-48 C:\Users\h\.gradle\caches\8.10.2\transforms\8bd4ece5174546686179e7d0e51aac91\transformed\foundation-layout-release\res
-com.anonymous.ChatApp_Sophy.app-ui-unit-release-49 C:\Users\h\.gradle\caches\8.10.2\transforms\8fecb73b0450e4d5b6b78680d2a529a7\transformed\ui-unit-release\res
-com.anonymous.ChatApp_Sophy.app-ui-geometry-release-50 C:\Users\h\.gradle\caches\8.10.2\transforms\94b03b7e6633c06ce2c744dae5788091\transformed\ui-geometry-release\res
-com.anonymous.ChatApp_Sophy.app-camera-view-1.5.0-alpha03-51 C:\Users\h\.gradle\caches\8.10.2\transforms\a2f9ee5b24a43beb0a2823e998b9d06f\transformed\camera-view-1.5.0-alpha03\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-runtime-compose-release-52 C:\Users\h\.gradle\caches\8.10.2\transforms\aad64b3d7be4f668c49191082f4d9d7f\transformed\lifecycle-runtime-compose-release\res
-com.anonymous.ChatApp_Sophy.app-credentials-1.2.0-rc01-53 C:\Users\h\.gradle\caches\8.10.2\transforms\ae2d027c49a5d615d242244850ef036a\transformed\credentials-1.2.0-rc01\res
-com.anonymous.ChatApp_Sophy.app-activity-ktx-1.8.0-54 C:\Users\h\.gradle\caches\8.10.2\transforms\aee273b670494b155f6c918e0ce98e5f\transformed\activity-ktx-1.8.0\res
-com.anonymous.ChatApp_Sophy.app-core-runtime-2.2.0-55 C:\Users\h\.gradle\caches\8.10.2\transforms\af212f51ae023bd13b38d90a450dec4d\transformed\core-runtime-2.2.0\res
-com.anonymous.ChatApp_Sophy.app-media-1.0.0-56 C:\Users\h\.gradle\caches\8.10.2\transforms\b5b80aea95284f73f764a4355dd2a3ab\transformed\media-1.0.0\res
-com.anonymous.ChatApp_Sophy.app-datastore-core-release-57 C:\Users\h\.gradle\caches\8.10.2\transforms\b83c36ccee2c4c3a983e8f42e9ee2569\transformed\datastore-core-release\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-process-2.8.7-58 C:\Users\h\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\res
-com.anonymous.ChatApp_Sophy.app-glide-4.16.0-59 C:\Users\h\.gradle\caches\8.10.2\transforms\ba471500c5c734078bdfb75cd8e5343a\transformed\glide-4.16.0\res
-com.anonymous.ChatApp_Sophy.app-drawerlayout-1.1.1-60 C:\Users\h\.gradle\caches\8.10.2\transforms\bb3088591e9eec7d4838abbde31de87b\transformed\drawerlayout-1.1.1\res
-com.anonymous.ChatApp_Sophy.app-recyclerview-1.3.1-61 C:\Users\h\.gradle\caches\8.10.2\transforms\bcb64d724631ae23ec19b9162845629e\transformed\recyclerview-1.3.1\res
-com.anonymous.ChatApp_Sophy.app-drawee-3.2.0-62 C:\Users\h\.gradle\caches\8.10.2\transforms\c2150fb844f5e7a9d1e47efa0d8b2a89\transformed\drawee-3.2.0\res
-com.anonymous.ChatApp_Sophy.app-firebase-common-21.0.0-63 C:\Users\h\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-viewmodel-release-64 C:\Users\h\.gradle\caches\8.10.2\transforms\c4777bf05f973f85dc5d67aeee8fef32\transformed\lifecycle-viewmodel-release\res
-com.anonymous.ChatApp_Sophy.app-camera-video-1.5.0-alpha03-65 C:\Users\h\.gradle\caches\8.10.2\transforms\c49ba79f0092bb3e385cefd2d0d28ef6\transformed\camera-video-1.5.0-alpha03\res
-com.anonymous.ChatApp_Sophy.app-camera-core-1.5.0-alpha03-66 C:\Users\h\.gradle\caches\8.10.2\transforms\c655b265a213d0f2014da0dd47735c90\transformed\camera-core-1.5.0-alpha03\res
-com.anonymous.ChatApp_Sophy.app-transition-1.5.0-67 C:\Users\h\.gradle\caches\8.10.2\transforms\d2286837172e7cc7c52507bdf5f40f14\transformed\transition-1.5.0\res
-com.anonymous.ChatApp_Sophy.app-ui-release-68 C:\Users\h\.gradle\caches\8.10.2\transforms\d9eda791f92ad15a388a97cccece36f8\transformed\ui-release\res
-com.anonymous.ChatApp_Sophy.app-savedstate-ktx-1.2.1-69 C:\Users\h\.gradle\caches\8.10.2\transforms\de0578a3a6bd77d20f7f53d6e562e0c0\transformed\savedstate-ktx-1.2.1\res
-com.anonymous.ChatApp_Sophy.app-core-1.13.1-70 C:\Users\h\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-runtime-ktx-release-71 C:\Users\h\.gradle\caches\8.10.2\transforms\e96d2ed0d125b6bcbed70838bf0a1626\transformed\lifecycle-runtime-ktx-release\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-livedata-core-ktx-2.8.7-72 C:\Users\h\.gradle\caches\8.10.2\transforms\ec48f7ccc7d4390aea1b48e2b47491c3\transformed\lifecycle-livedata-core-ktx-2.8.7\res
-com.anonymous.ChatApp_Sophy.app-runtime-release-73 C:\Users\h\.gradle\caches\8.10.2\transforms\f3942c6d8335c1bc1c2ea2a03eb68aeb\transformed\runtime-release\res
-com.anonymous.ChatApp_Sophy.app-camera-extensions-1.5.0-alpha03-74 C:\Users\h\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\res
-com.anonymous.ChatApp_Sophy.app-appcompat-1.7.0-75 C:\Users\h\.gradle\caches\8.10.2\transforms\fbd3e0d2b970279fa0dc792ffc070f08\transformed\appcompat-1.7.0\res
-com.anonymous.ChatApp_Sophy.app-datastore-preferences-release-76 C:\Users\h\.gradle\caches\8.10.2\transforms\fc218dae362f6e143b83759bfdffb61f\transformed\datastore-preferences-release\res
-com.anonymous.ChatApp_Sophy.app-lifecycle-viewmodel-savedstate-2.8.7-77 C:\Users\h\.gradle\caches\8.10.2\transforms\fccd007a80450a33a2a4ec3692e9b6bd\transformed\lifecycle-viewmodel-savedstate-2.8.7\res
-com.anonymous.ChatApp_Sophy.app-firebase-crashlytics-19.4.2-78 C:\Users\h\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\res
-com.anonymous.ChatApp_Sophy.app-res-79 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\build\generated\res\injectCrashlyticsMappingFileIdDebug
-com.anonymous.ChatApp_Sophy.app-pngs-80 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\build\generated\res\pngs\debug
-com.anonymous.ChatApp_Sophy.app-res-81 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\build\generated\res\processDebugGoogleServices
-com.anonymous.ChatApp_Sophy.app-resValues-82 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\build\generated\res\resValues\debug
-com.anonymous.ChatApp_Sophy.app-packageDebugResources-83 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
-com.anonymous.ChatApp_Sophy.app-packageDebugResources-84 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
-com.anonymous.ChatApp_Sophy.app-debug-85 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\build\intermediates\merged_res\debug\mergeDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-86 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\debug\res
-com.anonymous.ChatApp_Sophy.app-main-87 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\res
-com.anonymous.ChatApp_Sophy.app-debug-88 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-async-storage\async-storage\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-89 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-clipboard\clipboard\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-90 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-community\checkbox\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-91 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-community\datetimepicker\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-92 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-93 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-94 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-95 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-picker\picker\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-96 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-asset\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-97 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-barcode-scanner\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-98 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-blur\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-99 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-camera\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-100 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-constants\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-101 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-client\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-102 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-103 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu-interface\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-104 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-105 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-106 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-font\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-107 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-haptics\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-108 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-loader\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-109 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-110 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-json-utils\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-111 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-keep-awake\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-112 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-linear-gradient\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-113 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-linking\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-114 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-manifests\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-115 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-116 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-117 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-118 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-splash-screen\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-119 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-system-ui\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-120 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-updates-interface\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-121 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-web-browser\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-122 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-123 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-action-sheet\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-124 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-gesture-handler\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-125 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-network-info\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-126 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-pager-view\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-127 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-reanimated\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-128 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-safe-area-context\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-129 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-screens\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-130 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-sms\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-131 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-vector-icons\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-132 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-vision-camera\android\build\intermediates\packaged_res\debug\packageDebugResources
-com.anonymous.ChatApp_Sophy.app-debug-133 E:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-profileinstaller-1.3.1-0 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\res
+com.anonymous.ChatApp_Sophy.app-emoji2-views-helper-1.3.0-1 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\0e668c47faea58e8355b295f4cf17083\transformed\emoji2-views-helper-1.3.0\res
+com.anonymous.ChatApp_Sophy.app-camera-mlkit-vision-1.5.0-alpha03-2 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\0fa64c69cd1b17e344c06fe86b2efb67\transformed\camera-mlkit-vision-1.5.0-alpha03\res
+com.anonymous.ChatApp_Sophy.app-fragment-1.6.1-3 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\15d87f72f4e3faa9e1d2d75b73750acc\transformed\fragment-1.6.1\res
+com.anonymous.ChatApp_Sophy.app-core-common-2.0.3-4 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\res
+com.anonymous.ChatApp_Sophy.app-cardview-1.0.0-5 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\179120b2100677012381121a40e9d737\transformed\cardview-1.0.0\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-runtime-release-6 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\192087c4d6926005059c51b80e769c60\transformed\lifecycle-runtime-release\res
+com.anonymous.ChatApp_Sophy.app-ui-graphics-release-7 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\1aee9d63299c0c3a953571f79d70b8b8\transformed\ui-graphics-release\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-livedata-core-2.8.7-8 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\20ef9aaa717b593a39dd3a4b44fbed2a\transformed\lifecycle-livedata-core-2.8.7\res
+com.anonymous.ChatApp_Sophy.app-runtime-saveable-release-9 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\2617098ff84bb801035bffc0a04c1db7\transformed\runtime-saveable-release\res
+com.anonymous.ChatApp_Sophy.app-constraintlayout-2.0.1-10 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\2b8b7c9130861c6905c05264e525a3b0\transformed\constraintlayout-2.0.1\res
+com.anonymous.ChatApp_Sophy.app-activity-1.8.0-11 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\3203fbb0e53c5377b413a0de4e714c51\transformed\activity-1.8.0\res
+com.anonymous.ChatApp_Sophy.app-appcompat-resources-1.7.0-12 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\3285d28d0a2a70aecb0e1588f1d60262\transformed\appcompat-resources-1.7.0\res
+com.anonymous.ChatApp_Sophy.app-play-services-basement-18.4.0-13 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\res
+com.anonymous.ChatApp_Sophy.app-viewpager2-1.1.0-14 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\33c25067dfe58cea2c2bfabc95d52448\transformed\viewpager2-1.1.0\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-livedata-2.8.7-15 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\343390b9b38823805e6c54594aa1c6b7\transformed\lifecycle-livedata-2.8.7\res
+com.anonymous.ChatApp_Sophy.app-datastore-release-16 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\3b3a68477f03164326dea5c20a60368b\transformed\datastore-release\res
+com.anonymous.ChatApp_Sophy.app-animation-core-release-17 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\3b5a9b62b6d0ef191aec91c2bcb6c06a\transformed\animation-core-release\res
+com.anonymous.ChatApp_Sophy.app-startup-runtime-1.1.1-18 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\3c9c605c665aed3b6fd25381e12d15f7\transformed\startup-runtime-1.1.1\res
+com.anonymous.ChatApp_Sophy.app-camera-camera2-1.5.0-alpha03-19 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\res
+com.anonymous.ChatApp_Sophy.app-tracing-ktx-1.2.0-20 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\3f3b3b113b0aeba59fe58a4caa0c5ed2\transformed\tracing-ktx-1.2.0\res
+com.anonymous.ChatApp_Sophy.app-swiperefreshlayout-1.1.0-21 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\42c033406d5381c14a120a740376030c\transformed\swiperefreshlayout-1.1.0\res
+com.anonymous.ChatApp_Sophy.app-fragment-ktx-1.6.1-22 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\43adc128e8c70bb7a1a3192ec18dcfec\transformed\fragment-ktx-1.6.1\res
+com.anonymous.ChatApp_Sophy.app-foundation-release-23 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\4447e548ac28018030ac9c2a5026ddb5\transformed\foundation-release\res
+com.anonymous.ChatApp_Sophy.app-play-services-auth-21.3.0-24 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\res
+com.anonymous.ChatApp_Sophy.app-play-services-base-18.5.0-25 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\res
+com.anonymous.ChatApp_Sophy.app-browser-1.6.0-26 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\4968e2c22c908c9bd400ae9fac8e1330\transformed\browser-1.6.0\res
+com.anonymous.ChatApp_Sophy.app-credentials-play-services-auth-1.2.0-rc01-27 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\res
+com.anonymous.ChatApp_Sophy.app-customview-poolingcontainer-1.0.0-28 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\4a655532b5a3c4bdfd5a4cc7d8eec11d\transformed\customview-poolingcontainer-1.0.0\res
+com.anonymous.ChatApp_Sophy.app-autofill-1.1.0-29 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\4b765197cf2d4f461058b1e9985cbf99\transformed\autofill-1.1.0\res
+com.anonymous.ChatApp_Sophy.app-animation-release-30 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\4f392c5ec21e6671ddffca0e257301db\transformed\animation-release\res
+com.anonymous.ChatApp_Sophy.app-material-1.12.0-31 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\52c05a671c237c38b8b4a73a46a72c2b\transformed\material-1.12.0\res
+com.anonymous.ChatApp_Sophy.app-tracing-1.2.0-32 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\56290dfe2fa9035483aee968f458f61d\transformed\tracing-1.2.0\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-viewmodel-ktx-2.8.7-33 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5aca5b99cfd5043107c2ae38971608f4\transformed\lifecycle-viewmodel-ktx-2.8.7\res
+com.anonymous.ChatApp_Sophy.app-core-ktx-1.13.1-34 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5c3522a3191b3be7fd2200eba2296c6c\transformed\core-ktx-1.13.1\res
+com.anonymous.ChatApp_Sophy.app-Android-Image-Cropper-4.3.1-35 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\res
+com.anonymous.ChatApp_Sophy.app-BlurView-version-2.0.6-36 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\60e14d59d0f29018bc4d0e98fb0aed84\transformed\BlurView-version-2.0.6\res
+com.anonymous.ChatApp_Sophy.app-savedstate-1.2.1-37 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\61bcca20459cf75c3e7fcf9e40cb5407\transformed\savedstate-1.2.1\res
+com.anonymous.ChatApp_Sophy.app-ui-text-release-38 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\65f6e2fbcadd60bd6d48076f52386a38\transformed\ui-text-release\res
+com.anonymous.ChatApp_Sophy.app-coordinatorlayout-1.2.0-39 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\66c57a9bba2c8f12f07431da5c644ec2\transformed\coordinatorlayout-1.2.0\res
+com.anonymous.ChatApp_Sophy.app-ui-util-release-40 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\6e73787b906329b8d489a836899aa8fc\transformed\ui-util-release\res
+com.anonymous.ChatApp_Sophy.app-emoji2-1.3.0-41 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-service-2.8.7-42 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\70342a1c2396cabf86843e5066f7fae3\transformed\lifecycle-service-2.8.7\res
+com.anonymous.ChatApp_Sophy.app-core-splashscreen-1.2.0-alpha02-43 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\71cd547f93f438ffaf1e84f2decc95c7\transformed\core-splashscreen-1.2.0-alpha02\res
+com.anonymous.ChatApp_Sophy.app-react-android-0.76.7-debug-44 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\res
+com.anonymous.ChatApp_Sophy.app-annotation-experimental-1.4.1-45 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\72e0a0ac7d42ea7cc975a9678401d894\transformed\annotation-experimental-1.4.1\res
+com.anonymous.ChatApp_Sophy.app-camera-lifecycle-1.5.0-alpha03-46 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\764daaaf806aa89157a0a02e94229a21\transformed\camera-lifecycle-1.5.0-alpha03\res
+com.anonymous.ChatApp_Sophy.app-graphics-path-1.0.1-47 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\8a29520ece16aa24f8cf1577aa6b3669\transformed\graphics-path-1.0.1\res
+com.anonymous.ChatApp_Sophy.app-foundation-layout-release-48 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\8bd4ece5174546686179e7d0e51aac91\transformed\foundation-layout-release\res
+com.anonymous.ChatApp_Sophy.app-ui-unit-release-49 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\8fecb73b0450e4d5b6b78680d2a529a7\transformed\ui-unit-release\res
+com.anonymous.ChatApp_Sophy.app-ui-geometry-release-50 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\94b03b7e6633c06ce2c744dae5788091\transformed\ui-geometry-release\res
+com.anonymous.ChatApp_Sophy.app-camera-view-1.5.0-alpha03-51 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\a2f9ee5b24a43beb0a2823e998b9d06f\transformed\camera-view-1.5.0-alpha03\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-runtime-compose-release-52 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\aad64b3d7be4f668c49191082f4d9d7f\transformed\lifecycle-runtime-compose-release\res
+com.anonymous.ChatApp_Sophy.app-credentials-1.2.0-rc01-53 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\ae2d027c49a5d615d242244850ef036a\transformed\credentials-1.2.0-rc01\res
+com.anonymous.ChatApp_Sophy.app-activity-ktx-1.8.0-54 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\aee273b670494b155f6c918e0ce98e5f\transformed\activity-ktx-1.8.0\res
+com.anonymous.ChatApp_Sophy.app-core-runtime-2.2.0-55 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\af212f51ae023bd13b38d90a450dec4d\transformed\core-runtime-2.2.0\res
+com.anonymous.ChatApp_Sophy.app-media-1.0.0-56 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\b5b80aea95284f73f764a4355dd2a3ab\transformed\media-1.0.0\res
+com.anonymous.ChatApp_Sophy.app-datastore-core-release-57 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\b83c36ccee2c4c3a983e8f42e9ee2569\transformed\datastore-core-release\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-process-2.8.7-58 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\res
+com.anonymous.ChatApp_Sophy.app-glide-4.16.0-59 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\ba471500c5c734078bdfb75cd8e5343a\transformed\glide-4.16.0\res
+com.anonymous.ChatApp_Sophy.app-drawerlayout-1.1.1-60 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\bb3088591e9eec7d4838abbde31de87b\transformed\drawerlayout-1.1.1\res
+com.anonymous.ChatApp_Sophy.app-recyclerview-1.3.1-61 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\bcb64d724631ae23ec19b9162845629e\transformed\recyclerview-1.3.1\res
+com.anonymous.ChatApp_Sophy.app-drawee-3.2.0-62 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\c2150fb844f5e7a9d1e47efa0d8b2a89\transformed\drawee-3.2.0\res
+com.anonymous.ChatApp_Sophy.app-firebase-common-21.0.0-63 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-viewmodel-release-64 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\c4777bf05f973f85dc5d67aeee8fef32\transformed\lifecycle-viewmodel-release\res
+com.anonymous.ChatApp_Sophy.app-camera-video-1.5.0-alpha03-65 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\c49ba79f0092bb3e385cefd2d0d28ef6\transformed\camera-video-1.5.0-alpha03\res
+com.anonymous.ChatApp_Sophy.app-camera-core-1.5.0-alpha03-66 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\c655b265a213d0f2014da0dd47735c90\transformed\camera-core-1.5.0-alpha03\res
+com.anonymous.ChatApp_Sophy.app-transition-1.5.0-67 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\d2286837172e7cc7c52507bdf5f40f14\transformed\transition-1.5.0\res
+com.anonymous.ChatApp_Sophy.app-ui-release-68 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\d9eda791f92ad15a388a97cccece36f8\transformed\ui-release\res
+com.anonymous.ChatApp_Sophy.app-savedstate-ktx-1.2.1-69 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\de0578a3a6bd77d20f7f53d6e562e0c0\transformed\savedstate-ktx-1.2.1\res
+com.anonymous.ChatApp_Sophy.app-core-1.13.1-70 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-runtime-ktx-release-71 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\e96d2ed0d125b6bcbed70838bf0a1626\transformed\lifecycle-runtime-ktx-release\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-livedata-core-ktx-2.8.7-72 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\ec48f7ccc7d4390aea1b48e2b47491c3\transformed\lifecycle-livedata-core-ktx-2.8.7\res
+com.anonymous.ChatApp_Sophy.app-runtime-release-73 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\f3942c6d8335c1bc1c2ea2a03eb68aeb\transformed\runtime-release\res
+com.anonymous.ChatApp_Sophy.app-camera-extensions-1.5.0-alpha03-74 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\res
+com.anonymous.ChatApp_Sophy.app-appcompat-1.7.0-75 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\fbd3e0d2b970279fa0dc792ffc070f08\transformed\appcompat-1.7.0\res
+com.anonymous.ChatApp_Sophy.app-datastore-preferences-release-76 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\fc218dae362f6e143b83759bfdffb61f\transformed\datastore-preferences-release\res
+com.anonymous.ChatApp_Sophy.app-lifecycle-viewmodel-savedstate-2.8.7-77 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\fccd007a80450a33a2a4ec3692e9b6bd\transformed\lifecycle-viewmodel-savedstate-2.8.7\res
+com.anonymous.ChatApp_Sophy.app-firebase-crashlytics-19.4.2-78 C:\Users\DANG KHOI\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\res
+com.anonymous.ChatApp_Sophy.app-res-79 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\build\generated\res\injectCrashlyticsMappingFileIdDebug
+com.anonymous.ChatApp_Sophy.app-pngs-80 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\build\generated\res\pngs\debug
+com.anonymous.ChatApp_Sophy.app-res-81 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\build\generated\res\processDebugGoogleServices
+com.anonymous.ChatApp_Sophy.app-resValues-82 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\build\generated\res\resValues\debug
+com.anonymous.ChatApp_Sophy.app-packageDebugResources-83 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.anonymous.ChatApp_Sophy.app-packageDebugResources-84 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.anonymous.ChatApp_Sophy.app-debug-85 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-86 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\src\debug\res
+com.anonymous.ChatApp_Sophy.app-main-87 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\android\app\src\main\res
+com.anonymous.ChatApp_Sophy.app-debug-88 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-async-storage\async-storage\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-89 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-clipboard\clipboard\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-90 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-community\checkbox\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-91 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-community\datetimepicker\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-92 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-93 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-94 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-95 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\@react-native-picker\picker\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-96 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-asset\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-97 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-barcode-scanner\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-98 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-blur\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-99 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-camera\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-100 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-constants\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-101 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-client\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-102 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-103 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-menu-interface\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-104 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-dev-menu\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-105 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-file-system\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-106 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-font\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-107 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-haptics\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-108 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-loader\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-109 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-image-picker\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-110 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-json-utils\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-111 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-keep-awake\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-112 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-linear-gradient\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-113 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-linking\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-114 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-manifests\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-115 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-media-library\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-116 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-modules-core\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-117 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-sharing\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-118 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-splash-screen\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-119 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-system-ui\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-120 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-updates-interface\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-121 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo-web-browser\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-122 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\expo\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-123 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-action-sheet\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-124 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-gesture-handler\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-125 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-network-info\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-126 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-pager-view\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-127 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-reanimated\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-128 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-safe-area-context\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-129 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-screens\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-130 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-sms\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-131 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-vector-icons\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-132 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-vision-camera\android\build\intermediates\packaged_res\debug\packageDebugResources
+com.anonymous.ChatApp_Sophy.app-debug-133 D:\Study\CongNgheMoi\Sophy\ChatApp_Sophy\node_modules\react-native-webview\android\build\intermediates\packaged_res\debug\packageDebugResources

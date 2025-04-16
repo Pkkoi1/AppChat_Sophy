@@ -64,11 +64,12 @@ const MessageItemStyle = StyleSheet.create({
     marginBottom: 4,
   },
   image: {
-    width: 250,
-    height: 180,
+    width: "100%", // Make the image width relative to the chat box
+    height: undefined, // Allow proportional scaling
+    aspectRatio: 4 / 3, // Maintain a 4:3 aspect ratio
     borderRadius: 8,
     marginVertical: 10,
-    alignSelf: "center", // Center the image outside the bubble
+    alignSelf: "flex-start", // Align the image within the bubble
   },
   fileContainer: {
     padding: 10,

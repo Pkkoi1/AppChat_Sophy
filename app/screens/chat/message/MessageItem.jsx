@@ -253,25 +253,31 @@ const MessageItem = ({
     if (isSender && isFirstMessageFromSender) {
       // Chỉ hiển thị trạng thái cho tin nhắn đầu tiên của người gửi
       let statusText = "";
-      const isReceived =
-        receiver &&
-        message.readBy.some((user) => user.userId === receiver.userId);
 
-      if (isReceived) {
-        statusText = "Đã nhận";
+      if (!message.readBy || message.readBy.length === 0) {
+        // Default to "Đã gửi" if readBy is empty
+        statusText = "Đã gửi";
       } else {
-        switch (message.sendStatus) {
-          case "sending":
-            statusText = "Đang gửi...";
-            break;
-          case "sent":
-            statusText = "Đã gửi";
-            break;
-          case "seen":
-            statusText = "Đã xem";
-            break;
-          default:
-            statusText = "";
+        const isReceived =
+          receiver &&
+          message.readBy.some((user) => user.userId === receiver.userId); // Add null check for receiver
+
+        if (isReceived) {
+          statusText = "Đã xem";
+        } else {
+          switch (message.sendStatus) {
+            case "sending":
+              statusText = "Đang gửi...";
+              break;
+            case "sent":
+              statusText = "Đã gửi";
+              break;
+            case "seen":
+              statusText = "Đã xem";
+              break;
+            default:
+              statusText = "";
+          }
         }
       }
 
