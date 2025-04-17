@@ -93,6 +93,7 @@ const MessagePopup = ({
   messageReactions,
   setMessageReactions,
   senderId,
+  setMessages, // Add setMessages as a prop to update the message list
 }) => {
   const handleEmojiPress = (emoji) => {
     if (selectedMessage) {
@@ -127,6 +128,15 @@ const MessagePopup = ({
               selectedMessage.messageDetailId
             );
             console.log("Tin nhắn đã được thu hồi:", response);
+
+            // Update the UI to mark the message as recalled
+            setMessages((prevMessages) =>
+              prevMessages.map((msg) =>
+                msg.messageDetailId === selectedMessage.messageDetailId
+                  ? { ...msg, isRecall: true }
+                  : msg
+              )
+            );
           } catch (error) {
             console.error(
               "Lỗi khi thu hồi tin nhắn:",
@@ -177,6 +187,13 @@ const MessagePopup = ({
             selectedMessage.messageDetailId
           );
           console.log("Tin nhắn đã được xóa:", response);
+
+          // Update the UI to remove the deleted message
+          setMessages((prevMessages) =>
+            prevMessages.filter(
+              (msg) => msg.messageDetailId !== selectedMessage.messageDetailId
+            )
+          );
           Alert.alert("Thành công", "Tin nhắn đã được xóa.");
         } catch (error) {
           console.error(

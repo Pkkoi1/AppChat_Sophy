@@ -1,29 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.anonymous.ChatApp_Sophy.app-mergeDebugResources-83:/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "com.anonymous.ChatApp_Sophy.app-mergeDebugResources-85:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\fbd3e0d2b970279fa0dc792ffc070f08\\transformed\\appcompat-1.7.0\\res\\values-watch-v20\\values-watch-v20.xml",
-                    "from": {
-                        "startLines": "2,5,8",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "55,214,385",
-                        "endLines": "4,7,10",
-                        "endColumns": "12,12,12",
-                        "endOffsets": "209,380,553"
-                    },
-                    "to": {
-                        "startLines": "18,21,24",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "1294,1453,1624",
-                        "endLines": "20,23,26",
-                        "endColumns": "12,12,12",
-                        "endOffsets": "1448,1619,1792"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\45df7d4d3c383a14d6cab3fa71de24a8\\transformed\\play-services-auth-21.3.0\\res\\values-watch-v20\\values.xml",
+                    "source": "C:\\Users\\DANG KHOI\\.gradle\\caches\\8.10.2\\transforms\\45df7d4d3c383a14d6cab3fa71de24a8\\transformed\\play-services-auth-21.3.0\\res\\values-watch-v20\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11",
                         "startColumns": "0,0,0,0,0,0,0,0",
@@ -40,7 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\71cd547f93f438ffaf1e84f2decc95c7\\transformed\\core-splashscreen-1.2.0-alpha02\\res\\values-watch-v20\\values-watch-v20.xml",
+                    "source": "C:\\Users\\DANG KHOI\\.gradle\\caches\\8.10.2\\transforms\\71cd547f93f438ffaf1e84f2decc95c7\\transformed\\core-splashscreen-1.2.0-alpha02\\res\\values-watch-v20\\values-watch-v20.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9",
                         "startColumns": "4,4,4,4,4,4,4,4",
@@ -54,6 +35,25 @@
                         "startOffsets": "715,789,865,940,1017,1088,1156,1226",
                         "endColumns": "73,75,74,76,70,67,69,67",
                         "endOffsets": "784,860,935,1012,1083,1151,1221,1289"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\DANG KHOI\\.gradle\\caches\\8.10.2\\transforms\\fbd3e0d2b970279fa0dc792ffc070f08\\transformed\\appcompat-1.7.0\\res\\values-watch-v20\\values-watch-v20.xml",
+                    "from": {
+                        "startLines": "2,5,8",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,214,385",
+                        "endLines": "4,7,10",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "209,380,553"
+                    },
+                    "to": {
+                        "startLines": "18,21,24",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "1294,1453,1624",
+                        "endLines": "20,23,26",
+                        "endColumns": "12,12,12",
+                        "endOffsets": "1448,1619,1792"
                     }
                 }
             ]

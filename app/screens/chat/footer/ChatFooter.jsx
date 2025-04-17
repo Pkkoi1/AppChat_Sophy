@@ -103,7 +103,9 @@ const ChatFooter = ({ onSendMessage, onSendImage, onSendFile }) => {
         placeholder="Nhập tin nhắn"
         style={ChatFooterStyle.text}
         value={message}
-        onChangeText={setMessage}
+        onChangeText={(text) => {
+          setMessage(text);
+        }}
       />
       {message.trim() ? (
         <TouchableOpacity
