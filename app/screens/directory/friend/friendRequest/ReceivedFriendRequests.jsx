@@ -8,6 +8,7 @@ import {
   Image,
   ActivityIndicator,
   RefreshControl,
+  Alert, // Import Alert
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import HeadView from "../../../header/Header";
@@ -67,7 +68,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
   // Thêm state cho dữ liệu từ API
   const [receivedRequests, setReceivedRequests] = useState([]);
   const [sentRequests, setSentRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [index, setIndex] = useState(0);
@@ -139,28 +140,37 @@ const ReceivedFriendRequests = ({ navigation }) => {
   // Cập nhật xử lý sự kiện với API
   const handleAccept = async (item) => {
     try {
-      await api.acceptFriendRequest(item.userId);
+      setLoading(true); // Start loading
+      await api.acceptFriendRequest(item.friendRequestId);
       // Cập nhật UI sau khi thành công
       setReceivedRequests(prevRequests => 
-        prevRequests.filter(request => request.userId !== item.userId)
+        prevRequests.filter(request => request.friendRequestId !== item.friendRequestId)
       );
-      console.log(`Đồng ý kết bạn với ${item.name}`);
-      navigation.navigate("AcceptFriend", { user: item });
+      console.log(`Đồng ý kết bạn với ${item.senderId.fullname}`);
+      Alert.alert("Thành công", `Đã chấp nhận lời mời kết bạn từ ${item.senderId.fullname}`); // Show success message
     } catch (err) {
       console.error("Lỗi khi chấp nhận lời mời kết bạn:", err);
+      Alert.alert("Lỗi", "Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại sau."); // Show error message
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
   const handleReject = async (item) => {
     try {
-      await api.rejectFriendRequest(item.userId);
+      setLoading(true); // Start loading
+      await api.rejectFriendRequest(item.friendRequestId);
       // Cập nhật UI sau khi thành công
       setReceivedRequests(prevRequests => 
-        prevRequests.filter(request => request.userId !== item.userId)
+        prevRequests.filter(request => request.friendRequestId !== item.friendRequestId)
       );
-      console.log(`Từ chối kết bạn với ${item.name}`);
+      console.log(`Từ chối kết bạn với ${item.senderId.fullname}`);
+      Alert.alert("Thành công", `Đã từ chối lời mời kết bạn từ ${item.senderId.fullname}`); // Show success message
     } catch (err) {
       console.error("Lỗi khi từ chối lời mời kết bạn:", err);
+      Alert.alert("Lỗi", "Không thể từ chối lời mời kết bạn. Vui lòng thử lại sau."); // Show error message
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -197,7 +207,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
     return (
       <SectionList
       sections={groupByTime(receivedRequests)}
-      keyExtractor={(item) => item.userId}
+      keyExtractor={(item) => item.friendRequestId}
       renderItem={({ item }) => (
         <TouchableOpacity
           style={styles.requestItem}
@@ -216,18 +226,26 @@ const ReceivedFriendRequests = ({ navigation }) => {
             <Text style={styles.name}>{item.senderId?.fullname}</Text>
             <Text style={styles.status}>{"Muốn kết bạn"}</Text>
             <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={styles.rejectButton}
-                onPress={() => handleReject(item)}
-              >
-                <Text style={styles.rejectText}>TỪ CHỐI</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.acceptButton}
-                onPress={() => handleAccept(item)}
-              >
-                <Text style={styles.acceptText}>ĐỒNG Ý</Text>
-              </TouchableOpacity>
+              {loading ? ( // Show loading indicator while processing
+                <ActivityIndicator size="small" color={Color.blueBackgroundButton} />
+              ) : (
+                <>
+                  <TouchableOpacity
+                    style={styles.rejectButton}
+                    onPress={() => handleReject(item)}
+                    disabled={loading} // Disable button while loading
+                  >
+                    <Text style={styles.rejectText}>TỪ CHỐI</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.acceptButton}
+                    onPress={() => handleAccept(item)}
+                    disabled={loading} // Disable button while loading
+                  >
+                    <Text style={styles.acceptText}>ĐỒNG Ý</Text>
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           </View>
         </TouchableOpacity>

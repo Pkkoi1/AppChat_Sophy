@@ -30,12 +30,36 @@ const HeadView = ({ page, userInfo }) => {
       const result = await api.getUserByPhone(phoneNumber);
   
       if (result) {
-        // Lấy danh sách bạn bè
+        // Lấy danh sách bạn bè, lời mời đã gửi và đã nhận
         let requestSent = "";
         try {
           const friends = await api.getFriends();
           const isFriend = friends.some((f) => f._id === result._id);
-          requestSent = isFriend ? "friend" : "";
+          if (isFriend) {
+            requestSent = "friend";
+          } else {
+            const sentRequests = await api.getFriendRequestsSent();
+            console.log("sentRequests:", sentRequests); // Check the value of sentRequests
+            const isRequestSent = sentRequests.some(
+              (req) => {
+                console.log("req.receiverId:", req.receiverId, "result._id:", result._id);
+                return req.receiverId === result._id;
+              }
+            );
+            if (isRequestSent) {
+              requestSent = "pending";
+            } else {
+              const receivedRequests = await api.getFriendRequestsReceived();
+              console.log("result:", result._id); // Check the value of result
+              console.log("receivedRequests:", receivedRequests); // Check the value of receivedRequests
+              const isRequestReceived = receivedRequests.some(
+                (req) => req.senderId._id === result._id
+              );
+              if (isRequestReceived) {
+                requestSent = "accepted";
+              }
+            }
+          }
         } catch (e) {
           // Nếu lỗi khi lấy danh sách bạn bè, giữ requestSent là ""
           console.error("Lỗi khi kiểm tra bạn bè:", e);
