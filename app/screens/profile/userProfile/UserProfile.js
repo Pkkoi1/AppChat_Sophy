@@ -87,12 +87,41 @@ const UserProfile = ({ route }) => {
       }
     });
 
+    // Tương tự ReceivedFriendRequests
+    const handleRejectedFriendRequest = ({ friendRequestData }) => {
+      if (friendRequestData?.senderId === userInfo.userId && friendRequestData?.receiverId === friend.userId) {
+        setRequestSent("");
+        setRequestId(null);
+        Alert.alert("Thông báo", "Lời mời kết bạn đã bị từ chối.");
+      }
+    };
+
+    const handleAcceptedFriendRequest = ({ friendRequestData }) => {
+      console.log("Friend request accepted:", friendRequestData);
+      if (friendRequestData?.senderId === userInfo.userId && friendRequestData?.receiverId === friend.userId) {
+        setRequestSent("friend");
+        setRequestId(null);
+        Alert.alert("Thông báo", "Lời mời kết bạn đã được chấp nhận.");
+      }
+    };
+
+    const handleRetrievedFriendRequest = ({ friendRequestData }) => {
+      if (friendRequestData?.senderId === friend.userId && friendRequestData?.receiverId === userInfo.userId) {
+        setRequestSent("");
+        setRequestId(null);
+        Alert.alert("Thông báo", "Lời mời kết bạn đã bị thu hồi.");
+      }
+    };
+
+    socket.on("rejectedFriendRequest", handleRejectedFriendRequest);
+    socket.on("acceptedFriendRequest", handleAcceptedFriendRequest);
+    socket.on("retrievedFriendRequest", handleRetrievedFriendRequest);
+
     // Cleanup socket listeners on component unmount
     return () => {
-      socket.off("newFriendRequest");
-      socket.off("acceptedFriendRequest");
-      socket.off("rejectedFriendRequest");
-      socket.off("retrievedFriendRequest");
+      socket.off("rejectedFriendRequest", handleRejectedFriendRequest);
+      socket.off("acceptedFriendRequest", handleAcceptedFriendRequest);
+      socket.off("retrievedFriendRequest", handleRetrievedFriendRequest);
     };
   }, [socket, friend?.userId, userInfo.userId]);
 
