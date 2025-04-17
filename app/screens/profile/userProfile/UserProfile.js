@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,47 +10,47 @@ import {
   TextInput,
   RefreshControl,
   FlatList,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import Color from "../../../components/colors/Color";
 import postsData from "../../../../assets/objects/post.json";
-import usersData from "../../../../assets/objects/user.json";
 import AvatarUser from "../../../components/profile/AvatarUser";
+import { AuthContext } from "@/app/auth/AuthContext";
+import { api } from "../../../api/api"; // Import API
 
 const UserProfile = ({ route }) => {
   const navigation = useNavigation();
+  const { userInfo } = useContext(AuthContext);
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
-  const [requestSent, setRequestSent] = useState(null);
   const [posts, setPosts] = useState(postsData);
-  const [userExists, setUserExists] = useState(false); // Kiểm tra id có tồn tại trong usersData không
-  const [user, setUser] = useState(null); // Lưu thông tin user
+  const [userExists, setUserExists] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [requestId, setRequestId] = useState(null);
+  const [friendRequestMessage, setFriendRequestMessage] = useState("");
 
-  // Lấy id từ route.params
-  const { id, requestSent: initialRequestSent } = route.params || {};
+  // Random cover image
+  const [randomImageId, setRandomImageId] = useState(Math.floor(Math.random() * 1000));
+  const coverImageUrl = `https://picsum.photos/id/${randomImageId}/800/400`;
+
+  // Nhận friend và requestSent từ route.params
+  const { friend, requestSent: initialRequestSent } = route.params || {};
+
+  // Sử dụng initialRequestSent từ ListFriend truyền vào
+  const [requestSent, setRequestSent] = useState(initialRequestSent || null);
 
   useEffect(() => {
-    if (initialRequestSent) {
-      setRequestSent(initialRequestSent);
-    }
+    // Nếu requestSent thay đổi từ bên ngoài (nếu có logic cập nhật lại)
+    setRequestSent(initialRequestSent || null);
   }, [initialRequestSent]);
-
-  useEffect(() => {
-    // Tìm user trong usersData dựa trên id truyền vào
-    const foundUser = usersData.find((u) => u.id === id);
-    if (foundUser) {
-      setUser(foundUser);
-      setUserExists(true); // id tồn tại trong usersData
-    } else {
-      setUser(null);
-      setUserExists(false);
-    }
-  }, [id]);
 
   const onRefresh = () => {
     setRefreshing(true);
+    setRandomImageId(Math.floor(Math.random() * 1000)); // Đổi ảnh bìa khi làm mới
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
@@ -62,16 +62,214 @@ const UserProfile = ({ route }) => {
     extrapolate: "clamp",
   });
 
-  const handleAddFriend = () => {
-    navigation.navigate("AddFriend", { user });
+  // Xem ảnh bìa hoặc đại diện (có thể dùng modal hoặc màn hình riêng, ở đây chỉ mở ảnh full screen)
+  const handleViewImage = (imageUrl, fallbackText) => {
+    navigation.navigate("FullScreenImageViewer", {
+      imageUrl,
+      fallbackText,
+    });
   };
 
-  const handleCancelRequest = () => {
-    setRequestSent(null);
+  // Xử lý gửi lời mời kết bạn
+  const handleAddFriend = async () => {
+    if (!friend || !friend.userId) {
+      Alert.alert(
+        "Lỗi",
+        "Không thể xác định người dùng để gửi lời mời kết bạn"
+      );
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Kiểm tra xem người dùng có tồn tại không trước khi gửi lời mời
+      try {
+        // Kiểm tra người dùng trước khi gửi lời mời
+        const userCheck = await api.getUserById(friend.userId);
+        if (!userCheck || !userCheck.data) {
+          throw new Error("Không tìm thấy người dùng");
+        }
+      } catch (checkError) {
+        console.error("Lỗi khi kiểm tra người dùng:", checkError);
+        Alert.alert(
+          "Người dùng không tồn tại",
+          "Không thể tìm thấy người dùng này trong hệ thống"
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Nếu đã kiểm tra thành công, tiếp tục gửi lời mời
+      const response = await api.sendFriendRequest(
+        friend.userId,
+        friendRequestMessage
+      );
+
+      // Cập nhật UI sau khi gửi thành công
+      setRequestSent("pending");
+      setRequestId(response.userId); // Lưu ID của lời mời kết bạn nếu API trả về
+
+      Alert.alert("Thành công", "Đã gửi lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi gửi lời mời kết bạn:", error);
+
+      // Xử lý các trường hợp lỗi cụ thể
+      if (error.response) {
+        // Lỗi từ server với mã trạng thái
+        if (error.response.status === 404) {
+          Alert.alert(
+            "Không tìm thấy",
+            "Người dùng không tồn tại hoặc đã bị xóa"
+          );
+        } else if (
+          error.response.status === 400 &&
+          error.response.data.message.includes("already sent")
+        ) {
+          Alert.alert(
+            "Thông báo",
+            "Bạn đã gửi lời mời kết bạn cho người này rồi"
+          );
+          setRequestSent("pending");
+        } else if (
+          error.response.status === 400 &&
+          error.response.data.message.includes("already friends")
+        ) {
+          Alert.alert("Thông báo", "Hai bạn đã là bạn bè rồi");
+          setRequestSent("friend");
+        } else {
+          Alert.alert(
+            "Lỗi",
+            error.response.data.message ||
+              "Không thể gửi lời mời kết bạn. Vui lòng thử lại sau."
+          );
+        }
+      } else {
+        // Lỗi không liên quan đến phản hồi từ server
+        Alert.alert(
+          "Lỗi kết nối",
+          "Không thể kết nối đến máy chủ. Vui lòng kiểm tra kết nối mạng."
+        );
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAcceptRequest = () => {
-    navigation.navigate("AcceptFriend", { user });
+  // Xử lý hủy lời mời kết bạn đã gửi
+  const handleCancelRequest = async () => {
+    try {
+      setLoading(true);
+
+      // Nếu có requestId thì sử dụng, nếu không thì bạn cần tìm cách lấy ID của lời mời
+      if (!requestId) {
+        // Có thể lấy danh sách lời mời đã gửi và tìm ID tương ứng
+        const sentRequests = await api.getFriendRequestsSent();
+        const foundRequest = sentRequests.find(
+          (req) => req.receiver.userId === friend.userId
+        );
+
+        if (foundRequest) {
+          await api.retrieveFriendRequest(foundRequest.userId);
+        } else {
+          throw new Error("Không tìm thấy lời mời kết bạn để hủy");
+        }
+      } else {
+        await api.retrieveFriendRequest(requestId);
+      }
+
+      // Cập nhật UI sau khi hủy thành công
+      setRequestSent(null);
+      setRequestId(null);
+
+      Alert.alert("Thành công", "Đã hủy lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi hủy lời mời kết bạn:", error);
+      Alert.alert(
+        "Lỗi",
+        error.message || "Không thể hủy lời mời kết bạn. Vui lòng thử lại sau."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Xử lý chấp nhận lời mời kết bạn
+  const handleAcceptRequest = async () => {
+    try {
+      setLoading(true);
+
+      // Nếu có requestId thì sử dụng, nếu không thì bạn cần tìm cách lấy ID của lời mời
+      if (!requestId) {
+        // Có thể lấy danh sách lời mời đã nhận và tìm ID tương ứng
+        const receivedRequests = await api.getFriendRequestsReceived();
+        const foundRequest = receivedRequests.find(
+          (req) => req.sender.userId === friend.userId
+        );
+
+        if (foundRequest) {
+          await api.acceptFriendRequest(foundRequest.userId);
+        } else {
+          throw new Error("Không tìm thấy lời mời kết bạn để chấp nhận");
+        }
+      } else {
+        await api.acceptFriendRequest(requestId);
+      }
+
+      // Cập nhật UI sau khi chấp nhận thành công
+      setRequestSent("friend");
+      setRequestId(null);
+
+      Alert.alert("Thành công", "Đã chấp nhận lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi chấp nhận lời mời kết bạn:", error);
+      Alert.alert(
+        "Lỗi",
+        error.message ||
+          "Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại sau."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Xử lý từ chối lời mời kết bạn
+  const handleRejectRequest = async () => {
+    try {
+      setLoading(true);
+
+      // Nếu có requestId thì sử dụng, nếu không thì bạn cần tìm cách lấy ID của lời mời
+      if (!requestId) {
+        // Có thể lấy danh sách lời mời đã nhận và tìm ID tương ứng
+        const receivedRequests = await api.getFriendRequestsReceived();
+        const foundRequest = receivedRequests.find(
+          (req) => req.sender.userId === friend.userId
+        );
+
+        if (foundRequest) {
+          await api.rejectFriendRequest(foundRequest.userId);
+        } else {
+          throw new Error("Không tìm thấy lời mời kết bạn để từ chối");
+        }
+      } else {
+        await api.rejectFriendRequest(requestId);
+      }
+
+      // Cập nhật UI sau khi từ chối thành công
+      setRequestSent(null);
+      setRequestId(null);
+
+      Alert.alert("Thành công", "Đã từ chối lời mời kết bạn!");
+    } catch (error) {
+      console.error("Lỗi khi từ chối lời mời kết bạn:", error);
+      Alert.alert(
+        "Lỗi",
+        error.message ||
+          "Không thể từ chối lời mời kết bạn. Vui lòng thử lại sau."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const renderPostImages = ({ item }) => (
@@ -82,6 +280,129 @@ const UserProfile = ({ route }) => {
       />
     </TouchableOpacity>
   );
+
+  const renderFriendStatus = () => {
+    // Nếu là bạn bè (requestSent === "friend")
+    if (requestSent === "friend") {
+      return (
+        <View style={styles.friendContainer}>
+          <Text style={styles.statusText}>Công ty cổ phần thép TVP</Text>
+          <Text style={styles.statusText}>
+            {friend?.phone || "123456789"}
+          </Text>
+          <Text style={styles.statusText}>
+            {friend?.email || "user@gmail.com"}
+          </Text>
+        </View>
+      );
+    }
+
+    // Nếu đã gửi lời mời kết bạn và đang chờ chấp nhận (requestSent === "pending")
+    if (requestSent === "pending") {
+      return (
+        <View style={styles.buttonAndStatusContainer}>
+          <View style={styles.horizontalButtons}>
+            <TouchableOpacity style={styles.messageButton}>
+              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+              <Text style={styles.messageButtonText}>Nhắn tin</Text>
+            </TouchableOpacity>
+            {loading ? (
+              <ActivityIndicator size="small" color="#666" />
+            ) : (
+              <TouchableOpacity
+                style={styles.removeFriendButton}
+                onPress={handleCancelRequest}
+              >
+                <Ionicons name="person-remove-outline" size={20} color="#666" />
+                <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.divider} />
+        </View>
+      );
+    }
+
+    // Nếu nhận được lời mời kết bạn từ người này (requestSent === "accepted")
+    if (requestSent === "accepted") {
+      return (
+        <View style={styles.requestInfoContainer}>
+          <Text style={styles.requestTitle}>
+            Gửi lời mời kết bạn từ nhóm chung
+          </Text>
+          <View style={styles.requestInfo}>
+            <Icon name="person" size={20} color="#888" style={styles.requestIcon} />
+            <Text style={styles.requestLabel}>
+              Tên Zalo: {friend?.fullname || "Thủy Lê"}
+            </Text>
+          </View>
+          <View style={styles.requestInfo}>
+            <Icon name="group" size={20} color="#888" style={styles.requestIcon} />
+            <Text style={styles.requestInfo}>
+              Nhóm chung: Flipgrid_Experimental Group.{" "}
+              <Text style={styles.link}>Xem chi tiết</Text>
+            </Text>
+          </View>
+          <TextInput
+            style={styles.requestInput}
+            value={`Xin chào, tôi là ${friend?.fullname || "Thủy Lê"}`}
+            editable={false}
+          />
+          <View style={styles.actionButtons}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#007AFF" />
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.deniedButton}
+                  onPress={handleRejectRequest}
+                >
+                  <Text style={styles.deniedButtonText}>Từ chối</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleAcceptRequest}
+                  style={styles.acceptedButton}
+                >
+                  <Text style={styles.acceptedButtonText}>Đồng ý</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      );
+    }
+
+    // Nếu chưa là bạn bè và chưa gửi lời mời
+    return (
+      <View style={styles.buttonContainer}>
+        <View style={styles.avatarContainer}>
+          <Text style={styles.editText}>
+            Bạn chưa thể xem nhật ký của {friend?.fullname || "Thành Nghiêm"} khi chưa là bạn bè
+          </Text>
+        </View>
+        <View style={styles.buttonAndStatusContainer}>
+          <View style={styles.horizontalButtons}>
+            <TouchableOpacity style={styles.messageButton}>
+              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+              <Text style={styles.messageButtonText}>Nhắn tin</Text>
+            </TouchableOpacity>
+            {loading ? (
+              <ActivityIndicator size="small" color="#666" />
+            ) : (
+              <TouchableOpacity
+                style={styles.addFriendButton}
+                onPress={handleAddFriend}
+              >
+                <Ionicons name="person-add-outline" size={20} color="#666" />
+                <Text style={styles.addFriendButtonText}>Kết bạn</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.divider} />
+        </View>
+      </View>
+    );
+  };
 
   return (
     <ScrollView
@@ -97,10 +418,16 @@ const UserProfile = ({ route }) => {
     >
       <View style={styles.container}>
         <View style={styles.coverContainer}>
-          <Animated.Image
-            source={require("../../../../assets/images/avt.jpg")}
-            style={[styles.coverImage, { height: coverImageHeight }]}
-          />
+          <TouchableOpacity
+            onPress={() => handleViewImage(coverImageUrl)}
+            activeOpacity={0.8}
+          >
+            <Animated.Image
+              source={{ uri: coverImageUrl }}
+              style={[styles.coverImage, { height: coverImageHeight }]}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back-ios" size={24} color="#fff" />
@@ -124,117 +451,32 @@ const UserProfile = ({ route }) => {
 
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
-            <AvatarUser fullName={user?.name} />
+            <TouchableOpacity
+              onPress={() =>
+                handleViewImage(friend?.urlavatar, friend?.fullname || "User")
+              }
+              activeOpacity={0.8}
+            >
+              {friend?.urlavatar ? (
+                <Image source={{ uri: friend.urlavatar }} style={styles.avatar} />
+              ) : (
+                <AvatarUser
+                  fullName={friend?.fullname || ""}
+                  width={120}
+                  height={120}
+                  avtText={40}
+                  shadow={true}
+                  bordered={true}
+                />
+              )}
+            </TouchableOpacity>
           </View>
 
-          {!userExists ? (
-            <View style={styles.buttonContainer}>
-              <View style={styles.avatarContainer}>
-                <Text style={styles.editText}>
-                  Bạn chưa thể xem nhật ký của {user?.name || "Thành Nghiêm"}{" "}
-                  khi chưa là bạn bè
-                </Text>
-              </View>
+          <View style={styles.nameContainer}>
+            <Text style={styles.name}>{friend?.fullname || "Người dùng"}</Text>
+          </View>
 
-              {requestSent === "accepted" ? (
-                <View style={styles.requestInfoContainer}>
-                  <Text style={styles.requestTitle}>
-                    Gửi lời mời kết bạn từ nhóm chung
-                  </Text>
-                  <View style={styles.requestInfo}>
-                    <Icon
-                      name="person"
-                      size={20}
-                      color="#888"
-                      style={styles.requestIcon}
-                    />
-                    <Text style={styles.requestLabel}>
-                      Tên Zalo: {user?.name || "Thủy Lê"}
-                    </Text>
-                  </View>
-                  <View style={styles.requestInfo}>
-                    <Icon
-                      name="group"
-                      size={20}
-                      color="#888"
-                      style={styles.requestIcon}
-                    />
-                    <Text style={styles.requestInfo}>
-                      Nhóm chung: Flipgrid_Experimental Group.{" "}
-                      <Text style={styles.link}>Xem chi tiết</Text>
-                    </Text>
-                  </View>
-                  <TextInput
-                    style={styles.requestInput}
-                    value={`Xin chào, tôi là ${user?.name || "Thủy Lê"}`}
-                    editable={false}
-                  />
-                  <View style={styles.actionButtons}>
-                    <TouchableOpacity style={styles.deniedButton}>
-                      <Text style={styles.deniedButtonText}>Từ chối</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={handleAcceptRequest}
-                      style={styles.acceptedButton}
-                    >
-                      <Text style={styles.acceptedButtonText}>Đồng ý</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ) : (
-                <View style={styles.buttonAndStatusContainer}>
-                  <View style={styles.horizontalButtons}>
-                    <TouchableOpacity style={styles.messageButton}>
-                      <Ionicons
-                        name="chatbubble-outline"
-                        size={20}
-                        color="#0066cc"
-                      />
-                      <Text style={styles.messageButtonText}>Nhắn tin</Text>
-                    </TouchableOpacity>
-                    {requestSent === "pending" ? (
-                      <TouchableOpacity
-                        style={styles.removeFriendButton}
-                        onPress={handleCancelRequest}
-                      >
-                        <Ionicons
-                          name="person-remove-outline"
-                          size={20}
-                          color="#666"
-                        />
-                        <Text style={styles.removeFriendButtonText}>
-                          Hủy kết bạn
-                        </Text>
-                      </TouchableOpacity>
-                    ) : (
-                      <TouchableOpacity
-                        style={styles.addFriendButton}
-                        onPress={handleAddFriend}
-                      >
-                        <Ionicons
-                          name="person-add-outline"
-                          size={20}
-                          color="#666"
-                        />
-                        <Text style={styles.addFriendButtonText}>Kết bạn</Text>
-                      </TouchableOpacity>
-                    )}
-                  </View>
-                  <View style={styles.divider} />
-                  {/* <Text style={styles.statusText}>
-                    {user?.name || "Thủy Lê"} chưa có hoạt động nào. Hãy trò chuyện cùng nhau để hiểu nhau hơn
-                  </Text> */}
-                </View>
-              )}
-            </View>
-          ) : (
-            // Tiểu sử
-            <>
-              <Text style={styles.statusText}>Công ty cổ phần thép TVP</Text>
-              <Text style={styles.statusText}>123456789</Text>
-              <Text style={styles.statusText}>user@gmail.com</Text>
-            </>
-          )}
+          {renderFriendStatus()}
 
           {/* Add the new buttons here */}
           <View style={styles.optionsContainer}>
@@ -320,6 +562,8 @@ const UserProfile = ({ route }) => {
   );
 };
 
+// Styles remain the same
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -386,6 +630,7 @@ const styles = StyleSheet.create({
     color: "#000",
     marginVertical: 10,
     fontWeight: "bold",
+    textAlign: "center",
   },
   editText: {
     color: "#505050",

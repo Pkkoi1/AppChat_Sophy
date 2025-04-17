@@ -4,7 +4,7 @@ import { DATABASE_API, MY_IP } from "@env";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const API = `http://${MY_IP}:3000/api` || DATABASE_API;
-// const API = `http://192.168.1.240:3000/api` || DATABASE_API;
+// const API = `http://192.168.1.17:3000/api`;
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -597,6 +597,145 @@ export const api = {
     } catch (error) {
       console.error(
         "Lỗi khi xóa tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  //Thêm mới vào đây
+  getFriends: async () => {
+    try {
+      const response = await http.get("/users/friends"); // Assuming the endpoint is /users/friends based on backend router
+      return response.data; // Return the list of friends
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy danh sách bạn bè:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Gửi lời mời kết bạn
+  sendFriendRequest: async (userId, message = "") => {
+    try {
+      const response = await http.post(
+        `/users/friend-requests/send-request/${userId}`,
+        {
+          message,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Lấy danh sách lời mời kết bạn đã gửi
+  getFriendRequestsSent: async () => {
+    try {
+      const response = await http.get("/users/friend-requests-sent");
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy danh sách lời mời kết bạn đã gửi:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Lấy danh sách lời mời kết bạn đã nhận
+  getFriendRequestsReceived: async () => {
+    try {
+      const response = await http.get("/users/friend-requests-received");
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy danh sách lời mời kết bạn đã nhận:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Thu hồi lời mời kết bạn
+  retrieveFriendRequest: async (requestId) => {
+    try {
+      const response = await http.delete(
+        `/users/friend-requests/retrieve-request/${requestId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi thu hồi lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Chấp nhận lời mời kết bạn
+  acceptFriendRequest: async (requestId) => {
+    try {
+      const response = await http.put(
+        `/users/friend-requests/accept-request/${requestId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi chấp nhận lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Từ chối lời mời kết bạn
+  rejectFriendRequest: async (requestId) => {
+    try {
+      const response = await http.put(
+        `/users/friend-requests/reject-request/${requestId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi từ chối lời mời kết bạn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  getUserByPhone: async (phone) => {
+    try {
+      const response = await http.get(`/users/get-user/${phone}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy thông tin người dùng theo số điện thoại:",
+        error.response?.data || error.message
+      );
+
+      if (error.response && error.response.status === 404) {
+        throw new Error("Không tìm thấy người dùng với số điện thoại này");
+      }
+
+      throw error;
+    }
+  },
+  // Tìm kiếm người dùng theo danh sách số điện thoại
+  searchUsersByPhones: async (phones) => {
+    try {
+      const response = await http.post("/users/search-users", {
+        phones, // axios sẽ tự chuyển mảng thành nhiều phones=... trên query string
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi tìm kiếm người dùng theo số điện thoại:",
         error.response?.data || error.message
       );
       throw error;

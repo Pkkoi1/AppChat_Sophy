@@ -5,14 +5,60 @@ import {
   Octicons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { TextInput, View, TouchableOpacity, Text } from "react-native";
+import { TextInput, View, TouchableOpacity, Text, Alert } from "react-native";
 import HeaderStyle from "./HeaderStyle";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import { api } from "../../api/api";
 
 const HeadView = ({ page, userInfo }) => {
   const [search, setSearch] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const navigation = useNavigation();
+
+  const handleSearch = async () => {
+    if (!search || search.trim() === "") {
+      Alert.alert("Thông báo", "Vui lòng nhập số điện thoại cần tìm");
+      return;
+    }
+  
+    try {
+      setIsSearching(true);
+      const phoneNumber = search.trim();
+  
+      // Gọi API tìm kiếm người dùng theo số điện thoại
+      const result = await api.getUserByPhone(phoneNumber);
+  
+      if (result) {
+        // Lấy danh sách bạn bè
+        let requestSent = "";
+        try {
+          const friends = await api.getFriends();
+          const isFriend = friends.some((f) => f._id === result._id);
+          requestSent = isFriend ? "friend" : "";
+        } catch (e) {
+          // Nếu lỗi khi lấy danh sách bạn bè, giữ requestSent là ""
+          console.error("Lỗi khi kiểm tra bạn bè:", e);
+        }
+  
+        navigation.navigate("UserProfile", {
+          friend: result,
+          requestSent,
+        });
+  
+        setSearch("");
+      }
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm người dùng:", error);
+      Alert.alert(
+        "Không tìm thấy",
+        "Không tìm thấy người dùng nào với số điện thoại này",
+        [{ text: "Đóng", style: "cancel" }]
+      );
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   const renderPageIcons = () => {
     switch (page) {
@@ -130,15 +176,18 @@ const HeadView = ({ page, userInfo }) => {
       ) : (
         // Trang chính của ứng dụng
         <>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleSearch} disabled={isSearching}>
             <AntDesign name="search1" size={24} color="white" />
           </TouchableOpacity>
           <TextInput
             style={HeaderStyle().searchInput}
-            placeholder="Tìm kiếm"
+            placeholder="Tìm kiếm số điện thoại"
             placeholderTextColor="#ddd"
             value={search}
             onChangeText={setSearch}
+            keyboardType="phone-pad"
+            returnKeyType="search"
+            onSubmitEditing={handleSearch}
           />
         </>
       )}
