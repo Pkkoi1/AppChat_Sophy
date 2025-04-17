@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { View, FlatList, Text, Pressable } from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
@@ -6,7 +6,8 @@ import ConversationStyle from "./ConversationStyle";
 import MessagePopup from "../../../features/messagePopup/MessagePopup";
 
 const Conversation = ({
-  conversation,
+  messages,
+  setMessages, // Use messages and setMessages from props
   senderId,
   highlightedMessageIds = [],
   highlightedMessageId,
@@ -25,13 +26,11 @@ const Conversation = ({
   return (
     <View style={ConversationStyle.conversationContainer}>
       <FlatList
-        data={conversation.messages}
+        data={messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
         renderItem={({ item, index }) => {
           const prevMessage =
-            index < conversation.messages.length - 1
-              ? conversation.messages[index + 1]
-              : null;
+            index < messages.length - 1 ? messages[index + 1] : null;
 
           const shouldShowTimestamp =
             !prevMessage ||
@@ -64,7 +63,7 @@ const Conversation = ({
                   }
                   isFirstMessageFromSender={
                     index === 0 ||
-                    conversation.messages[index - 1].senderId !== item.senderId
+                    messages[index - 1].senderId !== item.senderId
                   }
                 />
               </Pressable>
@@ -72,10 +71,8 @@ const Conversation = ({
           );
         }}
         inverted={true}
-        initialNumToRender={10} // Render 10 tin nhắn ban đầu
-        maxToRenderPerBatch={10} // Render tối đa 10 tin nhắn mỗi lần
-        // windowSize={5} // Giữ ít item trong bộ nhớ
-        // removeClippedSubviews={true} // Loại bỏ item ngoài màn hình
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
         keyboardShouldPersistTaps="always"
       />
       <MessagePopup
@@ -86,6 +83,7 @@ const Conversation = ({
         messageReactions={messageReactions}
         setMessageReactions={setMessageReactions}
         senderId={senderId}
+        setMessages={setMessages} // Pass setMessages to update the message list
       />
     </View>
   );

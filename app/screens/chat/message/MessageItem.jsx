@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import { Video } from "expo-av"; // Add this import for the Video component
 
 import MessageItemStyle from "./MessageItemStyle";
 import HighlightText from "../../../components/highlightText/HighlightText";
@@ -246,7 +247,7 @@ const MessageItem = ({
               source={{ uri: attachment?.url }}
               style={MessageItemStyle.video}
               resizeMode="contain"
-              controls
+              useNativeControls // Enable video controls
             />
           </View>
         );

@@ -27,9 +27,11 @@ import { api } from "@/app/api/api";
 import { AuthContext } from "@/app/auth/AuthContext";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
+import { SocketContext } from "@/app/socket/SocketContext";
 
 const MessageScreen = ({ route, navigation }) => {
   const { userInfo } = useContext(AuthContext);
+  const socket = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
 
@@ -54,6 +56,49 @@ const MessageScreen = ({ route, navigation }) => {
       return `Truy cập ${Math.floor(diffInMinutes / 60)} giờ trước`;
     return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
+
+  useEffect(() => {
+    if (socket && conversation?.conversationId) {
+      // Join the conversation room
+      socket.emit("joinUserConversations", [conversation.conversationId]);
+
+      // Listen for new messages
+      socket.on("newMessage", ({ conversationId, message }) => {
+        if (conversationId === conversation.conversationId) {
+          // Extract relevant data from the `_doc` property if it exists
+          const formattedMessage = message._doc || message;
+
+          setMessages((prev) => [formattedMessage, ...prev]);
+          flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
+        }
+        console.log("Nhận tin nhắn mới qua socket:", message._doc || message);
+      });
+
+      // Listen for recalled messages
+      socket.on("messageRecalled", ({ conversationId, messageId }) => {
+        if (conversationId === conversation.conversationId) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === messageId
+                ? { ...msg, isRecall: true }
+                : msg
+            )
+          );
+        }
+        console.log(
+          "Nhận tin nhắn đã thu hồi qua socket:",
+          conversationId,
+          messageId
+        );
+      });
+
+      // Clean up socket listeners
+      return () => {
+        socket.off("newMessage");
+        socket.off("messageRecalled");
+      };
+    }
+  }, [socket, conversation?.conversationId]);
 
   const fetchAndStoreMessages = async () => {
     try {
@@ -87,7 +132,7 @@ const MessageScreen = ({ route, navigation }) => {
         senderId: userInfo.userId,
         type: message.type || "text",
       };
-      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+      // setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
       if (message.type === "text") {
         api
@@ -99,6 +144,18 @@ const MessageScreen = ({ route, navigation }) => {
             console.error("Lỗi gửi tin nhắn:", error);
             alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
           });
+      }
+      if (socket && socket.connected) {
+        socket.emit("newMessage", {
+          conversationId: pseudoMessage.conversationId,
+          message: pseudoMessage,
+          sender: {
+            userId: userInfo.userId,
+            fullname: userInfo.fullname,
+            avatar: userInfo.urlavatar,
+          },
+        });
+        console.log("Gửi tin nhắn qua socket:", pseudoMessage);
       }
     },
     [conversation, userInfo.userId]
@@ -233,7 +290,8 @@ const MessageScreen = ({ route, navigation }) => {
       />
       {messages.length > 0 ? (
         <Conversation
-          conversation={{ messages }}
+          messages={messages} // Pass messages state
+          setMessages={setMessages} // Pass setMessages function
           senderId={userInfo.userId}
           highlightedMessageIds={highlightedMessageIds}
           highlightedMessageId={highlightedMessageId}
