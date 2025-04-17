@@ -62,7 +62,11 @@ const Inbox = ({ conversation }) => {
   };
 
   const getMessageContent = () => {
-    if (!lastMessage) return "No messages yet";
+    // if (!lastMessage) return "No messages yet";
+
+    if (lastMessage.isRecall) {
+      return "Đã thu hồi một tin nhắn";
+    }
 
     switch (lastMessage.type) {
       case "ADD_MEMBER":
@@ -94,7 +98,7 @@ const Inbox = ({ conversation }) => {
       case "video":
         return `[Video]`;
       case "image":
-        return `[Hình ản]`;
+        return `[Hình ảnh]`;
       case "audio":
         return `[Tin nhắn thoại]`;
       case "sticker":
@@ -211,6 +215,8 @@ const Inbox = ({ conversation }) => {
         <Text style={styles.message} numberOfLines={1} ellipsizeMode="tail">
           {lastMessage?.senderId
             ? `${senderName}: ${getMessageContent()}`
+            : lastMessage?.isRecall
+            ? "Đã thu hồi một tin nhắn"
             : lastMessage?.content || "No messages yet"}
         </Text>
       </View>

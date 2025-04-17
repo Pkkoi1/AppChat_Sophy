@@ -105,10 +105,6 @@ const MessageItem = ({
   const getSenderInfo = () =>
     senders.find((s) => s.userId === message.senderId);
 
-  if (message.hiddenFrom?.includes(userInfo.userId)) {
-    return null; // Do not render the message if hiddenFrom contains the user's ID
-  }
-
   const handleDownload = async (fileUrl, fileName) => {
     try {
       const path = FileSystem.cacheDirectory + fileName;
@@ -242,12 +238,18 @@ const MessageItem = ({
       case "video":
         return (
           <View>
-            <Text style={MessageItemStyle.videoLabel}>Video:</Text>
             <Video
               source={{ uri: attachment?.url }}
               style={MessageItemStyle.video}
               resizeMode="contain"
-              useNativeControls // Enable video controls
+              useNativeControls
+              onPlaybackStatusUpdate={(status) => {
+                if (status.isLoaded) {
+                  console.log("Video loaded:", status);
+                } else {
+                  console.error("Video not loaded:", status.error);
+                }
+              }}
             />
           </View>
         );

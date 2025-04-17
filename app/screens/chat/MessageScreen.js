@@ -42,6 +42,7 @@ const MessageScreen = ({ route, navigation }) => {
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const flatListRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false); // Trạng thái đang nhập
   const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
   const [imageUri, setImageUri] = useState(null); // Trạng thái lưu trữ URI hình ảnh đã chọn
 
@@ -65,8 +66,13 @@ const MessageScreen = ({ route, navigation }) => {
       // Listen for new messages
       socket.on("newMessage", ({ conversationId, message }) => {
         if (conversationId === conversation.conversationId) {
-          // Extract relevant data from the `_doc` property if it exists
           const formattedMessage = message._doc || message;
+
+          // Check if the message is hidden for the current user
+          if (formattedMessage.hiddenFrom?.includes(userInfo.userId)) {
+            console.log("Tin nhắn bị ẩn, không lưu:", formattedMessage);
+            return;
+          }
 
           setMessages((prev) => [formattedMessage, ...prev]);
           flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
@@ -98,7 +104,7 @@ const MessageScreen = ({ route, navigation }) => {
         socket.off("messageRecalled");
       };
     }
-  }, [socket, conversation?.conversationId]);
+  }, [socket, conversation?.conversationId, userInfo.userId]);
 
   const fetchAndStoreMessages = async () => {
     try {
@@ -106,9 +112,12 @@ const MessageScreen = ({ route, navigation }) => {
 
       const response = await api.getAllMessages(conversation.conversationId);
 
-      // console.log("Tin nhắn được lấy từ API:", response);
+      // Lọc tin nhắn bị ẩn với người dùng hiện tại
+      const filteredMessages = response.messages.filter(
+        (message) => !message.hiddenFrom?.includes(userInfo.userId)
+      );
 
-      setMessages(response.messages); // Cập nhật state messages
+      setMessages(filteredMessages); // Cập nhật state messages
     } catch (error) {
       console.error("Lỗi lấy tin nhắn:", error);
       setMessages([]); // Cập nhật state messages với mảng rỗng nếu lỗi
@@ -158,7 +167,7 @@ const MessageScreen = ({ route, navigation }) => {
         console.log("Gửi tin nhắn qua socket:", pseudoMessage);
       }
     },
-    [conversation, userInfo.userId]
+    [conversation, userInfo.userId, socket]
   );
 
   const handleSendImage = useCallback(
@@ -182,8 +191,8 @@ const MessageScreen = ({ route, navigation }) => {
 
       console.log("Tạo pseudoMessage:", pseudoMessage);
 
-      setImageUri(message.attachment); // Set the image URI to state
-      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+      // setImageUri(message.attachment); // Set the image URI to state
+      // setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
       if (!message.attachment) {
         console.error("Lỗi: Không có ảnh để gửi.");
@@ -212,12 +221,24 @@ const MessageScreen = ({ route, navigation }) => {
           });
           console.log("Gửi ảnh thành công!");
         }
+        if (socket && socket.connected) {
+          socket.emit("newMessage", {
+            conversationId: pseudoMessage.conversationId,
+            message: pseudoMessage,
+            sender: {
+              userId: userInfo.userId,
+              fullname: userInfo.fullname,
+              avatar: userInfo.urlavatar,
+            },
+          });
+          console.log("Gửi tin nhắn qua socket:", pseudoMessage);
+        }
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);
         alert("Đã xảy ra lỗi khi gửi ảnh. Vui lòng thử lại.");
       }
     },
-    [conversation, userInfo.userId]
+    [conversation, userInfo.userId, socket]
   );
 
   const handleSendFile = useCallback(
@@ -237,7 +258,7 @@ const MessageScreen = ({ route, navigation }) => {
         attachment: { url: message.attachment }, // Corrected syntax
       };
 
-      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+      // setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
       if (message.type === "file") {
         try {
@@ -297,6 +318,7 @@ const MessageScreen = ({ route, navigation }) => {
           highlightedMessageId={highlightedMessageId}
           searchQuery={searchQuery}
           receiver={receiver}
+          onTyping={isTyping} // Pass isTyping to Conversation
         />
       ) : (
         <View style={MessageScreenStyle.loadingContainer}>
@@ -307,6 +329,9 @@ const MessageScreen = ({ route, navigation }) => {
         onSendMessage={handleSendMessage}
         onSendImage={handleSendImage}
         onSendFile={handleSendFile}
+        socket={socket} // Pass socket to ChatFooter
+        conversation={conversation} // Pass conversation to ChatFooter
+        setIsTyping={setIsTyping} // Pass setIsTyping to ChatFooter
       />
     </View>
   );
