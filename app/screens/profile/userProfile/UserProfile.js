@@ -24,36 +24,33 @@ import { api } from "../../../api/api"; // Import API
 
 const UserProfile = ({ route }) => {
   const navigation = useNavigation();
-  const { userInfo } = useContext(AuthContext); // Lấy thông tin người dùng từ AuthContext
+  const { userInfo } = useContext(AuthContext);
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
-  const [requestSent, setRequestSent] = useState(null);
   const [posts, setPosts] = useState(postsData);
-  const [userExists, setUserExists] = useState(false); // Kiểm tra id có tồn tại trong usersData không
+  const [userExists, setUserExists] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [requestId, setRequestId] = useState(null); // ID của lời mời kết bạn
-  const [friendRequestMessage, setFriendRequestMessage] = useState(""); // Tin nhắn kèm theo lời mời kết bạn
+  const [requestId, setRequestId] = useState(null);
+  const [friendRequestMessage, setFriendRequestMessage] = useState("");
 
-  // Lấy friend và requestSent từ route.params
+  // Random cover image
+  const [randomImageId, setRandomImageId] = useState(Math.floor(Math.random() * 1000));
+  const coverImageUrl = `https://picsum.photos/id/${randomImageId}/800/400`;
+
+  // Nhận friend và requestSent từ route.params
   const { friend, requestSent: initialRequestSent } = route.params || {};
 
-  // Add this effect to validate the friend data
+  // Sử dụng initialRequestSent từ ListFriend truyền vào
+  const [requestSent, setRequestSent] = useState(initialRequestSent || null);
+
   useEffect(() => {
-    // Check if friend data exists and has an ID
-    if (!friend || !friend._id) {
-      console.warn("UserProfile: Missing or invalid friend data", friend);
-      Alert.alert(
-        "Lỗi dữ liệu",
-        "Không thể tải thông tin người dùng. Vui lòng thử lại sau.",
-        [{ text: "Quay lại", onPress: () => navigation.goBack() }]
-      );
-    } else {
-      console.log("UserProfile: Valid friend data", friend._id);
-    }
-  }, [friend]);
+    // Nếu requestSent thay đổi từ bên ngoài (nếu có logic cập nhật lại)
+    setRequestSent(initialRequestSent || null);
+  }, [initialRequestSent]);
 
   const onRefresh = () => {
     setRefreshing(true);
+    setRandomImageId(Math.floor(Math.random() * 1000)); // Đổi ảnh bìa khi làm mới
     setTimeout(() => {
       setRefreshing(false);
     }, 2000);
@@ -65,10 +62,17 @@ const UserProfile = ({ route }) => {
     extrapolate: "clamp",
   });
 
-  // Xử lý gửi lời mời kết bạn
+  // Xem ảnh bìa hoặc đại diện (có thể dùng modal hoặc màn hình riêng, ở đây chỉ mở ảnh full screen)
+  const handleViewImage = (imageUrl, fallbackText) => {
+    navigation.navigate("FullScreenImageViewer", {
+      imageUrl,
+      fallbackText,
+    });
+  };
+
   // Xử lý gửi lời mời kết bạn
   const handleAddFriend = async () => {
-    if (!friend || !friend._id) {
+    if (!friend || !friend.userId) {
       Alert.alert(
         "Lỗi",
         "Không thể xác định người dùng để gửi lời mời kết bạn"
@@ -82,7 +86,7 @@ const UserProfile = ({ route }) => {
       // Kiểm tra xem người dùng có tồn tại không trước khi gửi lời mời
       try {
         // Kiểm tra người dùng trước khi gửi lời mời
-        const userCheck = await api.getUserById(friend._id);
+        const userCheck = await api.getUserById(friend.userId);
         if (!userCheck || !userCheck.data) {
           throw new Error("Không tìm thấy người dùng");
         }
@@ -98,13 +102,13 @@ const UserProfile = ({ route }) => {
 
       // Nếu đã kiểm tra thành công, tiếp tục gửi lời mời
       const response = await api.sendFriendRequest(
-        friend._id,
+        friend.userId,
         friendRequestMessage
       );
 
       // Cập nhật UI sau khi gửi thành công
       setRequestSent("pending");
-      setRequestId(response._id); // Lưu ID của lời mời kết bạn nếu API trả về
+      setRequestId(response.userId); // Lưu ID của lời mời kết bạn nếu API trả về
 
       Alert.alert("Thành công", "Đã gửi lời mời kết bạn!");
     } catch (error) {
@@ -162,11 +166,11 @@ const UserProfile = ({ route }) => {
         // Có thể lấy danh sách lời mời đã gửi và tìm ID tương ứng
         const sentRequests = await api.getFriendRequestsSent();
         const foundRequest = sentRequests.find(
-          (req) => req.receiver._id === friend._id
+          (req) => req.receiver.userId === friend.userId
         );
 
         if (foundRequest) {
-          await api.retrieveFriendRequest(foundRequest._id);
+          await api.retrieveFriendRequest(foundRequest.userId);
         } else {
           throw new Error("Không tìm thấy lời mời kết bạn để hủy");
         }
@@ -200,11 +204,11 @@ const UserProfile = ({ route }) => {
         // Có thể lấy danh sách lời mời đã nhận và tìm ID tương ứng
         const receivedRequests = await api.getFriendRequestsReceived();
         const foundRequest = receivedRequests.find(
-          (req) => req.sender._id === friend._id
+          (req) => req.sender.userId === friend.userId
         );
 
         if (foundRequest) {
-          await api.acceptFriendRequest(foundRequest._id);
+          await api.acceptFriendRequest(foundRequest.userId);
         } else {
           throw new Error("Không tìm thấy lời mời kết bạn để chấp nhận");
         }
@@ -239,11 +243,11 @@ const UserProfile = ({ route }) => {
         // Có thể lấy danh sách lời mời đã nhận và tìm ID tương ứng
         const receivedRequests = await api.getFriendRequestsReceived();
         const foundRequest = receivedRequests.find(
-          (req) => req.sender._id === friend._id
+          (req) => req.sender.userId === friend.userId
         );
 
         if (foundRequest) {
-          await api.rejectFriendRequest(foundRequest._id);
+          await api.rejectFriendRequest(foundRequest.userId);
         } else {
           throw new Error("Không tìm thấy lời mời kết bạn để từ chối");
         }
@@ -277,6 +281,129 @@ const UserProfile = ({ route }) => {
     </TouchableOpacity>
   );
 
+  const renderFriendStatus = () => {
+    // Nếu là bạn bè (requestSent === "friend")
+    if (requestSent === "friend") {
+      return (
+        <View style={styles.friendContainer}>
+          <Text style={styles.statusText}>Công ty cổ phần thép TVP</Text>
+          <Text style={styles.statusText}>
+            {friend?.phone || "123456789"}
+          </Text>
+          <Text style={styles.statusText}>
+            {friend?.email || "user@gmail.com"}
+          </Text>
+        </View>
+      );
+    }
+
+    // Nếu đã gửi lời mời kết bạn và đang chờ chấp nhận (requestSent === "pending")
+    if (requestSent === "pending") {
+      return (
+        <View style={styles.buttonAndStatusContainer}>
+          <View style={styles.horizontalButtons}>
+            <TouchableOpacity style={styles.messageButton}>
+              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+              <Text style={styles.messageButtonText}>Nhắn tin</Text>
+            </TouchableOpacity>
+            {loading ? (
+              <ActivityIndicator size="small" color="#666" />
+            ) : (
+              <TouchableOpacity
+                style={styles.removeFriendButton}
+                onPress={handleCancelRequest}
+              >
+                <Ionicons name="person-remove-outline" size={20} color="#666" />
+                <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.divider} />
+        </View>
+      );
+    }
+
+    // Nếu nhận được lời mời kết bạn từ người này (requestSent === "accepted")
+    if (requestSent === "accepted") {
+      return (
+        <View style={styles.requestInfoContainer}>
+          <Text style={styles.requestTitle}>
+            Gửi lời mời kết bạn từ nhóm chung
+          </Text>
+          <View style={styles.requestInfo}>
+            <Icon name="person" size={20} color="#888" style={styles.requestIcon} />
+            <Text style={styles.requestLabel}>
+              Tên Zalo: {friend?.fullname || "Thủy Lê"}
+            </Text>
+          </View>
+          <View style={styles.requestInfo}>
+            <Icon name="group" size={20} color="#888" style={styles.requestIcon} />
+            <Text style={styles.requestInfo}>
+              Nhóm chung: Flipgrid_Experimental Group.{" "}
+              <Text style={styles.link}>Xem chi tiết</Text>
+            </Text>
+          </View>
+          <TextInput
+            style={styles.requestInput}
+            value={`Xin chào, tôi là ${friend?.fullname || "Thủy Lê"}`}
+            editable={false}
+          />
+          <View style={styles.actionButtons}>
+            {loading ? (
+              <ActivityIndicator size="small" color="#007AFF" />
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.deniedButton}
+                  onPress={handleRejectRequest}
+                >
+                  <Text style={styles.deniedButtonText}>Từ chối</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleAcceptRequest}
+                  style={styles.acceptedButton}
+                >
+                  <Text style={styles.acceptedButtonText}>Đồng ý</Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </View>
+        </View>
+      );
+    }
+
+    // Nếu chưa là bạn bè và chưa gửi lời mời
+    return (
+      <View style={styles.buttonContainer}>
+        <View style={styles.avatarContainer}>
+          <Text style={styles.editText}>
+            Bạn chưa thể xem nhật ký của {friend?.fullname || "Thành Nghiêm"} khi chưa là bạn bè
+          </Text>
+        </View>
+        <View style={styles.buttonAndStatusContainer}>
+          <View style={styles.horizontalButtons}>
+            <TouchableOpacity style={styles.messageButton}>
+              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+              <Text style={styles.messageButtonText}>Nhắn tin</Text>
+            </TouchableOpacity>
+            {loading ? (
+              <ActivityIndicator size="small" color="#666" />
+            ) : (
+              <TouchableOpacity
+                style={styles.addFriendButton}
+                onPress={handleAddFriend}
+              >
+                <Ionicons name="person-add-outline" size={20} color="#666" />
+                <Text style={styles.addFriendButtonText}>Kết bạn</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.divider} />
+        </View>
+      </View>
+    );
+  };
+
   return (
     <ScrollView
       contentContainerStyle={styles.scrollViewContent}
@@ -291,10 +418,16 @@ const UserProfile = ({ route }) => {
     >
       <View style={styles.container}>
         <View style={styles.coverContainer}>
-          <Animated.Image
-            source={require("../../../../assets/images/avt.jpg")}
-            style={[styles.coverImage, { height: coverImageHeight }]}
-          />
+          <TouchableOpacity
+            onPress={() => handleViewImage(coverImageUrl)}
+            activeOpacity={0.8}
+          >
+            <Animated.Image
+              source={{ uri: coverImageUrl }}
+              style={[styles.coverImage, { height: coverImageHeight }]}
+              resizeMode="cover"
+            />
+          </TouchableOpacity>
           <View style={styles.header}>
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <Icon name="arrow-back-ios" size={24} color="#fff" />
@@ -318,180 +451,32 @@ const UserProfile = ({ route }) => {
 
         <View style={styles.overlay}>
           <View style={styles.avatarContainer}>
-            {friend?.urlavatar ? (
-              <Image source={{ uri: friend.urlavatar }} style={styles.avatar} />
-            ) : (
-              <AvatarUser
-                fullName={friend?.fullname || ""}
-                width={120}
-                height={120}
-                avtText={40}
-                shadow={true}
-                bordered={true}
-              />
-            )}
+            <TouchableOpacity
+              onPress={() =>
+                handleViewImage(friend?.urlavatar, friend?.fullname || "User")
+              }
+              activeOpacity={0.8}
+            >
+              {friend?.urlavatar ? (
+                <Image source={{ uri: friend.urlavatar }} style={styles.avatar} />
+              ) : (
+                <AvatarUser
+                  fullName={friend?.fullname || ""}
+                  width={120}
+                  height={120}
+                  avtText={40}
+                  shadow={true}
+                  bordered={true}
+                />
+              )}
+            </TouchableOpacity>
           </View>
 
           <View style={styles.nameContainer}>
             <Text style={styles.name}>{friend?.fullname || "Người dùng"}</Text>
           </View>
 
-          {!userExists ? (
-            // Neu la ban be
-            <>
-              {requestSent === "friend" ? (
-                <View style={styles.friendContainer}>
-                  <>
-                    <Text style={styles.statusText}>
-                      Công ty cổ phần thép TVP
-                    </Text>
-                    <Text style={styles.statusText}>
-                      {friend?.phone || "123456789"}
-                    </Text>
-                    <Text style={styles.statusText}>
-                      {friend?.email || "user@gmail.com"}
-                    </Text>
-                  </>
-                </View>
-              ) : (
-                // Nếu không phải bạn bè
-                <View style={styles.buttonContainer}>
-                  <View style={styles.avatarContainer}>
-                    <Text style={styles.editText}>
-                      Bạn chưa thể xem nhật ký của{" "}
-                      {friend?.fullname || "Thành Nghiêm"} khi chưa là bạn bè
-                    </Text>
-                  </View>
-
-                  {/* Đang chờ mình đồng ý kết bạn */}
-                  {requestSent === "accepted" ? (
-                    <View style={styles.requestInfoContainer}>
-                      <Text style={styles.requestTitle}>
-                        Gửi lời mời kết bạn từ nhóm chung
-                      </Text>
-                      <View style={styles.requestInfo}>
-                        <Icon
-                          name="person"
-                          size={20}
-                          color="#888"
-                          style={styles.requestIcon}
-                        />
-                        <Text style={styles.requestLabel}>
-                          Tên Zalo: {friend?.fullname || "Thủy Lê"}
-                        </Text>
-                      </View>
-                      <View style={styles.requestInfo}>
-                        <Icon
-                          name="group"
-                          size={20}
-                          color="#888"
-                          style={styles.requestIcon}
-                        />
-                        <Text style={styles.requestInfo}>
-                          Nhóm chung: Flipgrid_Experimental Group.{" "}
-                          <Text style={styles.link}>Xem chi tiết</Text>
-                        </Text>
-                      </View>
-                      <TextInput
-                        style={styles.requestInput}
-                        value={`Xin chào, tôi là ${
-                          friend?.fullname || "Thủy Lê"
-                        }`}
-                        editable={false}
-                      />
-                      <View style={styles.actionButtons}>
-                        {loading ? (
-                          <ActivityIndicator size="small" color="#007AFF" />
-                        ) : (
-                          <>
-                            <TouchableOpacity
-                              style={styles.deniedButton}
-                              onPress={handleRejectRequest}
-                            >
-                              <Text style={styles.deniedButtonText}>
-                                Từ chối
-                              </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                              onPress={handleAcceptRequest}
-                              style={styles.acceptedButton}
-                            >
-                              <Text style={styles.acceptedButtonText}>
-                                Đồng ý
-                              </Text>
-                            </TouchableOpacity>
-                          </>
-                        )}
-                      </View>
-                    </View>
-                  ) : (
-                    <View style={styles.buttonAndStatusContainer}>
-                      <View style={styles.horizontalButtons}>
-                        <TouchableOpacity style={styles.messageButton}>
-                          <Ionicons
-                            name="chatbubble-outline"
-                            size={20}
-                            color="#0066cc"
-                          />
-                          <Text style={styles.messageButtonText}>Nhắn tin</Text>
-                        </TouchableOpacity>
-
-                        {/* Đã gửi yêu cầu kết bạn */}
-                        {requestSent === "pending" ? (
-                          loading ? (
-                            <ActivityIndicator size="small" color="#666" />
-                          ) : (
-                            <TouchableOpacity
-                              style={styles.removeFriendButton}
-                              onPress={handleCancelRequest}
-                            >
-                              <Ionicons
-                                name="person-remove-outline"
-                                size={20}
-                                color="#666"
-                              />
-                              <Text style={styles.removeFriendButtonText}>
-                                Hủy kết bạn
-                              </Text>
-                            </TouchableOpacity>
-                          )
-                        ) : // Chưa gửi yêu cầu kết bạn
-                        loading ? (
-                          <ActivityIndicator size="small" color="#666" />
-                        ) : (
-                          <TouchableOpacity
-                            style={styles.addFriendButton}
-                            onPress={handleAddFriend}
-                          >
-                            <Ionicons
-                              name="person-add-outline"
-                              size={20}
-                              color="#666"
-                            />
-                            <Text style={styles.addFriendButtonText}>
-                              Kết bạn
-                            </Text>
-                          </TouchableOpacity>
-                        )}
-                      </View>
-                      <View style={styles.divider} />
-                    </View>
-                  )}
-                </View>
-              )}
-            </>
-          ) : (
-            // Tiểu sử
-            <>
-              <Text style={styles.statusText}>Công ty cổ phần thép TVP</Text>
-              <Text style={styles.statusText}>
-                {friend?.phone || "123456789"}
-              </Text>
-              <Text style={styles.statusText}>
-                {friend?.email || "user@gmail.com"}
-              </Text>
-            </>
-          )}
+          {renderFriendStatus()}
 
           {/* Add the new buttons here */}
           <View style={styles.optionsContainer}>

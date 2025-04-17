@@ -7,12 +7,13 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import HeadView from "../../../header/Header";
 import Color from "../../../../components/colors/Color";
 // Import API
-import api from "../../../../api/api"; // Đảm bảo đường dẫn chính xác
+import {api} from "../../../../api/api"; // Đảm bảo đường dẫn chính xác
 
 const groupByTime = (data) => {
   const today = new Date();
@@ -68,13 +69,33 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const [sentRequests, setSentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+  const [refreshing, setRefreshing] = useState(false);
   const [index, setIndex] = useState(0);
   const [routes, setRoutes] = useState([
     { key: "received", title: "Đã nhận" },
     { key: "sent", title: "Đã gửi" },
   ]);
-
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const receivedData = await api.getFriendRequestsReceived();
+      const sentData = await api.getFriendRequestsSent();
+      
+      setReceivedRequests(receivedData);
+      setSentRequests(sentData);
+      
+      // Cập nhật routes với số lượng 
+      setRoutes([
+        { key: "received", title: `Đã nhận ${receivedData.length}` },
+        { key: "sent", title: `Đã gửi ${sentData.length}` },
+      ]);
+    } catch (err) {
+      console.error("Lỗi khi tải dữ liệu lời mời kết bạn:", err);
+      setError("Không thể tải dữ liệu lời mời kết bạn");
+    } finally {
+      setRefreshing(false);
+    }
+  };
   // Fetch dữ liệu từ API
   useEffect(() => {
     const fetchData = async () => {
@@ -82,11 +103,13 @@ const ReceivedFriendRequests = ({ navigation }) => {
       try {
         const receivedData = await api.getFriendRequestsReceived();
         const sentData = await api.getFriendRequestsSent();
-        
+
         setReceivedRequests(receivedData);
         setSentRequests(sentData);
-        
-        // Cập nhật routes với số lượng 
+
+        console.log("Received Requests:", receivedData); // Add this line
+
+        // Cập nhật routes với số lượng
         setRoutes([
           { key: "received", title: `Đã nhận ${receivedData.length}` },
           { key: "sent", title: `Đã gửi ${sentData.length}` },
@@ -116,10 +139,10 @@ const ReceivedFriendRequests = ({ navigation }) => {
   // Cập nhật xử lý sự kiện với API
   const handleAccept = async (item) => {
     try {
-      await api.acceptFriendRequest(item.id);
+      await api.acceptFriendRequest(item.userId);
       // Cập nhật UI sau khi thành công
       setReceivedRequests(prevRequests => 
-        prevRequests.filter(request => request.id !== item.id)
+        prevRequests.filter(request => request.userId !== item.userId)
       );
       console.log(`Đồng ý kết bạn với ${item.name}`);
       navigation.navigate("AcceptFriend", { user: item });
@@ -130,10 +153,10 @@ const ReceivedFriendRequests = ({ navigation }) => {
 
   const handleReject = async (item) => {
     try {
-      await api.rejectFriendRequest(item.id);
+      await api.rejectFriendRequest(item.userId);
       // Cập nhật UI sau khi thành công
       setReceivedRequests(prevRequests => 
-        prevRequests.filter(request => request.id !== item.id)
+        prevRequests.filter(request => request.userId !== item.userId)
       );
       console.log(`Từ chối kết bạn với ${item.name}`);
     } catch (err) {
@@ -143,10 +166,10 @@ const ReceivedFriendRequests = ({ navigation }) => {
 
   const handleWithdraw = async (item) => {
     try {
-      await api.retrieveFriendRequest(item.id);
+      await api.retrieveFriendRequest(item.userId);
       // Cập nhật UI sau khi thành công
       setSentRequests(prevRequests => 
-        prevRequests.filter(request => request.id !== item.id)
+        prevRequests.filter(request => request.userId !== item.userId)
       );
       console.log(`Đã thu hồi lời mời kết bạn với ${item.name}`);
     } catch (err) {
@@ -173,52 +196,61 @@ const ReceivedFriendRequests = ({ navigation }) => {
     
     return (
       <SectionList
-        sections={groupByTime(receivedRequests)}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.requestItem}
-            onPress={() => handleRequestPress(item, "received")}
-          >
-            <Image
-              source={require("../../../../../assets/images/avt.jpg")}
-              style={styles.avatar}
-            />
-            <View style={styles.infoWrapper}>
-              <View style={styles.infoContainer}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.status}>{item.status || "Muốn kết bạn"}</Text>
-              </View>
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity
-                  style={styles.rejectButton}
-                  onPress={() => handleReject(item)}
-                >
-                  <Text style={styles.rejectText}>TỪ CHỐI</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.acceptButton}
-                  onPress={() => handleAccept(item)}
-                >
-                  <Text style={styles.acceptText}>ĐỒNG Ý</Text>
-                </TouchableOpacity>
-              </View>
+      sections={groupByTime(receivedRequests)}
+      keyExtractor={(item) => item.userId}
+      renderItem={({ item }) => (
+        <TouchableOpacity
+          style={styles.requestItem}
+          onPress={() => {
+            navigation.navigate("UserProfile", {
+              friend: item.senderId, // Pass the sender's user information
+              requestSent: "accepted", // Set requestSent to "accepted"
+            });
+          }}
+        >
+          <Image
+            source={{ uri: item.senderId?.urlavatar }}
+            style={styles.avatar}
+          />
+          <View style={styles.infoWrapper}>
+            <Text style={styles.name}>{item.senderId?.fullname}</Text>
+            <Text style={styles.status}>{"Muốn kết bạn"}</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={styles.rejectButton}
+                onPress={() => handleReject(item)}
+              >
+                <Text style={styles.rejectText}>TỪ CHỐI</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.acceptButton}
+                onPress={() => handleAccept(item)}
+              >
+                <Text style={styles.acceptText}>ĐỒNG Ý</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionHeaderText}>{title}</Text>
-            <View style={styles.line} />
           </View>
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
-          </View>
-        }
-        style={styles.list}
-      />
+        </TouchableOpacity>
+      )}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+        />
+      }
+      renderSectionHeader={({ section: { title } }) => (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionHeaderText}>{title}</Text>
+          <View style={styles.line} />
+        </View>
+      )}
+      ListEmptyComponent={
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
+        </View>
+      }
+      style={styles.list}
+    />
     );
   };
 
@@ -242,7 +274,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
     return (
       <SectionList
         sections={groupByTime(sentRequests)}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.userId}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.requestItem}
@@ -273,7 +305,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
         )}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Không có lời mời đã gửi</Text>
+            <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
           </View>
         }
         style={styles.list}
@@ -314,7 +346,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5", // A light background for better contrast
   },
   tabView: {
     marginTop: 10,
@@ -339,12 +371,13 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 10,
+    paddingVertical: 8, // Reduced padding for section headers
     paddingHorizontal: 15,
+    backgroundColor: "#fff", // Consistent background color
   },
   sectionHeaderText: {
     fontSize: 14,
-    color: "gray",
+    color: "#888", // Muted color for section headers
     marginRight: 10,
   },
   line: {
@@ -354,8 +387,18 @@ const styles = StyleSheet.create({
   },
   requestItem: {
     flexDirection: "row",
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    marginHorizontal: 10,
+    marginVertical: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    alignItems: "flex-start", // Align items to the top
   },
   avatar: {
     width: 50,
@@ -366,20 +409,22 @@ const styles = StyleSheet.create({
   infoWrapper: {
     flex: 1,
     flexDirection: "column",
+    justifyContent: "center",
   },
   infoContainer: {
     flex: 1,
-    marginBottom: 10,
+    marginBottom: 0, // Remove bottom margin
   },
   name: {
     fontSize: 16,
-    fontWeight: "bold",
-    color: "#000",
+    fontWeight: "600", // Slightly bolder font
+    color: "#333",
+    marginBottom: 4, // Add a bit of spacing
   },
   status: {
-    fontSize: 12,
-    color: "gray",
-    marginTop: 2,
+    fontSize: 14,
+    color: "#777",
+    marginTop: 0, // Remove top margin
   },
   timeAgo: {
     fontSize: 12,
@@ -388,37 +433,37 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    width: "100%",
+    justifyContent: "space-around", // Distribute buttons evenly
+    marginTop: 8, // Add some space above the buttons
   },
   rejectButton: {
-    backgroundColor: Color.grayBackgroundButton,
-    paddingVertical: 5,
-    paddingHorizontal: 20,
+    backgroundColor: "#eee",
+    paddingVertical: 6,
+    paddingHorizontal: 14,
     borderRadius: 20,
-    flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 4,
     alignItems: "center",
+    width: 130,
+    
   },
   rejectText: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#000",
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#555",
   },
   acceptButton: {
     backgroundColor: Color.blueBackgroundButton,
-    paddingVertical: 5,
-    paddingHorizontal: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
     borderRadius: 20,
-    flex: 1,
-    marginHorizontal: 5,
+    marginHorizontal: 4,
     alignItems: "center",
+    width: 130,
   },
   acceptText: {
-    fontSize: 12,
+    fontSize: 13,
     color: Color.blueText,
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   withdrawButton: {
     backgroundColor: Color.grayBackgroundButton,

@@ -21,22 +21,31 @@ const HeadView = ({ page, userInfo }) => {
       Alert.alert("Thông báo", "Vui lòng nhập số điện thoại cần tìm");
       return;
     }
-
+  
     try {
       setIsSearching(true);
       const phoneNumber = search.trim();
-      
+  
       // Gọi API tìm kiếm người dùng theo số điện thoại
       const result = await api.getUserByPhone(phoneNumber);
-      
+  
       if (result) {
-        // Điều hướng đến trang UserProfile với thông tin người dùng tìm được
+        // Lấy danh sách bạn bè
+        let requestSent = "";
+        try {
+          const friends = await api.getFriends();
+          const isFriend = friends.some((f) => f._id === result._id);
+          requestSent = isFriend ? "friend" : "";
+        } catch (e) {
+          // Nếu lỗi khi lấy danh sách bạn bè, giữ requestSent là ""
+          console.error("Lỗi khi kiểm tra bạn bè:", e);
+        }
+  
         navigation.navigate("UserProfile", {
           friend: result,
-          requestSent: '',
+          requestSent,
         });
-        
-        // Reset search sau khi tìm kiếm thành công
+  
         setSearch("");
       }
     } catch (error) {
