@@ -28,9 +28,10 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { SocketContext } from "@/app/socket/SocketContext";
+import { cleanupNewMessage, handleNewMessage } from "@/app/socket/SocketEvent";
 
 const MessageScreen = ({ route, navigation }) => {
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, handlerRefresh } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
@@ -63,21 +64,17 @@ const MessageScreen = ({ route, navigation }) => {
       // Join the conversation room
       socket.emit("joinUserConversations", [conversation.conversationId]);
 
-      // Listen for new messages
-      socket.on("newMessage", ({ conversationId, message }) => {
-        if (conversationId === conversation.conversationId) {
-          const formattedMessage = message._doc || message;
+      // Sử dụng hàm handleNewMessage
+      handleNewMessage(
+        socket,
+        conversation.conversationId,
+        setMessages,
+        flatListRef
+      );
 
-          // Check if the message is hidden for the current user
-          if (formattedMessage.hiddenFrom?.includes(userInfo.userId)) {
-            console.log("Tin nhắn bị ẩn, không lưu:", formattedMessage);
-            return;
-          }
-
-          setMessages((prev) => [formattedMessage, ...prev]);
-          flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
-        }
-        console.log("Nhận tin nhắn mới qua socket:", message._doc || message);
+      // Refresh conversation list when a new message is received
+      socket.on("newMessage", async () => {
+        await handlerRefresh();
       });
 
       // Listen for recalled messages
@@ -100,11 +97,12 @@ const MessageScreen = ({ route, navigation }) => {
 
       // Clean up socket listeners
       return () => {
+        cleanupNewMessage(socket); // Cleanup newMessage listener
         socket.off("newMessage");
         socket.off("messageRecalled");
       };
     }
-  }, [socket, conversation?.conversationId, userInfo.userId]);
+  }, [socket, conversation?.conversationId, userInfo.userId, handlerRefresh]);
 
   const fetchAndStoreMessages = async () => {
     try {
@@ -290,6 +288,52 @@ const MessageScreen = ({ route, navigation }) => {
     [conversation, userInfo.userId]
   );
 
+  const handleSendVideo = useCallback(
+    async (attachment) => {
+      if (!conversation?.conversationId) {
+        Alert.alert("Lỗi", "Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+
+      try {
+        const response = await api.sendFileVideoMessage({
+          conversationId: conversation.conversationId,
+          attachment,
+        });
+
+        console.log("Gửi video thành công:", response);
+
+        // Emit the video message to the socket
+        if (socket && socket.connected) {
+          const pseudoMessage = {
+            conversationId: conversation.conversationId,
+            messageDetailId: `msg_${Date.now()}`,
+            createdAt: new Date().toISOString(),
+            senderId: userInfo.userId,
+            type: "video",
+            attachment,
+          };
+
+          socket.emit("newMessage", {
+            conversationId: pseudoMessage.conversationId,
+            message: pseudoMessage,
+            sender: {
+              userId: userInfo.userId,
+              fullname: userInfo.fullname,
+              avatar: userInfo.urlavatar,
+            },
+          });
+
+          console.log("Gửi video qua socket:", pseudoMessage);
+        }
+      } catch (error) {
+        console.error("Lỗi khi gửi video:", error);
+        Alert.alert("Lỗi", "Không thể gửi video. Vui lòng thử lại.");
+      }
+    },
+    [conversation, userInfo.userId, socket]
+  );
+
   useEffect(() => {
     if (!conversation?.conversationId) {
       console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
@@ -329,6 +373,7 @@ const MessageScreen = ({ route, navigation }) => {
         onSendMessage={handleSendMessage}
         onSendImage={handleSendImage}
         onSendFile={handleSendFile}
+        onSendVideo={handleSendVideo}
         socket={socket} // Pass socket to ChatFooter
         conversation={conversation} // Pass conversation to ChatFooter
         setIsTyping={setIsTyping} // Pass setIsTyping to ChatFooter

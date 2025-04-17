@@ -4,6 +4,7 @@ import MessageItem from "./MessageItem";
 import moment from "moment";
 import ConversationStyle from "./ConversationStyle";
 import MessagePopup from "../../../features/messagePopup/MessagePopup";
+import PinnedMessage from "./PinnedMessage";
 
 const Conversation = ({
   messages,
@@ -18,6 +19,7 @@ const Conversation = ({
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
+  const pinnedMessage = messages.find((msg) => msg.isPinned); // Find pinned message
 
   const handleLongPress = (message) => {
     setSelectedMessage(message);
@@ -26,6 +28,7 @@ const Conversation = ({
 
   return (
     <View style={ConversationStyle.conversationContainer}>
+      <PinnedMessage pinnedMessage={pinnedMessage} />
       <FlatList
         data={messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}

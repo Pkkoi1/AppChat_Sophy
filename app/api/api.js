@@ -528,6 +528,18 @@ export const api = {
       throw new Error("Lỗi không xác định khi gửi tin nhắn.");
     }
   },
+  readMessage: async (conversationId) => {
+    try {
+      const response = await http.put(`/messages/read/${conversationId}`);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi đánh dấu tin nhắn là đã đọc:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   getAllMessages: async (conversationId) => {
     try {
       const response = await http.get(`/messages/all/${conversationId}`);
@@ -573,6 +585,33 @@ export const api = {
     } catch (error) {
       console.error(
         "Lỗi khi gửi ảnh văn bản:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  sendFileVideoMessage: async ({ conversationId, attachment }) => {
+    try {
+      const response = await http.post("/messages/send-file", {
+        conversationId, // Include conversation ID
+        attachment,
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi ảnh văn bản:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  pinMessage: async (messageId) => {
+    try {
+      const response = await http.put(`/messages/pin/${messageId}`);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi ghim tin nhắn:",
         error.response?.data || error.message
       );
       throw error;

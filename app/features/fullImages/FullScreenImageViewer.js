@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-import * as DocumentPicker from "expo-document-picker";
 import { PinchGestureHandler, State } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -67,23 +66,13 @@ const FullScreenImageViewer = ({ route, navigation }) => {
         return;
       }
 
-      const folderResult = await DocumentPicker.getDocumentAsync({
-        type: "application/*",
-        copyToCacheDirectory: false,
-      });
+      const fileUri = `${FileSystem.cacheDirectory}downloaded.jpg`;
+      await FileSystem.downloadAsync(imageUrl, fileUri);
 
-      if (folderResult.type === "cancel") {
-        Alert.alert("Hủy", "Không có thư mục nào được chọn.");
-        return;
-      }
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      await MediaLibrary.createAlbumAsync("Download", asset, false);
 
-      const fileUri = `${folderResult.uri}/downloaded.jpg`;
-      const downloaded = await FileSystem.downloadAsync(imageUrl, fileUri);
-
-      Alert.alert(
-        "Thành công",
-        `Hình ảnh đã được lưu vào: ${folderResult.uri}`
-      );
+      Alert.alert("Thành công", "Hình ảnh đã được lưu vào thư viện.");
     } catch (error) {
       console.error("Lỗi khi lưu ảnh:", error);
       Alert.alert("Lỗi", "Không thể lưu hình ảnh.");

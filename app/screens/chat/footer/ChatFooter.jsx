@@ -18,15 +18,17 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Color from "@/app/components/colors/Color";
 import { AuthContext } from "@/app/auth/AuthContext";
+import * as FileSystem from "expo-file-system";
+import { CLOUDINARY_PRESET, CLOUDINARY_CLOUD_NAME, CLOUDINARY_URL } from "@env";
 
 const ChatFooter = ({
   onSendMessage,
   onSendImage,
   onSendFile,
+  onSendVideo,
   socket,
   conversation,
   setIsTyping,
-  isTyping, // Add isTyping prop
 }) => {
   const [message, setMessage] = useState("");
   const typingTimeoutRef = useRef(null);
@@ -36,10 +38,18 @@ const ChatFooter = ({
   useEffect(() => {
     if (socket && conversation?.conversationId) {
       socket.on("userTyping", ({ conversationId, userId, fullname }) => {
-        if (conversationId !== conversation.conversationId) return;
-
-        setIsTyping(true); // Update typing state
-        console.log(`Người dùng ${fullname} đang nhập...`, conversationId);
+        if (
+          userId &&
+          userId !== userInfo.userId &&
+          userId !== undefined &&
+          userId !== "undefined"
+        ) {
+          setIsTyping(true); // Update typing state
+          console.log(
+            `Người dùng ${fullname} và ${userInfo.userId} đang nhập...`,
+            conversationId
+          );
+        }
 
         // Clear the previous timeout and set a new one
         if (userTypingTimeoutRef.current) {
@@ -57,7 +67,7 @@ const ChatFooter = ({
         }
       };
     }
-  }, [socket, conversation, setIsTyping]);
+  }, [socket, conversation, setIsTyping, userInfo.userId]);
 
   const handleTyping = () => {
     if (socket && conversation?.conversationId) {
@@ -66,7 +76,7 @@ const ChatFooter = ({
         userId: socket.userId,
         fullname: userInfo.fullname,
       });
-      setIsTyping(true);
+      // se
 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
@@ -111,20 +121,137 @@ const ChatFooter = ({
         multiple: false,
       });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
+      if (!result.canceled && result.assets?.length > 0) {
         const selectedFile = result.assets[0];
         console.log("Đã chọn file:", selectedFile);
-        onSendFile?.({
-          type: "file",
-          attachment: selectedFile.uri,
-          fileName: selectedFile.name,
-          mimeType: selectedFile.mimeType,
-        });
+
+        const mime = selectedFile.mimeType || "";
+
+        if (mime.startsWith("video")) {
+          try {
+            const attachment = await uploadVideoToCloudinary(selectedFile);
+            onSendVideo?.({
+              ...attachment,
+            });
+          } catch (error) {
+            Alert.alert("Lỗi", "Không thể tải video lên. Vui lòng thử lại.");
+          }
+        } else {
+          if (selectedFile.size > 10485760) {
+            Alert.alert(
+              "Kích thước tệp quá lớn",
+              "Vui lòng chọn tệp nhỏ hơn 10MB."
+            );
+            return;
+          }
+          onSendFile?.({
+            type: "file",
+            attachment: selectedFile.uri,
+            fileName: selectedFile.name,
+            mimeType: mime,
+          });
+        }
       } else {
-        console.log("Người dùng đã hủy chọn file hoặc không có file hợp lệ.");
+        console.log("Người dùng hủy hoặc không có file.");
       }
     } catch (error) {
-      console.error("Lỗi khi chọn file từ thư viện:", error);
+      console.error("Lỗi chọn file:", error);
+    }
+  };
+
+  const uploadFileToCloudinary = async (selectedFile) => {
+    try {
+      // Read file and convert to Base64
+      const base64File = await FileSystem.readAsStringAsync(selectedFile.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const fileBase64 = `data:${selectedFile.mimeType};base64,${base64File}`;
+
+      // Create payload for Cloudinary
+      const data = new FormData();
+      data.append("file", fileBase64);
+      data.append("upload_preset", CLOUDINARY_PRESET);
+      data.append("cloud_name", CLOUDINARY_CLOUD_NAME);
+
+      const response = await fetch(CLOUDINARY_URL, {
+        method: "POST",
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Lỗi khi upload file lên Cloudinary:", result);
+        throw new Error(result.error?.message || "Upload file thất bại.");
+      }
+
+      console.log("Đã upload file lên Cloudinary:", result);
+
+      // Construct the attachment object
+      const attachment = {
+        type: "file",
+        url: result.secure_url,
+        downloadUrl: result.secure_url.replace(
+          "/upload/",
+          "/upload/fl_attachment/"
+        ),
+        size: result.bytes,
+        name: selectedFile.name,
+      };
+
+      return attachment;
+    } catch (error) {
+      console.error("Lỗi khi upload file lên Cloudinary:", error);
+      throw error;
+    }
+  };
+  //Xử lý video
+  const uploadVideoToCloudinary = async (selectedMedia) => {
+    try {
+      // Đọc file video và chuyển đổi sang Base64
+      const base64File = await FileSystem.readAsStringAsync(selectedMedia.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const fileBase64 = `data:${
+        selectedMedia.type || "video/mp4"
+      };base64,${base64File}`;
+
+      // Tạo payload để gửi lên Cloudinary
+      const data = new FormData();
+      data.append("file", fileBase64); // Gửi Base64 thay vì URI
+      data.append("upload_preset", CLOUDINARY_PRESET); // Replace with your preset
+      data.append("cloud_name", CLOUDINARY_CLOUD_NAME); // Replace with your cloud name
+
+      const response = await fetch(CLOUDINARY_URL, {
+        method: "POST",
+        body: data,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Lỗi khi upload video lên Cloudinary:", result);
+        throw new Error(result.error?.message || "Upload video thất bại.");
+      }
+
+      console.log("Đã upload video lên Cloudinary:", result);
+
+      // Construct the attachment object
+      const attachment = {
+        type: "video",
+        url: result.secure_url,
+        downloadUrl: result.secure_url.replace(
+          "/upload/",
+          "/upload/fl_attachment/"
+        ),
+        size: result.bytes,
+        name: selectedMedia.name,
+      };
+
+      return attachment;
+    } catch (error) {
+      console.error("Lỗi khi upload video lên Cloudinary:", error);
+      throw error;
     }
   };
 
@@ -141,27 +268,31 @@ const ChatFooter = ({
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All, // Cho phép chọn cả ảnh và video
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
         allowsEditing: true,
         quality: 0.5,
       });
 
-      if (!result.canceled && result.assets && result.assets.length > 0) {
+      if (!result.canceled && result.assets?.length > 0) {
         const selectedMedia = result.assets[0];
         if (selectedMedia.type === "video") {
-          onSendImage({ type: "video", attachment: selectedMedia.uri });
+          try {
+            const attachment = await uploadVideoToCloudinary(selectedMedia);
+            onSendVideo({ ...attachment });
+          } catch (error) {
+            Alert.alert("Lỗi", "Không thể tải video lên. Vui lòng thử lại.");
+          }
         } else if (selectedMedia.type === "image") {
           onSendImage({ type: "image", attachment: selectedMedia.uri });
         }
       } else {
-        console.log(
-          "Người dùng đã hủy chọn phương tiện hoặc không có phương tiện hợp lệ."
-        );
+        console.log("Người dùng hủy hoặc không chọn gì.");
       }
     } catch (error) {
-      console.error("Lỗi khi chọn phương tiện từ thư viện:", error);
+      console.error("Lỗi chọn phương tiện:", error);
     }
   };
+
   return (
     <View style={ChatFooterStyle.container}>
       <TouchableOpacity>
