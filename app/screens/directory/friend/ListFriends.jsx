@@ -1,7 +1,6 @@
 import React, { useState, useCallback, useEffect, useContext } from "react";
 import {
   FlatList,
-  StyleSheet,
   Text,
   View,
   TouchableOpacity,
@@ -11,7 +10,7 @@ import {
   Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as Contacts from 'expo-contacts';
+import * as Contacts from "expo-contacts";
 import FriendSubMenu from "./SubMenu";
 import Friends from "./Friend";
 import { AuthContext } from "@/app/auth/AuthContext";
@@ -21,24 +20,22 @@ import ListFriendStyle from "./ListFriendStyle";
 const ListFriends = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [friends, setFriends] = useState([]);
-  const [phoneContacts, setPhoneContacts] = useState([]);
   const [showPhoneContacts, setShowPhoneContacts] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
   const { userInfo } = useContext(AuthContext);
+  const [phoneContacts, setPhoneContacts] = useState([]);
+  const [usersInDB, setUsersInDB] = useState([]);
 
+  // Lấy danh sách bạn bè từ API
   const fetchFriends = useCallback(async () => {
-    if (!refreshing) {
-      setLoading(true);
-    }
+    if (!refreshing) setLoading(true);
     setError(null);
     try {
       const data = await api.getFriends();
-      console.log("Danh sách bạn bè:", data);
       setFriends(data || []);
     } catch (err) {
-      console.error("Failed to fetch friends:", err);
       setError("Không thể tải danh sách bạn bè.");
     } finally {
       setLoading(false);
@@ -46,23 +43,29 @@ const ListFriends = () => {
     }
   }, [refreshing]);
 
+  // Lấy danh bạ điện thoại và tìm người dùng đã đăng ký app
   const getPhoneContacts = async () => {
     try {
       const { status } = await Contacts.requestPermissionsAsync();
-      if (status === 'granted') {
+      if (status === "granted") {
         setLoading(true);
         const { data } = await Contacts.getContactsAsync({
           fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
         });
-  
+
         if (data.length > 0) {
-          // Lọc và định dạng danh bạ
           const formattedContacts = data
-            .filter(contact => contact.name && contact.phoneNumbers && contact.phoneNumbers.length > 0)
-            .map(contact => {
-              // Lấy số điện thoại đầu tiên và loại bỏ khoảng trắng, dấu gạch ngang, dấu ngoặc
-              const phoneNumber = contact.phoneNumbers[0].number.replace(/[\s\-()]/g, '');
-              
+            .filter(
+              (contact) =>
+                contact.name &&
+                contact.phoneNumbers &&
+                contact.phoneNumbers.length > 0
+            )
+            .map((contact) => {
+              const phoneNumber = contact.phoneNumbers[0].number.replace(
+                /[\s\-()]/g,
+                ""
+              );
               return {
                 _id: contact.id,
                 fullname: contact.name,
@@ -70,12 +73,22 @@ const ListFriends = () => {
                 isPhoneContact: true,
               };
             });
-            
-          console.log(`Đã tìm thấy ${formattedContacts.length} liên hệ trong danh bạ`);
+
+          // Lấy danh sách số điện thoại
+          const phoneNumbers = formattedContacts.map((c) => c.phone);
+
+          // Gọi API searchUsersByPhones
+          try {
+            const users = await api.searchUsersByPhones(phoneNumbers);
+            setUsersInDB(users || []);
+          } catch (err) {
+            // Không cần setError ở đây, chỉ log
+          }
+
           setPhoneContacts(formattedContacts);
         } else {
-          console.log("Không tìm thấy liên hệ nào trong danh bạ");
           setPhoneContacts([]);
+          setUsersInDB([]);
         }
       } else {
         Alert.alert(
@@ -83,15 +96,11 @@ const ListFriends = () => {
           "Ứng dụng cần quyền truy cập danh bạ để hiển thị danh sách liên hệ của bạn",
           [
             { text: "Đóng", style: "cancel" },
-            { 
-              text: "Cài đặt", 
-              onPress: () => Linking.openSettings() 
-            }
+            { text: "Cài đặt", onPress: () => Linking.openSettings() },
           ]
         );
       }
     } catch (err) {
-      console.error("Lỗi khi truy cập danh bạ:", err);
       setError("Không thể truy cập danh bạ điện thoại: " + err.message);
     } finally {
       setLoading(false);
@@ -109,18 +118,15 @@ const ListFriends = () => {
     getPhoneContacts();
   };
 
-  const toggleContactsView = () => {
-    setShowPhoneContacts(!showPhoneContacts);
-  };
-
+  // Hiển thị header
   const renderHeader = () => (
     <View style={ListFriendStyle.container}>
       <FriendSubMenu />
       <View style={ListFriendStyle.buttonContainer}>
         <TouchableOpacity
           style={[
-            ListFriendStyle.buttonTab, 
-            !showPhoneContacts && ListFriendStyle.buttonAll
+            ListFriendStyle.buttonTab,
+            !showPhoneContacts && ListFriendStyle.buttonAll,
           ]}
           onPress={() => setShowPhoneContacts(false)}
         >
@@ -131,31 +137,63 @@ const ListFriends = () => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[
-            ListFriendStyle.buttonTab, 
-            showPhoneContacts && ListFriendStyle.buttonNew
+            ListFriendStyle.buttonTab,
+            showPhoneContacts && ListFriendStyle.buttonNew,
           ]}
           onPress={() => setShowPhoneContacts(true)}
         >
-          <Text>Danh bạ điện thoại</Text>
+          <Text>Danh bạ</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
-  // Xử lý dữ liệu hiển thị dựa vào chế độ xem
-  const displayData = showPhoneContacts ? phoneContacts : friends;
+  // Nếu đang ở chế độ danh bạ, hiển thị người dùng đã đăng ký app lên đầu
+  let displayData = [];
+  if (showPhoneContacts) {
+    // Tìm các user trong DB có số điện thoại trùng với danh bạ
+    const usersInContacts = usersInDB
+      .map((user) => {
+        // Tìm contact trong danh bạ để lấy fullname nếu có
+        const matchedContact = phoneContacts.find(
+          (c) => c.phone === user.phone
+        );
+        return {
+          ...user,
+          fullname: matchedContact ? matchedContact.fullname : user.fullname,
+          isPhoneContact: true,
+          isAppUser: true,
+        };
+      })
+      .sort((a, b) => a.fullname.localeCompare(b.fullname));
 
-  // Sắp xếp danh sách theo chữ cái đầu tiên của fullname
-  const sortedContacts = displayData
-    .filter((contact) => contact && contact.fullname)
-    .sort((a, b) => a.fullname.localeCompare(b.fullname));
+    // Các contact còn lại chưa dùng app
+    const contactsNotInApp = phoneContacts
+      .filter(
+        (c) => !usersInDB.some((u) => u.phone === c.phone)
+      )
+      .map((c) => ({
+        ...c,
+        isAppUser: false,
+      }))
+      .sort((a, b) => a.fullname.localeCompare(b.fullname));
+
+    displayData = [...usersInContacts, ...contactsNotInApp];
+  } else {
+    displayData = friends
+      .map((f) => ({
+        ...f,
+        isAppUser: true,
+      }))
+      .sort((a, b) => a.fullname.localeCompare(b.fullname));
+  }
 
   // Nhóm theo chữ cái đầu tiên
-  const groupedContacts = sortedContacts.reduce((acc, contact) => {
-    const firstLetter = contact.fullname[0].toUpperCase();
-    if (!acc[firstLetter]) {
-      acc[firstLetter] = [];
-    }
+  const groupedContacts = displayData.reduce((acc, contact) => {
+    const firstLetter = contact.fullname
+      ? contact.fullname[0].toUpperCase()
+      : "#";
+    if (!acc[firstLetter]) acc[firstLetter] = [];
     acc[firstLetter].push(contact);
     return acc;
   }, {});
@@ -163,7 +201,7 @@ const ListFriends = () => {
   return (
     <View>
       {loading && !refreshing ? (
-        <ActivityIndicator size="large" color="#0000ff" style={{marginTop: 20}} />
+        <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
       ) : (
         <FlatList
           ListHeaderComponent={renderHeader}
@@ -177,17 +215,28 @@ const ListFriends = () => {
               <Text style={ListFriendStyle.categoryTitle}>{item}</Text>
               {groupedContacts[item]?.map((contact) => (
                 <TouchableOpacity
-                  key={contact._id}
-                  onPress={() =>
-                    contact.isPhoneContact 
-                      ? Alert.alert("Liên hệ", `Gọi cho ${contact.fullname} (${contact.phone})`)
-                      : navigation.navigate("UserProfile", {
-                          friend: contact,
-                          requestSent: 'friend',
-                        })
-                  }
+                  key={contact._id || contact.phone}
+                  onPress={() => {
+                    if (showPhoneContacts && contact.isAppUser) {
+                      navigation.navigate("UserProfile", {
+                        friend: contact,
+                        requestSent: "friend",
+                      });
+                    } else if (showPhoneContacts && contact.isPhoneContact) {
+                      Alert.alert(
+                        "Liên hệ",
+                        `Gọi cho ${contact.fullname} (${contact.phone})`
+                      );
+                    } else {
+                      navigation.navigate("UserProfile", {
+                        friend: contact,
+                        requestSent: "friend",
+                      });
+                    }
+                  }}
                 >
                   <Friends friend={contact} />
+                  
                 </TouchableOpacity>
               ))}
             </View>
@@ -195,7 +244,11 @@ const ListFriends = () => {
           contentContainerStyle={ListFriendStyle.container}
         />
       )}
-      {error && <Text style={{color: 'red', textAlign: 'center', margin: 10}}>{error}</Text>}
+      {error && (
+        <Text style={{ color: "red", textAlign: "center", margin: 10 }}>
+          {error}
+        </Text>
+      )}
     </View>
   );
 };

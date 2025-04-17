@@ -618,9 +618,12 @@ export const api = {
   // Gửi lời mời kết bạn
   sendFriendRequest: async (userId, message = "") => {
     try {
-      const response = await http.post(`/users/friend-requests/send-request/${userId}`, {
-        message
-      });
+      const response = await http.post(
+        `/users/friend-requests/send-request/${userId}`,
+        {
+          message,
+        }
+      );
       return response.data;
     } catch (error) {
       console.error(
@@ -630,7 +633,7 @@ export const api = {
       throw error;
     }
   },
-  
+
   // Lấy danh sách lời mời kết bạn đã gửi
   getFriendRequestsSent: async () => {
     try {
@@ -644,7 +647,7 @@ export const api = {
       throw error;
     }
   },
-  
+
   // Lấy danh sách lời mời kết bạn đã nhận
   getFriendRequestsReceived: async () => {
     try {
@@ -658,11 +661,13 @@ export const api = {
       throw error;
     }
   },
-  
+
   // Thu hồi lời mời kết bạn
   retrieveFriendRequest: async (requestId) => {
     try {
-      const response = await http.delete(`/users/friend-requests/retrieve-request/${requestId}`);
+      const response = await http.delete(
+        `/users/friend-requests/retrieve-request/${requestId}`
+      );
       return response.data;
     } catch (error) {
       console.error(
@@ -672,11 +677,13 @@ export const api = {
       throw error;
     }
   },
-  
+
   // Chấp nhận lời mời kết bạn
   acceptFriendRequest: async (requestId) => {
     try {
-      const response = await http.put(`/users/friend-requests/accept-request/${requestId}`);
+      const response = await http.put(
+        `/users/friend-requests/accept-request/${requestId}`
+      );
       return response.data;
     } catch (error) {
       console.error(
@@ -686,11 +693,13 @@ export const api = {
       throw error;
     }
   },
-  
+
   // Từ chối lời mời kết bạn
   rejectFriendRequest: async (requestId) => {
     try {
-      const response = await http.put(`/users/friend-requests/reject-request/${requestId}`);
+      const response = await http.put(
+        `/users/friend-requests/reject-request/${requestId}`
+      );
       return response.data;
     } catch (error) {
       console.error(
@@ -709,13 +718,27 @@ export const api = {
         "Lỗi khi lấy thông tin người dùng theo số điện thoại:",
         error.response?.data || error.message
       );
-      
+
       if (error.response && error.response.status === 404) {
         throw new Error("Không tìm thấy người dùng với số điện thoại này");
       }
-      
+
       throw error;
     }
   },
-
+  // Tìm kiếm người dùng theo danh sách số điện thoại
+  searchUsersByPhones: async (phones) => {
+    try {
+      const response = await http.post("/users/search-users", {
+        phones, // axios sẽ tự chuyển mảng thành nhiều phones=... trên query string
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi tìm kiếm người dùng theo số điện thoại:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };
