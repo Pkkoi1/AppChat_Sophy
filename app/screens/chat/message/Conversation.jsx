@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, FlatList, Text, Pressable } from "react-native";
+import {
+  View,
+  FlatList,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
 import ConversationStyle from "./ConversationStyle";
@@ -8,18 +15,19 @@ import PinnedMessage from "./PinnedMessage";
 
 const Conversation = ({
   messages,
-  setMessages, // Use messages and setMessages from props
+  setMessages,
   senderId,
   highlightedMessageIds = [],
   highlightedMessageId,
   searchQuery = "",
   receiver,
-  onTyping, // Use onTyping prop to control typing indicator
+  onTyping,
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
-  const pinnedMessage = messages.find((msg) => msg.isPinned); // Find pinned message
+  const [pinnedModalVisible, setPinnedModalVisible] = useState(false); // Modal for pinned messages
+  const pinnedMessages = messages.filter((msg) => msg.isPinned); // Get all pinned messages
 
   const handleLongPress = (message) => {
     setSelectedMessage(message);
@@ -28,7 +36,24 @@ const Conversation = ({
 
   return (
     <View style={ConversationStyle.conversationContainer}>
-      <PinnedMessage pinnedMessage={pinnedMessage} />
+      {pinnedMessages.length > 0 && (
+        <TouchableOpacity
+          style={ConversationStyle.pinnedButton}
+          onPress={() => setPinnedModalVisible(true)}
+        >
+          <View style={ConversationStyle.pinnedButtonContent}>
+            <Text style={ConversationStyle.pinnedButtonText}>
+              Tin nhắn của {pinnedMessages[pinnedMessages.length - 1].senderId}:{" "}
+              {pinnedMessages[pinnedMessages.length - 1].content}
+            </Text>
+            {pinnedMessages.length > 1 && (
+              <Text style={ConversationStyle.pinnedCount}>
+                +{pinnedMessages.length - 1}
+              </Text>
+            )}
+          </View>
+        </TouchableOpacity>
+      )}
       <FlatList
         data={messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
@@ -79,7 +104,7 @@ const Conversation = ({
         maxToRenderPerBatch={10}
         keyboardShouldPersistTaps="always"
       />
-      {onTyping && ( // Show typing indicator based on onTyping prop
+      {onTyping && (
         <View style={ConversationStyle.typingIndicatorContainer}>
           <Text style={ConversationStyle.typingIndicatorText}>
             Đang soạn tin ...
@@ -94,8 +119,20 @@ const Conversation = ({
         messageReactions={messageReactions}
         setMessageReactions={setMessageReactions}
         senderId={senderId}
-        setMessages={setMessages} // Pass setMessages to update the message list
+        setMessages={setMessages}
+        messages={messages} // Pass messages to MessagePopup
       />
+      <Modal
+        visible={pinnedModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setPinnedModalVisible(false)}
+      >
+        <PinnedMessage
+          pinnedMessages={pinnedMessages}
+          onClose={() => setPinnedModalVisible(false)}
+        />
+      </Modal>
     </View>
   );
 };
