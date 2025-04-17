@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   Keyboard,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  Text,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -15,14 +16,80 @@ import * as DocumentPicker from "expo-document-picker";
 
 import AntDesign from "@expo/vector-icons/AntDesign";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
+import Color from "@/app/components/colors/Color";
+import { AuthContext } from "@/app/auth/AuthContext";
 
-const ChatFooter = ({ onSendMessage, onSendImage, onSendFile }) => {
+const ChatFooter = ({
+  onSendMessage,
+  onSendImage,
+  onSendFile,
+  socket,
+  conversation,
+  setIsTyping,
+  isTyping, // Add isTyping prop
+}) => {
   const [message, setMessage] = useState("");
+  const typingTimeoutRef = useRef(null);
+  const userTypingTimeoutRef = useRef(null); // Ref to manage userTyping timeout
+  const { userInfo } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (socket && conversation?.conversationId) {
+      socket.on("userTyping", ({ conversationId, userId, fullname }) => {
+        if (conversationId !== conversation.conversationId) return;
+
+        setIsTyping(true); // Update typing state
+        console.log(`Người dùng ${fullname} đang nhập...`, conversationId);
+
+        // Clear the previous timeout and set a new one
+        if (userTypingTimeoutRef.current) {
+          clearTimeout(userTypingTimeoutRef.current);
+        }
+        userTypingTimeoutRef.current = setTimeout(() => {
+          setIsTyping(null); // Reset typing state after 2 seconds of inactivity
+        }, 1000);
+      });
+
+      return () => {
+        socket.off("userTyping");
+        if (userTypingTimeoutRef.current) {
+          clearTimeout(userTypingTimeoutRef.current); // Clean up timeout
+        }
+      };
+    }
+  }, [socket, conversation, setIsTyping]);
+
+  const handleTyping = () => {
+    if (socket && conversation?.conversationId) {
+      socket.emit("typing", {
+        conversationId: conversation.conversationId,
+        userId: socket.userId,
+        fullname: userInfo.fullname,
+      });
+      setIsTyping(true);
+
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false); // Turn off typing indicator after 1 second of inactivity
+      }, 1000);
+    }
+  };
+
+  const handleInputChange = (text) => {
+    setMessage(text);
+    handleTyping();
+  };
 
   const handleSend = () => {
     if (message.trim()) {
       onSendMessage({ type: "text", content: message });
-      setMessage(""); // Clear the input field
+      setMessage("");
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      setIsTyping(false);
     }
   };
 
@@ -39,13 +106,13 @@ const ChatFooter = ({ onSendMessage, onSendImage, onSendFile }) => {
       }
 
       const result = await DocumentPicker.getDocumentAsync({
-        type: "*/*", // Allow all file types
+        type: "*/*",
         copyToCacheDirectory: true,
         multiple: false,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedFile = result.assets[0]; // Get the first file
+        const selectedFile = result.assets[0];
         console.log("Đã chọn file:", selectedFile);
         onSendFile?.({
           type: "file",
@@ -68,28 +135,33 @@ const ChatFooter = ({ onSendMessage, onSendImage, onSendFile }) => {
       if (!permissionResult.granted) {
         Alert.alert(
           "Quyền truy cập bị từ chối",
-          "Ứng dụng cần quyền truy cập thư viện ảnh."
+          "Ứng dụng cần quyền truy cập thư viện phương tiện."
         );
         return;
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ImagePicker.MediaTypeOptions.All, // Cho phép chọn cả ảnh và video
         allowsEditing: true,
         quality: 0.5,
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedImageUri = result.assets[0].uri;
-        onSendImage({ type: "image", attachment: selectedImageUri });
+        const selectedMedia = result.assets[0];
+        if (selectedMedia.type === "video") {
+          onSendImage({ type: "video", attachment: selectedMedia.uri });
+        } else if (selectedMedia.type === "image") {
+          onSendImage({ type: "image", attachment: selectedMedia.uri });
+        }
       } else {
-        console.log("Người dùng đã hủy chọn ảnh hoặc không có ảnh hợp lệ.");
+        console.log(
+          "Người dùng đã hủy chọn phương tiện hoặc không có phương tiện hợp lệ."
+        );
       }
     } catch (error) {
-      console.error("Lỗi khi chọn ảnh từ thư viện:", error);
+      console.error("Lỗi khi chọn phương tiện từ thư viện:", error);
     }
   };
-
   return (
     <View style={ChatFooterStyle.container}>
       <TouchableOpacity>
@@ -103,9 +175,7 @@ const ChatFooter = ({ onSendMessage, onSendImage, onSendFile }) => {
         placeholder="Nhập tin nhắn"
         style={ChatFooterStyle.text}
         value={message}
-        onChangeText={(text) => {
-          setMessage(text);
-        }}
+        onChangeText={handleInputChange}
       />
       {message.trim() ? (
         <TouchableOpacity
@@ -119,7 +189,6 @@ const ChatFooter = ({ onSendMessage, onSendImage, onSendFile }) => {
           <TouchableOpacity onPress={pickDocument}>
             <AntDesign name="addfile" size={24} color="#8f8f8f" />
           </TouchableOpacity>
-
           <TouchableOpacity>
             <Feather name="mic" size={24} color="#8f8f8f" />
           </TouchableOpacity>
@@ -142,6 +211,7 @@ const ChatFooterStyle = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
   },
+
   text: {
     flex: 1,
     fontSize: 16,

@@ -10,21 +10,29 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [conversations, setConversations] = useState([]); // Thêm state conversations
+
   const socket = useContext(SocketContext); // Get socket from context
 
   useEffect(() => {
     const loadStorage = async () => {
       try {
-        const [token, refresh, user] = await AsyncStorage.multiGet([
-          "accessToken",
-          "refreshToken",
-          "userInfo",
-        ]);
+        const [token, refresh, user, storedConversations] =
+          await AsyncStorage.multiGet([
+            "accessToken",
+            "refreshToken",
+            "userInfo",
+            "conversations", // Lấy danh sách cuộc trò chuyện từ AsyncStorage
+          ]);
 
         if (token[1] && refresh[1] && user[1]) {
           setaccessToken(token[1]);
           setRefreshToken(refresh[1]);
           setUserInfo(JSON.parse(user[1]));
+        }
+
+        if (storedConversations[1]) {
+          setConversations(JSON.parse(storedConversations[1])); // Cập nhật state conversations
         }
       } catch (err) {
         console.error("Error loading storage:", err);
@@ -35,44 +43,6 @@ export const AuthProvider = ({ children }) => {
 
     loadStorage();
   }, []);
-
-  const refreshAccessToken = async () => {
-    console.log("refreshAccessToken được gọi");
-    console.log("Giá trị refreshToken trong state:", refreshToken);
-    console.log("Giá trị userInfo trong state:", userInfo);
-    console.log("Giá trị accessToken trong state:", accessToken);
-
-    try {
-      // Lấy refreshToken từ AsyncStorage nếu không có trong state
-      const storedRefreshToken =
-        refreshToken || (await AsyncStorage.getItem("refreshToken"));
-
-      if (!storedRefreshToken) {
-        console.error("No refresh token available");
-        return;
-      }
-
-      const response = await api.refreshToken({
-        refreshToken: storedRefreshToken,
-      });
-      const { accessToken: newAccessToken } = response.token;
-      const { refreshToken: newRefreshToken } = response.token;
-      console.log("Phan hoi tu refresh token ở context:", response);
-
-      setaccessToken(newAccessToken);
-      await AsyncStorage.setItem("accessToken", newAccessToken);
-      await AsyncStorage.setItem("refreshToken", newRefreshToken);
-      await getUserInfoById(response.data.user.userId);
-
-      // Lấy thông tin người dùng sau khi refresh token
-      // if (userInfo?.userId) {
-      //   await getUserInfoById(userInfo.userId);
-      // }
-    } catch (error) {
-      console.error("Error refreshing access token:", error);
-      logout(); // Đăng xuất nếu refresh token không hợp lệ
-    }
-  };
 
   const login = async (params) => {
     const response = await api.login(params);
@@ -85,6 +55,16 @@ export const AuthProvider = ({ children }) => {
 
     if (socket && response.data.user.userId) {
       socket.emit("authenticate", response.data.user.userId);
+    }
+
+    // Lấy danh sách cuộc trò chuyện sau khi đăng nhập
+    const conversationsResponse = await api.conversations();
+    if (conversationsResponse && conversationsResponse.data) {
+      setConversations(conversationsResponse.data); // Lưu danh sách vào state
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(conversationsResponse.data)
+      ); // Lưu vào AsyncStorage
     }
   };
 
@@ -108,10 +88,12 @@ export const AuthProvider = ({ children }) => {
       setaccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
+      setConversations([]); // Xóa danh sách cuộc trò chuyện
       await AsyncStorage.multiRemove([
         "accessToken",
         "refreshToken",
         "userInfo",
+        "conversations", // Xóa danh sách cuộc trò chuyện khỏi AsyncStorage
       ]);
     }
   };
@@ -139,6 +121,7 @@ export const AuthProvider = ({ children }) => {
         refreshToken,
         userInfo,
         isLoading,
+        conversations,
         register,
         login,
         logout,

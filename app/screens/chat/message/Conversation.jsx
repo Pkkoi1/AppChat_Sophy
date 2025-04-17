@@ -13,6 +13,7 @@ const Conversation = ({
   highlightedMessageId,
   searchQuery = "",
   receiver,
+  onTyping, // Use onTyping prop to control typing indicator
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -75,6 +76,13 @@ const Conversation = ({
         maxToRenderPerBatch={10}
         keyboardShouldPersistTaps="always"
       />
+      {onTyping && ( // Show typing indicator based on onTyping prop
+        <View style={ConversationStyle.typingIndicatorContainer}>
+          <Text style={ConversationStyle.typingIndicatorText}>
+            Đang soạn tin ...
+          </Text>
+        </View>
+      )}
       <MessagePopup
         popupVisible={popupVisible}
         setPopupVisible={setPopupVisible}
