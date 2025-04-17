@@ -617,6 +617,18 @@ export const api = {
       throw error;
     }
   },
+  unPinMessage: async (messageId) => {
+    try {
+      const response = await http.put(`/messages/unpin/${messageId}`);
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi bỏ ghim tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   recallMessage: async (messageId) => {
     try {
       const response = await http.put(`/messages/recall/${messageId}`);

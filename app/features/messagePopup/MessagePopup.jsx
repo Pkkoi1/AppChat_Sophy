@@ -40,6 +40,12 @@ const popupOptions = [
     iconColor: "#3B82F6",
   },
   { label: "Ghim", icon: "pin-outline", action: "pin", iconColor: "#F97316" },
+  // {
+  //   label: "Bỏ ghim",
+  //   icon: "pin-off-outline",
+  //   action: "unpin",
+  //   iconColor: "#F97316",
+  // },
   {
     label: "Nhắc hẹn",
     icon: "clock-outline",
@@ -94,6 +100,7 @@ const MessagePopup = ({
   setMessageReactions,
   senderId,
   setMessages, // Add setMessages as a prop to update the message list
+  messages, // Add messages as a prop to access the current message list
 }) => {
   const handleEmojiPress = (emoji) => {
     if (selectedMessage) {
@@ -155,18 +162,60 @@ const MessagePopup = ({
         break;
       case "pin":
         if (selectedMessage) {
-          console.log("Ghim tin nhắn:", selectedMessage.messageDetailId);
-          setMessages((prevMessages) =>
-            prevMessages.map((msg) => ({
-              ...msg,
-              isPinned: msg.messageDetailId === selectedMessage.messageDetailId,
-              pinnedAt:
-                msg.messageDetailId === selectedMessage.messageDetailId
-                  ? new Date().toISOString()
-                  : null,
-            }))
-          );
-          Alert.alert("Thành công", "Tin nhắn đã được ghim.");
+          try {
+            if (selectedMessage.isPinned) {
+              console.log("Bỏ ghim tin nhắn:", selectedMessage.messageDetailId);
+              await api.unPinMessage(selectedMessage.messageDetailId);
+              setMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                  msg.messageDetailId === selectedMessage.messageDetailId
+                    ? { ...msg, isPinned: false, pinnedAt: null }
+                    : msg
+                )
+              );
+              Alert.alert("Thành công", "Tin nhắn đã được bỏ ghim.");
+            } else {
+              console.log("Ghim tin nhắn:", selectedMessage.messageDetailId);
+              if (!messages) {
+                throw new Error("Messages list is undefined.");
+              }
+              const pinnedMessages = messages.filter((msg) => msg.isPinned);
+              if (pinnedMessages.length >= 3) {
+                // Unpin the oldest pinned message
+                const oldestPinnedId = pinnedMessages[0].messageDetailId;
+                await api.unPinMessage(oldestPinnedId);
+                setMessages((prevMessages) =>
+                  prevMessages.map((msg) =>
+                    msg.messageDetailId === oldestPinnedId
+                      ? { ...msg, isPinned: false, pinnedAt: null }
+                      : msg
+                  )
+                );
+              }
+              await api.pinMessage(selectedMessage.messageDetailId);
+              setMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                  msg.messageDetailId === selectedMessage.messageDetailId
+                    ? {
+                        ...msg,
+                        isPinned: true,
+                        pinnedAt: new Date().toISOString(),
+                      }
+                    : msg
+                )
+              );
+              Alert.alert("Thành công", "Tin nhắn đã được ghim.");
+            }
+          } catch (error) {
+            console.error(
+              "Lỗi khi xử lý ghim/bỏ ghim tin nhắn:",
+              error.response?.data || error.message
+            );
+            Alert.alert(
+              "Lỗi",
+              "Không thể xử lý ghim/bỏ ghim tin nhắn. Vui lòng thử lại."
+            );
+          }
         }
         break;
       case "reminder":
@@ -226,7 +275,17 @@ const MessagePopup = ({
   // Filter options based on whether the message is recalled
   const filteredOptions = selectedMessage?.isRecall
     ? popupOptions.filter((option) => option.action === "delete")
-    : popupOptions;
+    : popupOptions.map((option) => {
+        if (option.action === "pin" || option.action === "unpin") {
+          return {
+            ...option,
+            label: selectedMessage?.isPinned ? "Bỏ ghim" : "Ghim",
+            icon: selectedMessage?.isPinned ? "pin-off-outline" : "pin-outline",
+            action: "pin", // Keep the action as "pin" for both cases
+          };
+        }
+        return option;
+      });
 
   return (
     <Modal
@@ -294,9 +353,8 @@ const MessagePopup = ({
                       MessagePopupStyle.gridText,
                       item.color && { color: item.color },
                     ]}
-                  >
-                    {item.label}
-                  </Text>
+                  ></Text>
+                  <Text style={MessagePopupStyle.gridText}>{item.label}</Text>
                 </TouchableOpacity>
               )}
               style={MessagePopupStyle.gridContainer}

@@ -1,29 +1,64 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
 
-const PinnedMessage = ({ pinnedMessage }) => {
-  if (!pinnedMessage || !pinnedMessage.isPinned) return null;
-
+const PinnedMessage = ({ pinnedMessages, onClose }) => {
   return (
     <View style={styles.pinnedContainer}>
-      <Text style={styles.pinnedText}>
-        Tin nhắn của {pinnedMessage.senderId}: {pinnedMessage.content}
-      </Text>
+      <Text style={styles.pinnedTitle}>Pinned Messages</Text>
+      <FlatList
+        data={pinnedMessages}
+        keyExtractor={(item) => item.messageDetailId}
+        renderItem={({ item }) => (
+          <View style={styles.pinnedMessageContainer}>
+            <Text style={styles.pinnedMessageText}>
+              Tin nhắn của {item.senderId}: {item.content}
+            </Text>
+          </View>
+        )}
+      />
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Text style={styles.closeButtonText}>Close</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   pinnedContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "#f8d7da",
-    padding: 10,
-    zIndex: 1,
+    flex: 1,
+    backgroundColor: "#fff",
+    padding: 20,
+    marginTop: 50,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
-  pinnedText: {
+  pinnedTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  pinnedMessageContainer: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  pinnedMessageText: {
+    fontSize: 16,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#f8d7da",
+    alignItems: "center",
+    borderRadius: 5,
+  },
+  closeButtonText: {
     color: "#721c24",
     fontWeight: "bold",
   },
