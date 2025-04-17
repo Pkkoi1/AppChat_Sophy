@@ -105,10 +105,13 @@ const MessageItem = ({
   const getSenderInfo = () =>
     senders.find((s) => s.userId === message.senderId);
 
-  const handleDownload = async (fileUrl, fileName) => {
+  const handleDownload = async (fileUrl, fileName, downloadUrl) => {
     try {
       const path = FileSystem.cacheDirectory + fileName;
-      const res = FileSystem.createDownloadResumable(fileUrl, path);
+      const res = FileSystem.createDownloadResumable(
+        downloadUrl || fileUrl,
+        path
+      );
       const { uri } = await res.downloadAsync();
 
       if (!uri) throw new Error("Không thể tải file");
@@ -167,6 +170,7 @@ const MessageItem = ({
         avtText={12}
         shadow={false}
         bordered={false}
+        style={{ marginLeft: 5 }}
       />
     );
   };
@@ -218,6 +222,7 @@ const MessageItem = ({
         const fileUrl = attachment?.url;
         const fileName = attachment?.name || "Tệp tin";
         const fileType = attachment?.type || "unknown";
+        const downloadUrl = attachment?.downloadUrl;
 
         return (
           <View style={MessageItemStyle.fileContainer}>
@@ -228,7 +233,7 @@ const MessageItem = ({
               <Text style={MessageItemStyle.fileName}>{fileName}</Text>
             </View>
             <TouchableOpacity
-              onPress={() => handleDownload(fileUrl, fileName)}
+              onPress={() => handleDownload(fileUrl, fileName, downloadUrl)}
               style={MessageItemStyle.downloadButton}
             >
               <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
@@ -243,13 +248,6 @@ const MessageItem = ({
               style={MessageItemStyle.video}
               resizeMode="contain"
               useNativeControls
-              onPlaybackStatusUpdate={(status) => {
-                if (status.isLoaded) {
-                  console.log("Video loaded:", status);
-                } else {
-                  console.error("Video not loaded:", status.error);
-                }
-              }}
             />
           </View>
         );

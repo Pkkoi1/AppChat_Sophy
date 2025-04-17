@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, { createContext, useState, useEffect, useContext, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../socket/SocketContext"; // Import SocketContext
@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   const [conversations, setConversations] = useState([]); // Thêm state conversations
 
   const socket = useContext(SocketContext); // Get socket from context
+  const flatListRef = useRef(null); // Optional: Reference for scrolling if needed
 
   useEffect(() => {
     const loadStorage = async () => {
@@ -43,6 +44,36 @@ export const AuthProvider = ({ children }) => {
 
     loadStorage();
   }, []);
+
+  const handleNewMessage = () => {
+    if (!socket) return;
+
+    socket.on("newMessage", ({ conversationId: incomingConversationId, message }) => {
+      const formattedMessage = message._doc || message;
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === incomingConversationId
+            ? { ...conv, lastMessage: formattedMessage }
+            : conv
+        )
+      );
+
+      flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 }); // Optional: Scroll to top
+      console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
+    });
+  };
+
+  const cleanupNewMessage = () => {
+    if (socket) {
+      socket.off("newMessage");
+    }
+  };
+
+  useEffect(() => {
+    handleNewMessage(); // Start listening for new messages
+    return () => cleanupNewMessage(); // Cleanup on unmount
+  }, [socket]);
 
   const login = async (params) => {
     const response = await api.login(params);
@@ -114,6 +145,21 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.setItem("userInfo", JSON.stringify(updated));
   };
 
+  const handlerRefresh = async () => {
+    try {
+      const conversationsResponse = await api.conversations();
+      if (conversationsResponse && conversationsResponse.data) {
+        setConversations(conversationsResponse.data); // Update state with new conversations
+        await AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(conversationsResponse.data)
+        ); // Save updated conversations to AsyncStorage
+      }
+    } catch (error) {
+      console.error("Error refreshing conversations:", error);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -127,7 +173,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         updateUserInfo,
         getUserInfoById,
-        // refreshAccessToken, // Expose the refreshAccessToken function
+        handlerRefresh, // Expose handlerRefresh
+        flatListRef, // Optional: Expose flatListRef if needed
       }}
     >
       {children}

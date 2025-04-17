@@ -154,7 +154,20 @@ const MessagePopup = ({
         console.log("Đã sao chép tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "pin":
-        console.log("Ghim tin nhắn:", selectedMessage.messageDetailId);
+        if (selectedMessage) {
+          console.log("Ghim tin nhắn:", selectedMessage.messageDetailId);
+          setMessages((prevMessages) =>
+            prevMessages.map((msg) => ({
+              ...msg,
+              isPinned: msg.messageDetailId === selectedMessage.messageDetailId,
+              pinnedAt:
+                msg.messageDetailId === selectedMessage.messageDetailId
+                  ? new Date().toISOString()
+                  : null,
+            }))
+          );
+          Alert.alert("Thành công", "Tin nhắn đã được ghim.");
+        }
         break;
       case "reminder":
         console.log(
