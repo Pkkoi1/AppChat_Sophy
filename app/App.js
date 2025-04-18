@@ -48,6 +48,7 @@ import ZaloFAQScreen from "./screens/login/ZaloFAQScreen";
 import FullScreenImageViewer from "./features/fullImages/FullScreenImageViewer";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ShareMessage from "./screens/chat/share/ShareMessage";
+import SearchUser from "./screens/chat/search/SearrchUser";
 
 const Stack = createNativeStackNavigator();
 
@@ -134,6 +135,7 @@ function RootLayout() {
                 options={{ headerShown: false }} // Hide the header for full-screen view
               />
               <Stack.Screen name="ShareMessage" component={ShareMessage} />
+              <Stack.Screen name="SearchUser" component={SearchUser} />
             </Stack.Navigator>
           </NavigationContainer>
         </GestureHandlerRootView>
