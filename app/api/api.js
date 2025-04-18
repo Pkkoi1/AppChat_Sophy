@@ -615,25 +615,30 @@ export const api = {
       throw error;
     }
   },
-  // Gửi lời mời kết bạn
-  sendFriendRequest: async (userId, message = "") => {
+  createConversation: async (receiverId) => {
     try {
-      const response = await http.post(
-        `/users/friend-requests/send-request/${userId}`,
-        {
-          message,
-        }
-      );
+      const response = await http.post("/conversations/create", { receiverId });
       return response.data;
     } catch (error) {
       console.error(
-        "Lỗi khi gửi lời mời kết bạn:",
+        "Lỗi khi tạo cuộc trò chuyện:",
         error.response?.data || error.message
       );
       throw error;
     }
   },
-
+  getConversationById: async (conversationId) => {
+    try{
+      const response = await http.get(`/conversations/${conversationId}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy thông tin cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   // Lấy danh sách lời mời kết bạn đã gửi
   getFriendRequestsSent: async () => {
     try {
@@ -661,7 +666,24 @@ export const api = {
       throw error;
     }
   },
-
+  // Gửi lời mời kết bạn
+  sendFriendRequest: async (userId, message = "") => {
+    try {
+      const response = await http.post(
+        `/users/friend-requests/send-request/${userId}`,
+        {
+          message,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi lời mời kết bạn aspi:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   // Thu hồi lời mời kết bạn
   retrieveFriendRequest: async (requestId) => {
     try {

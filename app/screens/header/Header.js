@@ -28,7 +28,7 @@ const HeadView = ({ page, userInfo }) => {
   
       // Gọi API tìm kiếm người dùng theo số điện thoại
       const result = await api.getUserByPhone(phoneNumber);
-  
+      console.log("find userrrrrrrrrrrrrrrrrr:", result); // Check the value of result
       if (result) {
         // Lấy danh sách bạn bè, lời mời đã gửi và đã nhận
         let requestSent = "";
@@ -41,16 +41,15 @@ const HeadView = ({ page, userInfo }) => {
             const sentRequests = await api.getFriendRequestsSent();
             console.log("sentRequests:", sentRequests); // Check the value of sentRequests
             const isRequestSent = sentRequests.some(
-              (req) => {
-                console.log("req.receiverId:", req.receiverId, "result._id:", result._id);
-                return req.receiverId === result._id;
+              (sentRequest) => {
+                console.log("req.receiverId:", sentRequest.receiverId, "result._id:", result._id);
+                return sentRequest.receiverId._id === result._id;
               }
             );
             if (isRequestSent) {
               requestSent = "pending";
             } else {
               const receivedRequests = await api.getFriendRequestsReceived();
-              console.log("result:", result._id); // Check the value of result
               console.log("receivedRequests:", receivedRequests); // Check the value of receivedRequests
               const isRequestReceived = receivedRequests.some(
                 (req) => req.senderId._id === result._id
@@ -60,6 +59,7 @@ const HeadView = ({ page, userInfo }) => {
               }
             }
           }
+          console.log("requestSenttttttttttttt:", requestSent); // Check the value of requestSent
         } catch (e) {
           // Nếu lỗi khi lấy danh sách bạn bè, giữ requestSent là ""
           console.error("Lỗi khi kiểm tra bạn bè:", e);
