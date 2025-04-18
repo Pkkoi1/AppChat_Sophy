@@ -16,22 +16,26 @@ import PinnedMessage from "./PinnedMessage";
 const Conversation = ({
   messages,
   setMessages,
+  notifications, // Pass notifications to Conversation
   senderId,
   highlightedMessageIds = [],
   highlightedMessageId,
   searchQuery = "",
   receiver,
   onTyping,
+  onReply, // Thêm prop onReply
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
-  const [pinnedModalVisible, setPinnedModalVisible] = useState(false); // Modal for pinned messages
-  const pinnedMessages = messages.filter((msg) => msg.isPinned); // Get all pinned messages
+  const [pinnedModalVisible, setPinnedModalVisible] = useState(false);
+  const pinnedMessages = messages.filter((msg) => msg.isPinned);
 
   const handleLongPress = (message) => {
-    setSelectedMessage(message);
-    setPopupVisible(true);
+    if (message.type !== "notification") {
+      setSelectedMessage(message);
+      setPopupVisible(true);
+    }
   };
 
   return (
@@ -120,7 +124,8 @@ const Conversation = ({
         setMessageReactions={setMessageReactions}
         senderId={senderId}
         setMessages={setMessages}
-        messages={messages} // Pass messages to MessagePopup
+        messages={messages}
+        onReply={onReply} // Truyền onReply xuống MessagePopup
       />
       <Modal
         visible={pinnedModalVisible}

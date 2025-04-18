@@ -142,10 +142,35 @@ const ShareMessage = ({ route }) => {
 
     try {
       for (const conversation of selectedConversations) {
-        const response = await api.sendMessage({
-          conversationId: conversation.conversationId,
-          content: message.content,
-        });
+        let response;
+
+        switch (message.type) {
+          case "text":
+            response = await api.sendMessage({
+              conversationId: conversation.conversationId,
+              content: message.content,
+            });
+            break;
+
+          case "image":
+            response = await api.forwardImageMessage(
+              message.messageDetailId,
+              conversation.conversationId
+            );
+            break;
+
+          case "video":
+          case "file":
+            response = await api.sendFileVideoMessage({
+              conversationId: conversation.conversationId,
+              attachment: message.attachment,
+            });
+            break;
+
+          default:
+            Alert.alert("Lỗi", "Loại tin nhắn không được hỗ trợ.");
+            return;
+        }
 
         // Emit the new message via socket
         if (socket && socket.connected) {

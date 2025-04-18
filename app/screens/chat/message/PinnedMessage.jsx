@@ -10,7 +10,7 @@ import {
 const PinnedMessage = ({ pinnedMessages, onClose }) => {
   return (
     <View style={styles.pinnedContainer}>
-      <Text style={styles.pinnedTitle}>Pinned Messages</Text>
+      <Text style={styles.pinnedTitle}>Tin nhắn đã ghim</Text>
       <FlatList
         data={pinnedMessages}
         keyExtractor={(item) => item.messageDetailId}
@@ -23,7 +23,7 @@ const PinnedMessage = ({ pinnedMessages, onClose }) => {
         )}
       />
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-        <Text style={styles.closeButtonText}>Close</Text>
+        <Text style={styles.closeButtonText}>Đóng</Text>
       </TouchableOpacity>
     </View>
   );

@@ -647,6 +647,22 @@ export const api = {
       throw error;
     }
   },
+  replyMessage: async (messageId, content) => {
+    try {
+      console.log("messageId:", messageId);
+      console.log("content:", content);
+      const response = await http.post(`/messages/reply/${messageId}`, {
+        content,
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi trả lời tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   recallMessage: async (messageId) => {
     try {
       const response = await http.put(`/messages/recall/${messageId}`);
@@ -654,6 +670,20 @@ export const api = {
     } catch (error) {
       console.error(
         "Lỗi khi thu hồi tin nhắn:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  forwardImageMessage: async (messageId, conversationId) => {
+    try {
+      const response = await http.post(`/messages/forward/${messageId}`, {
+        conversationId,
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi chuyển tiếp ảnh:",
         error.response?.data || error.message
       );
       throw error;
@@ -696,7 +726,20 @@ export const api = {
       throw error;
     }
   },
-  
+  getConversationById: async (conversationId) => {
+    try {
+      const response = await http.get(`/conversations/${conversationId}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy thông tin cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  // Lấy danh sách lời mời kết bạn đã gửi
+
   getFriendRequestsSent: async () => {
     try {
       const response = await http.get("/users/friend-requests-sent");

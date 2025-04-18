@@ -13,7 +13,6 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import * as DocumentPicker from "expo-document-picker";
-
 import AntDesign from "@expo/vector-icons/AntDesign";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
 import Color from "@/app/components/colors/Color";
@@ -29,10 +28,12 @@ const ChatFooter = ({
   socket,
   conversation,
   setIsTyping,
+  replyingTo, // Thêm prop replyingTo
+  setReplyingTo, // Thêm prop setReplyingTo
 }) => {
   const [message, setMessage] = useState("");
   const typingTimeoutRef = useRef(null);
-  const userTypingTimeoutRef = useRef(null); // Ref to manage userTyping timeout
+  const userTypingTimeoutRef = useRef(null);
   const { userInfo } = useContext(AuthContext);
 
   useEffect(() => {
@@ -44,26 +45,25 @@ const ChatFooter = ({
           userId !== undefined &&
           userId !== "undefined"
         ) {
-          setIsTyping(true); // Update typing state
+          setIsTyping(true);
           console.log(
             `Người dùng ${fullname} và ${userInfo.userId} đang nhập...`,
             conversationId
           );
         }
 
-        // Clear the previous timeout and set a new one
         if (userTypingTimeoutRef.current) {
           clearTimeout(userTypingTimeoutRef.current);
         }
         userTypingTimeoutRef.current = setTimeout(() => {
-          setIsTyping(null); // Reset typing state after 2 seconds of inactivity
+          setIsTyping(null);
         }, 1000);
       });
 
       return () => {
         socket.off("userTyping");
         if (userTypingTimeoutRef.current) {
-          clearTimeout(userTypingTimeoutRef.current); // Clean up timeout
+          clearTimeout(userTypingTimeoutRef.current);
         }
       };
     }
@@ -76,13 +76,12 @@ const ChatFooter = ({
         userId: socket.userId,
         fullname: userInfo.fullname,
       });
-      // se
 
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
       typingTimeoutRef.current = setTimeout(() => {
-        setIsTyping(false); // Turn off typing indicator after 1 second of inactivity
+        setIsTyping(false);
       }, 1000);
     }
   };
@@ -101,6 +100,10 @@ const ChatFooter = ({
       }
       setIsTyping(false);
     }
+  };
+
+  const handleCancelReply = () => {
+    setReplyingTo(null); // Hủy trả lời
   };
 
   const pickDocument = async () => {
@@ -130,9 +133,7 @@ const ChatFooter = ({
         if (mime.startsWith("video")) {
           try {
             const attachment = await uploadVideoToCloudinary(selectedFile);
-            onSendVideo?.({
-              ...attachment,
-            });
+            onSendVideo?.({ ...attachment });
           } catch (error) {
             Alert.alert("Lỗi", "Không thể tải video lên. Vui lòng thử lại.");
           }
@@ -161,13 +162,10 @@ const ChatFooter = ({
 
   const uploadFileToCloudinary = async (selectedFile) => {
     try {
-      // Read file and convert to Base64
       const base64File = await FileSystem.readAsStringAsync(selectedFile.uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
       const fileBase64 = `data:${selectedFile.mimeType};base64,${base64File}`;
-
-      // Create payload for Cloudinary
       const data = new FormData();
       data.append("file", fileBase64);
       data.append("upload_preset", CLOUDINARY_PRESET);
@@ -186,8 +184,6 @@ const ChatFooter = ({
       }
 
       console.log("Đã upload file lên Cloudinary:", result);
-
-      // Construct the attachment object
       const attachment = {
         type: "file",
         url: result.secure_url,
@@ -198,29 +194,25 @@ const ChatFooter = ({
         size: result.bytes,
         name: selectedFile.name,
       };
-
       return attachment;
     } catch (error) {
       console.error("Lỗi khi upload file lên Cloudinary:", error);
       throw error;
     }
   };
-  //Xử lý video
+
   const uploadVideoToCloudinary = async (selectedMedia) => {
     try {
-      // Đọc file video và chuyển đổi sang Base64
       const base64File = await FileSystem.readAsStringAsync(selectedMedia.uri, {
         encoding: FileSystem.EncodingType.Base64,
       });
       const fileBase64 = `data:${
         selectedMedia.type || "video/mp4"
       };base64,${base64File}`;
-
-      // Tạo payload để gửi lên Cloudinary
       const data = new FormData();
-      data.append("file", fileBase64); // Gửi Base64 thay vì URI
-      data.append("upload_preset", CLOUDINARY_PRESET); // Replace with your preset
-      data.append("cloud_name", CLOUDINARY_CLOUD_NAME); // Replace with your cloud name
+      data.append("file", fileBase64);
+      data.append("upload_preset", CLOUDINARY_PRESET);
+      data.append("cloud_name", CLOUDINARY_CLOUD_NAME);
 
       const response = await fetch(CLOUDINARY_URL, {
         method: "POST",
@@ -235,8 +227,6 @@ const ChatFooter = ({
       }
 
       console.log("Đã upload video lên Cloudinary:", result);
-
-      // Construct the attachment object
       const attachment = {
         type: "video",
         url: result.secure_url,
@@ -247,7 +237,6 @@ const ChatFooter = ({
         size: result.bytes,
         name: selectedMedia.name,
       };
-
       return attachment;
     } catch (error) {
       console.error("Lỗi khi upload video lên Cloudinary:", error);
@@ -295,54 +284,90 @@ const ChatFooter = ({
 
   return (
     <View style={ChatFooterStyle.container}>
-      <TouchableOpacity>
-        <MaterialCommunityIcons
-          name="sticker-emoji"
-          size={24}
-          color="#8f8f8f"
-        />
-      </TouchableOpacity>
-      <TextInput
-        placeholder="Nhập tin nhắn"
-        style={ChatFooterStyle.text}
-        value={message}
-        onChangeText={handleInputChange}
-      />
-      {message.trim() ? (
-        <TouchableOpacity
-          onPress={handleSend}
-          style={ChatFooterStyle.sendButton}
-        >
-          <Ionicons name="send" size={24} color="#005ae0" />
-        </TouchableOpacity>
-      ) : (
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <TouchableOpacity onPress={pickDocument}>
-            <AntDesign name="addfile" size={24} color="#8f8f8f" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Feather name="mic" size={24} color="#8f8f8f" />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={pickImage}>
-            <SimpleLineIcons name="picture" size={24} color="#8f8f8f" />
+      {replyingTo && (
+        <View style={ChatFooterStyle.replyContainer}>
+          <View style={ChatFooterStyle.replyContent}>
+            <Text style={ChatFooterStyle.replyLabel}>Đang trả lời:</Text>
+            <Text style={ChatFooterStyle.replyText} numberOfLines={1}>
+              {replyingTo.content}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={handleCancelReply}>
+            <Ionicons name="close" size={20} color="#8f8f8f" />
           </TouchableOpacity>
         </View>
       )}
+      <View style={ChatFooterStyle.inputContainer}>
+        <TouchableOpacity>
+          <MaterialCommunityIcons
+            name="sticker-emoji"
+            size={24}
+            color="#8f8f8f"
+          />
+        </TouchableOpacity>
+        <TextInput
+          placeholder="Nhập tin nhắn"
+          style={ChatFooterStyle.text}
+          value={message}
+          onChangeText={handleInputChange}
+        />
+        {message.trim() ? (
+          <TouchableOpacity
+            onPress={handleSend}
+            style={ChatFooterStyle.sendButton}
+          >
+            <Ionicons name="send" size={24} color="#005ae0" />
+          </TouchableOpacity>
+        ) : (
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+            <TouchableOpacity onPress={pickDocument}>
+              <AntDesign name="addfile" size={24} color="#8f8f8f" />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Feather name="mic" size={24} color="#8f8f8f" />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={pickImage}>
+              <SimpleLineIcons name="picture" size={24} color="#8f8f8f" />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
     </View>
   );
 };
 
 const ChatFooterStyle = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
     backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
   },
-
+  replyContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    backgroundColor: "#f0f0f0",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  replyContent: {
+    flex: 1,
+  },
+  replyLabel: {
+    fontSize: 12,
+    color: "#666",
+  },
+  replyText: {
+    fontSize: 14,
+    color: "#000",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
   text: {
     flex: 1,
     fontSize: 16,
