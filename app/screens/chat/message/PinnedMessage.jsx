@@ -1,4 +1,5 @@
-import React, { memo } from "react";
+import { api } from "@/app/api/api";
+import React, { memo, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,14 +8,44 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const PinnedMessage = ({ pinnedMessages, onClose, onScrollToMessage }) => {
+const PinnedMessage = ({
+  pinnedMessages,
+  onClose,
+  onScrollToMessage,
+  setMessages,
+}) => {
+  // Function to unpin recalled messages
+  const handleUnPinRecalledMessages = async () => {
+    for (const item of pinnedMessages) {
+      if (item.isRecall) {
+        await api.unPinMessage(item.messageDetailId); // Call the unPinMessage API
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            msg.messageDetailId === item.messageDetailId
+              ? { ...msg, isPinned: false, pinnedAt: null }
+              : msg
+          )
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleUnPinRecalledMessages(); // Unpin recalled messages on component mount
+  }, [pinnedMessages]);
+
+  // Filter out recalled messages
+  const filteredPinnedMessages = pinnedMessages.filter(
+    (item) => !item.isRecall
+  );
+
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={styles.pinnedMessageContainer}
       onPress={() => {
-        onScrollToMessage(item.messageDetailId); // Cuộn đến tin nhắn
+        onScrollToMessage(item.messageDetailId); // Scroll to the message
         console.log(item.messageDetailId);
-        onClose(); // Đóng modal
+        onClose(); // Close modal
       }}
     >
       <Text style={styles.pinnedMessageText}>
@@ -24,22 +55,24 @@ const PinnedMessage = ({ pinnedMessages, onClose, onScrollToMessage }) => {
   );
 
   const getItemLayout = (data, index) => ({
-    length: 50, // Chiều cao cố định của mỗi item (thay đổi nếu cần)
+    length: 50, // Fixed height of each item (change if needed)
     offset: 50 * index,
     index,
   });
 
   const handleScrollToIndexFailed = (info) => {
     console.warn("Scroll failed: ", info);
-    // Xử lý fallback, ví dụ cuộn đến vị trí gần nhất
+    // Handle fallback, e.g., scroll to the nearest position
   };
 
   return (
     <View style={styles.pinnedContainer}>
-      <Text style={styles.pinnedTitle}>Tin nhắn đã ghim</Text>
+      <Text style={styles.pinnedTitle}>
+        Tin nhắn đã ghim ({filteredPinnedMessages.length})
+      </Text>
       <FlatList
-        data={pinnedMessages}
-        renderItem={renderItem} // Đảm bảo renderItem là một hàm
+        data={filteredPinnedMessages} // Use filtered messages
+        renderItem={renderItem}
         keyExtractor={(item) => item.messageDetailId}
         getItemLayout={getItemLayout}
         onScrollToIndexFailed={handleScrollToIndexFailed}

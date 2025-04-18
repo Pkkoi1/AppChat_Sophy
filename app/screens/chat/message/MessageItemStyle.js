@@ -155,14 +155,15 @@ const MessageItemStyle = StyleSheet.create({
   },
   notificationContainer: {
     alignSelf: "center", // Center the notification horizontally
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#ffffff",
     // padding: 10,
     paddingHorizontal: 5,
+
     borderRadius: 50,
     marginVertical: 10,
   },
   notificationText: {
-    fontSize: 13,
+    fontSize: 10,
     color: "#555",
     textAlign: "center", // Center the text within the container
   },

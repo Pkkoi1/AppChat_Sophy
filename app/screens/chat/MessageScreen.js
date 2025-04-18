@@ -91,6 +91,39 @@ const MessageScreen = ({ route, navigation }) => {
           messageId
         );
       });
+
+      socket.on("messagePinned", ({ conversationId, messageId }) => {
+        if (conversationId === conversation.conversationId) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === messageId
+                ? { ...msg, isPinned: true, pinnedAt: new Date() }
+                : msg
+            )
+          );
+        }
+        console.log(
+          "Nhận tin nhắn đã ghim qua socket:",
+          conversationId,
+          messageId
+        );
+      });
+      socket.on("messageUnpinned", ({ conversationId, messageId }) => {
+        if (conversationId === conversation.conversationId) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === messageId
+                ? { ...msg, isPinned: false, pinnedAt: null }
+                : msg
+            )
+          );
+        }
+        console.log(
+          "Nhận tin nhắn đã bỏ ghim qua socket:",
+          conversationId,
+          messageId
+        );
+      });
       return () => {
         cleanupNewMessage(socket);
         socket.off("newMessage");
@@ -99,13 +132,17 @@ const MessageScreen = ({ route, navigation }) => {
     }
   }, [messages, sended]);
 
-  const fetchAndStoreMessages = async () => {
+  const fetchMessages = async () => {
     try {
       setIsLoading(true);
       const response = await api.getAllMessages(conversation.conversationId);
       const filteredMessages = response.messages.filter(
         (message) => !message.hiddenFrom?.includes(userInfo.userId)
       );
+      // console.log(
+      //   "Tin nhắn đã tải:",
+      //   filteredMessages.map((msg) => msg.messageDetailId)
+      // );
       setMessages(filteredMessages);
     } catch (error) {
       console.error("Lỗi lấy tin nhắn:", error);
@@ -114,6 +151,15 @@ const MessageScreen = ({ route, navigation }) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!conversation?.conversationId) {
+      console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
+      setMessages([]);
+      return;
+    }
+    fetchMessages();
+  }, [conversation?.conversationId]);
 
   const handleSendMessage = useCallback(
     async (message) => {
@@ -397,8 +443,6 @@ const MessageScreen = ({ route, navigation }) => {
       return;
     }
 
-    // const invertedIndex = messages.length - 1 - index;
-
     if (flatListRef.current) {
       try {
         flatListRef.current.scrollToIndex({
@@ -407,9 +451,12 @@ const MessageScreen = ({ route, navigation }) => {
           viewPosition: 0.5,
         });
         setHighlightedMessageId(messageId);
+
+        // Reset highlightedMessageId after 2 seconds
+        setTimeout(() => setHighlightedMessageId(null), 500);
       } catch (error) {
         console.warn("Lỗi cuộn đến message:", error.message);
-        // fallback nếu lỗi out-of-range
+        // Fallback nếu lỗi out-of-range
         setTimeout(() => {
           flatListRef.current?.scrollToOffset({
             offset: index * 80, // height mặc định 80 trong getItemLayout
@@ -419,15 +466,6 @@ const MessageScreen = ({ route, navigation }) => {
       }
     }
   };
-
-  useEffect(() => {
-    if (!conversation?.conversationId) {
-      console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
-      setMessages([]);
-      return;
-    }
-    fetchAndStoreMessages();
-  }, [conversation?.conversationId]);
 
   const effectiveBackground = background || conversation?.background || null;
 
@@ -458,6 +496,8 @@ const MessageScreen = ({ route, navigation }) => {
             onReply={handleReply}
             flatListRef={flatListRef} // Pass FlatList ref to Conversation
             onScrollToMessage={scrollToMessage} // Pass scrollToMessage to Conversation
+            conversationId={conversation.conversationId} // Truyền conversationId
+            fetchMessages={fetchMessages} // Truyền fetchMessages
           />
         ) : (
           <View style={MessageScreenStyle.loadingContainer}>

@@ -210,9 +210,26 @@ const MessageItem = ({
         ? userInfo?.fullname
         : receiver?.fullname;
 
+    // console.log("replyData", replyData);
+    // Check if the replied message is recalled
+    if (replyData.isRecall || messageReplyId?.isRecall) {
+      return (
+        <TouchableOpacity
+          onPress={() => onScrollToMessage(messageReplyId)} // Scroll to the original message
+        >
+          <View style={MessageItemStyle.replyContainer}>
+            <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
+            <Text style={MessageItemStyle.replyContent}>
+              Tin nhắn đã được thu hồi
+            </Text>
+          </View>
+        </TouchableOpacity>
+      );
+    }
+
     return (
       <TouchableOpacity
-        onPress={() => onScrollToMessage(messageReplyId)} // Cuộn đến tin nhắn gốc
+        onPress={() => onScrollToMessage(messageReplyId)} // Scroll to the original message
       >
         <View style={MessageItemStyle.replyContainer}>
           <Text style={MessageItemStyle.replySender}>{replySender}:</Text>

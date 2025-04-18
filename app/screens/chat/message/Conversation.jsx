@@ -26,6 +26,8 @@ const Conversation = ({
   onReply,
   flatListRef, // Receive FlatList ref from MessageScreen
   onScrollToMessage, // Receive scrollToMessage from MessageScreen
+  conversationId, // Nhận conversationId
+  fetchMessages, // Nhận fetchMessages
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -131,6 +133,8 @@ const Conversation = ({
         messages={messages}
         onReply={onReply}
         onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessagePopup
+        conversationId={conversationId} // Truyền conversationId
+        fetchMessages={fetchMessages} // Truyền fetchMessages
       />
       <Modal
         visible={pinnedModalVisible}
