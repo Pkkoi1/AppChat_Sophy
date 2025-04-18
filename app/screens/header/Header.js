@@ -16,7 +16,8 @@ const HeadView = ({ page, userInfo }) => {
   const [isSearching, setIsSearching] = useState(false);
   const navigation = useNavigation();
 
-  // 
+  
+     
   
   const handleSearch = () => {
     navigation.navigate("SearchUser"); // Chuyển sang giao diện SearchUser

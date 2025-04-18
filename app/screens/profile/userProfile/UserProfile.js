@@ -45,6 +45,38 @@ const UserProfile = ({ route }) => {
     setRequestSent(initialRequestSent || null);
   }, [initialRequestSent]);
 
+  // Lắng nghe sự kiện 'userExists' từ server de tao cuoc tro chuyen
+  useEffect(() => {
+    if (!socket || !userInfo?.userId) return;
+  
+    // Lắng nghe sự kiện 'newConversation'
+    socket.on("newConversation", (data) => {
+      console.log("New conversation received:", data);
+      if (data?.conversation) {
+        Alert.alert(
+          "Thông báo",
+          "Bạn có một cuộc trò chuyện mới!",
+          [
+            {
+              text: "Xem ngay",
+              onPress: () => {
+                navigation.navigate("Chat", {
+                  conversation: data.conversation,
+                });
+              },
+            },
+            { text: "Đóng", style: "cancel" },
+          ]
+        );
+      }
+    });
+  
+    // Cleanup socket listener khi component unmount
+    return () => {
+      socket.off("newConversation");
+    };
+  }, [socket, userInfo?.userId]);
+
   // Socket Event Listeners
   useEffect(() => {
     if (!socket || !friend?.userId) return;
@@ -340,11 +372,51 @@ const UserProfile = ({ route }) => {
     }
   };
 
+  // const handleAcceptRequest = async () => {
+  //   try {
+  //     setLoading(true);
+  //     let acceptRequestId = requestId;
+
+  //     if (!acceptRequestId) {
+  //       const receivedRequests = await api.getFriendRequestsReceived();
+  //       const foundRequest = receivedRequests.find(
+  //         (req) => req.senderId?.userId === friend.userId
+  //       );
+  //       if (foundRequest) {
+  //         acceptRequestId = foundRequest.friendRequestId;
+  //       } else {
+  //         throw new Error("Không tìm thấy lời mời kết bạn để chấp nhận");
+  //       }
+  //     }
+
+  //     await api.acceptFriendRequest(acceptRequestId);
+  //     setRequestSent("friend");
+  //     setRequestId(null);
+
+  //     // Emit socket event to notify the sender
+  //     socket.emit("acceptFriendRequest", {
+  //       senderId: friend.userId,
+  //       receiverId: userInfo.userId,
+  //       receiverName: userInfo.fullname,
+  //       friendRequestId: acceptRequestId,
+  //     });
+
+  //     Alert.alert("Thành công", "Đã chấp nhận lời mời kết bạn!");
+  //   } catch (error) {
+  //     console.error("Lỗi khi chấp nhận lời mời kết bạn:", error);
+  //     Alert.alert(
+  //       "Lỗi",
+  //       error.message || "Không thể chấp nhận lời mời kết bạn."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
   const handleAcceptRequest = async () => {
     try {
       setLoading(true);
       let acceptRequestId = requestId;
-
+  
       if (!acceptRequestId) {
         const receivedRequests = await api.getFriendRequestsReceived();
         const foundRequest = receivedRequests.find(
@@ -356,11 +428,11 @@ const UserProfile = ({ route }) => {
           throw new Error("Không tìm thấy lời mời kết bạn để chấp nhận");
         }
       }
-
+  
       await api.acceptFriendRequest(acceptRequestId);
       setRequestSent("friend");
       setRequestId(null);
-
+  
       // Emit socket event to notify the sender
       socket.emit("acceptFriendRequest", {
         senderId: friend.userId,
@@ -368,8 +440,19 @@ const UserProfile = ({ route }) => {
         receiverName: userInfo.fullname,
         friendRequestId: acceptRequestId,
       });
-
+  
       Alert.alert("Thành công", "Đã chấp nhận lời mời kết bạn!");
+  
+      // Tạo cuộc trò chuyện mới sau khi chấp nhận lời mời kết bạn
+      const conversation = await api.createConversation(friend.userId);
+      if (conversation?.conversationId) {
+        navigation.navigate("Chat", {
+          conversation: conversation,
+          receiver: friend,
+        });
+      } else {
+        Alert.alert("Lỗi", "Không thể tạo cuộc trò chuyện.");
+      }
     } catch (error) {
       console.error("Lỗi khi chấp nhận lời mời kết bạn:", error);
       Alert.alert(
@@ -479,7 +562,7 @@ const UserProfile = ({ route }) => {
                   <Text style={styles.deniedButtonText}>Từ chối</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={handleAcceptRequest}
+                  onPress={handleCreateConversation}
                   style={styles.acceptedButton}
                 >
                   <Text style={styles.acceptedButtonText}>Đồng ý</Text>
