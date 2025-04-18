@@ -11,6 +11,7 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Clipboard from "@react-native-clipboard/clipboard";
 import { api } from "@/app/api/api"; // Import the API module
+import { useNavigation } from "@react-navigation/native";
 import MessagePopupStyle from "./MessagePopupStyle";
 
 const popupOptions = [
@@ -40,12 +41,7 @@ const popupOptions = [
     iconColor: "#3B82F6",
   },
   { label: "Ghim", icon: "pin-outline", action: "pin", iconColor: "#F97316" },
-  // {
-  //   label: "Bỏ ghim",
-  //   icon: "pin-off-outline",
-  //   action: "unpin",
-  //   iconColor: "#F97316",
-  // },
+
   {
     label: "Nhắc hẹn",
     icon: "clock-outline",
@@ -102,6 +98,8 @@ const MessagePopup = ({
   setMessages, // Add setMessages as a prop to update the message list
   messages, // Add messages as a prop to access the current message list
 }) => {
+  const navigation = useNavigation(); // Initialize navigation
+
   const handleEmojiPress = (emoji) => {
     if (selectedMessage) {
       const messageId = selectedMessage.messageDetailId;
@@ -122,7 +120,12 @@ const MessagePopup = ({
         console.log("Trả lời tin nhắn:", selectedMessage.messageDetailId);
         break;
       case "forward":
-        console.log("Chuyển tiếp tin nhắn:", selectedMessage.messageDetailId);
+        if (selectedMessage) {
+          console.log("Chuyển tiếp tin nhắn:", selectedMessage.messageDetailId);
+          navigation.navigate("ShareMessage", {
+            message: selectedMessage,
+          });
+        }
         break;
       case "saveToCloud":
         console.log("Lưu vào Cloud:", selectedMessage.messageDetailId);

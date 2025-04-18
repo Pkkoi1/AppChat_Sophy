@@ -36,7 +36,7 @@ const ListInbox = () => {
         socket.off("newMessage");
       };
     }
-  }, [socket, handlerRefresh]);
+  }, []);
 
   return (
     <View style={{ flex: 1, width: "100%" }}>
