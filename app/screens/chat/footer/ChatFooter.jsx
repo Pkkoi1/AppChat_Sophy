@@ -258,7 +258,7 @@ const ChatFooter = ({
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
+        // allowsEditing: true,
         quality: 0.5,
       });
 

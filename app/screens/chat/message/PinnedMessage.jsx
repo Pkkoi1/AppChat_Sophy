@@ -1,4 +1,5 @@
-import React from "react";
+import { api } from "@/app/api/api";
+import React, { memo, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,20 +8,74 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const PinnedMessage = ({ pinnedMessages, onClose }) => {
+const PinnedMessage = ({
+  pinnedMessages,
+  onClose,
+  onScrollToMessage,
+  setMessages,
+}) => {
+  // Function to unpin recalled messages
+  const handleUnPinRecalledMessages = async () => {
+    for (const item of pinnedMessages) {
+      if (item.isRecall) {
+        await api.unPinMessage(item.messageDetailId); // Call the unPinMessage API
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            msg.messageDetailId === item.messageDetailId
+              ? { ...msg, isPinned: false, pinnedAt: null }
+              : msg
+          )
+        );
+      }
+    }
+  };
+
+  useEffect(() => {
+    handleUnPinRecalledMessages(); // Unpin recalled messages on component mount
+  }, [pinnedMessages]);
+
+  // Filter out recalled messages
+  const filteredPinnedMessages = pinnedMessages.filter(
+    (item) => !item.isRecall
+  );
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.pinnedMessageContainer}
+      onPress={() => {
+        onScrollToMessage(item.messageDetailId); // Scroll to the message
+        console.log(item.messageDetailId);
+        onClose(); // Close modal
+      }}
+    >
+      <Text style={styles.pinnedMessageText}>
+        Tin nhắn của {item.senderId}: {item.content}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const getItemLayout = (data, index) => ({
+    length: 50, // Fixed height of each item (change if needed)
+    offset: 50 * index,
+    index,
+  });
+
+  const handleScrollToIndexFailed = (info) => {
+    console.warn("Scroll failed: ", info);
+    // Handle fallback, e.g., scroll to the nearest position
+  };
+
   return (
     <View style={styles.pinnedContainer}>
-      <Text style={styles.pinnedTitle}>Tin nhắn đã ghim</Text>
+      <Text style={styles.pinnedTitle}>
+        Tin nhắn đã ghim ({filteredPinnedMessages.length})
+      </Text>
       <FlatList
-        data={pinnedMessages}
+        data={filteredPinnedMessages} // Use filtered messages
+        renderItem={renderItem}
         keyExtractor={(item) => item.messageDetailId}
-        renderItem={({ item }) => (
-          <View style={styles.pinnedMessageContainer}>
-            <Text style={styles.pinnedMessageText}>
-              Tin nhắn của {item.senderId}: {item.content}
-            </Text>
-          </View>
-        )}
+        getItemLayout={getItemLayout}
+        onScrollToIndexFailed={handleScrollToIndexFailed}
       />
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <Text style={styles.closeButtonText}>Đóng</Text>

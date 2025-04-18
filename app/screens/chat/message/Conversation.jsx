@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   FlatList,
@@ -16,14 +16,18 @@ import PinnedMessage from "./PinnedMessage";
 const Conversation = ({
   messages,
   setMessages,
-  notifications, // Pass notifications to Conversation
+  notifications,
   senderId,
   highlightedMessageIds = [],
   highlightedMessageId,
   searchQuery = "",
   receiver,
   onTyping,
-  onReply, // Thêm prop onReply
+  onReply,
+  flatListRef, // Receive FlatList ref from MessageScreen
+  onScrollToMessage, // Receive scrollToMessage from MessageScreen
+  conversationId, // Nhận conversationId
+  fetchMessages, // Nhận fetchMessages
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
@@ -59,6 +63,7 @@ const Conversation = ({
         </TouchableOpacity>
       )}
       <FlatList
+        ref={flatListRef} // Use FlatList ref passed from MessageScreen
         data={messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
         renderItem={({ item, index }) => {
@@ -88,7 +93,7 @@ const Conversation = ({
                   message={item}
                   receiver={receiver}
                   isSender={item.senderId === senderId}
-                  isHighlighted={item.messageDetailId === highlightedMessageId}
+                  isHighlighted={item.messageDetailId === highlightedMessageId} // Highlight the message
                   searchQuery={
                     highlightedMessageIds.includes(item.messageDetailId)
                       ? searchQuery
@@ -98,6 +103,7 @@ const Conversation = ({
                     index === 0 ||
                     messages[index - 1].senderId !== item.senderId
                   }
+                  onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessageItem
                 />
               </Pressable>
             </View>
@@ -125,7 +131,10 @@ const Conversation = ({
         senderId={senderId}
         setMessages={setMessages}
         messages={messages}
-        onReply={onReply} // Truyền onReply xuống MessagePopup
+        onReply={onReply}
+        onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessagePopup
+        conversationId={conversationId} // Truyền conversationId
+        fetchMessages={fetchMessages} // Truyền fetchMessages
       />
       <Modal
         visible={pinnedModalVisible}
@@ -136,6 +145,7 @@ const Conversation = ({
         <PinnedMessage
           pinnedMessages={pinnedMessages}
           onClose={() => setPinnedModalVisible(false)}
+          onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to PinnedMessage
         />
       </Modal>
     </View>

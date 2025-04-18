@@ -15,6 +15,8 @@ import {
   TextInput,
   StatusBar,
   ImageBackground,
+  InteractionManager,
+  TouchableOpacity,
 } from "react-native";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
@@ -43,7 +45,7 @@ const MessageScreen = ({ route, navigation }) => {
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const [replyingTo, setReplyingTo] = useState(null); // State cho tin nhắn đang trả lời
-  const flatListRef = useRef(null);
+  const flatListRef = useRef(null); // Attach FlatList ref here
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
@@ -89,6 +91,39 @@ const MessageScreen = ({ route, navigation }) => {
           messageId
         );
       });
+
+      socket.on("messagePinned", ({ conversationId, messageId }) => {
+        if (conversationId === conversation.conversationId) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === messageId
+                ? { ...msg, isPinned: true, pinnedAt: new Date() }
+                : msg
+            )
+          );
+        }
+        console.log(
+          "Nhận tin nhắn đã ghim qua socket:",
+          conversationId,
+          messageId
+        );
+      });
+      socket.on("messageUnpinned", ({ conversationId, messageId }) => {
+        if (conversationId === conversation.conversationId) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === messageId
+                ? { ...msg, isPinned: false, pinnedAt: null }
+                : msg
+            )
+          );
+        }
+        console.log(
+          "Nhận tin nhắn đã bỏ ghim qua socket:",
+          conversationId,
+          messageId
+        );
+      });
       return () => {
         cleanupNewMessage(socket);
         socket.off("newMessage");
@@ -97,13 +132,17 @@ const MessageScreen = ({ route, navigation }) => {
     }
   }, [messages, sended]);
 
-  const fetchAndStoreMessages = async () => {
+  const fetchMessages = async () => {
     try {
       setIsLoading(true);
       const response = await api.getAllMessages(conversation.conversationId);
       const filteredMessages = response.messages.filter(
         (message) => !message.hiddenFrom?.includes(userInfo.userId)
       );
+      // console.log(
+      //   "Tin nhắn đã tải:",
+      //   filteredMessages.map((msg) => msg.messageDetailId)
+      // );
       setMessages(filteredMessages);
     } catch (error) {
       console.error("Lỗi lấy tin nhắn:", error);
@@ -112,6 +151,15 @@ const MessageScreen = ({ route, navigation }) => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!conversation?.conversationId) {
+      console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
+      setMessages([]);
+      return;
+    }
+    fetchMessages();
+  }, [conversation?.conversationId]);
 
   const handleSendMessage = useCallback(
     async (message) => {
@@ -386,14 +434,38 @@ const MessageScreen = ({ route, navigation }) => {
     setReplyingTo(message); // Cập nhật tin nhắn đang trả lời
   };
 
-  useEffect(() => {
-    if (!conversation?.conversationId) {
-      console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
-      setMessages([]);
+  const scrollToMessage = (messageId) => {
+    const index = messages.findIndex(
+      (msg) => msg.messageDetailId === messageId
+    );
+    if (index === -1) {
+      console.warn("Không tìm thấy message:", messageId);
       return;
     }
-    fetchAndStoreMessages();
-  }, [conversation?.conversationId]);
+
+    if (flatListRef.current) {
+      try {
+        flatListRef.current.scrollToIndex({
+          index: index,
+          animated: true,
+          viewPosition: 0.5,
+        });
+        setHighlightedMessageId(messageId);
+
+        // Reset highlightedMessageId after 2 seconds
+        setTimeout(() => setHighlightedMessageId(null), 500);
+      } catch (error) {
+        console.warn("Lỗi cuộn đến message:", error.message);
+        // Fallback nếu lỗi out-of-range
+        setTimeout(() => {
+          flatListRef.current?.scrollToOffset({
+            offset: index * 80, // height mặc định 80 trong getItemLayout
+            animated: true,
+          });
+        }, 300);
+      }
+    }
+  };
 
   const effectiveBackground = background || conversation?.background || null;
 
@@ -417,11 +489,15 @@ const MessageScreen = ({ route, navigation }) => {
             setMessages={setMessages}
             senderId={userInfo.userId}
             highlightedMessageIds={highlightedMessageIds}
-            highlightedMessageId={highlightedMessageId}
+            highlightedMessageId={highlightedMessageId} // Pass highlightedMessageId
             searchQuery={searchQuery}
             receiver={receiver}
             onTyping={isTyping}
-            onReply={handleReply} // Truyền handleReply xuống Conversation
+            onReply={handleReply}
+            flatListRef={flatListRef} // Pass FlatList ref to Conversation
+            onScrollToMessage={scrollToMessage} // Pass scrollToMessage to Conversation
+            conversationId={conversation.conversationId} // Truyền conversationId
+            fetchMessages={fetchMessages} // Truyền fetchMessages
           />
         ) : (
           <View style={MessageScreenStyle.loadingContainer}>
@@ -436,8 +512,8 @@ const MessageScreen = ({ route, navigation }) => {
           socket={socket}
           conversation={conversation}
           setIsTyping={setIsTyping}
-          replyingTo={replyingTo} // Truyền replyingTo xuống ChatFooter
-          setReplyingTo={setReplyingTo} // Truyền setReplyingTo để hủy trả lời
+          replyingTo={replyingTo}
+          setReplyingTo={setReplyingTo}
         />
       </ImageBackground>
     </View>
