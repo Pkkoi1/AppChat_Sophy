@@ -13,6 +13,7 @@ import AvatarUser from "@/app/components/profile/AvatarUser";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import * as Sharing from "expo-sharing";
 import { AuthContext } from "@/app/auth/AuthContext";
+import { Linking } from "react-native";
 const errorImage =
   "https://res.cloudinary.com/dyd5381vx/image/upload/v1744732824/z6509003496600_0f4526fe7c8ca476fea6dddff2b3bc91_d4nysj.jpg";
 
@@ -264,15 +265,36 @@ const MessageItem = ({
       );
     }
 
+    const isLink = (text) => {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return urlRegex.test(text);
+    };
+
+    const handleLinkPress = async (url) => {
+      if (await Linking.canOpenURL(url)) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert("Không thể mở link", url);
+      }
+    };
+
     return (
       <>
         {isReply && renderReplyContent()}
         {type === "text" ? (
-          <HighlightText
-            text={content}
-            highlight={searchQuery}
-            style={MessageItemStyle.content}
-          />
+          isLink(content) ? (
+            <TouchableOpacity onPress={() => handleLinkPress(content)}>
+              <Text style={[MessageItemStyle.content, { color: "#3f88f2" }]}>
+                {content}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <HighlightText
+              text={content}
+              highlight={searchQuery}
+              style={MessageItemStyle.content}
+            />
+          )
         ) : type === "image" ? (
           <TouchableOpacity
             onPress={() =>
