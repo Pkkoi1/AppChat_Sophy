@@ -491,6 +491,27 @@ export const api = {
       throw error;
     }
   },
+  updateBackground: async (imageBase64, conversationId) => {
+    try {
+      const response = await http.put(
+        `/conversations/mobile/update/background/${conversationId}`,
+        {
+          imageBase64,
+        }
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi cập nhật ảnh nền cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      console.error(
+        "Lỗi khi cập nhật ảnh nền cuộc trò chuyện 2:",
+        conversationId
+      );
+      throw error;
+    }
+  },
   sendMessage: async ({ conversationId, content }) => {
     try {
       const response = await http.post("/messages/send", {
@@ -561,10 +582,7 @@ export const api = {
       });
       return response.data; // Return the response data
     } catch (error) {
-      console.error(
-        "Lỗi khi gửi ảnh văn bản:",
-        error.response?.data || error.message
-      );
+      console.error("Lỗi khi gửi ảnh:", error.response?.data || error.message);
       throw error;
     }
   },
@@ -584,7 +602,7 @@ export const api = {
       return response.data; // Return the response data
     } catch (error) {
       console.error(
-        "Lỗi khi gửi ảnh văn bản:",
+        "Lỗi khi gửi tệp tin:",
         error.response?.data || error.message
       );
       throw error;
@@ -599,7 +617,7 @@ export const api = {
       return response.data; // Return the response data
     } catch (error) {
       console.error(
-        "Lỗi khi gửi ảnh văn bản:",
+        "Lỗi khi gửi video:",
         error.response?.data || error.message
       );
       throw error;

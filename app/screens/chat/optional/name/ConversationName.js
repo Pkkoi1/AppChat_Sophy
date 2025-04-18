@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   SafeAreaView,
@@ -6,6 +6,9 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
+  Modal,
+  Button,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -13,6 +16,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
 import { AuthContext } from "@/app/auth/AuthContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import * as ImagePicker from "expo-image-picker"; // Thêm expo-image-picker
+import * as FileSystem from "expo-file-system"; // Thêm expo-file-system để chuyển ảnh sang base64
+import { api } from "@/app/api/api"; // Nhập API
 
 const options = [
   {
@@ -33,6 +39,7 @@ const options = [
   {
     name: "Đổi\n hình nền",
     icon: <Octicons name="paintbrush" size={20} color="black" />,
+    action: "changeBackground", // Thêm action cho đổi hình nền
   },
   {
     name: "Tắt\n thông báo",
@@ -42,8 +49,11 @@ const options = [
 
 const ConversationName = ({ receiver, conversation }) => {
   const navigation = useNavigation();
+  const [selectedImage, setSelectedImage] = useState(null); // Lưu URI ảnh đã chọn
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false); // Trạng thái modal xem trước
+  const { handlerRefresh, updateBackground } = useContext(AuthContext); // Use handlerRefresh from AuthContext
+
   const defaultGroupAvatar = require("../../../../../assets/images/default-group-avatar.jpg");
-  const { userInfo } = useContext(AuthContext);
 
   const avatarSource = conversation?.isGroup
     ? conversation.groupAvatarUrl
@@ -53,13 +63,81 @@ const ConversationName = ({ receiver, conversation }) => {
     ? { uri: receiver.urlavatar }
     : null;
 
+  // Hàm mở thư viện chọn ảnh
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      Alert.alert("Lỗi", "Cần cấp quyền truy cập thư viện ảnh!");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 5],
+
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets[0].uri) {
+      setSelectedImage(result.assets[0].uri);
+      setIsPreviewModalVisible(true); // Mở modal xem trước
+    }
+  };
+
+  // Hàm xử lý xác nhận đổi hình nền
+  const handleConfirmChangeBackground = async () => {
+    if (!selectedImage) return;
+
+    try {
+      // Chuyển ảnh sang base64
+      const base64Image = await FileSystem.readAsStringAsync(selectedImage, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const conversationId = conversation?.conversationId;
+      if (!conversationId) {
+        throw new Error(
+          `Không thể lấy conversationId từ conversation. ${conversation}`
+        );
+      }
+
+      // Gọi API updateBackground
+      const response = await api.updateBackground(
+        `data:image/jpeg;base64,${base64Image}`, // Ensure proper formatting
+        conversationId
+      );
+      await handlerRefresh(); // Refresh the conversation list after updating background
+      Alert.alert("Thành công", "Đã cập nhật ảnh nền cuộc trò chuyện!");
+      setIsPreviewModalVisible(false);
+      setSelectedImage(null);
+      updateBackground(response.conversation.background);
+      navigation.goBack();
+    } catch (error) {
+      console.error(
+        "Lỗi khi đổi ảnh nền:",
+        error.response?.data || error.message
+      );
+      Alert.alert("Lỗi", "Không thể cập nhật ảnh nền. Vui lòng thử lại.");
+    }
+  };
+
+  // Hàm xử lý hủy đổi ảnh
+  const handleCancelChangeBackground = () => {
+    setIsPreviewModalVisible(false);
+    setSelectedImage(null);
+  };
+
   const handlePress = (option) => {
     if (option.action === "searchMessages") {
       navigation.navigate("Chat", {
-        startSearch: true, // Kích hoạt tìm kiếm trên MessageScreen
+        startSearch: true,
         conversation,
-        receiver: receiver,
+        receiver,
       });
+    } else if (option.action === "changeBackground") {
+      pickImage(); // Mở thư viện chọn ảnh
     }
   };
 
@@ -106,6 +184,43 @@ const ConversationName = ({ receiver, conversation }) => {
           );
         })}
       </View>
+
+      {/* Modal xem trước ảnh */}
+      <Modal
+        visible={isPreviewModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={handleCancelChangeBackground}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {selectedImage && (
+              <Image
+                source={{ uri: selectedImage }}
+                style={styles.previewImage}
+                resizeMode="contain"
+              />
+            )}
+            <Text style={styles.modalText}>
+              Bạn có muốn sử dụng ảnh này làm hình nền?
+            </Text>
+            <View style={styles.modalButtonContainer}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.confirmButton]}
+                onPress={handleConfirmChangeBackground}
+              >
+                <Text style={styles.modalButtonText}>Đồng ý</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={handleCancelChangeBackground}
+              >
+                <Text style={styles.modalButtonText}>Hủy</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -148,6 +263,52 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#f9f9f9",
     marginBottom: 10,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 20,
+    width: "80%",
+    alignItems: "center",
+  },
+  previewImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  modalButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  confirmButton: {
+    backgroundColor: "#1f7bff",
+  },
+  cancelButton: {
+    backgroundColor: "#ff3b30",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
 

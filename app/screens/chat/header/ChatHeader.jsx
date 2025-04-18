@@ -20,7 +20,9 @@ const ChatHeader = ({
 
   const handlerOptionScreen = () => {
     navigation.navigate("Options", {
-      ...(conversation?.isGroup ? { conversation } : { receiver }),
+      ...(conversation?.isGroup
+        ? { conversation }
+        : { receiver, conversation }),
     });
   };
   return (

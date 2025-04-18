@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
   StatusBar,
+  ImageBackground, // Import ImageBackground
 } from "react-native";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
@@ -31,7 +32,7 @@ import { SocketContext } from "@/app/socket/SocketContext";
 import { cleanupNewMessage, handleNewMessage } from "@/app/socket/SocketEvent";
 
 const MessageScreen = ({ route, navigation }) => {
-  const { userInfo, handlerRefresh } = useContext(AuthContext);
+  const { userInfo, handlerRefresh, background } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
@@ -43,6 +44,7 @@ const MessageScreen = ({ route, navigation }) => {
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const flatListRef = useRef(null);
+
   const [isTyping, setIsTyping] = useState(false); // Trạng thái đang nhập
   const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
   const [imageUri, setImageUri] = useState(null); // Trạng thái lưu trữ URI hình ảnh đã chọn
@@ -139,7 +141,7 @@ const MessageScreen = ({ route, navigation }) => {
         senderId: userInfo.userId,
         type: message.type || "text",
       };
-      // setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
       if (message.type === "text") {
         api
@@ -190,7 +192,7 @@ const MessageScreen = ({ route, navigation }) => {
       console.log("Tạo pseudoMessage:", pseudoMessage);
 
       // setImageUri(message.attachment); // Set the image URI to state
-      // setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
       if (!message.attachment) {
         console.error("Lỗi: Không có ảnh để gửi.");
@@ -229,7 +231,7 @@ const MessageScreen = ({ route, navigation }) => {
               avatar: userInfo.urlavatar,
             },
           });
-          console.log("Gửi tin nhắn qua socket:", pseudoMessage);
+          console.log("Gửi hình qua socket:", pseudoMessage);
         }
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);
@@ -256,7 +258,7 @@ const MessageScreen = ({ route, navigation }) => {
         attachment: { url: message.attachment }, // Corrected syntax
       };
 
-      // setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
       if (message.type === "file") {
         try {
@@ -278,6 +280,18 @@ const MessageScreen = ({ route, navigation }) => {
             fileName: message.fileName,
             fileType: message.mimeType,
           });
+          if (socket && socket.connected) {
+            socket.emit("newMessage", {
+              conversationId: pseudoMessage.conversationId,
+              message: pseudoMessage,
+              sender: {
+                userId: userInfo.userId,
+                fullname: userInfo.fullname,
+                avatar: userInfo.urlavatar,
+              },
+            });
+            console.log("Gửi tin nhắn qua socket:", pseudoMessage);
+          }
           console.log("Gửi file thành công!");
         } catch (error) {
           console.error("Lỗi khi gửi file:", error);
@@ -344,8 +358,10 @@ const MessageScreen = ({ route, navigation }) => {
     fetchAndStoreMessages();
   }, [conversation?.conversationId]);
 
+  const effectiveBackground = background || conversation?.background || null; // Use conversation background if global background is empty
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#ebecf0" }}>
+    <View style={{ flex: 1 }}>
       <StatusBar />
       <ChatHeader
         navigation={navigation}
@@ -353,31 +369,37 @@ const MessageScreen = ({ route, navigation }) => {
         conversation={conversation}
         lastActiveStatus={calculateLastActive(receiver?.lastActive)}
       />
-      {messages.length > 0 ? (
-        <Conversation
-          messages={messages} // Pass messages state
-          setMessages={setMessages} // Pass setMessages function
-          senderId={userInfo.userId}
-          highlightedMessageIds={highlightedMessageIds}
-          highlightedMessageId={highlightedMessageId}
-          searchQuery={searchQuery}
-          receiver={receiver}
-          onTyping={isTyping} // Pass isTyping to Conversation
+      <ImageBackground
+        source={effectiveBackground ? { uri: effectiveBackground } : null}
+        style={{ flex: 1 }}
+        resizeMode="cover"
+      >
+        {messages.length > 0 ? (
+          <Conversation
+            messages={messages} // Pass messages state
+            setMessages={setMessages} // Pass setMessages function
+            senderId={userInfo.userId}
+            highlightedMessageIds={highlightedMessageIds}
+            highlightedMessageId={highlightedMessageId}
+            searchQuery={searchQuery}
+            receiver={receiver}
+            onTyping={isTyping} // Pass isTyping to Conversation
+          />
+        ) : (
+          <View style={MessageScreenStyle.loadingContainer}>
+            <Text style={MessageScreenStyle.loadingText}>Đang tải...</Text>
+          </View>
+        )}
+        <ChatFooter
+          onSendMessage={handleSendMessage}
+          onSendImage={handleSendImage}
+          onSendFile={handleSendFile}
+          onSendVideo={handleSendVideo}
+          socket={socket} // Pass socket to ChatFooter
+          conversation={conversation} // Pass conversation to ChatFooter
+          setIsTyping={setIsTyping} // Pass setIsTyping to ChatFooter
         />
-      ) : (
-        <View style={MessageScreenStyle.loadingContainer}>
-          <Text style={MessageScreenStyle.loadingText}>Đang tải...</Text>
-        </View>
-      )}
-      <ChatFooter
-        onSendMessage={handleSendMessage}
-        onSendImage={handleSendImage}
-        onSendFile={handleSendFile}
-        onSendVideo={handleSendVideo}
-        socket={socket} // Pass socket to ChatFooter
-        conversation={conversation} // Pass conversation to ChatFooter
-        setIsTyping={setIsTyping} // Pass setIsTyping to ChatFooter
-      />
+      </ImageBackground>
     </View>
   );
 };

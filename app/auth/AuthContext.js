@@ -1,4 +1,10 @@
-import React, { createContext, useState, useEffect, useContext, useRef } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../socket/SocketContext"; // Import SocketContext
@@ -10,7 +16,8 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [conversations, setConversations] = useState([]); // Thêm state conversations
+  const [conversations, setConversations] = useState([]); // State for conversations
+  const [background, setBackground] = useState(null); // State for background
 
   const socket = useContext(SocketContext); // Get socket from context
   const flatListRef = useRef(null); // Optional: Reference for scrolling if needed
@@ -18,12 +25,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadStorage = async () => {
       try {
-        const [token, refresh, user, storedConversations] =
+        const [token, refresh, user, storedConversations, storedBackground] =
           await AsyncStorage.multiGet([
             "accessToken",
             "refreshToken",
             "userInfo",
-            "conversations", // Lấy danh sách cuộc trò chuyện từ AsyncStorage
+            "conversations", // Load conversations from AsyncStorage
+            "background", // Load background from AsyncStorage
           ]);
 
         if (token[1] && refresh[1] && user[1]) {
@@ -33,7 +41,11 @@ export const AuthProvider = ({ children }) => {
         }
 
         if (storedConversations[1]) {
-          setConversations(JSON.parse(storedConversations[1])); // Cập nhật state conversations
+          setConversations(JSON.parse(storedConversations[1])); // Update conversations state
+        }
+
+        if (storedBackground[1]) {
+          setBackground(storedBackground[1]); // Update background state
         }
       } catch (err) {
         console.error("Error loading storage:", err);
@@ -48,20 +60,23 @@ export const AuthProvider = ({ children }) => {
   const handleNewMessage = () => {
     if (!socket) return;
 
-    socket.on("newMessage", ({ conversationId: incomingConversationId, message }) => {
-      const formattedMessage = message._doc || message;
+    socket.on(
+      "newMessage",
+      ({ conversationId: incomingConversationId, message }) => {
+        const formattedMessage = message._doc || message;
 
-      setConversations((prevConversations) =>
-        prevConversations.map((conv) =>
-          conv.conversationId === incomingConversationId
-            ? { ...conv, lastMessage: formattedMessage }
-            : conv
-        )
-      );
+        setConversations((prevConversations) =>
+          prevConversations.map((conv) =>
+            conv.conversationId === incomingConversationId
+              ? { ...conv, lastMessage: formattedMessage }
+              : conv
+          )
+        );
 
-      flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 }); // Optional: Scroll to top
-      console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
-    });
+        flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 }); // Optional: Scroll to top
+        console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
+      }
+    );
   };
 
   const cleanupNewMessage = () => {
@@ -120,11 +135,13 @@ export const AuthProvider = ({ children }) => {
       setRefreshToken(null);
       setUserInfo(null);
       setConversations([]); // Xóa danh sách cuộc trò chuyện
+      setBackground(null); // Xóa background
       await AsyncStorage.multiRemove([
         "accessToken",
         "refreshToken",
         "userInfo",
         "conversations", // Xóa danh sách cuộc trò chuyện khỏi AsyncStorage
+        "background", // Xóa background khỏi AsyncStorage
       ]);
     }
   };
@@ -160,6 +177,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateBackground = async (newBackground) => {
+    setBackground(newBackground); // Update state
+    await AsyncStorage.setItem("background", newBackground); // Save to AsyncStorage
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -168,12 +190,14 @@ export const AuthProvider = ({ children }) => {
         userInfo,
         isLoading,
         conversations,
+        background, // Expose background state
         register,
         login,
         logout,
         updateUserInfo,
         getUserInfoById,
-        handlerRefresh, // Expose handlerRefresh
+        handlerRefresh,
+        updateBackground, // Expose updateBackground function
         flatListRef, // Optional: Expose flatListRef if needed
       }}
     >

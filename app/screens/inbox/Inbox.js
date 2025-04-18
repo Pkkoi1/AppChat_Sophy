@@ -10,7 +10,7 @@ import AvatarUser from "@/app/components/profile/AvatarUser";
 const DEFAULT_AVATAR = "https://example.com/default-avatar.png"; // Replace with actual default avatar URL
 
 const Inbox = ({ conversation }) => {
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, updateBackground } = useContext(AuthContext);
 
   const {
     groupName,
@@ -174,12 +174,13 @@ const Inbox = ({ conversation }) => {
 
   return (
     <TouchableOpacity
-      onPress={() =>
+      onPress={() => {
+        updateBackground(conversation?.background); // Update background before navigating
         navigation.navigate("Chat", {
           conversation: conversation,
           receiver: isGroup ? null : receiver,
-        })
-      }
+        });
+      }}
       activeOpacity={0.6}
       style={styles.container}
     >
