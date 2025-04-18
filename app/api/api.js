@@ -739,6 +739,7 @@ export const api = {
     }
   },
   // Lấy danh sách lời mời kết bạn đã gửi
+
   getFriendRequestsSent: async () => {
     try {
       const response = await http.get("/users/friend-requests-sent");
