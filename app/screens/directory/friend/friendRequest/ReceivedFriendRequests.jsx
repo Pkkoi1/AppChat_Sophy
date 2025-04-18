@@ -139,32 +139,38 @@ const ReceivedFriendRequests = ({ navigation }) => {
         { key: "sent", title: `Đã gửi ${sent.length}` },
       ]);
     };
-    //  {"friendRequestId": "fr7792672504185546", 
-    // "message": "Xin chào, mình là Phan Hoàng Tân. Kết bạn với mình nhé!", 
-    // "sender": {"avatar": "https://res.cloudinary.com/dyd5381vx/image/upload/v1744651198/avatars/cdfxytyx8tv96wpxwe9o.jpg", 
-                // "fullname": "Phan Hoàng Tân", 
-                // "userId": "user779030103"}, 
-                // "timestamp": "2025-04-17T18:55:46.724Z"}
+    //  {"friendRequestId": "fr7792672504185546",
+    // "message": "Xin chào, mình là Phan Hoàng Tân. Kết bạn với mình nhé!",
+    // "sender": {"avatar": "https://res.cloudinary.com/dyd5381vx/image/upload/v1744651198/avatars/cdfxytyx8tv96wpxwe9o.jpg",
+    // "fullname": "Phan Hoàng Tân",
+    // "userId": "user779030103"},
+    // "timestamp": "2025-04-17T18:55:46.724Z"}
     const handleNewFriendRequest = (data) => {
       console.log("SOCKET newFriendRequest:", data); // Xem dữ liệu thực tế
-      setReceivedRequests(prev => [data, ...prev]);
+      setReceivedRequests((prev) => [data, ...prev]);
     };
 
     const handleRejectedFriendRequest = ({ friendRequestData }) => {
       setSentRequests((prev) =>
-        prev.filter((req) => req.friendRequestId !== friendRequestData.friendRequestId)
+        prev.filter(
+          (req) => req.friendRequestId !== friendRequestData.friendRequestId
+        )
       );
     };
 
     const handleAcceptedFriendRequest = ({ friendRequestData }) => {
       setSentRequests((prev) =>
-        prev.filter((req) => req.friendRequestId !== friendRequestData.friendRequestId)
+        prev.filter(
+          (req) => req.friendRequestId !== friendRequestData.friendRequestId
+        )
       );
     };
 
     const handleRetrievedFriendRequest = ({ friendRequestData }) => {
       setReceivedRequests((prev) =>
-        prev.filter((req) => req.friendRequestId !== friendRequestData.friendRequestId)
+        prev.filter(
+          (req) => req.friendRequestId !== friendRequestData.friendRequestId
+        )
       );
     };
 
@@ -192,13 +198,21 @@ const ReceivedFriendRequests = ({ navigation }) => {
       console.log("ACCEPTED.friendRequestId:", item); // Kiểm tra giá trị của friendRequestId
       await api.acceptFriendRequest(item.friendRequestId);
       setReceivedRequests((prevRequests) =>
-        prevRequests.filter((request) => request.friendRequestId !== item.friendRequestId)
+        prevRequests.filter(
+          (request) => request.friendRequestId !== item.friendRequestId
+        )
       );
       console.log(`Đồng ý kết bạn với ${item.sender.fullname}`);
-      Alert.alert("Thành công", `Đã chấp nhận lời mời kết bạn từ ${item.sender.fullname}`);
+      Alert.alert(
+        "Thành công",
+        `Đã chấp nhận lời mời kết bạn từ ${item.sender.fullname}`
+      );
     } catch (err) {
       console.error("Lỗi khi chấp nhận lời mời kết bạn:", err);
-      Alert.alert("Lỗi", "Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại sau.");
+      Alert.alert(
+        "Lỗi",
+        "Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại sau."
+      );
     } finally {
       setLoading(false);
     }
@@ -210,13 +224,21 @@ const ReceivedFriendRequests = ({ navigation }) => {
       console.log("REJECT.friendRequestId:", item); // Kiểm tra giá trị của friendRequestId
       await api.rejectFriendRequest(item.friendRequestId);
       setReceivedRequests((prevRequests) =>
-        prevRequests.filter((request) => request.friendRequestId !== item.friendRequestId)
+        prevRequests.filter(
+          (request) => request.friendRequestId !== item.friendRequestId
+        )
       );
       console.log(`Từ chối kết bạn với ${item.sender.fullname}`);
-      Alert.alert("Thành công", `Đã từ chối lời mời kết bạn từ ${item.sender.fullname}`);
+      Alert.alert(
+        "Thành công",
+        `Đã từ chối lời mời kết bạn từ ${item.sender.fullname}`
+      );
     } catch (err) {
       console.error("Lỗi khi từ chối lời mời kết bạn received :", err);
-      Alert.alert("Lỗi", "Không thể từ chối lời mời kết bạn. Vui lòng thử lại sau.");
+      Alert.alert(
+        "Lỗi",
+        "Không thể từ chối lời mời kết bạn. Vui lòng thử lại sau."
+      );
     } finally {
       setLoading(false);
     }
@@ -259,14 +281,14 @@ const ReceivedFriendRequests = ({ navigation }) => {
         renderItem={({ item }) => {
           // Ưu tiên lấy sender, fallback sang senderId nếu có
           const user = item.sender || item.senderId;
-          // {"friendRequestId": "fr7792672504183225", 
+          // {"friendRequestId": "fr7792672504183225",
           // "message": "Xin chào, mình là Phan Hoàng Tân. Kết bạn với mình nhé!"
           // sender:
-            // "birthday": "2003-08-12", 
-            // "fullname": "Phan Hoàng Tân", 
-            // "isMale": true, "phone": "0123456779", 
-            // "urlavatar": "https://res.cloudinary.com/dyd5381vx/image/upload/v1744651198/avatars/cdfxytyx8tv96wpxwe9o.jpg", 
-            // "userId": "user779030103"}
+          // "birthday": "2003-08-12",
+          // "fullname": "Phan Hoàng Tân",
+          // "isMale": true, "phone": "0123456779",
+          // "urlavatar": "https://res.cloudinary.com/dyd5381vx/image/upload/v1744651198/avatars/cdfxytyx8tv96wpxwe9o.jpg",
+          // "userId": "user779030103"}
           console.log("Received item:", item); // Kiểm tra dữ liệu thực tế
           return (
             <TouchableOpacity
@@ -287,7 +309,10 @@ const ReceivedFriendRequests = ({ navigation }) => {
                 <Text style={styles.status}>{"Muốn kết bạn"}</Text>
                 <View style={styles.buttonContainer}>
                   {loading ? (
-                    <ActivityIndicator size="small" color={Color.blueBackgroundButton} />
+                    <ActivityIndicator
+                      size="small"
+                      color={Color.blueBackgroundButton}
+                    />
                   ) : (
                     <>
                       <TouchableOpacity
@@ -312,10 +337,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
           );
         }}
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.sectionHeader}>
@@ -353,29 +375,46 @@ const ReceivedFriendRequests = ({ navigation }) => {
     return (
       <SectionList
         sections={groupByTime(sentRequests)}
-        keyExtractor={(item) => item.userId}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.requestItem}
-            onPress={() => handleRequestPress(item, "sent")}
-          >
-            <Image
-              source={require("../../../../../assets/images/avt.jpg")}
-              style={styles.avatar}
-            />
-            <View style={styles.infoContainer}>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.status}>{item.status}</Text>
-              <Text style={styles.timeAgo}>{item.timeAgo}</Text>
-            </View>
-            <TouchableOpacity 
-              style={styles.withdrawButton}
-              onPress={() => handleWithdraw(item)}
+        keyExtractor={(item) => item.friendRequestId} // Sử dụng friendRequestId để đồng bộ
+        renderItem={({ item }) => {
+          const user = item.receiver || item.receiverId; // Ưu tiên lấy receiver, fallback sang receiverId nếu có
+          return (
+            <TouchableOpacity
+              style={styles.requestItem}
+              onPress={() => {
+                navigation.navigate("UserProfile", {
+                  friend: user,
+                  requestSent: "pending",
+                });
+              }}
             >
-              <Text style={styles.withdrawText}>THU HỒI</Text>
+              <Image
+                source={{
+                  uri:
+                    user?.avatar ||
+                    user?.urlavatar ||
+                    "https://via.placeholder.com/50",
+                }}
+                style={styles.avatar}
+              />
+              <View style={styles.infoWrapper}>
+                <Text style={styles.name}>
+                  {user?.fullname || "Người dùng"}
+                </Text>
+                <Text style={styles.status}>{"Đã gửi lời mời kết bạn"}</Text>
+                <TouchableOpacity
+                  style={styles.withdrawButton}
+                  onPress={() => handleWithdraw(item)}
+                >
+                  <Text style={styles.withdrawText}>THU HỒI</Text>
+                </TouchableOpacity>
+              </View>
             </TouchableOpacity>
-          </TouchableOpacity>
-        )}
+          );
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         renderSectionHeader={({ section: { title } }) => (
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderText}>{title}</Text>
@@ -384,7 +423,9 @@ const ReceivedFriendRequests = ({ navigation }) => {
         )}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
+            <Text style={styles.emptyText}>
+              Không có lời mời kết bạn đã gửi
+            </Text>
           </View>
         }
         style={styles.list}

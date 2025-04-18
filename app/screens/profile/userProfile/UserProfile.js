@@ -142,11 +142,11 @@ const UserProfile = ({ route }) => {
   
       // Kiểm tra xem cuộc trò chuyện đã tồn tại chưa
       try {
-        const existingConversation = await api.getConversationById(friend.userId);
+        const existingConversation = await api.getConversationById(friend.conversationId);
         if (existingConversation) {
           // Nếu cuộc trò chuyện đã tồn tại, chuyển đến màn hình Chat với conversationId
           navigation.navigate("Chat", {
-            conversationId: existingConversation.conversationId,
+            conversation: existingConversation,
             receiver: friend,
           });
           return;
@@ -166,7 +166,7 @@ const UserProfile = ({ route }) => {
       const conversation = await api.createConversation(friend.userId);
       if (conversation?.conversationId) {
         navigation.navigate("Chat", {
-          conversationId: conversation.conversationId,
+          conversation: conversation,
           receiver: friend,
         });
       } else {
