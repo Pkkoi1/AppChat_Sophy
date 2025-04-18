@@ -16,6 +16,7 @@ import Friends from "./Friend";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { api } from "../../../api/api";
 import ListFriendStyle from "./ListFriendStyle";
+import { SocketContext } from "../../../socket/SocketContext"; // Thêm dòng này
 
 const ListFriends = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -27,6 +28,7 @@ const ListFriends = () => {
   const { userInfo } = useContext(AuthContext);
   const [phoneContacts, setPhoneContacts] = useState([]);
   const [usersInDB, setUsersInDB] = useState([]);
+  const socket = useContext(SocketContext); // Thêm dòng này
 
   // Lấy danh sách bạn bè từ API
   const fetchFriends = useCallback(async () => {
@@ -111,6 +113,18 @@ const ListFriends = () => {
     fetchFriends();
     getPhoneContacts();
   }, [fetchFriends]);
+
+  // Lắng nghe sự kiện acceptedFriendRequest từ socket
+  useEffect(() => {
+    if (!socket) return;
+    const handleAcceptedFriendRequest = () => {
+      fetchFriends(); // Cập nhật lại danh sách bạn bè
+    };
+    socket.on("acceptedFriendRequest", handleAcceptedFriendRequest);
+    return () => {
+      socket.off("acceptedFriendRequest", handleAcceptedFriendRequest);
+    };
+  }, [socket, fetchFriends]);
 
   const handlerRefresh = () => {
     setRefreshing(true);

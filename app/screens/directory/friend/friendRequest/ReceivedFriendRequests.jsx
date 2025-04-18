@@ -133,7 +133,12 @@ const ReceivedFriendRequests = ({ navigation }) => {
 
   useEffect(() => {
     if (!socket) return;
-
+    const updateRoutes = (received, sent) => {
+      setRoutes([
+        { key: "received", title: `Đã nhận ${received.length}` },
+        { key: "sent", title: `Đã gửi ${sent.length}` },
+      ]);
+    };
     //  {"friendRequestId": "fr7792672504185546", 
     // "message": "Xin chào, mình là Phan Hoàng Tân. Kết bạn với mình nhé!", 
     // "sender": {"avatar": "https://res.cloudinary.com/dyd5381vx/image/upload/v1744651198/avatars/cdfxytyx8tv96wpxwe9o.jpg", 
@@ -184,12 +189,13 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const handleAccept = async (item) => {
     try {
       setLoading(true);
+      console.log("ACCEPTED.friendRequestId:", item); // Kiểm tra giá trị của friendRequestId
       await api.acceptFriendRequest(item.friendRequestId);
       setReceivedRequests((prevRequests) =>
         prevRequests.filter((request) => request.friendRequestId !== item.friendRequestId)
       );
-      console.log(`Đồng ý kết bạn với ${item.senderId.fullname}`);
-      Alert.alert("Thành công", `Đã chấp nhận lời mời kết bạn từ ${item.senderId.fullname}`);
+      console.log(`Đồng ý kết bạn với ${item.sender.fullname}`);
+      Alert.alert("Thành công", `Đã chấp nhận lời mời kết bạn từ ${item.sender.fullname}`);
     } catch (err) {
       console.error("Lỗi khi chấp nhận lời mời kết bạn:", err);
       Alert.alert("Lỗi", "Không thể chấp nhận lời mời kết bạn. Vui lòng thử lại sau.");
@@ -201,14 +207,15 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const handleReject = async (item) => {
     try {
       setLoading(true);
+      console.log("REJECT.friendRequestId:", item); // Kiểm tra giá trị của friendRequestId
       await api.rejectFriendRequest(item.friendRequestId);
       setReceivedRequests((prevRequests) =>
         prevRequests.filter((request) => request.friendRequestId !== item.friendRequestId)
       );
-      console.log(`Từ chối kết bạn với ${item.senderId.fullname}`);
-      Alert.alert("Thành công", `Đã từ chối lời mời kết bạn từ ${item.senderId.fullname}`);
+      console.log(`Từ chối kết bạn với ${item.sender.fullname}`);
+      Alert.alert("Thành công", `Đã từ chối lời mời kết bạn từ ${item.sender.fullname}`);
     } catch (err) {
-      console.error("Lỗi khi từ chối lời mời kết bạn:", err);
+      console.error("Lỗi khi từ chối lời mời kết bạn received :", err);
       Alert.alert("Lỗi", "Không thể từ chối lời mời kết bạn. Vui lòng thử lại sau.");
     } finally {
       setLoading(false);
