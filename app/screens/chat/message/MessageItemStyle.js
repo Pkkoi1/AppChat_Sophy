@@ -138,6 +138,34 @@ const MessageItemStyle = StyleSheet.create({
     paddingRight: 15,
     justifyContent: "center",
   },
+  replyContainer: {
+    borderLeftWidth: 2,
+    borderLeftColor: "#007bff",
+    paddingLeft: 10,
+    marginBottom: 5,
+  },
+  replySender: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#555",
+  },
+  replyContent: {
+    fontSize: 12,
+    color: "#555",
+  },
+  notificationContainer: {
+    alignSelf: "center", // Center the notification horizontally
+    backgroundColor: "#f0f0f0",
+    // padding: 10,
+    paddingHorizontal: 5,
+    borderRadius: 50,
+    marginVertical: 10,
+  },
+  notificationText: {
+    fontSize: 13,
+    color: "#555",
+    textAlign: "center", // Center the text within the container
+  },
 });
 
 export default MessageItemStyle;

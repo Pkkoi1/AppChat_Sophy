@@ -95,8 +95,9 @@ const MessagePopup = ({
   messageReactions,
   setMessageReactions,
   senderId,
-  setMessages, // Add setMessages as a prop to update the message list
-  messages, // Add messages as a prop to access the current message list
+  setMessages,
+  messages,
+  onReply,
 }) => {
   const navigation = useNavigation(); // Initialize navigation
 
@@ -118,6 +119,7 @@ const MessagePopup = ({
     switch (action) {
       case "reply":
         console.log("Trả lời tin nhắn:", selectedMessage.messageDetailId);
+        onReply(selectedMessage);
         break;
       case "forward":
         if (selectedMessage) {

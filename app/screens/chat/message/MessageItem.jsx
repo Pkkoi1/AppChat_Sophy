@@ -105,6 +105,16 @@ const MessageItem = ({
   const getSenderInfo = () =>
     senders.find((s) => s.userId === message.senderId);
 
+  const renderNotification = () => {
+    const { notification } = message;
+    if (!notification) return null;
+    return (
+      <View style={MessageItemStyle.notificationContainer}>
+        <Text style={MessageItemStyle.notificationText}>{message.content}</Text>
+      </View>
+    );
+  };
+
   const handleDownload = async (fileUrl, fileName, downloadUrl) => {
     try {
       const path = FileSystem.cacheDirectory + fileName;
@@ -187,8 +197,42 @@ const MessageItem = ({
     return null;
   };
 
+  const renderReplyContent = () => {
+    const { replyData } = message;
+
+    if (!replyData) return null;
+
+    const replyType = replyData.type;
+    const replyContent = replyData.content || "Tin nhắn không hỗ trợ";
+    const replySender =
+      replyData.senderId === userInfo.userId
+        ? userInfo?.fullname
+        : receiver?.fullname;
+
+    return (
+      <View style={MessageItemStyle.replyContainer}>
+        <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
+        {replyType === "text" ? (
+          <Text style={MessageItemStyle.replyContent}>{replyContent}</Text>
+        ) : replyType === "image" ? (
+          <Text style={MessageItemStyle.replyContent}>[Hình ảnh]</Text>
+        ) : replyType === "file" ? (
+          <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
+        ) : replyType === "video" ? (
+          <Text style={MessageItemStyle.replyContent}>[Video]</Text>
+        ) : (
+          <Text style={MessageItemStyle.replyContent}>[Không hỗ trợ]</Text>
+        )}
+      </View>
+    );
+  };
+
   const renderContent = () => {
-    const { type, content, attachment, isRecall } = message;
+    const { type, content, attachment, isRecall, isReply } = message;
+
+    if (type === "notification") {
+      return renderNotification();
+    }
 
     if (isRecall) {
       return (
@@ -198,50 +242,52 @@ const MessageItem = ({
       );
     }
 
-    switch (type) {
-      case "text":
-        return (
+    return (
+      <>
+        {isReply && renderReplyContent()}
+        {type === "text" ? (
           <HighlightText
             text={content}
             highlight={searchQuery}
             style={MessageItemStyle.content}
           />
-        );
-      case "image":
-        const imageUrl = attachment?.url || errorImage;
-        return (
+        ) : type === "image" ? (
           <TouchableOpacity
             onPress={() =>
-              navigation.navigate("FullScreenImageViewer", { imageUrl })
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: attachment?.url || errorImage,
+              })
             }
           >
-            <Image source={{ uri: imageUrl }} style={MessageItemStyle.image} />
+            <Image
+              source={{ uri: attachment?.url || errorImage }}
+              style={MessageItemStyle.image}
+            />
           </TouchableOpacity>
-        );
-      case "file":
-        const fileUrl = attachment?.url;
-        const fileName = attachment?.name || "Tệp tin";
-        const fileType = attachment?.type || "unknown";
-        const downloadUrl = attachment?.downloadUrl;
-
-        return (
+        ) : type === "file" ? (
           <View style={MessageItemStyle.fileContainer}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
             >
-              {renderFileIcon(fileType)}
-              <Text style={MessageItemStyle.fileName}>{fileName}</Text>
+              {renderFileIcon(attachment?.type || "unknown")}
+              <Text style={MessageItemStyle.fileName}>
+                {attachment?.name || "Tệp tin"}
+              </Text>
             </View>
             <TouchableOpacity
-              onPress={() => handleDownload(fileUrl, fileName, downloadUrl)}
+              onPress={() =>
+                handleDownload(
+                  attachment?.url,
+                  attachment?.name || "Tệp tin",
+                  attachment?.downloadUrl
+                )
+              }
               style={MessageItemStyle.downloadButton}
             >
               <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
             </TouchableOpacity>
           </View>
-        );
-      case "video":
-        return (
+        ) : type === "video" ? (
           <View>
             <Video
               source={{ uri: attachment?.url }}
@@ -250,14 +296,13 @@ const MessageItem = ({
               useNativeControls
             />
           </View>
-        );
-      default:
-        return (
+        ) : (
           <Text style={MessageItemStyle.unsupported}>
             Không hỗ trợ loại tin nhắn này
           </Text>
-        );
-    }
+        )}
+      </>
+    );
   };
 
   const renderStatus = () => {
@@ -274,6 +319,14 @@ const MessageItem = ({
 
     return <Text style={MessageItemStyle.statusText}>{text}</Text>;
   };
+
+  if (message.type === "notification") {
+    return (
+      <View style={MessageItemStyle.notificationContainer}>
+        {renderNotification()}
+      </View>
+    );
+  }
 
   return (
     <View

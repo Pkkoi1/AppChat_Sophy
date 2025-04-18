@@ -23,6 +23,12 @@ const ListInbox = () => {
     }
   };
 
+  if (socket) {
+    socket.on("newMessage", async () => {
+      console.log("New message received. Refreshing conversations...");
+      await handlerRefresh(); // Refresh the conversation list
+    });
+  }
   useEffect(() => {
     if (socket) {
       // Listen for newMessage event

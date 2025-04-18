@@ -11,11 +11,10 @@ import {
   Text,
   Platform,
   StyleSheet,
-  KeyboardAvoidingViewComponent,
   KeyboardAvoidingView,
   TextInput,
   StatusBar,
-  ImageBackground, // Import ImageBackground
+  ImageBackground,
 } from "react-native";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
@@ -43,11 +42,12 @@ const MessageScreen = ({ route, navigation }) => {
   const [highlightedMessageIds, setHighlightedMessageIds] = useState([]);
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+  const [replyingTo, setReplyingTo] = useState(null); // State cho tin nhắn đang trả lời
   const flatListRef = useRef(null);
-
-  const [isTyping, setIsTyping] = useState(false); // Trạng thái đang nhập
-  const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
-  const [imageUri, setImageUri] = useState(null); // Trạng thái lưu trữ URI hình ảnh đã chọn
+  const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [imageUri, setImageUri] = useState(null);
+  const [sended, setSended] = useState(false);
 
   const calculateLastActive = (lastActive) => {
     const now = new Date();
@@ -63,23 +63,16 @@ const MessageScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (socket && conversation?.conversationId) {
-      // Join the conversation room
       socket.emit("joinUserConversations", [conversation.conversationId]);
-
-      // Sử dụng hàm handleNewMessage
       handleNewMessage(
         socket,
         conversation.conversationId,
         setMessages,
         flatListRef
       );
-
-      // Refresh conversation list when a new message is received
       socket.on("newMessage", async () => {
         await handlerRefresh();
       });
-
-      // Listen for recalled messages
       socket.on("messageRecalled", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
@@ -96,78 +89,102 @@ const MessageScreen = ({ route, navigation }) => {
           messageId
         );
       });
-
-      // Clean up socket listeners
       return () => {
-        cleanupNewMessage(socket); // Cleanup newMessage listener
+        cleanupNewMessage(socket);
         socket.off("newMessage");
         socket.off("messageRecalled");
       };
     }
-  }, [socket, conversation?.conversationId, userInfo.userId, handlerRefresh]);
+  }, [messages, sended]);
 
   const fetchAndStoreMessages = async () => {
     try {
-      setIsLoading(true); // Bật loading
-
+      setIsLoading(true);
       const response = await api.getAllMessages(conversation.conversationId);
-
-      // Lọc tin nhắn bị ẩn với người dùng hiện tại
       const filteredMessages = response.messages.filter(
         (message) => !message.hiddenFrom?.includes(userInfo.userId)
       );
-
-      setMessages(filteredMessages); // Cập nhật state messages
+      setMessages(filteredMessages);
     } catch (error) {
       console.error("Lỗi lấy tin nhắn:", error);
-      setMessages([]); // Cập nhật state messages với mảng rỗng nếu lỗi
+      setMessages([]);
     } finally {
-      setIsLoading(false); // Tắt loading
+      setIsLoading(false);
     }
   };
 
   const handleSendMessage = useCallback(
-    (message) => {
+    async (message) => {
       if (!conversation?.conversationId) {
         alert("Không thể gửi tin nhắn: Cuộc trò chuyện không tồn tại.");
         return;
       }
 
       const pseudoMessage = {
-        conversationId: conversation.conversationId,
-        content: message.content,
+        _id: `temp_${Date.now()}`, // Temporary ID for local rendering
         messageDetailId: `msg_${Date.now()}`,
-        createdAt: new Date().toISOString(),
         senderId: userInfo.userId,
+        conversationId: conversation.conversationId,
         type: message.type || "text",
+        content: message.content,
+        createdAt: new Date().toISOString(),
+        isReply: !!replyingTo,
+        messageReplyId: replyingTo?.messageDetailId || null,
+        replyData: replyingTo
+          ? {
+              content: replyingTo.content,
+              type: replyingTo.type,
+              senderId: replyingTo.senderId,
+            }
+          : null, // Include reply data if replying
+        sendStatus: "sending", // Initial status
       };
-      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
-      if (message.type === "text") {
-        api
-          .sendMessage({
+      setMessages((prev) => [pseudoMessage, ...prev]);
+
+      try {
+        if (message.type === "text") {
+          if (replyingTo) {
+            await api.replyMessage(
+              replyingTo?.messageDetailId,
+              message?.content
+            );
+          } else {
+            await api.sendMessage({
+              conversationId: pseudoMessage.conversationId,
+              content: pseudoMessage.content,
+            });
+          }
+        }
+
+        if (socket && socket.connected) {
+          socket.emit("newMessage", {
             conversationId: pseudoMessage.conversationId,
-            content: pseudoMessage.content,
-          })
-          .catch((error) => {
-            console.error("Lỗi gửi tin nhắn:", error);
-            alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
+            message: pseudoMessage,
+            sender: {
+              userId: userInfo.userId,
+              fullname: userInfo.fullname,
+              avatar: userInfo.urlavatar,
+            },
           });
-      }
-      if (socket && socket.connected) {
-        socket.emit("newMessage", {
-          conversationId: pseudoMessage.conversationId,
-          message: pseudoMessage,
-          sender: {
-            userId: userInfo.userId,
-            fullname: userInfo.fullname,
-            avatar: userInfo.urlavatar,
-          },
-        });
-        console.log("Gửi tin nhắn qua socket:", pseudoMessage);
+
+          // Remove the pseudoMessage immediately after emitting the socket event
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+
+          console.log("Gửi tin nhắn qua socket:", pseudoMessage);
+        }
+      } catch (error) {
+        console.error("Lỗi gửi tin nhắn:", error);
+        alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
+      } finally {
+        setReplyingTo(null); // Clear reply state after sending
       }
     },
-    [conversation, userInfo.userId, socket]
+    [conversation, userInfo.userId, socket, replyingTo]
   );
 
   const handleSendImage = useCallback(
@@ -179,37 +196,32 @@ const MessageScreen = ({ route, navigation }) => {
       }
 
       console.log("Bắt đầu gửi ảnh...");
-
       const pseudoMessage = {
         conversationId: conversation.conversationId,
         messageDetailId: `msg_${Date.now()}`,
         createdAt: new Date().toISOString(),
         senderId: userInfo.userId,
         type: message.type || "image",
-        attachment: { url: message.attachment }, // Corrected syntax
+        sendStatus: "sending",
+        attachment: { url: message.attachment },
       };
-
       console.log("Tạo pseudoMessage:", pseudoMessage);
-
-      // setImageUri(message.attachment); // Set the image URI to state
-      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
 
       if (!message.attachment) {
         console.error("Lỗi: Không có ảnh để gửi.");
         alert("Không có ảnh để gửi.");
         return;
       }
+      setMessages((prev) => [pseudoMessage, ...prev]);
 
       try {
         console.log("Đọc file ảnh từ URI:", message.attachment);
-
         const base64Image = await FileSystem.readAsStringAsync(
           message.attachment,
           {
             encoding: FileSystem.EncodingType.Base64,
           }
         );
-
         const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
         console.log("Chuyển đổi ảnh sang Base64 thành công.");
 
@@ -231,6 +243,14 @@ const MessageScreen = ({ route, navigation }) => {
               avatar: userInfo.urlavatar,
             },
           });
+
+          // Remove the pseudoMessage immediately after emitting the socket event
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+
           console.log("Gửi hình qua socket:", pseudoMessage);
         }
       } catch (error) {
@@ -255,15 +275,15 @@ const MessageScreen = ({ route, navigation }) => {
         createdAt: new Date().toISOString(),
         senderId: userInfo.userId,
         type: message.type || "file",
-        attachment: { url: message.attachment }, // Corrected syntax
+        attachment: { url: message.attachment },
+        sendStatus: "sending",
       };
 
-      setMessages((prev) => [pseudoMessage, ...(prev || [])]);
+      setMessages((prev) => [pseudoMessage, ...prev]);
 
       if (message.type === "file") {
         try {
           console.log("Đọc file từ URI:", message.attachment);
-
           const base64File = await FileSystem.readAsStringAsync(
             message.attachment,
             {
@@ -271,7 +291,6 @@ const MessageScreen = ({ route, navigation }) => {
             }
           );
           const fileBase64 = `data:${message.mimeType};base64,${base64File}`;
-
           console.log("Chuyển đổi file sang Base64 thành công.");
 
           await api.sendFileMessage({
@@ -290,6 +309,14 @@ const MessageScreen = ({ route, navigation }) => {
                 avatar: userInfo.urlavatar,
               },
             });
+
+            // Remove the pseudoMessage immediately after emitting the socket event
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
+
             console.log("Gửi tin nhắn qua socket:", pseudoMessage);
           }
           console.log("Gửi file thành công!");
@@ -309,25 +336,25 @@ const MessageScreen = ({ route, navigation }) => {
         return;
       }
 
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: "video",
+        attachment,
+        sendStatus: "sending",
+      };
+
+      setMessages((prev) => [pseudoMessage, ...prev]);
       try {
         const response = await api.sendFileVideoMessage({
           conversationId: conversation.conversationId,
           attachment,
         });
-
         console.log("Gửi video thành công:", response);
 
-        // Emit the video message to the socket
         if (socket && socket.connected) {
-          const pseudoMessage = {
-            conversationId: conversation.conversationId,
-            messageDetailId: `msg_${Date.now()}`,
-            createdAt: new Date().toISOString(),
-            senderId: userInfo.userId,
-            type: "video",
-            attachment,
-          };
-
           socket.emit("newMessage", {
             conversationId: pseudoMessage.conversationId,
             message: pseudoMessage,
@@ -337,6 +364,13 @@ const MessageScreen = ({ route, navigation }) => {
               avatar: userInfo.urlavatar,
             },
           });
+
+          // Remove the pseudoMessage immediately after emitting the socket event
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
 
           console.log("Gửi video qua socket:", pseudoMessage);
         }
@@ -348,17 +382,20 @@ const MessageScreen = ({ route, navigation }) => {
     [conversation, userInfo.userId, socket]
   );
 
+  const handleReply = (message) => {
+    setReplyingTo(message); // Cập nhật tin nhắn đang trả lời
+  };
+
   useEffect(() => {
     if (!conversation?.conversationId) {
       console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
-      setMessages([]); // Clear messages if conversation is invalid
+      setMessages([]);
       return;
     }
-
     fetchAndStoreMessages();
   }, [conversation?.conversationId]);
 
-  const effectiveBackground = background || conversation?.background || null; // Use conversation background if global background is empty
+  const effectiveBackground = background || conversation?.background || null;
 
   return (
     <View style={{ flex: 1 }}>
@@ -376,14 +413,15 @@ const MessageScreen = ({ route, navigation }) => {
       >
         {messages.length > 0 ? (
           <Conversation
-            messages={messages} // Pass messages state
-            setMessages={setMessages} // Pass setMessages function
+            messages={messages}
+            setMessages={setMessages}
             senderId={userInfo.userId}
             highlightedMessageIds={highlightedMessageIds}
             highlightedMessageId={highlightedMessageId}
             searchQuery={searchQuery}
             receiver={receiver}
-            onTyping={isTyping} // Pass isTyping to Conversation
+            onTyping={isTyping}
+            onReply={handleReply} // Truyền handleReply xuống Conversation
           />
         ) : (
           <View style={MessageScreenStyle.loadingContainer}>
@@ -395,9 +433,11 @@ const MessageScreen = ({ route, navigation }) => {
           onSendImage={handleSendImage}
           onSendFile={handleSendFile}
           onSendVideo={handleSendVideo}
-          socket={socket} // Pass socket to ChatFooter
-          conversation={conversation} // Pass conversation to ChatFooter
-          setIsTyping={setIsTyping} // Pass setIsTyping to ChatFooter
+          socket={socket}
+          conversation={conversation}
+          setIsTyping={setIsTyping}
+          replyingTo={replyingTo} // Truyền replyingTo xuống ChatFooter
+          setReplyingTo={setReplyingTo} // Truyền setReplyingTo để hủy trả lời
         />
       </ImageBackground>
     </View>
