@@ -77,6 +77,7 @@ const MessageItem = ({
   isHighlighted,
   receiver,
   isFirstMessageFromSender,
+  onScrollToMessage,
 }) => {
   const { userInfo } = useContext(AuthContext);
 
@@ -198,7 +199,7 @@ const MessageItem = ({
   };
 
   const renderReplyContent = () => {
-    const { replyData } = message;
+    const { replyData, messageReplyId } = message;
 
     if (!replyData) return null;
 
@@ -210,20 +211,24 @@ const MessageItem = ({
         : receiver?.fullname;
 
     return (
-      <View style={MessageItemStyle.replyContainer}>
-        <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
-        {replyType === "text" ? (
-          <Text style={MessageItemStyle.replyContent}>{replyContent}</Text>
-        ) : replyType === "image" ? (
-          <Text style={MessageItemStyle.replyContent}>[Hình ảnh]</Text>
-        ) : replyType === "file" ? (
-          <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
-        ) : replyType === "video" ? (
-          <Text style={MessageItemStyle.replyContent}>[Video]</Text>
-        ) : (
-          <Text style={MessageItemStyle.replyContent}>[Không hỗ trợ]</Text>
-        )}
-      </View>
+      <TouchableOpacity
+        onPress={() => onScrollToMessage(messageReplyId)} // Cuộn đến tin nhắn gốc
+      >
+        <View style={MessageItemStyle.replyContainer}>
+          <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
+          {replyType === "text" ? (
+            <Text style={MessageItemStyle.replyContent}>{replyContent}</Text>
+          ) : replyType === "image" ? (
+            <Text style={MessageItemStyle.replyContent}>[Hình ảnh]</Text>
+          ) : replyType === "file" ? (
+            <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
+          ) : replyType === "video" ? (
+            <Text style={MessageItemStyle.replyContent}>[Video]</Text>
+          ) : (
+            <Text style={MessageItemStyle.replyContent}>[Không hỗ trợ]</Text>
+          )}
+        </View>
+      </TouchableOpacity>
     );
   };
 

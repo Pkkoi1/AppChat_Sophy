@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import {
   View,
   Text,
@@ -7,20 +7,42 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const PinnedMessage = ({ pinnedMessages, onClose }) => {
+const PinnedMessage = ({ pinnedMessages, onClose, onScrollToMessage }) => {
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={styles.pinnedMessageContainer}
+      onPress={() => {
+        onScrollToMessage(item.messageDetailId); // Cuộn đến tin nhắn
+        console.log(item.messageDetailId);
+        onClose(); // Đóng modal
+      }}
+    >
+      <Text style={styles.pinnedMessageText}>
+        Tin nhắn của {item.senderId}: {item.content}
+      </Text>
+    </TouchableOpacity>
+  );
+
+  const getItemLayout = (data, index) => ({
+    length: 50, // Chiều cao cố định của mỗi item (thay đổi nếu cần)
+    offset: 50 * index,
+    index,
+  });
+
+  const handleScrollToIndexFailed = (info) => {
+    console.warn("Scroll failed: ", info);
+    // Xử lý fallback, ví dụ cuộn đến vị trí gần nhất
+  };
+
   return (
     <View style={styles.pinnedContainer}>
       <Text style={styles.pinnedTitle}>Tin nhắn đã ghim</Text>
       <FlatList
         data={pinnedMessages}
+        renderItem={renderItem} // Đảm bảo renderItem là một hàm
         keyExtractor={(item) => item.messageDetailId}
-        renderItem={({ item }) => (
-          <View style={styles.pinnedMessageContainer}>
-            <Text style={styles.pinnedMessageText}>
-              Tin nhắn của {item.senderId}: {item.content}
-            </Text>
-          </View>
-        )}
+        getItemLayout={getItemLayout}
+        onScrollToIndexFailed={handleScrollToIndexFailed}
       />
       <TouchableOpacity style={styles.closeButton} onPress={onClose}>
         <Text style={styles.closeButtonText}>Đóng</Text>

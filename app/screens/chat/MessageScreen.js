@@ -15,6 +15,8 @@ import {
   TextInput,
   StatusBar,
   ImageBackground,
+  InteractionManager,
+  TouchableOpacity,
 } from "react-native";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
@@ -43,7 +45,7 @@ const MessageScreen = ({ route, navigation }) => {
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
   const [replyingTo, setReplyingTo] = useState(null); // State cho tin nhắn đang trả lời
-  const flatListRef = useRef(null);
+  const flatListRef = useRef(null); // Attach FlatList ref here
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
@@ -386,6 +388,38 @@ const MessageScreen = ({ route, navigation }) => {
     setReplyingTo(message); // Cập nhật tin nhắn đang trả lời
   };
 
+  const scrollToMessage = (messageId) => {
+    const index = messages.findIndex(
+      (msg) => msg.messageDetailId === messageId
+    );
+    if (index === -1) {
+      console.warn("Không tìm thấy message:", messageId);
+      return;
+    }
+
+    // const invertedIndex = messages.length - 1 - index;
+
+    if (flatListRef.current) {
+      try {
+        flatListRef.current.scrollToIndex({
+          index: index,
+          animated: true,
+          viewPosition: 0.5,
+        });
+        setHighlightedMessageId(messageId);
+      } catch (error) {
+        console.warn("Lỗi cuộn đến message:", error.message);
+        // fallback nếu lỗi out-of-range
+        setTimeout(() => {
+          flatListRef.current?.scrollToOffset({
+            offset: index * 80, // height mặc định 80 trong getItemLayout
+            animated: true,
+          });
+        }, 300);
+      }
+    }
+  };
+
   useEffect(() => {
     if (!conversation?.conversationId) {
       console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
@@ -417,11 +451,13 @@ const MessageScreen = ({ route, navigation }) => {
             setMessages={setMessages}
             senderId={userInfo.userId}
             highlightedMessageIds={highlightedMessageIds}
-            highlightedMessageId={highlightedMessageId}
+            highlightedMessageId={highlightedMessageId} // Pass highlightedMessageId
             searchQuery={searchQuery}
             receiver={receiver}
             onTyping={isTyping}
-            onReply={handleReply} // Truyền handleReply xuống Conversation
+            onReply={handleReply}
+            flatListRef={flatListRef} // Pass FlatList ref to Conversation
+            onScrollToMessage={scrollToMessage} // Pass scrollToMessage to Conversation
           />
         ) : (
           <View style={MessageScreenStyle.loadingContainer}>
@@ -436,8 +472,8 @@ const MessageScreen = ({ route, navigation }) => {
           socket={socket}
           conversation={conversation}
           setIsTyping={setIsTyping}
-          replyingTo={replyingTo} // Truyền replyingTo xuống ChatFooter
-          setReplyingTo={setReplyingTo} // Truyền setReplyingTo để hủy trả lời
+          replyingTo={replyingTo}
+          setReplyingTo={setReplyingTo}
         />
       </ImageBackground>
     </View>
