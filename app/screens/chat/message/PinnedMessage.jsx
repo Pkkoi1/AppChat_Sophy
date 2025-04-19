@@ -1,5 +1,6 @@
 import { api } from "@/app/api/api";
-import React, { memo, useEffect } from "react";
+import { AuthContext } from "@/app/auth/AuthContext";
+import React, { memo, useContext, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,11 +10,14 @@ import {
 } from "react-native";
 
 const PinnedMessage = ({
+  receiver,
   pinnedMessages,
   onClose,
   onScrollToMessage,
   setMessages,
 }) => {
+  const { userInfo } = useContext(AuthContext);
+
   // Function to unpin recalled messages
   const handleUnPinRecalledMessages = async () => {
     for (const item of pinnedMessages) {
@@ -49,7 +53,11 @@ const PinnedMessage = ({
       }}
     >
       <Text style={styles.pinnedMessageText}>
-        Tin nhắn của {item.senderId}: {item.content}
+        Tin nhắn của{" "}
+        {item.senderId === userInfo.userId
+          ? userInfo.fullname
+          : receiver?.fullname || "Người dùng"}:{" "}
+        {item.content}
       </Text>
     </TouchableOpacity>
   );

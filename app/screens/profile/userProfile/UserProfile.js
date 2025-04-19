@@ -183,15 +183,7 @@ const UserProfile = ({ route }) => {
         }
       } catch (error) {
         // Nếu không tìm thấy cuộc trò chuyện, tiếp tục tạo mới
-        if (error.response && error.response.status === 404) {
-          console.log(
-            "Không tìm thấy cuộc trò chuyện cũ, tạo cuộc trò chuyện mới."
-          );
-        } else {
-          console.error("Lỗi khi kiểm tra cuộc trò chuyện:", error);
-          Alert.alert("Lỗi", "Có lỗi xảy ra khi kiểm tra cuộc trò chuyện.");
-          return;
-        }
+        console.log("Cuộc trò chuyện không tồn tại, tạo mới:", error);
       }
 
       // Tạo cuộc trò chuyện mới nếu không tìm thấy cuộc trò chuyện cũ
@@ -375,10 +367,10 @@ const UserProfile = ({ route }) => {
     navigation.navigate("UserInfo", {
       user: friend,
       // Truyền thêm thông tin cần thiết
-      isFriend: requestSent === "friend"
+      isFriend: requestSent === "friend",
     });
   };
-  
+
   const renderPostImages = ({ item }) => (
     <TouchableOpacity onPress={() => {}}>
       <Image
@@ -407,8 +399,6 @@ const UserProfile = ({ route }) => {
         </View>
       );
     }
-
-    
 
     // Trang thai da gui loi moi ket ban
     if (requestSent === "pending") {
@@ -611,7 +601,9 @@ const UserProfile = ({ route }) => {
             </View>
 
             <View style={styles.nameContainer}>
-              <Text style={styles.name}>{friend?.fullname || "Người dùng"}</Text>
+              <Text style={styles.name}>
+                {friend?.fullname || "Người dùng"}
+              </Text>
             </View>
 
             {renderFriendStatus()}
@@ -645,7 +637,9 @@ const UserProfile = ({ route }) => {
                         size={20}
                         color="#7865C9"
                       />
-                      <Text style={styles.musicText}>Bài hát: {post.music}</Text>
+                      <Text style={styles.musicText}>
+                        Bài hát: {post.music}
+                      </Text>
                     </View>
                     <View style={styles.postFooter}>
                       <View style={styles.postFooterLeft}>
@@ -667,7 +661,11 @@ const UserProfile = ({ route }) => {
                       <View style={styles.postFooterRight}>
                         <View style={styles.footerIconsContainer}>
                           <TouchableOpacity style={styles.footerIcon}>
-                            <Ionicons name="heart-outline" size={20} color="#888" />
+                            <Ionicons
+                              name="heart-outline"
+                              size={20}
+                              color="#888"
+                            />
                             <Text style={styles.footerText}>Thích</Text>
                           </TouchableOpacity>
                           <TouchableOpacity style={styles.footerIcon}>
@@ -690,7 +688,7 @@ const UserProfile = ({ route }) => {
           </View>
         </View>
       </ScrollView>
-       {requestSent === "friend" && (
+      {requestSent === "friend" && (
         <TouchableOpacity
           style={styles.floatingMessageButton}
           onPress={handleCreateConversation}
@@ -1098,7 +1096,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10, // Thêm dòng này cho cân đối
   },
-  
 });
 
 export default UserProfile;
