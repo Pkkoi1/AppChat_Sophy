@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   FlatList,
@@ -12,6 +12,7 @@ import moment from "moment";
 import ConversationStyle from "./ConversationStyle";
 import MessagePopup from "../../../features/messagePopup/MessagePopup";
 import PinnedMessage from "./PinnedMessage";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const Conversation = ({
   messages,
@@ -34,6 +35,7 @@ const Conversation = ({
   const [messageReactions, setMessageReactions] = useState({});
   const [pinnedModalVisible, setPinnedModalVisible] = useState(false);
   const pinnedMessages = messages.filter((msg) => msg.isPinned);
+  const { userInfo } = useContext(AuthContext); // Assuming you have a UserContext to get user info
 
   const handleLongPress = (message) => {
     if (message.type !== "notification") {
@@ -51,8 +53,12 @@ const Conversation = ({
         >
           <View style={ConversationStyle.pinnedButtonContent}>
             <Text style={ConversationStyle.pinnedButtonText}>
-              Tin nhắn của {pinnedMessages[pinnedMessages.length - 1].senderId}:{" "}
-              {pinnedMessages[pinnedMessages.length - 1].content}
+              Tin nhắn của{" "}
+              {pinnedMessages[pinnedMessages.length - 1].senderId ===
+              userInfo.userId
+                ? userInfo.fullname
+                : receiver?.fullname || "Người dùng"}
+              : {pinnedMessages[pinnedMessages.length - 1].content}
             </Text>
             {pinnedMessages.length > 1 && (
               <Text style={ConversationStyle.pinnedCount}>
@@ -143,6 +149,7 @@ const Conversation = ({
         onRequestClose={() => setPinnedModalVisible(false)}
       >
         <PinnedMessage
+          receiver={receiver}
           pinnedMessages={pinnedMessages}
           onClose={() => setPinnedModalVisible(false)}
           onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to PinnedMessage

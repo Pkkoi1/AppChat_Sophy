@@ -123,6 +123,19 @@ export const AuthProvider = ({ children }) => {
     setRefreshToken(refreshToken);
 
     await getUserInfoById(response.user.userId);
+    // Lấy danh sách cuộc trò chuyện sau khi đăng nhập
+    if (socket && response.data.user.userId) {
+      socket.emit("authenticate", response.data.user.userId);
+    }
+
+    const conversationsResponse = await api.conversations();
+    if (conversationsResponse && conversationsResponse.data) {
+      setConversations(conversationsResponse.data); // Lưu danh sách vào state
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(conversationsResponse.data)
+      ); // Lưu vào AsyncStorage
+    }
   };
 
   const logout = async () => {
