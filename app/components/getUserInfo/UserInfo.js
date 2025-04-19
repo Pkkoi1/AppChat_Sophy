@@ -3,7 +3,7 @@ import { api } from "@/app/api/api";
 // Hàm tiện ích để lấy thông tin người dùng
 export const fetchUserInfo = async (id) => {
   if (!id) {
-    console.error("fetchUserInfo: ID không hợp lệ:", id);
+    // console.error("fetchUserInfo: ID không hợp lệ:", id);
     return null; // Trả về null nếu ID không hợp lệ
   }
 

@@ -25,7 +25,7 @@ const ListFriends = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, handlerRefresh } = useContext(AuthContext);
   const [phoneContacts, setPhoneContacts] = useState([]);
   const [usersInDB, setUsersInDB] = useState([]);
   const socket = useContext(SocketContext); // Thêm dòng này
@@ -44,6 +44,39 @@ const ListFriends = () => {
       setRefreshing(false);
     }
   }, [refreshing]);
+
+  if (socket) {
+    socket.on("newMessage", async () => {
+      console.log("New message received. Refreshing conversations...");
+      await handlerRefresh(); // Refresh the conversation list
+    });
+  }
+  if (socket) {
+    socket.on("newConversation", async () => {
+      console.log("New convertation received. Refreshing conversations...");
+      await handlerRefresh(); // Refresh the conversation list
+    });
+  }
+  useEffect(() => {
+    if (socket) {
+      // Listen for newMessage event
+      socket.on("newMessage", async () => {
+        console.log("New message received. Refreshing conversations...");
+        await handlerRefresh(); // Refresh the conversation list
+      });
+      if (socket) {
+        socket.on("newConversation", async () => {
+          console.log("New convertation received. Refreshing conversations...");
+          await handlerRefresh(); // Refresh the conversation list
+        });
+      }
+      // Cleanup listener on unmount
+      return () => {
+        socket.off("newMessage");
+        socket.off("newConversation");
+      };
+    }
+  }, []);
 
   // Lấy danh bạ điện thoại và tìm người dùng đã đăng ký app
   const getPhoneContacts = async () => {
@@ -126,7 +159,7 @@ const ListFriends = () => {
     };
   }, [socket, fetchFriends]);
 
-  const handlerRefresh = () => {
+  const handlerRefreshList = () => {
     setRefreshing(true);
     fetchFriends();
     getPhoneContacts();
@@ -183,9 +216,7 @@ const ListFriends = () => {
 
     // Các contact còn lại chưa dùng app
     const contactsNotInApp = phoneContacts
-      .filter(
-        (c) => !usersInDB.some((u) => u.phone === c.phone)
-      )
+      .filter((c) => !usersInDB.some((u) => u.phone === c.phone))
       .map((c) => ({
         ...c,
         isAppUser: false,
@@ -215,14 +246,21 @@ const ListFriends = () => {
   return (
     <View>
       {loading && !refreshing ? (
-        <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
+        <ActivityIndicator
+          size="large"
+          color="#0000ff"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         <FlatList
           ListHeaderComponent={renderHeader}
           data={Object.keys(groupedContacts)}
           keyExtractor={(item) => item}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handlerRefreshList}
+            />
           }
           renderItem={({ item }) => (
             <View style={ListFriendStyle.listFriendContainer}>
@@ -250,7 +288,6 @@ const ListFriends = () => {
                   }}
                 >
                   <Friends friend={contact} />
-                  
                 </TouchableOpacity>
               ))}
             </View>

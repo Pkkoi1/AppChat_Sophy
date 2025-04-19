@@ -99,7 +99,7 @@ const SearchUser = ({ navigation }) => {
             setSearchResults([]); // Không tìm thấy người dùng
           }
         } catch (error) {
-          console.error("Lỗi khi tìm kiếm người dùng:", error);
+          // console.error("Lỗi khi tìm kiếm người dùng:", error);
           setSearchResults([]);
         } finally {
           setIsSearching(false);
