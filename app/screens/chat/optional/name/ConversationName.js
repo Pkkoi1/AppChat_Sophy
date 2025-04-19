@@ -138,6 +138,11 @@ const ConversationName = ({ receiver, conversation }) => {
       });
     } else if (option.action === "changeBackground") {
       pickImage(); // Mở thư viện chọn ảnh
+    } else if (option.name === "Trang\n cá nhân") {
+      navigation.navigate("UserProfile", {
+        friend: receiver,
+        requestSent: "friend",
+      });
     }
   };
 

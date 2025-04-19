@@ -75,6 +75,12 @@ const MessageScreen = ({ route, navigation }) => {
       socket.on("newMessage", async () => {
         await handlerRefresh();
       });
+      if (socket) {
+        socket.on("newConversation", async () => {
+          console.log("New convertation received. Refreshing conversations...");
+          await handlerRefresh(); // Refresh the conversation list
+        });
+      }
       socket.on("messageRecalled", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
@@ -128,6 +134,9 @@ const MessageScreen = ({ route, navigation }) => {
         cleanupNewMessage(socket);
         socket.off("newMessage");
         socket.off("messageRecalled");
+        socket.off("messagePinned");
+        socket.off("messageUnpinned");
+        socket.off("newConversation");
       };
     }
   }, [messages, sended]);

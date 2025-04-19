@@ -731,10 +731,10 @@ export const api = {
       const response = await http.get(`/conversations/${conversationId}`);
       return response.data;
     } catch (error) {
-      console.error(
-        "Lỗi khi lấy thông tin cuộc trò chuyện:",
-        error.response?.data || error.message
-      );
+      // console.error(
+      //   "Lỗi khi lấy thông tin cuộc trò chuyện:",
+      //   error.response?.data || error.message
+      // );
       throw error;
     }
   },
@@ -836,10 +836,10 @@ export const api = {
       const response = await http.get(`/users/get-user/${phone}`);
       return response.data;
     } catch (error) {
-      console.error(
-        "Lỗi khi lấy thông tin người dùng theo số điện thoại:",
-        error.response?.data || error.message
-      );
+      // console.error(
+      //   "Lỗi khi lấy thông tin người dùng theo số điện thoại:",
+      //   error.response?.data || error.message
+      // );
 
       if (error.response && error.response.status === 404) {
         throw new Error("Không tìm thấy người dùng với số điện thoại này");
@@ -856,10 +856,10 @@ export const api = {
       });
       return response.data;
     } catch (error) {
-      console.error(
-        "Lỗi khi tìm kiếm người dùng theo số điện thoại:",
-        error.response?.data || error.message
-      );
+      // console.error(
+      //   "Lỗi khi tìm kiếm người dùng theo số điện thoại:",
+      //   error.response?.data || error.message
+      // );
       throw error;
     }
   },
@@ -874,5 +874,5 @@ export const api = {
       );
       throw error;
     }
-  }
+  },
 };
