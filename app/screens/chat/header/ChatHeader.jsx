@@ -15,6 +15,8 @@ const ChatHeader = ({
 }) => {
   const [receiverName, setReceiverName] = useState("");
   const handlerBack = () => {
+    api.readMessage(conversation.conversationId);
+
     navigation.goBack();
   };
 
