@@ -820,4 +820,16 @@ export const api = {
       throw error;
     }
   },
+  unfriend: async (userId) => {
+    try {
+      const response = await http.delete(`/users/friends/unfriend/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi xóa bạn bè:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  }
 };
