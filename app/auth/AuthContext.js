@@ -124,8 +124,8 @@ export const AuthProvider = ({ children }) => {
 
     await getUserInfoById(response.user.userId);
     // Lấy danh sách cuộc trò chuyện sau khi đăng nhập
-    if (socket && response.data.user.userId) {
-      socket.emit("authenticate", response.data.user.userId);
+    if (socket && response.user.userId) {
+      socket.emit("authenticate", response.user.userId);
     }
 
     const conversationsResponse = await api.conversations();
