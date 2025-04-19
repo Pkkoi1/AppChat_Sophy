@@ -1,4 +1,10 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../socket/SocketContext"; // Import SocketContext
@@ -10,21 +16,36 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [conversations, setConversations] = useState([]); // State for conversations
+  const [background, setBackground] = useState(null); // State for background
+
   const socket = useContext(SocketContext); // Get socket from context
+  const flatListRef = useRef(null); // Optional: Reference for scrolling if needed
 
   useEffect(() => {
     const loadStorage = async () => {
       try {
-        const [token, refresh, user] = await AsyncStorage.multiGet([
-          "accessToken",
-          "refreshToken",
-          "userInfo",
-        ]);
+        const [token, refresh, user, storedConversations, storedBackground] =
+          await AsyncStorage.multiGet([
+            "accessToken",
+            "refreshToken",
+            "userInfo",
+            "conversations", // Load conversations from AsyncStorage
+            "background", // Load background from AsyncStorage
+          ]);
 
         if (token[1] && refresh[1] && user[1]) {
           setaccessToken(token[1]);
           setRefreshToken(refresh[1]);
           setUserInfo(JSON.parse(user[1]));
+        }
+
+        if (storedConversations[1]) {
+          setConversations(JSON.parse(storedConversations[1])); // Update conversations state
+        }
+
+        if (storedBackground[1]) {
+          setBackground(storedBackground[1]); // Update background state
         }
       } catch (err) {
         console.error("Error loading storage:", err);
@@ -36,43 +57,38 @@ export const AuthProvider = ({ children }) => {
     loadStorage();
   }, []);
 
-  const refreshAccessToken = async () => {
-    console.log("refreshAccessToken được gọi");
-    console.log("Giá trị refreshToken trong state:", refreshToken);
-    console.log("Giá trị userInfo trong state:", userInfo);
-    console.log("Giá trị accessToken trong state:", accessToken);
+  const handleNewMessage = () => {
+    if (!socket) return;
 
-    try {
-      // Lấy refreshToken từ AsyncStorage nếu không có trong state
-      const storedRefreshToken =
-        refreshToken || (await AsyncStorage.getItem("refreshToken"));
+    socket.on(
+      "newMessage",
+      ({ conversationId: incomingConversationId, message }) => {
+        const formattedMessage = message._doc || message;
 
-      if (!storedRefreshToken) {
-        console.error("No refresh token available");
-        return;
+        setConversations((prevConversations) =>
+          prevConversations.map((conv) =>
+            conv.conversationId === incomingConversationId
+              ? { ...conv, lastMessage: formattedMessage }
+              : conv
+          )
+        );
+
+        flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 }); // Optional: Scroll to top
+        console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
       }
+    );
+  };
 
-      const response = await api.refreshToken({
-        refreshToken: storedRefreshToken,
-      });
-      const { accessToken: newAccessToken } = response.token;
-      const { refreshToken: newRefreshToken } = response.token;
-      console.log("Phan hoi tu refresh token ở context:", response);
-
-      setaccessToken(newAccessToken);
-      await AsyncStorage.setItem("accessToken", newAccessToken);
-      await AsyncStorage.setItem("refreshToken", newRefreshToken);
-      await getUserInfoById(response.data.user.userId);
-
-      // Lấy thông tin người dùng sau khi refresh token
-      // if (userInfo?.userId) {
-      //   await getUserInfoById(userInfo.userId);
-      // }
-    } catch (error) {
-      console.error("Error refreshing access token:", error);
-      logout(); // Đăng xuất nếu refresh token không hợp lệ
+  const cleanupNewMessage = () => {
+    if (socket) {
+      socket.off("newMessage");
     }
   };
+
+  useEffect(() => {
+    handleNewMessage(); // Start listening for new messages
+    return () => cleanupNewMessage(); // Cleanup on unmount
+  }, [socket]);
 
   const login = async (params) => {
     const response = await api.login(params);
@@ -85,6 +101,16 @@ export const AuthProvider = ({ children }) => {
 
     if (socket && response.data.user.userId) {
       socket.emit("authenticate", response.data.user.userId);
+    }
+
+    // Lấy danh sách cuộc trò chuyện sau khi đăng nhập
+    const conversationsResponse = await api.conversations();
+    if (conversationsResponse && conversationsResponse.data) {
+      setConversations(conversationsResponse.data); // Lưu danh sách vào state
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(conversationsResponse.data)
+      ); // Lưu vào AsyncStorage
     }
   };
 
@@ -108,10 +134,14 @@ export const AuthProvider = ({ children }) => {
       setaccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
+      setConversations([]); // Xóa danh sách cuộc trò chuyện
+      setBackground(null); // Xóa background
       await AsyncStorage.multiRemove([
         "accessToken",
         "refreshToken",
         "userInfo",
+        "conversations", // Xóa danh sách cuộc trò chuyện khỏi AsyncStorage
+        "background", // Xóa background khỏi AsyncStorage
       ]);
     }
   };
@@ -132,6 +162,26 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.setItem("userInfo", JSON.stringify(updated));
   };
 
+  const handlerRefresh = async () => {
+    try {
+      const conversationsResponse = await api.conversations();
+      if (conversationsResponse && conversationsResponse.data) {
+        setConversations(conversationsResponse.data); // Update state with new conversations
+        await AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(conversationsResponse.data)
+        ); // Save updated conversations to AsyncStorage
+      }
+    } catch (error) {
+      console.error("Error refreshing conversations:", error);
+    }
+  };
+
+  const updateBackground = async (newBackground) => {
+    setBackground(newBackground); // Update state
+    await AsyncStorage.setItem("background", newBackground); // Save to AsyncStorage
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -139,12 +189,16 @@ export const AuthProvider = ({ children }) => {
         refreshToken,
         userInfo,
         isLoading,
+        conversations,
+        background, // Expose background state
         register,
         login,
         logout,
         updateUserInfo,
         getUserInfoById,
-        // refreshAccessToken, // Expose the refreshAccessToken function
+        handlerRefresh,
+        updateBackground, // Expose updateBackground function
+        flatListRef, // Optional: Expose flatListRef if needed
       }}
     >
       {children}

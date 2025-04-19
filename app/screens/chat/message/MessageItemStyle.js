@@ -15,7 +15,7 @@ const MessageItemStyle = StyleSheet.create({
   messageBox: {
     padding: 10,
     borderRadius: 10,
-    maxWidth: "85%", // Increase maxWidth to ensure space for the sender's name
+    maxWidth: "90%", // Increase maxWidth to ensure space for the sender's name
     marginVertical: 2,
     marginHorizontal: 10,
     position: "relative", // Để avatar có thể nằm trên
@@ -64,9 +64,9 @@ const MessageItemStyle = StyleSheet.create({
     width: "100%", // Ensure the sender's name does not overflow
   },
   image: {
-    width: "100%", // Make the image width relative to the chat box
-    height: undefined, // Allow proportional scaling
-    aspectRatio: 4 / 3, // Maintain a 4:3 aspect ratio
+    width: "200", // Make the image width relative to the chat box
+    height: "300", // Allow proportional scaling
+    // aspectRatio: 16 / 9, // Maintain a 4:3 aspect ratio
     borderRadius: 8,
     marginVertical: 10,
     alignSelf: "flex-start", // Align the image within the bubble
@@ -88,7 +88,7 @@ const MessageItemStyle = StyleSheet.create({
   },
   video: {
     width: 200,
-    height: 150,
+    height: 300,
     borderRadius: 8,
     marginTop: 5,
   },
@@ -137,6 +137,35 @@ const MessageItemStyle = StyleSheet.create({
     width: "100%",
     paddingRight: 15,
     justifyContent: "center",
+  },
+  replyContainer: {
+    borderLeftWidth: 2,
+    borderLeftColor: "#007bff",
+    paddingLeft: 10,
+    marginBottom: 5,
+  },
+  replySender: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#555",
+  },
+  replyContent: {
+    fontSize: 12,
+    color: "#555",
+  },
+  notificationContainer: {
+    alignSelf: "center", // Center the notification horizontally
+    backgroundColor: "#ffffff",
+    // padding: 10,
+    paddingHorizontal: 5,
+
+    borderRadius: 50,
+    marginVertical: 10,
+  },
+  notificationText: {
+    fontSize: 10,
+    color: "#555",
+    textAlign: "center", // Center the text within the container
   },
 });
 

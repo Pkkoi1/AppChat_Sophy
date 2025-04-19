@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,10 @@ import {
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import * as Clipboard from "@react-native-clipboard/clipboard";
 import { api } from "@/app/api/api"; // Import the API module
+import { useNavigation } from "@react-navigation/native";
 import MessagePopupStyle from "./MessagePopupStyle";
+import { SocketContext } from "@/app/socket/SocketContext";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const popupOptions = [
   {
@@ -40,6 +43,7 @@ const popupOptions = [
     iconColor: "#3B82F6",
   },
   { label: "Ghim", icon: "pin-outline", action: "pin", iconColor: "#F97316" },
+
   {
     label: "Nhắc hẹn",
     icon: "clock-outline",
@@ -93,7 +97,55 @@ const MessagePopup = ({
   messageReactions,
   setMessageReactions,
   senderId,
+  setMessages,
+  messages,
+  onReply,
+  conversationId, // Nhận conversationId
+  fetchMessages, // Nhận fetchMessages
 }) => {
+  const navigation = useNavigation(); // Initialize navigation
+  const socket = useContext(SocketContext);
+  const { handlerRefresh, userInfo } = useContext(AuthContext);
+
+  const handleCopyMessage = (message) => {
+    if (!message) {
+      console.warn("Không thể sao chép: Không có tin nhắn được chọn.");
+      Alert.alert("Lỗi", "Không thể sao chép tin nhắn này.");
+      return;
+    }
+
+    if (message.isRecall) {
+      console.warn("Không thể sao chép: Tin nhắn đã bị thu hồi.");
+      Alert.alert("Lỗi", "Không thể sao chép tin nhắn đã thu hồi.");
+      return;
+    }
+
+    let contentToCopy = "";
+    if (message.type === "text" || message.type === "notification") {
+      contentToCopy = message.content;
+    } else if (
+      message.type === "image" ||
+      message.type === "video" ||
+      message.type === "file"
+    ) {
+      contentToCopy = message.attachment?.url || message.attachment?.name || "";
+    }
+
+    if (contentToCopy) {
+      Clipboard.setStringAsync(contentToCopy);
+      console.log(`Đã sao chép ${message.type}:`, message.messageDetailId);
+      Alert.alert(
+        "Thành công",
+        `Đã sao chép ${getContentTypeLabel(message.type)}.`
+      );
+    } else {
+      console.warn(
+        `Không thể sao chép: Không có nội dung hợp lệ cho ${message.type}.`
+      );
+      Alert.alert("Lỗi", "Không thể sao chép tin nhắn này.");
+    }
+  };
+
   const handleEmojiPress = (emoji) => {
     if (selectedMessage) {
       const messageId = selectedMessage.messageDetailId;
@@ -112,9 +164,15 @@ const MessagePopup = ({
     switch (action) {
       case "reply":
         console.log("Trả lời tin nhắn:", selectedMessage.messageDetailId);
+        onReply(selectedMessage);
         break;
       case "forward":
-        console.log("Chuyển tiếp tin nhắn:", selectedMessage.messageDetailId);
+        if (selectedMessage) {
+          console.log("Chuyển tiếp tin nhắn:", selectedMessage.messageDetailId);
+          navigation.navigate("ShareMessage", {
+            message: selectedMessage,
+          });
+        }
         break;
       case "saveToCloud":
         console.log("Lưu vào Cloud:", selectedMessage.messageDetailId);
@@ -127,6 +185,15 @@ const MessagePopup = ({
               selectedMessage.messageDetailId
             );
             console.log("Tin nhắn đã được thu hồi:", response);
+
+            // Update the UI to mark the message as recalled
+            setMessages((prevMessages) =>
+              prevMessages.map((msg) =>
+                msg.messageDetailId === selectedMessage.messageDetailId
+                  ? { ...msg, isRecall: true }
+                  : msg
+              )
+            );
           } catch (error) {
             console.error(
               "Lỗi khi thu hồi tin nhắn:",
@@ -140,11 +207,54 @@ const MessagePopup = ({
         }
         break;
       case "copy":
-        Clipboard.setStringAsync(selectedMessage.content);
-        console.log("Đã sao chép tin nhắn:", selectedMessage.messageDetailId);
+        handleCopyMessage(selectedMessage); // Use the reusable function
         break;
       case "pin":
-        console.log("Ghim tin nhắn:", selectedMessage.messageDetailId);
+        if (selectedMessage) {
+          try {
+            if (selectedMessage.isPinned) {
+              console.log("Bỏ ghim tin nhắn:", selectedMessage.messageDetailId);
+              await api.unPinMessage(selectedMessage.messageDetailId);
+              if (socket && socket.connected) {
+                socket.emit("unPinMessage", {
+                  conversationId: selectedMessage.conversationId,
+                  messageId: selectedMessage.messageDetailId,
+                });
+                console.log("Socket event emitted: unPinMessage", {
+                  conversationId: selectedMessage.conversationId,
+                  messageId: selectedMessage.messageDetailId,
+                });
+              }
+              Alert.alert("Thành công", "Tin nhắn đã được bỏ ghim.");
+            } else {
+              console.log("Ghim tin nhắn:", selectedMessage.messageDetailId);
+              await api.pinMessage(selectedMessage.messageDetailId);
+              if (socket && socket.connected) {
+                socket.emit("pinMessage", {
+                  conversationId: selectedMessage.conversationId,
+                  messageId: selectedMessage.messageDetailId,
+                });
+                console.log("Socket event emitted: pinMessage", {
+                  conversationId: selectedMessage.conversationId,
+                  messageId: selectedMessage.messageDetailId,
+                });
+              }
+              Alert.alert("Thành công", "Tin nhắn đã được ghim.");
+            }
+            // Tải lại danh sách tin nhắn từ server
+            await fetchMessages();
+            handlerRefresh();
+          } catch (error) {
+            console.error(
+              "Lỗi khi xử lý ghim/bỏ ghim tin nhắn:",
+              error.response?.data || error.message
+            );
+            Alert.alert(
+              "Lỗi",
+              "Không thể xử lý ghim/bỏ ghim tin nhắn. Vui lòng thử lại."
+            );
+          }
+        }
         break;
       case "reminder":
         console.log(
@@ -177,6 +287,13 @@ const MessagePopup = ({
             selectedMessage.messageDetailId
           );
           console.log("Tin nhắn đã được xóa:", response);
+
+          // Update the UI to remove the deleted message
+          setMessages((prevMessages) =>
+            prevMessages.filter(
+              (msg) => msg.messageDetailId !== selectedMessage.messageDetailId
+            )
+          );
           Alert.alert("Thành công", "Tin nhắn đã được xóa.");
         } catch (error) {
           console.error(
@@ -193,10 +310,34 @@ const MessagePopup = ({
     setPopupVisible(false);
   };
 
-  // Filter options based on whether the message is recalled
+  // Filter options based on whether the message is recalled and its type
   const filteredOptions = selectedMessage?.isRecall
     ? popupOptions.filter((option) => option.action === "delete")
-    : popupOptions;
+    : popupOptions
+        .filter((option) => {
+          // Only show "Thu hồi" if the message was sent by the current user
+          if (option.action === "recall") {
+            return selectedMessage?.senderId === userInfo.userId;
+          }
+          // Only show "Sao chép" if the message type is "text"
+          if (option.action === "copy") {
+            return selectedMessage?.type === "text";
+          }
+          return true;
+        })
+        .map((option) => {
+          if (option.action === "pin" || option.action === "unpin") {
+            return {
+              ...option,
+              label: selectedMessage?.isPinned ? "Bỏ ghim" : "Ghim",
+              icon: selectedMessage?.isPinned
+                ? "pin-off-outline"
+                : "pin-outline",
+              action: "pin", // Keep the action as "pin" for both cases
+            };
+          }
+          return option;
+        });
 
   return (
     <Modal
@@ -264,9 +405,8 @@ const MessagePopup = ({
                       MessagePopupStyle.gridText,
                       item.color && { color: item.color },
                     ]}
-                  >
-                    {item.label}
-                  </Text>
+                  ></Text>
+                  <Text style={MessagePopupStyle.gridText}>{item.label}</Text>
                 </TouchableOpacity>
               )}
               style={MessagePopupStyle.gridContainer}

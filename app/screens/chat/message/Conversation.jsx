@@ -1,37 +1,74 @@
-import React, { useRef, useEffect, useState } from "react";
-import { View, FlatList, Text, Pressable } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  FlatList,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
 import ConversationStyle from "./ConversationStyle";
 import MessagePopup from "../../../features/messagePopup/MessagePopup";
+import PinnedMessage from "./PinnedMessage";
 
 const Conversation = ({
-  conversation,
+  messages,
+  setMessages,
+  notifications,
   senderId,
   highlightedMessageIds = [],
   highlightedMessageId,
   searchQuery = "",
   receiver,
+  onTyping,
+  onReply,
+  flatListRef, // Receive FlatList ref from MessageScreen
+  onScrollToMessage, // Receive scrollToMessage from MessageScreen
+  conversationId, // Nhận conversationId
+  fetchMessages, // Nhận fetchMessages
 }) => {
   const [popupVisible, setPopupVisible] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
+  const [pinnedModalVisible, setPinnedModalVisible] = useState(false);
+  const pinnedMessages = messages.filter((msg) => msg.isPinned);
 
   const handleLongPress = (message) => {
-    setSelectedMessage(message);
-    setPopupVisible(true);
+    if (message.type !== "notification") {
+      setSelectedMessage(message);
+      setPopupVisible(true);
+    }
   };
 
   return (
     <View style={ConversationStyle.conversationContainer}>
+      {pinnedMessages.length > 0 && (
+        <TouchableOpacity
+          style={ConversationStyle.pinnedButton}
+          onPress={() => setPinnedModalVisible(true)}
+        >
+          <View style={ConversationStyle.pinnedButtonContent}>
+            <Text style={ConversationStyle.pinnedButtonText}>
+              Tin nhắn của {pinnedMessages[pinnedMessages.length - 1].senderId}:{" "}
+              {pinnedMessages[pinnedMessages.length - 1].content}
+            </Text>
+            {pinnedMessages.length > 1 && (
+              <Text style={ConversationStyle.pinnedCount}>
+                +{pinnedMessages.length - 1}
+              </Text>
+            )}
+          </View>
+        </TouchableOpacity>
+      )}
       <FlatList
-        data={conversation.messages}
+        ref={flatListRef} // Use FlatList ref passed from MessageScreen
+        data={messages}
         keyExtractor={(item) => item.messageDetailId || item.message_id}
         renderItem={({ item, index }) => {
           const prevMessage =
-            index < conversation.messages.length - 1
-              ? conversation.messages[index + 1]
-              : null;
+            index < messages.length - 1 ? messages[index + 1] : null;
 
           const shouldShowTimestamp =
             !prevMessage ||
@@ -56,7 +93,7 @@ const Conversation = ({
                   message={item}
                   receiver={receiver}
                   isSender={item.senderId === senderId}
-                  isHighlighted={item.messageDetailId === highlightedMessageId}
+                  isHighlighted={item.messageDetailId === highlightedMessageId} // Highlight the message
                   searchQuery={
                     highlightedMessageIds.includes(item.messageDetailId)
                       ? searchQuery
@@ -64,20 +101,26 @@ const Conversation = ({
                   }
                   isFirstMessageFromSender={
                     index === 0 ||
-                    conversation.messages[index - 1].senderId !== item.senderId
+                    messages[index - 1].senderId !== item.senderId
                   }
+                  onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessageItem
                 />
               </Pressable>
             </View>
           );
         }}
         inverted={true}
-        initialNumToRender={10} // Render 10 tin nhắn ban đầu
-        maxToRenderPerBatch={10} // Render tối đa 10 tin nhắn mỗi lần
-        // windowSize={5} // Giữ ít item trong bộ nhớ
-        // removeClippedSubviews={true} // Loại bỏ item ngoài màn hình
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
         keyboardShouldPersistTaps="always"
       />
+      {onTyping && (
+        <View style={ConversationStyle.typingIndicatorContainer}>
+          <Text style={ConversationStyle.typingIndicatorText}>
+            Đang soạn tin ...
+          </Text>
+        </View>
+      )}
       <MessagePopup
         popupVisible={popupVisible}
         setPopupVisible={setPopupVisible}
@@ -86,7 +129,25 @@ const Conversation = ({
         messageReactions={messageReactions}
         setMessageReactions={setMessageReactions}
         senderId={senderId}
+        setMessages={setMessages}
+        messages={messages}
+        onReply={onReply}
+        onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessagePopup
+        conversationId={conversationId} // Truyền conversationId
+        fetchMessages={fetchMessages} // Truyền fetchMessages
       />
+      <Modal
+        visible={pinnedModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setPinnedModalVisible(false)}
+      >
+        <PinnedMessage
+          pinnedMessages={pinnedMessages}
+          onClose={() => setPinnedModalVisible(false)}
+          onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to PinnedMessage
+        />
+      </Modal>
     </View>
   );
 };

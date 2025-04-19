@@ -1,7 +1,7 @@
 -- Merging decision tree log ---
 manifest
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:1:1-38:12
-MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:1:1-38:12
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:1:1-39:12
+MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:1:1-39:12
 INJECTED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:1:1-7:12
 INJECTED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:1:1-7:12
@@ -26,6 +26,7 @@ MERGED from [:react-native-reanimated] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\
 MERGED from [:react-native-sms] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-sms\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:react-native-vector-icons] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-vector-icons\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-asset] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-asset\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
+MERGED from [:expo-av] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-av\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-barcode-scanner] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-barcode-scanner\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-9:12
 MERGED from [:expo-blur] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-blur\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-7:12
 MERGED from [:expo-camera] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-camera\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-10:12
@@ -59,6 +60,8 @@ MERGED from [com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\cac
 MERGED from [androidx.credentials:credentials:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ae2d027c49a5d615d242244850ef036a\transformed\credentials-1.2.0-rc01\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:17:1-44:12
 MERGED from [com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:17:1-40:12
+MERGED from [com.google.android.exoplayer:exoplayer:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\41391fbc5ab5c60e382b40eb37f18894\transformed\exoplayer-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-ui:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\03ba88f17ef10aa5dd9d1ba75fd149be\transformed\exoplayer-ui-2.18.1\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.recyclerview:recyclerview:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bcb64d724631ae23ec19b9162845629e\transformed\recyclerview-1.3.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.viewpager2:viewpager2:1.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\33c25067dfe58cea2c2bfabc95d52448\transformed\viewpager2-1.1.0\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.mlkit:barcode-scanning:17.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4194145ecbde87b6f758abfa08a548b0\transformed\barcode-scanning-17.2.0\AndroidManifest.xml:2:1-7:12
@@ -148,7 +151,12 @@ MERGED from [androidx.browser:browser:1.6.0] C:\Users\ASUS\.gradle\caches\8.10.2
 MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\271776abd03b0e908159309223b8a252\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5afcb85b44c16494e31bb53fce9a745c\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.customview:customview:1.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8f0616cc5865f9c6a0421ea9d6baed3e\transformed\customview-1.1.0\AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.media:media:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b5b80aea95284f73f764a4355dd2a3ab\transformed\media-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [com.google.android.exoplayer:exoplayer-dash:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7c4110a81f1633b828441d4c5e5be629\transformed\exoplayer-dash-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-hls:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e25e2bc4b0beec798569fb8ad06f5cb3\transformed\exoplayer-hls-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-rtsp:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\01d7fc6448ece71ca3216da1ba18bdc0\transformed\exoplayer-rtsp-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-smoothstreaming:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\2e3c5ad4e1765357202021c7cbf472e6\transformed\exoplayer-smoothstreaming-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4d39b9e16d34ff6061caa9d6df5fa3bd\transformed\exoplayer-core-2.18.1\AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.media:media:1.4.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e8e8152bd19e8b8fd0228ab103f81d0\transformed\media-1.4.3\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\50aef321753faf9e3cccfce5dcc6cb18\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8a29520ece16aa24f8cf1577aa6b3669\transformed\graphics-path-1.0.1\AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.core:core:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\AndroidManifest.xml:17:1-30:12
@@ -178,6 +186,7 @@ MERGED from [androidx.fragment:fragment:1.6.1] C:\Users\ASUS\.gradle\caches\8.10
 MERGED from [androidx.fragment:fragment-ktx:1.6.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\43adc128e8c70bb7a1a3192ec18dcfec\transformed\fragment-ktx-1.6.1\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a655532b5a3c4bdfd5a4cc7d8eec11d\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:17:1-23:12
 MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5c3522a3191b3be7fd2200eba2296c6c\transformed\core-ktx-1.13.1\AndroidManifest.xml:2:1-7:12
+MERGED from [com.google.android.exoplayer:extension-okhttp:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e5127f7c89097c9cb7441ba084cc6b72\transformed\extension-okhttp-2.18.1\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:17:1-55:12
 MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3c9c605c665aed3b6fd25381e12d15f7\transformed\startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
 MERGED from [androidx.tracing:tracing:1.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\56290dfe2fa9035483aee968f458f61d\transformed\tracing-1.2.0\AndroidManifest.xml:17:1-22:12
@@ -200,6 +209,11 @@ MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\AS
 MERGED from [com.google.firebase:firebase-components:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\51f117c6fb33235f61a99bb8f6193e37\transformed\firebase-components-18.0.0\AndroidManifest.xml:15:1-20:12
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9431dcee1468f6cae0c199639ad7ad37\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.android.datatransport:transport-api:3.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0a3c8297222aa53920a95ab5dc77e32e\transformed\transport-api-3.2.0\AndroidManifest.xml:15:1-20:12
+MERGED from [com.google.android.exoplayer:exoplayer-datasource:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32ca613f4518713240f6641ece14eb40\transformed\exoplayer-datasource-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-database:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4faa6c9b97780f4c2897c30cf0418261\transformed\exoplayer-database-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-extractor:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\964e484abff1441d25d783aaec3631a2\transformed\exoplayer-extractor-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-decoder:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\37e2acb17f6998d45bd7d5638ff4d0bf\transformed\exoplayer-decoder-2.18.1\AndroidManifest.xml:17:1-24:12
+MERGED from [com.google.android.exoplayer:exoplayer-common:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6df6beedb83e9a490cadecd6cdbb5eea\transformed\exoplayer-common-2.18.1\AndroidManifest.xml:17:1-26:12
 MERGED from [com.github.bumptech.glide:gifdecoder:4.16.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4ccce8b3e2f0dc04bfef89556c3aa069\transformed\gifdecoder-4.16.0\AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\d8ce203bc8d32321f2af63d2117dd200\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3a268a862ef0420d6a563dbe26bda81b\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
@@ -253,12 +267,16 @@ MERGED from [com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Us
 MERGED from [com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:23:5-67
 	android:name
 		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:4:20-62
+uses-permission#android.permission.MODIFY_AUDIO_SETTINGS
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:3-77
+	android:name
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:20-75
 uses-permission#android.permission.READ_CONTACTS
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:3-69
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:3-69
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:20-67
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:20-67
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:3-77
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:3-77
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:5-80
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:5-80
 MERGED from [:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:5-80
@@ -266,33 +284,33 @@ MERGED from [:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_m
 MERGED from [:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:5-80
 MERGED from [:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:5-80
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:20-75
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:20-75
 uses-permission#android.permission.RECORD_AUDIO
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:3-68
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:3-68
 MERGED from [:expo-camera] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-camera\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-71
 MERGED from [:expo-camera] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-camera\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-71
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:20-66
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:20-66
 uses-permission#android.permission.SYSTEM_ALERT_WINDOW
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:3-75
-MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:3-75
-MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:3-75
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:3-75
+MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:3-75
+MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:3-75
 MERGED from [com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:16:5-78
 MERGED from [com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:16:5-78
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:20-73
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:20-73
 uses-permission#android.permission.VIBRATE
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:3-63
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:3-63
 MERGED from [:expo-haptics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-haptics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-66
 MERGED from [:expo-haptics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-haptics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-66
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:20-61
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:20-61
 uses-permission#android.permission.WRITE_CONTACTS
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:3-70
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:3-70
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:20-68
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:20-68
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:3-78
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:12:3-78
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-81
 MERGED from [:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-81
 MERGED from [:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:5-81
@@ -300,9 +318,9 @@ MERGED from [:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_m
 MERGED from [:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:5-81
 MERGED from [:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:5-81
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:20-76
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:12:20-76
 queries
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:12:3-18:13
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:13:3-19:13
 MERGED from [:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-35:15
 MERGED from [:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-35:15
 MERGED from [:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-9:15
@@ -322,23 +340,23 @@ MERGED from [androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gra
 MERGED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:9:5-20:15
 MERGED from [com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:9:5-20:15
 intent#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+data:scheme:https
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:13:5-17:14
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:14:5-18:14
 action#android.intent.action.VIEW
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:14:7-58
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:14:15-56
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
 category#android.intent.category.BROWSABLE
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-67
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:17-65
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
 data
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-37
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
 	android:scheme
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:13-35
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
 application
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:3-37:17
-MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:3-37:17
-MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:3-37:17
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:3-38:17
+MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:3-38:17
+MERGED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:3-38:17
 INJECTED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:6:5-162
 MERGED from [:react-native-community_datetimepicker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-community\datetimepicker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-20
 MERGED from [:react-native-community_datetimepicker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-community\datetimepicker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-20
@@ -445,89 +463,89 @@ MERGED from [com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\ca
 	android:extractNativeLibs
 		INJECTED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml
 	android:requestLegacyExternalStorage
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:248-291
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:248-291
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:248-291
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:248-291
 	tools:ignore
 		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:6:75-114
 	android:roundIcon
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:116-161
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:116-161
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:116-161
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:116-161
 	android:icon
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:81-115
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:81-115
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:81-115
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:81-115
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:221-247
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:221-247
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:221-247
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:221-247
 	android:label
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:48-80
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:48-80
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:48-80
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:48-80
 	tools:targetApi
 		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:6:54-74
 	android:allowBackup
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:162-188
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:162-188
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:162-188
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:162-188
 	android:theme
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:189-220
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:189-220
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:189-220
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:189-220
 	tools:replace
 		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:6:115-159
 	android:usesCleartextTraffic
 		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:6:18-53
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:16-47
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:19:16-47
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:16-47
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:16-47
 meta-data#expo.modules.updates.ENABLED
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:5-83
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:5-83
 	android:value
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:60-81
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:60-81
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:16-59
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:16-59
 meta-data#expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:5-105
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:5-105
 	android:value
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:81-103
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:81-103
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:16-80
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:16-80
 meta-data#expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:5-99
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:5-99
 	android:value
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:80-97
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:80-97
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:16-79
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:16-79
 activity#com.anonymous.ChatApp_Sophy.MainActivity
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:5-36:16
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:5-37:16
 	android:screenOrientation
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:280-316
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:280-316
 	android:launchMode
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:135-166
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:135-166
 	android:windowSoftInputMode
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:167-209
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:167-209
 	android:exported
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:256-279
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:256-279
 	android:configChanges
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:44-134
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:44-134
 	android:theme
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:210-255
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:210-255
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:15-43
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:15-43
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:7-27:23
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:25:7-28:23
 action#android.intent.action.MAIN
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:25:9-60
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:9-60
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:25:17-58
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:17-58
 category#android.intent.category.LAUNCHER
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:9-68
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:27:9-68
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:19-66
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:27:19-66
 intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.BROWSABLE+category:name:android.intent.category.DEFAULT+data:scheme:com.anonymous.ChatApp_Sophy+data:scheme:exp+chatappsophy+data:scheme:myapp
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:28:7-35:23
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:29:7-36:23
 category#android.intent.category.DEFAULT
-ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:30:9-67
+ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
 	android:name
-		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:30:19-65
+		ADDED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
 uses-sdk
 INJECTED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml
@@ -574,6 +592,8 @@ MERGED from [:react-native-vector-icons] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Soph
 MERGED from [:react-native-vector-icons] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-vector-icons\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-asset] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-asset\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-asset] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-asset\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-av] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-av\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
+MERGED from [:expo-av] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-av\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-barcode-scanner] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-barcode-scanner\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-barcode-scanner] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-barcode-scanner\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
 MERGED from [:expo-blur] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-blur\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:5:5-44
@@ -640,6 +660,10 @@ MERGED from [androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\
 MERGED from [androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:21:5-44
 MERGED from [com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.exoplayer:exoplayer:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\41391fbc5ab5c60e382b40eb37f18894\transformed\exoplayer-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\41391fbc5ab5c60e382b40eb37f18894\transformed\exoplayer-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-ui:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\03ba88f17ef10aa5dd9d1ba75fd149be\transformed\exoplayer-ui-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-ui:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\03ba88f17ef10aa5dd9d1ba75fd149be\transformed\exoplayer-ui-2.18.1\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.recyclerview:recyclerview:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bcb64d724631ae23ec19b9162845629e\transformed\recyclerview-1.3.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.recyclerview:recyclerview:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bcb64d724631ae23ec19b9162845629e\transformed\recyclerview-1.3.1\AndroidManifest.xml:20:5-44
 MERGED from [androidx.viewpager2:viewpager2:1.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\33c25067dfe58cea2c2bfabc95d52448\transformed\viewpager2-1.1.0\AndroidManifest.xml:5:5-44
@@ -818,8 +842,18 @@ MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\ASUS\.
 MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5afcb85b44c16494e31bb53fce9a745c\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.customview:customview:1.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8f0616cc5865f9c6a0421ea9d6baed3e\transformed\customview-1.1.0\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.customview:customview:1.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8f0616cc5865f9c6a0421ea9d6baed3e\transformed\customview-1.1.0\AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.media:media:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b5b80aea95284f73f764a4355dd2a3ab\transformed\media-1.0.0\AndroidManifest.xml:20:5-44
-MERGED from [androidx.media:media:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b5b80aea95284f73f764a4355dd2a3ab\transformed\media-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [com.google.android.exoplayer:exoplayer-dash:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7c4110a81f1633b828441d4c5e5be629\transformed\exoplayer-dash-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-dash:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7c4110a81f1633b828441d4c5e5be629\transformed\exoplayer-dash-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-hls:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e25e2bc4b0beec798569fb8ad06f5cb3\transformed\exoplayer-hls-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-hls:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e25e2bc4b0beec798569fb8ad06f5cb3\transformed\exoplayer-hls-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-rtsp:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\01d7fc6448ece71ca3216da1ba18bdc0\transformed\exoplayer-rtsp-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-rtsp:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\01d7fc6448ece71ca3216da1ba18bdc0\transformed\exoplayer-rtsp-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-smoothstreaming:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\2e3c5ad4e1765357202021c7cbf472e6\transformed\exoplayer-smoothstreaming-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-smoothstreaming:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\2e3c5ad4e1765357202021c7cbf472e6\transformed\exoplayer-smoothstreaming-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4d39b9e16d34ff6061caa9d6df5fa3bd\transformed\exoplayer-core-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4d39b9e16d34ff6061caa9d6df5fa3bd\transformed\exoplayer-core-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.media:media:1.4.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e8e8152bd19e8b8fd0228ab103f81d0\transformed\media-1.4.3\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.media:media:1.4.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e8e8152bd19e8b8fd0228ab103f81d0\transformed\media-1.4.3\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\50aef321753faf9e3cccfce5dcc6cb18\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\50aef321753faf9e3cccfce5dcc6cb18\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8a29520ece16aa24f8cf1577aa6b3669\transformed\graphics-path-1.0.1\AndroidManifest.xml:5:5-44
@@ -878,6 +912,8 @@ MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\ASU
 MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a655532b5a3c4bdfd5a4cc7d8eec11d\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
 MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5c3522a3191b3be7fd2200eba2296c6c\transformed\core-ktx-1.13.1\AndroidManifest.xml:5:5-44
 MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5c3522a3191b3be7fd2200eba2296c6c\transformed\core-ktx-1.13.1\AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.exoplayer:extension-okhttp:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e5127f7c89097c9cb7441ba084cc6b72\transformed\extension-okhttp-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:extension-okhttp:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e5127f7c89097c9cb7441ba084cc6b72\transformed\extension-okhttp-2.18.1\AndroidManifest.xml:20:5-22:41
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
 MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3c9c605c665aed3b6fd25381e12d15f7\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
@@ -922,6 +958,16 @@ MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\User
 MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9431dcee1468f6cae0c199639ad7ad37\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.datatransport:transport-api:3.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0a3c8297222aa53920a95ab5dc77e32e\transformed\transport-api-3.2.0\AndroidManifest.xml:18:5-44
 MERGED from [com.google.android.datatransport:transport-api:3.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0a3c8297222aa53920a95ab5dc77e32e\transformed\transport-api-3.2.0\AndroidManifest.xml:18:5-44
+MERGED from [com.google.android.exoplayer:exoplayer-datasource:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32ca613f4518713240f6641ece14eb40\transformed\exoplayer-datasource-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-datasource:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32ca613f4518713240f6641ece14eb40\transformed\exoplayer-datasource-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-database:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4faa6c9b97780f4c2897c30cf0418261\transformed\exoplayer-database-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-database:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4faa6c9b97780f4c2897c30cf0418261\transformed\exoplayer-database-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-extractor:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\964e484abff1441d25d783aaec3631a2\transformed\exoplayer-extractor-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-extractor:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\964e484abff1441d25d783aaec3631a2\transformed\exoplayer-extractor-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-decoder:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\37e2acb17f6998d45bd7d5638ff4d0bf\transformed\exoplayer-decoder-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-decoder:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\37e2acb17f6998d45bd7d5638ff4d0bf\transformed\exoplayer-decoder-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-common:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6df6beedb83e9a490cadecd6cdbb5eea\transformed\exoplayer-common-2.18.1\AndroidManifest.xml:20:5-22:41
+MERGED from [com.google.android.exoplayer:exoplayer-common:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6df6beedb83e9a490cadecd6cdbb5eea\transformed\exoplayer-common-2.18.1\AndroidManifest.xml:20:5-22:41
 MERGED from [com.github.bumptech.glide:gifdecoder:4.16.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4ccce8b3e2f0dc04bfef89556c3aa069\transformed\gifdecoder-4.16.0\AndroidManifest.xml:5:5-7:41
 MERGED from [com.github.bumptech.glide:gifdecoder:4.16.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4ccce8b3e2f0dc04bfef89556c3aa069\transformed\gifdecoder-4.16.0\AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\d8ce203bc8d32321f2af63d2117dd200\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
@@ -976,10 +1022,14 @@ MERGED from [com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.g
 MERGED from [com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:7:5-79
 MERGED from [com.google.android.recaptcha:recaptcha:18.6.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\502d5fbd12e93c593a3108fe24cfe3ce\transformed\recaptcha-18.6.1\AndroidManifest.xml:8:5-79
 MERGED from [com.google.android.recaptcha:recaptcha:18.6.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\502d5fbd12e93c593a3108fe24cfe3ce\transformed\recaptcha-18.6.1\AndroidManifest.xml:8:5-79
+MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4d39b9e16d34ff6061caa9d6df5fa3bd\transformed\exoplayer-core-2.18.1\AndroidManifest.xml:24:5-79
+MERGED from [com.google.android.exoplayer:exoplayer-core:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4d39b9e16d34ff6061caa9d6df5fa3bd\transformed\exoplayer-core-2.18.1\AndroidManifest.xml:24:5-79
 MERGED from [com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:22:5-79
 MERGED from [com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:22:5-79
 MERGED from [com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:20:5-79
 MERGED from [com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:20:5-79
+MERGED from [com.google.android.exoplayer:exoplayer-common:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6df6beedb83e9a490cadecd6cdbb5eea\transformed\exoplayer-common-2.18.1\AndroidManifest.xml:24:5-79
+MERGED from [com.google.android.exoplayer:exoplayer-common:2.18.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6df6beedb83e9a490cadecd6cdbb5eea\transformed\exoplayer-common-2.18.1\AndroidManifest.xml:24:5-79
 	android:name
 		ADDED from [:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:22-76
 meta-data#firebase_crashlytics_collection_enabled

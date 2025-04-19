@@ -6,11 +6,13 @@ import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import RenderGroupAvatar from "@/app/components/group/RenderGroupAvatar";
 import { AuthContext } from "@/app/auth/AuthContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import { api } from "@/app/api/api";
 
 const DEFAULT_AVATAR = "https://example.com/default-avatar.png"; // Replace with actual default avatar URL
 
 const Inbox = ({ conversation }) => {
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, updateBackground, handlerRefresh } =
+    useContext(AuthContext);
 
   const {
     groupName,
@@ -20,9 +22,11 @@ const Inbox = ({ conversation }) => {
     receiverId,
     isGroup,
     groupMembers,
+    unreadCount, // Access unreadCount from conversation
   } = conversation;
+
   const navigation = useNavigation();
-  const [receiver, setReceiver] = useState(null); // Initialize to null
+  const [receiver, setReceiver] = useState(null);
   const [senderName, setSenderName] = useState("");
   const [uid, setUid] = useState("");
 
@@ -61,8 +65,21 @@ const Inbox = ({ conversation }) => {
     return message;
   };
 
+  const readMessage = async (conversationId) => {
+    try {
+      const response = await api.readMessage(conversationId);
+      handlerRefresh();
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+    }
+  };
+
   const getMessageContent = () => {
-    if (!lastMessage) return "No messages yet";
+    // if (!lastMessage) return "No messages yet";
+
+    if (lastMessage.isRecall) {
+      return "Đã thu hồi một tin nhắn";
+    }
 
     switch (lastMessage.type) {
       case "ADD_MEMBER":
@@ -94,7 +111,7 @@ const Inbox = ({ conversation }) => {
       case "video":
         return `[Video]`;
       case "image":
-        return `[Hình ản]`;
+        return `[Hình ảnh]`;
       case "audio":
         return `[Tin nhắn thoại]`;
       case "sticker":
@@ -168,14 +185,22 @@ const Inbox = ({ conversation }) => {
     isGroup,
   ]);
 
+  // Check if the current user has unread messages
+  const userUnread = unreadCount?.find(
+    (entry) => entry.userId === userInfo.userId
+  );
+  const hasUnreadMessages = userUnread?.count > 0;
+
   return (
     <TouchableOpacity
-      onPress={() =>
+      onPress={() => {
+        readMessage(conversationId); // Mark the message as read when pressed
+        updateBackground(conversation?.background); // Update background before navigating
         navigation.navigate("Chat", {
           conversation: conversation,
           receiver: isGroup ? null : receiver,
-        })
-      }
+        });
+      }}
       activeOpacity={0.6}
       style={styles.container}
     >
@@ -184,7 +209,7 @@ const Inbox = ({ conversation }) => {
           groupAvatarUrl ? (
             <Image source={{ uri: groupAvatarUrl }} style={styles.avatar} />
           ) : (
-            <RenderGroupAvatar members={groupMembers} /> // Sử dụng RenderGroupAvatar
+            <RenderGroupAvatar members={groupMembers} />
           )
         ) : receiver?.urlavatar ? (
           <Image source={{ uri: receiver?.urlavatar }} style={styles.avatar} />
@@ -208,11 +233,27 @@ const Inbox = ({ conversation }) => {
             {getTimeDifference(lastMessage?.createdAt)}
           </Text>
         </View>
-        <Text style={styles.message} numberOfLines={1} ellipsizeMode="tail">
-          {lastMessage?.senderId
-            ? `${senderName}: ${getMessageContent()}`
-            : lastMessage?.content || "No messages yet"}
-        </Text>
+        <View style={styles.messageRow}>
+          <Text
+            style={[
+              styles.message,
+              hasUnreadMessages && styles.unreadMessage, // Apply bold styling if unread
+            ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
+            {lastMessage?.senderId
+              ? `${senderName}: ${getMessageContent()}`
+              : lastMessage?.isRecall
+              ? "Đã thu hồi một tin nhắn"
+              : lastMessage?.content || "No messages yet"}
+          </Text>
+          {hasUnreadMessages && (
+            <View style={styles.unreadBadge}>
+              <Text style={styles.unreadBadgeText}>{userUnread.count}</Text>
+            </View>
+          )}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -251,11 +292,34 @@ const styles = StyleSheet.create({
     color: "gray",
     fontSize: 12,
   },
+  messageRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 4,
+  },
   message: {
     color: "gray",
     fontSize: 14,
-    marginTop: 4,
-    maxWidth: "90%",
+    maxWidth: "80%",
+  },
+  unreadMessage: {
+    fontWeight: "bold", // Bold styling for unread messages
+    color: "black",
+  },
+  unreadBadge: {
+    backgroundColor: "red",
+    borderRadius: 12,
+    width: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+  },
+  unreadBadgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 });
 

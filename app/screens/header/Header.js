@@ -16,49 +16,13 @@ const HeadView = ({ page, userInfo }) => {
   const [isSearching, setIsSearching] = useState(false);
   const navigation = useNavigation();
 
-  const handleSearch = async () => {
-    if (!search || search.trim() === "") {
-      Alert.alert("Thông báo", "Vui lòng nhập số điện thoại cần tìm");
-      return;
-    }
   
-    try {
-      setIsSearching(true);
-      const phoneNumber = search.trim();
+     
   
-      // Gọi API tìm kiếm người dùng theo số điện thoại
-      const result = await api.getUserByPhone(phoneNumber);
-  
-      if (result) {
-        // Lấy danh sách bạn bè
-        let requestSent = "";
-        try {
-          const friends = await api.getFriends();
-          const isFriend = friends.some((f) => f._id === result._id);
-          requestSent = isFriend ? "friend" : "";
-        } catch (e) {
-          // Nếu lỗi khi lấy danh sách bạn bè, giữ requestSent là ""
-          console.error("Lỗi khi kiểm tra bạn bè:", e);
-        }
-  
-        navigation.navigate("UserProfile", {
-          friend: result,
-          requestSent,
-        });
-  
-        setSearch("");
-      }
-    } catch (error) {
-      console.error("Lỗi khi tìm kiếm người dùng:", error);
-      Alert.alert(
-        "Không tìm thấy",
-        "Không tìm thấy người dùng nào với số điện thoại này",
-        [{ text: "Đóng", style: "cancel" }]
-      );
-    } finally {
-      setIsSearching(false);
-    }
+  const handleSearch = () => {
+    navigation.navigate("SearchUser"); // Chuyển sang giao diện SearchUser
   };
+  
 
   const renderPageIcons = () => {
     switch (page) {
@@ -188,6 +152,7 @@ const HeadView = ({ page, userInfo }) => {
             keyboardType="phone-pad"
             returnKeyType="search"
             onSubmitEditing={handleSearch}
+            onPress={handleSearch}
           />
         </>
       )}

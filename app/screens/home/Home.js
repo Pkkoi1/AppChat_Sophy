@@ -11,9 +11,14 @@ import Footer from "../footer/Footer";
 import HomeStyle from "./HomeStyle";
 import { AuthContext } from "../../auth/AuthContext"; // Import useAuth hook
 import Loading from "@/app/components/loading/Loading";
+import { SocketContext } from "@/app/socket/SocketContext";
 
 const Home = ({ route }) => {
-  const { userInfo } = useContext(AuthContext);
+  const socket = useContext(SocketContext); // Use SocketContext
+
+  const { userInfo, handlerRefresh } = useContext(AuthContext);
+  const [refreshing, setRefreshing] = useState(false);
+
   // Lấy thông tin người dùng từ AuthContext
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -59,6 +64,27 @@ const Home = ({ route }) => {
       setIndex(screenIndex);
     }
   };
+
+  if (socket) {
+    socket.on("newMessage", async () => {
+      console.log("New message received. Refreshing conversations...");
+      await handlerRefresh(); // Refresh the conversation list
+    });
+  }
+  useEffect(() => {
+    if (socket) {
+      // Listen for newMessage event
+      socket.on("newMessage", async () => {
+        console.log("New message received. Refreshing conversations...");
+        await handlerRefresh(); // Refresh the conversation list
+      });
+
+      // Cleanup listener on unmount
+      return () => {
+        socket.off("newMessage");
+      };
+    }
+  }, []);
 
   useEffect(() => {
     if (userInfo) {
