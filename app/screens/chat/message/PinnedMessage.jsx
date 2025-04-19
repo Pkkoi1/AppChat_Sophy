@@ -56,8 +56,8 @@ const PinnedMessage = ({
         Tin nhắn của{" "}
         {item.senderId === userInfo.userId
           ? userInfo.fullname
-          : receiver?.fullname || "Người dùng"}:{" "}
-        {item.content}
+          : receiver?.fullname || "Người dùng"}
+        : {item.content}
       </Text>
     </TouchableOpacity>
   );

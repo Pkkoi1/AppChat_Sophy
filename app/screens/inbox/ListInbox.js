@@ -48,11 +48,6 @@ const ListInbox = () => {
           await handlerRefresh(); // Refresh the conversation list
         });
       }
-      // Cleanup listener on unmount
-      return () => {
-        socket.off("newMessage");
-        socket.off("newConversation");
-      };
     }
   }, []);
 

@@ -24,10 +24,14 @@ const MessageItemStyle = StyleSheet.create({
     backgroundColor: "#d4f1ff",
     alignSelf: "flex-end",
     marginRight: 10,
+    borderColor: "#007bff",
+    borderWidth: 0.5,
   },
   receiver: {
     backgroundColor: "#FFF",
     alignSelf: "flex-start",
+    borderColor: "#f0f0f0",
+    borderWidth: 0.5,
   },
   receiverWithAvatar: {
     // marginLeft: 45, // Để hộp tin nhắn không quá sát avatar
