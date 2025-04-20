@@ -73,6 +73,8 @@ const MessageScreen = ({ route, navigation }) => {
         flatListRef
       );
       socket.on("newMessage", async () => {
+        api.readMessage(conversation.conversationId);
+
         await handlerRefresh();
       });
       if (socket) {
@@ -187,13 +189,8 @@ const MessageScreen = ({ route, navigation }) => {
         createdAt: new Date().toISOString(),
         isReply: !!replyingTo,
         messageReplyId: replyingTo?.messageDetailId || null,
-        replyData: replyingTo
-          ? {
-              content: replyingTo.content,
-              type: replyingTo.type,
-              senderId: replyingTo.senderId,
-            }
-          : null, // Include reply data if replying
+        replyData: replyingTo,
+
         sendStatus: "sending", // Initial status
       };
 
@@ -212,27 +209,12 @@ const MessageScreen = ({ route, navigation }) => {
               content: pseudoMessage.content,
             });
           }
-        }
-
-        if (socket && socket.connected) {
-          socket.emit("newMessage", {
-            conversationId: pseudoMessage.conversationId,
-            message: pseudoMessage,
-            sender: {
-              userId: userInfo.userId,
-              fullname: userInfo.fullname,
-              avatar: userInfo.urlavatar,
-            },
-          });
-
-          // Remove the pseudoMessage immediately after emitting the socket event
+          // fetchMessages(); // Refresh messages after sending
           setMessages((prev) =>
             prev.filter(
               (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
             )
           );
-
-          console.log("Gửi tin nhắn qua socket:", pseudoMessage);
         }
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
@@ -241,7 +223,7 @@ const MessageScreen = ({ route, navigation }) => {
         setReplyingTo(null); // Clear reply state after sending
       }
     },
-    [conversation, userInfo.userId, socket, replyingTo]
+    [conversation, userInfo.userId, replyingTo]
   );
 
   const handleSendImage = useCallback(
@@ -289,33 +271,18 @@ const MessageScreen = ({ route, navigation }) => {
             imageBase64: imageBase64,
           });
           console.log("Gửi ảnh thành công!");
-        }
-        if (socket && socket.connected) {
-          socket.emit("newMessage", {
-            conversationId: pseudoMessage.conversationId,
-            message: pseudoMessage,
-            sender: {
-              userId: userInfo.userId,
-              fullname: userInfo.fullname,
-              avatar: userInfo.urlavatar,
-            },
-          });
-
-          // Remove the pseudoMessage immediately after emitting the socket event
           setMessages((prev) =>
             prev.filter(
               (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
             )
           );
-
-          console.log("Gửi hình qua socket:", pseudoMessage);
         }
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);
         alert("Đã xảy ra lỗi khi gửi ảnh. Vui lòng thử lại.");
       }
     },
-    [conversation, userInfo.userId, socket]
+    [conversation, userInfo.userId]
   );
 
   const handleSendFile = useCallback(
@@ -356,26 +323,11 @@ const MessageScreen = ({ route, navigation }) => {
             fileName: message.fileName,
             fileType: message.mimeType,
           });
-          if (socket && socket.connected) {
-            socket.emit("newMessage", {
-              conversationId: pseudoMessage.conversationId,
-              message: pseudoMessage,
-              sender: {
-                userId: userInfo.userId,
-                fullname: userInfo.fullname,
-                avatar: userInfo.urlavatar,
-              },
-            });
-
-            // Remove the pseudoMessage immediately after emitting the socket event
-            setMessages((prev) =>
-              prev.filter(
-                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-              )
-            );
-
-            console.log("Gửi tin nhắn qua socket:", pseudoMessage);
-          }
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
           console.log("Gửi file thành công!");
         } catch (error) {
           console.error("Lỗi khi gửi file:", error);
@@ -411,32 +363,17 @@ const MessageScreen = ({ route, navigation }) => {
         });
         console.log("Gửi video thành công:", response);
 
-        if (socket && socket.connected) {
-          socket.emit("newMessage", {
-            conversationId: pseudoMessage.conversationId,
-            message: pseudoMessage,
-            sender: {
-              userId: userInfo.userId,
-              fullname: userInfo.fullname,
-              avatar: userInfo.urlavatar,
-            },
-          });
-
-          // Remove the pseudoMessage immediately after emitting the socket event
-          setMessages((prev) =>
-            prev.filter(
-              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-            )
-          );
-
-          console.log("Gửi video qua socket:", pseudoMessage);
-        }
+        setMessages((prev) =>
+          prev.filter(
+            (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+          )
+        );
       } catch (error) {
         console.error("Lỗi khi gửi video:", error);
         Alert.alert("Lỗi", "Không thể gửi video. Vui lòng thử lại.");
       }
     },
-    [conversation, userInfo.userId, socket]
+    [conversation, userInfo.userId]
   );
 
   const handleReply = (message) => {
