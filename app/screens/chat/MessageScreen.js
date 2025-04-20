@@ -150,14 +150,35 @@ const MessageScreen = ({ route, navigation }) => {
     }
   }, [messages, sended]);
 
+  const checkStorageSpace = async () => {
+    try {
+      const info = await FileSystem.getInfoAsync(FileSystem.documentDirectory);
+      if (info.exists && info.totalSpace && info.freeSpace) {
+        const freeSpaceMB = info.freeSpace / (1024 * 1024); // Chuyển đổi sang MB
+        console.log(`Dung lượng trống: ${freeSpaceMB.toFixed(2)} MB`);
+        return freeSpaceMB > 10; // Đảm bảo còn ít nhất 10MB trống
+      }
+      return true; // Nếu không lấy được thông tin, giả định đủ bộ nhớ
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra bộ nhớ:", error);
+      return true; // Nếu lỗi, giả định đủ bộ nhớ
+    }
+  };
+
   const fetchMessages = async () => {
     try {
       setIsLoading(true);
 
+      // Kiểm tra bộ nhớ trước khi tải tin nhắn
+      const hasEnoughSpace = await checkStorageSpace();
+      if (!hasEnoughSpace) {
+        alert("Bộ nhớ không đủ. Vui lòng giải phóng dung lượng và thử lại.");
+        return;
+      }
+
       // Bước 1: Load từ cache
       const cached = await getMessages(conversation.conversationId);
       setMessages(cached);
-      // console.log("1 tin nhắn ~", JSON.stringify(cached[0]).length, "ký tự");
 
       // Bước 2: Gọi API lấy mới
       const response = await api.getAllMessages(conversation.conversationId);
@@ -168,11 +189,12 @@ const MessageScreen = ({ route, navigation }) => {
       const updated = await saveMessages(conversation.conversationId, filtered);
       setMessages(updated);
     } catch (error) {
-      if (String(error).includes("SQLITE_FULL")) {
-        console.warn("Bộ nhớ đầy. Đang xóa AsyncStorage...");
-        await AsyncStorage.clear(); // Cảnh báo: sẽ xoá hết luôn
-        alert("Đã dọn dẹp bộ nhớ tạm. Vui lòng thử lại.");
-      }
+      console.error("Lỗi khi tải tin nhắn:", error);
+      alert(
+        `Đã xảy ra lỗi khi tải tin nhắn: ${
+          error.response?.data?.message || error.message
+        }. Vui lòng thử lại.`
+      );
     } finally {
       setIsLoading(false);
     }

@@ -8,7 +8,12 @@ import React, {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../socket/SocketContext";
-import { getConversations, saveConversations } from "../storage/StorageService"; // Import storage helpers
+import {
+  checkStoragePaths,
+  getConversations,
+  pickExternalDirectory,
+  saveConversations,
+} from "../storage/StorageService"; // Import storage helpers
 
 export const AuthContext = createContext();
 
@@ -22,6 +27,20 @@ export const AuthProvider = ({ children }) => {
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
+
+  const ensureStoragePermission = async () => {
+    const savedUri = await AsyncStorage.getItem("SHOPY_DIRECTORY_URI");
+    if (!savedUri) {
+      try {
+        const pickedUri = await pickExternalDirectory();
+        console.log("📁 Thư mục đã chọn:", pickedUri);
+      } catch (err) {
+        console.error("❌ Không thể chọn thư mục lưu trữ:", err.message);
+      }
+    } else {
+      console.log("📁 Đã có thư mục lưu trữ:", savedUri);
+    }
+  };
 
   useEffect(() => {
     const loadStorage = async () => {
@@ -103,7 +122,7 @@ export const AuthProvider = ({ children }) => {
     if (socket && response.data.user.userId) {
       socket.emit("authenticate", response.data.user.userId);
     }
-
+    await ensureStoragePermission();
     const conversationsResponse = await api.conversations();
     if (conversationsResponse && conversationsResponse.data) {
       setConversations(conversationsResponse.data);
@@ -123,7 +142,7 @@ export const AuthProvider = ({ children }) => {
     if (socket && response.user.userId) {
       socket.emit("authenticate", response.user.userId);
     }
-
+    await ensureStoragePermission();
     const conversationsResponse = await api.conversations();
     if (conversationsResponse && conversationsResponse.data) {
       setConversations(conversationsResponse.data);
@@ -176,6 +195,7 @@ export const AuthProvider = ({ children }) => {
         setConversations(conversationsResponse.data);
         await saveConversations(conversationsResponse.data);
       }
+      // checkStoragePaths(); // Check storage paths after refreshing conversations
     } catch (error) {
       console.error("Error refreshing conversations:", error);
     }
