@@ -7,7 +7,13 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
-import { SocketContext } from "../socket/SocketContext"; // Import SocketContext
+import { SocketContext } from "../socket/SocketContext";
+import {
+  checkStoragePaths,
+  getConversations,
+  pickExternalDirectory,
+  saveConversations,
+} from "../storage/StorageService"; // Import storage helpers
 
 export const AuthContext = createContext();
 
@@ -16,22 +22,35 @@ export const AuthProvider = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [conversations, setConversations] = useState([]); // State for conversations
-  const [background, setBackground] = useState(null); // State for background
+  const [conversations, setConversations] = useState([]);
+  const [background, setBackground] = useState(null);
 
-  const socket = useContext(SocketContext); // Get socket from context
-  const flatListRef = useRef(null); // Optional: Reference for scrolling if needed
+  const socket = useContext(SocketContext);
+  const flatListRef = useRef(null);
+
+  const ensureStoragePermission = async () => {
+    const savedUri = await AsyncStorage.getItem("SHOPY_DIRECTORY_URI");
+    if (!savedUri) {
+      try {
+        const pickedUri = await pickExternalDirectory();
+        console.log("📁 Thư mục đã chọn:", pickedUri);
+      } catch (err) {
+        console.error("❌ Không thể chọn thư mục lưu trữ:", err.message);
+      }
+    } else {
+      console.log("📁 Đã có thư mục lưu trữ:", savedUri);
+    }
+  };
 
   useEffect(() => {
     const loadStorage = async () => {
       try {
-        const [token, refresh, user, storedConversations, storedBackground] =
+        const [token, refresh, user, storedBackground] =
           await AsyncStorage.multiGet([
             "accessToken",
             "refreshToken",
             "userInfo",
-            "conversations", // Load conversations from AsyncStorage
-            "background", // Load background from AsyncStorage
+            "background",
           ]);
 
         if (token[1] && refresh[1] && user[1]) {
@@ -40,12 +59,13 @@ export const AuthProvider = ({ children }) => {
           setUserInfo(JSON.parse(user[1]));
         }
 
-        if (storedConversations[1]) {
-          setConversations(JSON.parse(storedConversations[1])); // Update conversations state
+        const cachedConversations = await getConversations();
+        if (cachedConversations?.length > 0) {
+          setConversations(cachedConversations);
         }
 
         if (storedBackground[1]) {
-          setBackground(storedBackground[1]); // Update background state
+          setBackground(storedBackground[1]);
         }
       } catch (err) {
         console.error("Error loading storage:", err);
@@ -73,7 +93,7 @@ export const AuthProvider = ({ children }) => {
           )
         );
 
-        flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 }); // Optional: Scroll to top
+        flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
         console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
       }
     );
@@ -86,8 +106,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    handleNewMessage(); // Start listening for new messages
-    return () => cleanupNewMessage(); // Cleanup on unmount
+    handleNewMessage();
+    return () => cleanupNewMessage();
   }, [socket]);
 
   const login = async (params) => {
@@ -102,39 +122,31 @@ export const AuthProvider = ({ children }) => {
     if (socket && response.data.user.userId) {
       socket.emit("authenticate", response.data.user.userId);
     }
-
-    // Lấy danh sách cuộc trò chuyện sau khi đăng nhập
+    await ensureStoragePermission();
     const conversationsResponse = await api.conversations();
     if (conversationsResponse && conversationsResponse.data) {
-      setConversations(conversationsResponse.data); // Lưu danh sách vào state
-      await AsyncStorage.setItem(
-        "conversations",
-        JSON.stringify(conversationsResponse.data)
-      ); // Lưu vào AsyncStorage
+      setConversations(conversationsResponse.data);
+      await saveConversations(conversationsResponse.data);
     }
   };
 
   const register = async (params) => {
     const response = await api.registerAccount(params);
-    console.log("Phan hoi tu register:", response.user);
     const { accessToken, refreshToken } = response.token;
 
     setaccessToken(accessToken);
     setRefreshToken(refreshToken);
 
     await getUserInfoById(response.user.userId);
-    // Lấy danh sách cuộc trò chuyện sau khi đăng nhập
+
     if (socket && response.user.userId) {
       socket.emit("authenticate", response.user.userId);
     }
-
+    await ensureStoragePermission();
     const conversationsResponse = await api.conversations();
     if (conversationsResponse && conversationsResponse.data) {
-      setConversations(conversationsResponse.data); // Lưu danh sách vào state
-      await AsyncStorage.setItem(
-        "conversations",
-        JSON.stringify(conversationsResponse.data)
-      ); // Lưu vào AsyncStorage
+      setConversations(conversationsResponse.data);
+      await saveConversations(conversationsResponse.data);
     }
   };
 
@@ -147,14 +159,15 @@ export const AuthProvider = ({ children }) => {
       setaccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
-      setConversations([]); // Xóa danh sách cuộc trò chuyện
-      setBackground(null); // Xóa background
+      setConversations([]);
+      setBackground(null);
       await AsyncStorage.multiRemove([
         "accessToken",
         "refreshToken",
         "userInfo",
-        "conversations", // Xóa danh sách cuộc trò chuyện khỏi AsyncStorage
-        "background", // Xóa background khỏi AsyncStorage
+        "conversations",
+        "background",
+        "messages",
       ]);
     }
   };
@@ -179,20 +192,18 @@ export const AuthProvider = ({ children }) => {
     try {
       const conversationsResponse = await api.conversations();
       if (conversationsResponse && conversationsResponse.data) {
-        setConversations(conversationsResponse.data); // Update state with new conversations
-        await AsyncStorage.setItem(
-          "conversations",
-          JSON.stringify(conversationsResponse.data)
-        ); // Save updated conversations to AsyncStorage
+        setConversations(conversationsResponse.data);
+        await saveConversations(conversationsResponse.data);
       }
+      // checkStoragePaths(); // Check storage paths after refreshing conversations
     } catch (error) {
       console.error("Error refreshing conversations:", error);
     }
   };
 
   const updateBackground = async (newBackground) => {
-    setBackground(newBackground); // Update state
-    await AsyncStorage.setItem("background", newBackground); // Save to AsyncStorage
+    setBackground(newBackground);
+    await AsyncStorage.setItem("background", newBackground);
   };
 
   return (
@@ -203,15 +214,15 @@ export const AuthProvider = ({ children }) => {
         userInfo,
         isLoading,
         conversations,
-        background, // Expose background state
+        background,
         register,
         login,
         logout,
         updateUserInfo,
         getUserInfoById,
         handlerRefresh,
-        updateBackground, // Expose updateBackground function
-        flatListRef, // Optional: Expose flatListRef if needed
+        updateBackground,
+        flatListRef,
       }}
     >
       {children}

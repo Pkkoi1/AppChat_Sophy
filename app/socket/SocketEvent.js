@@ -2,7 +2,8 @@ export const handleNewMessage = (
   socket,
   conversationId,
   setMessages,
-  flatListRef
+  flatListRef,
+  saveMessages
 ) => {
   if (!socket) return;
 
@@ -14,7 +15,7 @@ export const handleNewMessage = (
 
         setMessages((prev) => [formattedMessage, ...prev]);
         flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
-
+        saveMessages(conversationId, [formattedMessage], "after"); // Save the new message to AsyncStorage
         console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
       }
     }

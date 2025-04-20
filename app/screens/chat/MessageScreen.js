@@ -4,6 +4,7 @@ import React, {
   useRef,
   useContext,
   useCallback,
+  memo,
 } from "react";
 import {
   SafeAreaView,
@@ -31,6 +32,11 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { SocketContext } from "@/app/socket/SocketContext";
 import { cleanupNewMessage, handleNewMessage } from "@/app/socket/SocketEvent";
+import {
+  getMessages,
+  saveMessages,
+  appendMessage,
+} from "../../storage/StorageService";
 
 const MessageScreen = ({ route, navigation }) => {
   const { userInfo, handlerRefresh, background } = useContext(AuthContext);
@@ -70,7 +76,8 @@ const MessageScreen = ({ route, navigation }) => {
         socket,
         conversation.conversationId,
         setMessages,
-        flatListRef
+        flatListRef,
+        saveMessages
       );
       socket.on("newMessage", async () => {
         api.readMessage(conversation.conversationId);
@@ -143,21 +150,51 @@ const MessageScreen = ({ route, navigation }) => {
     }
   }, [messages, sended]);
 
+  const checkStorageSpace = async () => {
+    try {
+      const info = await FileSystem.getInfoAsync(FileSystem.documentDirectory);
+      if (info.exists && info.totalSpace && info.freeSpace) {
+        const freeSpaceMB = info.freeSpace / (1024 * 1024); // Chuyển đổi sang MB
+        console.log(`Dung lượng trống: ${freeSpaceMB.toFixed(2)} MB`);
+        return freeSpaceMB > 10; // Đảm bảo còn ít nhất 10MB trống
+      }
+      return true; // Nếu không lấy được thông tin, giả định đủ bộ nhớ
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra bộ nhớ:", error);
+      return true; // Nếu lỗi, giả định đủ bộ nhớ
+    }
+  };
+
   const fetchMessages = async () => {
     try {
       setIsLoading(true);
+
+      // Kiểm tra bộ nhớ trước khi tải tin nhắn
+      const hasEnoughSpace = await checkStorageSpace();
+      if (!hasEnoughSpace) {
+        alert("Bộ nhớ không đủ. Vui lòng giải phóng dung lượng và thử lại.");
+        return;
+      }
+
+      // Bước 1: Load từ cache
+      const cached = await getMessages(conversation.conversationId);
+      setMessages(cached);
+
+      // Bước 2: Gọi API lấy mới
       const response = await api.getAllMessages(conversation.conversationId);
-      const filteredMessages = response.messages.filter(
-        (message) => !message.hiddenFrom?.includes(userInfo.userId)
+      const filtered = response.messages.filter(
+        (m) => !m.hiddenFrom?.includes(userInfo.userId)
       );
-      // console.log(
-      //   "Tin nhắn đã tải:",
-      //   filteredMessages.map((msg) => msg.messageDetailId)
-      // );
-      setMessages(filteredMessages);
+
+      const updated = await saveMessages(conversation.conversationId, filtered);
+      setMessages(updated);
     } catch (error) {
-      console.error("Lỗi lấy tin nhắn:", error);
-      setMessages([]);
+      console.error("Lỗi khi tải tin nhắn:", error);
+      alert(
+        `Đã xảy ra lỗi khi tải tin nhắn: ${
+          error.response?.data?.message || error.message
+        }. Vui lòng thử lại.`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +226,7 @@ const MessageScreen = ({ route, navigation }) => {
         createdAt: new Date().toISOString(),
         isReply: !!replyingTo,
         messageReplyId: replyingTo?.messageDetailId || null,
-        replyData: replyingTo,
+        replyData: replyingTo || null, // Đảm bảo replyData không bị undefined
 
         sendStatus: "sending", // Initial status
       };
@@ -198,29 +235,54 @@ const MessageScreen = ({ route, navigation }) => {
 
       try {
         if (message.type === "text") {
-          if (replyingTo) {
-            await api.replyMessage(
-              replyingTo?.messageDetailId,
+          if (replyingTo && replyingTo.messageDetailId) {
+            const res = await api.replyMessage(
+              replyingTo.messageDetailId,
               message?.content
             );
+            await appendMessage(conversation.conversationId, res.message);
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
           } else {
-            await api.sendMessage({
+            const res = await api.sendMessage({
               conversationId: pseudoMessage.conversationId,
               content: pseudoMessage.content,
             });
+            await appendMessage(conversation.conversationId, res.message);
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
           }
-          // fetchMessages(); // Refresh messages after sending
-          setMessages((prev) =>
-            prev.filter(
-              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-            )
-          );
         }
+        saveMessages(
+          conversation.conversationId,
+          [pseudoMessage],
+          "before"
+        ).then(() => {
+          console.log("Lưu tin nhắn thành công vào cache.");
+        });
+        setSended((prev) => !prev); // Toggle sended state to trigger re-render
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
-        alert("Đã xảy ra lỗi khi gửi tin nhắn. Vui lòng thử lại.");
+        alert(
+          `Đã xảy ra lỗi khi gửi tin nhắn: ${
+            error.response?.data?.message || error.message
+          }. Vui lòng thử lại.`
+        );
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.messageDetailId === pseudoMessage.messageDetailId
+              ? { ...msg, sendStatus: "failed" }
+              : msg
+          )
+        );
       } finally {
-        setReplyingTo(null); // Clear reply state after sending
+        setReplyingTo(null);
       }
     },
     [conversation, userInfo.userId, replyingTo]
@@ -270,16 +332,33 @@ const MessageScreen = ({ route, navigation }) => {
             conversationId: pseudoMessage.conversationId,
             imageBase64: imageBase64,
           });
-          console.log("Gửi ảnh thành công!");
           setMessages((prev) =>
             prev.filter(
               (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
             )
           );
+          saveMessages(
+            conversation.conversationId,
+            [pseudoMessage],
+            "before"
+          ).then(() => {
+            console.log("Lưu tin nhắn thành công vào cache.");
+          });
         }
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);
-        alert("Đã xảy ra lỗi khi gửi ảnh. Vui lòng thử lại.");
+        alert(
+          `Đã xảy ra lỗi khi gửi ảnh: ${
+            error.response?.data?.message || error.message
+          }. Vui lòng thử lại.`
+        );
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.messageDetailId === pseudoMessage.messageDetailId
+              ? { ...msg, sendStatus: "failed" }
+              : msg
+          )
+        );
       }
     },
     [conversation, userInfo.userId]
@@ -328,10 +407,28 @@ const MessageScreen = ({ route, navigation }) => {
               (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
             )
           );
+          saveMessages(
+            conversation.conversationId,
+            [pseudoMessage],
+            "before"
+          ).then(() => {
+            console.log("Lưu tin nhắn thành công vào cache.");
+          });
           console.log("Gửi file thành công!");
         } catch (error) {
           console.error("Lỗi khi gửi file:", error);
-          alert("Đã xảy ra lỗi khi gửi file. Vui lòng thử lại.");
+          alert(
+            `Đã xảy ra lỗi khi gửi file: ${
+              error.response?.data?.message || error.message
+            }. Vui lòng thử lại.`
+          );
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === pseudoMessage.messageDetailId
+                ? { ...msg, sendStatus: "failed" }
+                : msg
+            )
+          );
         }
       }
     },
@@ -368,9 +465,28 @@ const MessageScreen = ({ route, navigation }) => {
             (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
           )
         );
+        saveMessages(
+          conversation.conversationId,
+          [pseudoMessage],
+          "before"
+        ).then(() => {
+          console.log("Lưu tin nhắn thành công vào cache.");
+        });
       } catch (error) {
         console.error("Lỗi khi gửi video:", error);
-        Alert.alert("Lỗi", "Không thể gửi video. Vui lòng thử lại.");
+        Alert.alert(
+          "Lỗi",
+          `Không thể gửi video: ${
+            error.response?.data?.message || error.message
+          }. Vui lòng thử lại.`
+        );
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.messageDetailId === pseudoMessage.messageDetailId
+              ? { ...msg, sendStatus: "failed" }
+              : msg
+          )
+        );
       }
     },
     [conversation, userInfo.userId]
@@ -394,26 +510,39 @@ const MessageScreen = ({ route, navigation }) => {
         flatListRef.current.scrollToIndex({
           index: index,
           animated: true,
-          viewPosition: 0.5,
+          viewPosition: 0.5, // Vị trí hiển thị tin nhắn ở giữa màn hình
         });
         setHighlightedMessageId(messageId);
 
-        // Reset highlightedMessageId after 2 seconds
-        setTimeout(() => setHighlightedMessageId(null), 500);
+        // Reset highlightedMessageId sau 2 giây
+        setTimeout(() => setHighlightedMessageId(null), 2000);
       } catch (error) {
         console.warn("Lỗi cuộn đến message:", error.message);
+
         // Fallback nếu lỗi out-of-range
-        setTimeout(() => {
-          flatListRef.current?.scrollToOffset({
-            offset: index * 80, // height mặc định 80 trong getItemLayout
-            animated: true,
-          });
-        }, 300);
+        flatListRef.current.scrollToOffset({
+          offset: Math.max(0, index * 80), // Tính toán offset dựa trên chiều cao item
+          animated: true,
+        });
+
+        // Đảm bảo tin nhắn được highlight sau fallback
+        setHighlightedMessageId(messageId);
+        setTimeout(() => setHighlightedMessageId(null), 2000);
       }
     }
   };
 
   const effectiveBackground = background || conversation?.background || null;
+
+  const MemoizedConversation = memo(Conversation, (prevProps, nextProps) => {
+    // So sánh các props để tránh render lại không cần thiết
+    return (
+      prevProps.messages === nextProps.messages &&
+      prevProps.highlightedMessageId === nextProps.highlightedMessageId &&
+      prevProps.searchQuery === nextProps.searchQuery &&
+      prevProps.senderId === nextProps.senderId
+    );
+  });
 
   return (
     <View style={{ flex: 1 }}>
