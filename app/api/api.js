@@ -512,6 +512,23 @@ export const api = {
       throw error;
     }
   },
+  removeBackGround: async (conversationId) => {
+    // /mobile/update/background/remove
+    try {
+      const response = await http.put(
+        `/conversations/mobile/update/background/remove/${conversationId}`
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi xóa ảnh nền cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      console.error("Lỗi khi xóa ảnh nền cuộc trò chuyện 2:", conversationId);
+      throw error;
+    }
+  },
+  // Gửi tin nhắn
   sendMessage: async ({ conversationId, content }) => {
     try {
       const response = await http.post("/messages/send", {

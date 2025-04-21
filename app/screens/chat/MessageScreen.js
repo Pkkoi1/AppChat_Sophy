@@ -178,16 +178,21 @@ const MessageScreen = ({ route, navigation }) => {
 
       // Bước 1: Load từ cache
       const cached = await getMessages(conversation.conversationId);
-      setMessages(cached);
+      setMessages(cached || []); // Đảm bảo cached không phải undefined
 
       // Bước 2: Gọi API lấy mới
       const response = await api.getAllMessages(conversation.conversationId);
+
+      if (!response || !response.messages) {
+        throw new Error("API không trả về dữ liệu tin nhắn hợp lệ.");
+      }
+
       const filtered = response.messages.filter(
         (m) => !m.hiddenFrom?.includes(userInfo.userId)
       );
 
       const updated = await saveMessages(conversation.conversationId, filtered);
-      setMessages(updated);
+      setMessages(updated || []); // Đảm bảo updated không phải undefined
     } catch (error) {
       console.error("Lỗi khi tải tin nhắn:", error);
       alert(

@@ -4,8 +4,8 @@ const { StorageAccessFramework } = FileSystem;
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DIRECTORY_KEY = "SHOPY_DIRECTORY_URI";
-
-// Chọn thư mục ngoài và lưu lại URI
+let isWriting = false;
+// ========== Chọn thư mục ========== //
 export const pickExternalDirectory = async () => {
   try {
     const dirUri =
@@ -23,69 +23,236 @@ export const pickExternalDirectory = async () => {
   }
 };
 
-// Lấy thư mục đã chọn
 const getBaseDir = async () => {
   const uri = await AsyncStorage.getItem(DIRECTORY_KEY);
-  if (!uri)
-    throw new Error(
-      "❌ Chưa có thư mục nào được chọn. Gọi pickExternalDirectory() trước."
-    );
+  if (!uri) throw new Error("❌ Chưa có thư mục nào được chọn.");
   return uri;
 };
 
-// Viết file JSON ra external storage
-const writeFile = async (fileName, data) => {
-  try {
-    const dirUri = await getBaseDir();
-    const content = JSON.stringify(data);
-    const fileUri = await StorageAccessFramework.createFileAsync(
-      dirUri,
-      fileName,
-      "application/json"
-    );
-    await FileSystem.writeAsStringAsync(fileUri, content, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-    console.log("✅ Đã lưu:", fileUri);
-  } catch (err) {
-    console.error("Lỗi khi ghi file:", err);
-    throw err;
-  }
+// ========== Định danh file theo user ========== //
+const getUserFileName = async () => {
+  const userId = await AsyncStorage.getItem("userId");
+  if (!userId) return null;
+  return `user_${userId}.json`;
 };
 
-// Đọc file JSON từ external
+const readUserData = async () => {
+  const fileName = await getUserFileName();
+  if (!fileName) return {}; // Trả về object rỗng nếu chưa đăng nhập
+  return (await readFile(fileName)) || {};
+};
+
+const writeUserData = async (data) => {
+  const fileName = await getUserFileName();
+  if (!fileName) {
+    console.warn("⛔ Không thể ghi file vì chưa có userId.");
+    return;
+  }
+  await writeFile(fileName, data);
+};
+
+// ========== Core File IO ========== //
+// Hàng đợi để quản lý các thao tác ghi
+const writeQueue = [];
+
+const writeFile = async (fileName, data) => {
+  // Tạo một promise để xếp hàng thao tác ghi
+  const writePromise = new Promise(async (resolve, reject) => {
+    const executeWrite = async () => {
+      try {
+        const dirUri = await getBaseDir();
+
+        // Làm sạch dữ liệu trước khi serialize
+        const cleanData = JSON.parse(
+          JSON.stringify(data, (key, value) => {
+            if (typeof value === "undefined" || typeof value === "function") {
+              return null;
+            }
+            // Kiểm tra boolean
+            if (
+              typeof value === "boolean" &&
+              value !== true &&
+              value !== false
+            ) {
+              console.warn("❌ Giá trị boolean không hợp lệ:", value);
+              return null;
+            }
+            return value;
+          })
+        );
+
+        // Serialize dữ liệu
+        let content;
+        try {
+          content = JSON.stringify(cleanData, null, 2);
+          JSON.parse(content); // Kiểm tra JSON hợp lệ
+        } catch (err) {
+          console.error("❌ Lỗi serialize dữ liệu:", err);
+          await debugFileContent(fileName);
+          throw new Error("Dữ liệu không thể serialize thành JSON hợp lệ");
+        }
+
+        const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
+        const cleanFileName = fileName.replace(/ \(\d+\)\.json$/, ".json");
+        const existingFileUri = files.find((uri) => {
+          const decodedUri = decodeURIComponent(uri);
+          return (
+            decodedUri.endsWith(`/${cleanFileName}`) ||
+            decodedUri.match(
+              new RegExp(
+                `/${cleanFileName.replace(".json", "")}\\s*\\(\\d+\\)\\.json$`
+              )
+            )
+          );
+        });
+
+        let fileUri;
+        if (existingFileUri) {
+          fileUri = existingFileUri;
+          console.log("🔄 Sử dụng tệp hiện có:", fileUri);
+        } else {
+          fileUri = await StorageAccessFramework.createFileAsync(
+            dirUri,
+            cleanFileName.replace(".json", ""),
+            "application/json"
+          );
+          console.log("✅ Tạo tệp mới:", fileUri);
+        }
+
+        // Ghi tệp
+        await FileSystem.writeAsStringAsync(fileUri, content, {
+          encoding: FileSystem.EncodingType.UTF8,
+        });
+
+        // Xóa tệp trùng lặp
+        const duplicateFiles = files.filter((uri) => {
+          const decodedUri = decodeURIComponent(uri);
+          return (
+            decodedUri.match(
+              new RegExp(
+                `/${cleanFileName.replace(".json", "")}\\s*\\(\\d+\\)\\.json$`
+              )
+            ) && uri !== fileUri
+          );
+        });
+
+        for (const duplicate of duplicateFiles) {
+          await FileSystem.deleteAsync(duplicate, { idempotent: true });
+          console.log("🗑️ Đã xóa tệp trùng lặp:", duplicate);
+        }
+
+        console.log("✅ Đã ghi dữ liệu vào:", fileUri);
+        resolve();
+      } catch (err) {
+        console.error("❌ Lỗi ghi tệp:", err);
+        reject(err);
+      }
+    };
+
+    writeQueue.push(executeWrite);
+    if (!isWriting) {
+      isWriting = true;
+      // Thực thi từng thao tác trong hàng đợi
+      while (writeQueue.length > 0) {
+        const nextWrite = writeQueue.shift();
+        await nextWrite();
+      }
+      isWriting = false;
+    }
+  });
+
+  return writePromise;
+};
 const readFile = async (fileName) => {
   try {
     const dirUri = await getBaseDir();
     const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
-    const target = files.find((f) => f.endsWith(`/${fileName}`));
-    if (!target) return [];
+    const cleanFileName = fileName.replace(/ \(\d+\)\.json$/, ".json");
+    const target = files.find((f) => {
+      const decodedUri = decodeURIComponent(f);
+      return (
+        decodedUri.endsWith(`/${cleanFileName}`) ||
+        decodedUri.match(
+          new RegExp(
+            `/${cleanFileName.replace(".json", "")}\\s*\\(\\d+\\)\\.json$`
+          )
+        )
+      );
+    });
+    if (!target) return null;
 
     const content = await FileSystem.readAsStringAsync(target, {
       encoding: FileSystem.EncodingType.UTF8,
     });
-    return content ? JSON.parse(content) : [];
+    if (!content) return null;
+
+    try {
+      return JSON.parse(content);
+    } catch (err) {
+      // console.error("❌ Lỗi parse JSON:", err.message);
+      // console.log("📄 Nội dung tệp lỗi:", content.slice(0, 500), "..."); // Log một phần nội dung
+      await FileSystem.deleteAsync(target, { idempotent: true });
+      console.log("🗑️ Đã xóa tệp lỗi:", target);
+      return null;
+    }
   } catch (err) {
-    console.error("Lỗi khi đọc file:", err);
-    return [];
+    console.error("❌ Lỗi đọc tệp:", err);
+    return null;
   }
 };
+export const debugFileContent = async (fileName) => {
+  try {
+    const dirUri = await getBaseDir();
+    const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
+    const cleanFileName = fileName.replace(/ \(\d+\)\.json$/, ".json");
+    const target = files.find((f) => {
+      const decodedUri = decodeURIComponent(f);
+      return (
+        decodedUri.endsWith(`/${cleanFileName}`) ||
+        decodedUri.match(
+          new RegExp(
+            `/${cleanFileName.replace(".json", "")}\\s*\\(\\d+\\)\\.json$`
+          )
+        )
+      );
+    });
+    if (!target) {
+      console.log("❌ Không tìm thấy file:", fileName);
+      return;
+    }
 
-// ========== CONVERSATIONS ==========
+    const content = await FileSystem.readAsStringAsync(target, {
+      encoding: FileSystem.EncodingType.UTF8,
+    });
+    console.log("📄 Nội dung file:", content);
+    try {
+      const parsed = JSON.parse(content);
+      console.log("✅ JSON hợp lệ:", parsed);
+    } catch (err) {
+      console.error("❌ JSON không hợp lệ:", err.message);
+    }
+  } catch (err) {
+    console.error("Lỗi khi đọc nội dung file:", err);
+  }
+};
+// ========== Conversations ========== //
 export const getConversations = async () => {
-  return readFile("conversations.json");
+  const data = await readUserData();
+  return data.conversations || [];
 };
 
-export const saveConversations = async (data) => {
+export const saveConversations = async (conversations) => {
+  const data = await readUserData();
   const MAX_CONVERSATIONS = 100;
-  const limited = data.slice(0, MAX_CONVERSATIONS);
-  await writeFile("conversations.json", limited);
-  return limited;
+  data.conversations = conversations.slice(0, MAX_CONVERSATIONS);
+  await writeUserData(data);
+  return data.conversations;
 };
 
-// ========== MESSAGES ==========
+// ========== Messages ========== //
 export const getMessages = async (conversationId) => {
-  return readFile(`messages_${conversationId}.json`);
+  const data = await readUserData();
+  return data.messages?.[conversationId] || [];
 };
 
 export const saveMessages = async (
@@ -93,13 +260,10 @@ export const saveMessages = async (
   newMessages,
   direction = "after"
 ) => {
-  const fileName = `messages_${conversationId}.json`;
-  const oldMessages = await getMessages(conversationId);
-  const merged =
-    direction === "before"
-      ? [...newMessages, ...oldMessages]
-      : [...oldMessages, ...newMessages];
+  const data = await readUserData();
+  const oldMessages = data.messages?.[conversationId] || [];
 
+  const merged = [...newMessages, ...oldMessages];
   const deduped = Array.from(
     new Map(
       merged
@@ -109,27 +273,44 @@ export const saveMessages = async (
   );
 
   const MAX_MESSAGES = 1000;
-  const limitedMessages = deduped.slice(0, MAX_MESSAGES);
+  const limited = deduped.slice(0, MAX_MESSAGES);
 
-  await writeFile(fileName, limitedMessages);
-  return limitedMessages;
+  if (!data.messages) data.messages = {};
+  data.messages[conversationId] = limited;
+
+  await writeUserData(data);
+  return limited;
 };
 
 export const appendMessage = async (conversationId, message) => {
   return saveMessages(conversationId, [message], "before");
 };
 
-// ========== FRIENDS ==========
+// ========== Friends ========== //
 export const getFriends = async () => {
-  return readFile("friends.json");
+  const data = await readUserData();
+  return data.friends || [];
 };
 
-export const saveFriends = async (data) => {
-  await writeFile("friends.json", data);
+export const saveFriends = async (friends) => {
+  const data = await readUserData();
+  data.friends = friends;
+  await writeUserData(data);
 };
 
-// ========== ATTACHMENTS ==========
-// Hiện tại vẫn lưu nội bộ, có thể mở rộng dùng StorageAccessFramework nếu cần
+// ========== Background ========== //
+export const getBackground = async () => {
+  const data = await readUserData();
+  return data.background || null;
+};
+
+export const saveBackground = async (bg) => {
+  const data = await readUserData();
+  data.background = bg;
+  await writeUserData(data);
+};
+
+// ========== Attachments (để sau nếu cần) ========== //
 export const saveAttachment = async (uri, fileName) => {
   console.warn(
     "Chức năng lưu file đính kèm vào external chưa được hoàn thiện."
@@ -145,7 +326,7 @@ export const deleteAttachment = async (filePath) => {
   }
 };
 
-// ========== CLEAR ==========
+// ========== Clear ========== //
 export const clearAllStorage = async () => {
   try {
     await AsyncStorage.removeItem(DIRECTORY_KEY);
