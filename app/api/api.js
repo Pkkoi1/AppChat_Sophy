@@ -491,6 +491,7 @@ export const api = {
       throw error;
     }
   },
+  //Conversation
   updateBackground: async (imageBase64, conversationId) => {
     try {
       const response = await http.put(
@@ -718,6 +719,21 @@ export const api = {
       throw error;
     }
   },
+
+  addCoOwner: async (conversationId, userId) => {
+    try {
+      const response = await http.put(
+        `/conversations/add-co-owner/${conversationId}/${userId}`
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi thêm đồng sở hữu cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   //Thêm mới vào đây
   getFriends: async () => {
     try {
@@ -757,6 +773,7 @@ export const api = {
   },
   // Lấy danh sách lời mời kết bạn đã gửi
 
+  //Friend
   getFriendRequestsSent: async () => {
     try {
       const response = await http.get("/users/friend-requests-sent");

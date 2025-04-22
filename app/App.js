@@ -50,6 +50,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ShareMessage from "./screens/chat/share/ShareMessage";
 import SearchUser from "./screens/chat/search/SearrchUser";
 import UserInfo from "./screens/profile/userProfile/userInfo/UserInfo"; // Đảm bảo đường dẫn đúng
+import GroupMember from "./screens/chat/optional/group/Member/Index";
 
 const Stack = createNativeStackNavigator();
 
@@ -138,6 +139,8 @@ function RootLayout() {
               <Stack.Screen name="ShareMessage" component={ShareMessage} />
               <Stack.Screen name="SearchUser" component={SearchUser} />
               <Stack.Screen name="UserInfo" component={UserInfo} />
+              {/* GroupMember */}
+              <Stack.Screen name="GroupMember" component={GroupMember} />
 
               {/* Add other screens here */}
             </Stack.Navigator>

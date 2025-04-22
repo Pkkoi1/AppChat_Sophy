@@ -23,6 +23,31 @@ export const pickExternalDirectory = async () => {
   }
 };
 
+const handleStorageError = async (error) => {
+  if (error.message.includes("isn't readable")) {
+    console.warn(
+      "⚠️ Thư mục không thể đọc được. Đang yêu cầu cấp lại quyền..."
+    );
+    try {
+      const dirUri =
+        await StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (dirUri.granted) {
+        await AsyncStorage.setItem(DIRECTORY_KEY, dirUri.directoryUri);
+        console.log(
+          "✅ Quyền đã được cấp lại cho thư mục:",
+          dirUri.directoryUri
+        );
+      } else {
+        console.error("❌ Người dùng từ chối cấp quyền.");
+      }
+    } catch (err) {
+      console.error("❌ Lỗi khi yêu cầu cấp lại quyền:", err);
+    }
+  } else {
+    console.error("❌ Lỗi không xác định:", error);
+  }
+};
+
 const getBaseDir = async () => {
   const uri = await AsyncStorage.getItem(DIRECTORY_KEY);
   if (!uri) throw new Error("❌ Chưa có thư mục nào được chọn.");
@@ -145,6 +170,7 @@ const writeFile = async (fileName, data) => {
         resolve();
       } catch (err) {
         console.error("❌ Lỗi ghi tệp:", err);
+        await handleStorageError(err);
         reject(err);
       }
     };
@@ -189,14 +215,21 @@ const readFile = async (fileName) => {
     try {
       return JSON.parse(content);
     } catch (err) {
-      // console.error("❌ Lỗi parse JSON:", err.message);
-      // console.log("📄 Nội dung tệp lỗi:", content.slice(0, 500), "..."); // Log một phần nội dung
-      await FileSystem.deleteAsync(target, { idempotent: true });
-      console.log("🗑️ Đã xóa tệp lỗi:", target);
+      // console.warn("❌ Lỗi parse JSON:", err.message);
+      // console.log("📄 Nội dung tệp lỗi:", content.slice(0, 500), "...");
+
+      // Skip deletion if the file is in the Sophy directory
+      if (!target.includes("Sophy")) {
+        await FileSystem.deleteAsync(target, { idempotent: true });
+        console.log("🗑️ Đã xóa tệp lỗi:", target);
+      } else {
+        console.warn("⚠️ Bỏ qua xóa tệp trong thư mục Sophy:", target);
+      }
       return null;
     }
   } catch (err) {
     console.error("❌ Lỗi đọc tệp:", err);
+    await handleStorageError(err);
     return null;
   }
 };
