@@ -18,88 +18,23 @@ const SearchUser = ({ navigation }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  // const handleSearch = async () => {
-    //   if (!search || search.trim() === "") {
-    //     Alert.alert("Thông báo", "Vui lòng nhập số điện thoại cần tìm");
-    //     return;
-    //   }
-    
-    //   try {
-    //     setIsSearching(true);
-    //     const phoneNumber = search.trim();
-    
-    //     // Gọi API tìm kiếm người dùng theo số điện thoại
-    //     const result = await api.getUserByPhone(phoneNumber);
-    //     console.log("find userrrrrrrrrrrrrrrrrr:", result); // Check the value of result
-    //     if (result) {
-    //       // Lấy danh sách bạn bè, lời mời đã gửi và đã nhận
-    //       let requestSent = "";
-    //       try {
-    //         const friends = await api.getFriends();
-    //         const isFriend = friends.some((f) => f._id === result._id);
-    //         if (isFriend) {
-    //           requestSent = "friend";
-    //         } else {
-    //           const sentRequests = await api.getFriendRequestsSent();
-    //           console.log("sentRequests:", sentRequests); // Check the value of sentRequests
-    //           const isRequestSent = sentRequests.some(
-    //             (sentRequest) => {
-    //               console.log("req.receiverId:", sentRequest.receiverId, "result._id:", result._id);
-    //               return sentRequest.receiverId._id === result._id;
-    //             }
-    //           );
-    //           if (isRequestSent) {
-    //             requestSent = "pending";
-    //           } else {
-    //             const receivedRequests = await api.getFriendRequestsReceived();
-    //             console.log("receivedRequests:", receivedRequests); // Check the value of receivedRequests
-    //             const isRequestReceived = receivedRequests.some(
-    //               (req) => req.senderId._id === result._id
-    //             );
-    //             if (isRequestReceived) {
-    //               requestSent = "accepted";
-    //             }
-    //           }
-    //         }
-    //         console.log("requestSenttttttttttttt:", requestSent); // Check the value of requestSent
-    //       } catch (e) {
-    //         // Nếu lỗi khi lấy danh sách bạn bè, giữ requestSent là ""
-    //         console.error("Lỗi khi kiểm tra bạn bè:", e);
-    //       }
-    
-    //       navigation.navigate("UserProfile", {
-    //         friend: result,
-    //         requestSent,
-    //       });
-    
-    //       setSearch("");
-    //     }
-    //   } catch (error) {
-    //     console.error("Lỗi khi tìm kiếm người dùng:", error);
-    //     Alert.alert(
-    //       "Không tìm thấy",
-    //       "Không tìm thấy người dùng nào với số điện thoại này",
-    //       [{ text: "Đóng", style: "cancel" }]
-    //     );
-    //   } finally {
-    //     setIsSearching(false);
-    //   }
-    // };
-    
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchQuery.trim() !== "") {
         setIsSearching(true);
         try {
-          const phoneNumber = searchQuery.trim();
-          const result = await api.getUserByPhone(phoneNumber);
-          if (result) {
-            setSearchResults([result]); // Hiển thị kết quả tìm kiếm
-          } else {
-            setSearchResults([]); // Không tìm thấy người dùng
-          }
+          // Lấy danh sách bạn bè
+          const friends = await api.getFriends();
+          
+          // Lọc danh sách bạn bè dựa trên số điện thoại (tìm kiếm tương đối)
+          const filteredFriends = friends.filter((friend) =>
+            friend.phone?.toString().includes(searchQuery.trim())
+          );
+
+          // Cập nhật kết quả tìm kiếm
+          setSearchResults(filteredFriends);
         } catch (error) {
-          // console.error("Lỗi khi tìm kiếm người dùng:", error);
+          console.error("Lỗi khi lấy danh sách bạn bè:", error);
           setSearchResults([]);
         } finally {
           setIsSearching(false);
