@@ -3,7 +3,7 @@ import { View, ActivityIndicator } from "react-native";
 import { AuthContext } from "./AuthContext"; // Import AuthContext
 
 const AuthLoading = ({ navigation }) => {
-  const {  userInfo } = useContext(AuthContext); // Use AuthContext
+  const { userInfo } = useContext(AuthContext); // Use AuthContext
 
   useEffect(() => {
     const checkLogin = async () => {
@@ -21,7 +21,7 @@ const AuthLoading = ({ navigation }) => {
         }
       } catch (e) {
         console.log("Lỗi khi làm mới token hoặc load dữ liệu:", e);
-        navigation.replace("Main");
+        // navigation.replace("Main");
       }
     };
     checkLogin();

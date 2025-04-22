@@ -113,20 +113,27 @@ export const AuthProvider = ({ children }) => {
   const login = async (params) => {
     const response = await api.login(params);
     const { accessToken, refreshToken } = response.data.token;
+    const userId = response.data.user.userId;
 
     setaccessToken(accessToken);
     setRefreshToken(refreshToken);
 
-    await getUserInfoById(response.data.user.userId);
+    // ✅ Lưu userId vào AsyncStorage để dùng cho lưu file
+    await AsyncStorage.setItem("userId", userId);
 
-    if (socket && response.data.user.userId) {
-      socket.emit("authenticate", response.data.user.userId);
+    // Lấy full thông tin user
+    await getUserInfoById(userId);
+
+    if (socket && userId) {
+      socket.emit("authenticate", userId);
     }
+
     await ensureStoragePermission();
+
     const conversationsResponse = await api.conversations();
     if (conversationsResponse && conversationsResponse.data) {
       setConversations(conversationsResponse.data);
-      await saveConversations(conversationsResponse.data);
+      await saveConversations(conversationsResponse.data); // Lúc này userId đã có
     }
   };
 
