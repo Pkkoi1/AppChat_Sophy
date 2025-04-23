@@ -26,8 +26,8 @@ const options = [
   {
     name: "Báo xấu",
     icon: <AntDesign name="warning" size={20} color={Colors.gray} />,
-    includeGroup: true,
-    isGroup: true,
+    includeGroup: false, // Always show this option
+    isGroup: false,
     color: "black",
   },
   {
@@ -40,14 +40,14 @@ const options = [
   {
     name: "Dung lượng trò chuyện",
     icon: <Ionicons name="pie-chart-outline" size={20} color={Colors.gray} />,
-    includeGroup: true,
+    includeGroup: false, // Always show this option
     isGroup: true,
     color: "black",
   },
   {
     name: "Xóa lịch sử trò chuyện",
     icon: <SimpleLineIcons name="trash" size={20} color="red" />,
-    includeGroup: true,
+    includeGroup: false, // Always show this option
     isGroup: true,
     color: "red",
   },
@@ -76,7 +76,8 @@ const BanAndRemoveOption = ({ conversation, receiver }) => {
   const [loadingMembers, setLoadingMembers] = useState(false);
   const [selectedOwner, setSelectedOwner] = useState(null);
 
-  const isOwner = conversation.rules.ownerId === userInfo.userId; // Check if the user is the group owner
+  const isOwner = conversation.rules?.ownerId === userInfo.userId; // Check if the user is the group owner
+  const isGroup = conversation.isGroup; // Check if the conversation is a group
 
   const fetchGroupMembers = async () => {
     setLoadingMembers(true);
@@ -278,8 +279,7 @@ const BanAndRemoveOption = ({ conversation, receiver }) => {
   return (
     <View style={styles.container}>
       {options
-        .filter((option) => option.includeGroup || !conversation?.isGroup)
-        .filter((option) => option.name !== "Rời nhóm" || conversation?.isGroup)
+        .filter((option) => isGroup || !option.includeGroup || !option.isGroup) // Always show non-group-specific options
         .filter((option) => !option.ownerOnly || isOwner) // Show owner-only options only if the user is the owner
         .map((option, index) => (
           <TouchableOpacity
@@ -296,25 +296,30 @@ const BanAndRemoveOption = ({ conversation, receiver }) => {
           </TouchableOpacity>
         ))}
 
-      <Overlay
-        isVisible={isOverlayVisible}
-        onBackdropPress={() => setOverlayVisible(false)}
-        overlayStyle={styles.overlayContainer}
-      >
-        <Text style={styles.overlayTitle}>
-          Chọn thành viên để làm nhóm trưởng
-        </Text>
-        {loadingMembers ? (
-          <Text style={styles.loadingText}>
-            Đang tải danh sách thành viên...
+      {isGroup && (
+        <Overlay
+          isVisible={isOverlayVisible}
+          onBackdropPress={() => setOverlayVisible(false)}
+          overlayStyle={styles.overlayContainer}
+        >
+          <Text style={styles.overlayTitle}>
+            Chọn thành viên để làm nhóm trưởng
           </Text>
-        ) : (
-          groupMembers.map(renderMember)
-        )}
-        <TouchableOpacity style={styles.confirmButton} onPress={handleSetOwner}>
-          <Text style={styles.confirmButtonText}>Chọn và tiếp tục</Text>
-        </TouchableOpacity>
-      </Overlay>
+          {loadingMembers ? (
+            <Text style={styles.loadingText}>
+              Đang tải danh sách thành viên...
+            </Text>
+          ) : (
+            groupMembers.map(renderMember)
+          )}
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={handleSetOwner}
+          >
+            <Text style={styles.confirmButtonText}>Chọn và tiếp tục</Text>
+          </TouchableOpacity>
+        </Overlay>
+      )}
     </View>
   );
 };
