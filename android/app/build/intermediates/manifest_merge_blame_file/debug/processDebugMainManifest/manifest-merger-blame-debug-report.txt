@@ -9,166 +9,166 @@
 9        android:targetSdkVersion="34" />
 10
 11    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-11-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:3-75
-11-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:20-73
+11-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:3-75
+11-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:9:20-73
 12    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
-12-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:2:3-77
-12-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:2:20-75
+12-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:2:3-77
+12-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:2:20-75
 13    <uses-permission android:name="android.permission.CAMERA" />
-13-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:3:3-62
-13-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:3:20-60
+13-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:3:3-62
+13-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:3:20-60
 14    <uses-permission android:name="android.permission.INTERNET" />
-14-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:4:3-64
-14-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:4:20-62
+14-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:4:3-64
+14-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:4:20-62
 15    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-15-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:3-77
-15-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:20-75
+15-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:3-77
+15-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:5:20-75
 16    <uses-permission android:name="android.permission.READ_CONTACTS" />
-16-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:3-69
-16-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:20-67
+16-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:3-69
+16-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:6:20-67
 17    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-17-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:3-77
-17-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:20-75
+17-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:3-77
+17-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:7:20-75
 18    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-18-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:3-68
-18-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:20-66
+18-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:3-68
+18-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:8:20-66
 19    <uses-permission android:name="android.permission.VIBRATE" />
-19-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:3-63
-19-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:20-61
+19-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:3-63
+19-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:10:20-61
 20    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
-20-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:3-70
-20-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:20-68
+20-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:3-70
+20-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:11:20-68
 21    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-21-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:12:3-78
-21-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:12:20-76
+21-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:12:3-78
+21-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:12:20-76
 22
 23    <queries>
-23-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:13:3-19:13
+23-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:13:3-19:13
 24        <intent>
-24-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:14:5-18:14
+24-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:14:5-18:14
 25            <action android:name="android.intent.action.VIEW" />
-25-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
-25-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
+25-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
+25-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
 26
 27            <category android:name="android.intent.category.BROWSABLE" />
-27-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
-27-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
+27-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
+27-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
 28
 29            <data android:scheme="https" />
-29-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-29-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+29-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+29-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
 30        </intent>
 31        <intent>
-31-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-14:18
+31-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-14:18
 32            <action android:name="android.intent.action.SEND" />
-32-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
-32-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
+32-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
+32-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
 33
 34            <category android:name="android.intent.category.DEFAULT" />
-34-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-34-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+34-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+34-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
 35
 36            <data android:mimeType="application/octet-stream" />
-36-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+36-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
 37        </intent>
 38        <intent>
-38-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-21:18
+38-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-21:18
 39            <action android:name="android.intent.action.SEND" />
-39-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
-39-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
+39-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
+39-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
 40
 41            <category android:name="android.intent.category.DEFAULT" />
-41-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-41-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+41-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+41-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
 42
 43            <data android:mimeType="text/x-vcard" />
-43-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+43-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
 44        </intent>
 45        <intent>
-45-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:22:9-28:18
+45-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:22:9-28:18
 46            <action android:name="android.intent.action.SEND" />
-46-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
-46-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
+46-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
+46-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
 47
 48            <category android:name="android.intent.category.DEFAULT" />
-48-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-48-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+48-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+48-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
 49
 50            <data android:mimeType="text/vcard" />
-50-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+50-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
 51        </intent>
 52        <intent>
-52-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:29:9-31:18
+52-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:29:9-31:18
 53            <action android:name="android.intent.action.EDIT" />
-53-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:30:13-65
-53-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:30:21-62
+53-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:30:13-65
+53-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:30:21-62
 54        </intent>
 55        <intent>
-55-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:32:9-34:18
+55-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:32:9-34:18
 56            <action android:name="android.intent.action.INSERT" />
-56-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:33:13-67
-56-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:33:21-64
+56-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:33:13-67
+56-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:33:21-64
 57        </intent>
 58
 59        <package android:name="host.exp.exponent" /> <!-- Query open documents -->
-59-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-53
-59-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:18-50
+59-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-53
+59-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:18-50
 60        <intent>
-60-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:9-17:18
+60-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:9-17:18
 61            <action android:name="android.intent.action.OPEN_DOCUMENT" />
-61-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-74
-61-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:21-71
+61-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-74
+61-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:21-71
 62
 63            <category android:name="android.intent.category.DEFAULT" />
-63-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-63-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+63-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+63-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
 64            <category android:name="android.intent.category.OPENABLE" />
-64-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-73
-64-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:23-70
+64-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-73
+64-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:23-70
 65
 66            <data android:mimeType="*/*" />
-66-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+66-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
 67        </intent> <!-- Query open documents -->
 68        <intent>
-68-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-17:18
+68-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-17:18
 69            <action android:name="android.intent.action.OPEN_DOCUMENT_TREE" />
-69-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-79
-69-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:21-76
+69-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-79
+69-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:21-76
 70        </intent>
 71        <intent>
-71-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-19:18
+71-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:9-19:18
 72
 73            <!-- Required for picking images from the camera roll if targeting API 30 -->
 74            <action android:name="android.media.action.IMAGE_CAPTURE" />
-74-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:13-73
-74-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:21-70
+74-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:13-73
+74-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:21-70
 75        </intent>
 76        <intent>
-76-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:20:9-24:18
+76-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:20:9-24:18
 77
 78            <!-- Required for picking images from the camera if targeting API 30 -->
 79            <action android:name="android.media.action.ACTION_VIDEO_CAPTURE" />
-79-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:13-80
-79-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:21-77
+79-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:13-80
+79-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:21-77
 80        </intent>
 81        <intent>
-81-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-14:18
+81-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-14:18
 82
 83            <!-- Required for file sharing if targeting API 30 -->
 84            <action android:name="android.intent.action.SEND" />
-84-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
-84-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
+84-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-65
+84-->[:expo-contacts] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-contacts\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:21-62
 85
 86            <data android:mimeType="*/*" />
-86-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+86-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
 87        </intent>
 88        <intent>
-88-->[:expo-web-browser] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-web-browser\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-12:18
+88-->[:expo-web-browser] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-web-browser\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-12:18
 89
 90            <!-- Required for opening tabs if targeting API 30 -->
 91            <action android:name="android.support.customtabs.action.CustomTabsService" />
-91-->[:expo-web-browser] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-web-browser\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-90
-91-->[:expo-web-browser] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-web-browser\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:21-87
+91-->[:expo-web-browser] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-web-browser\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-90
+91-->[:expo-web-browser] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-web-browser\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:21-87
 92        </intent>
 93        <intent>
 93-->[androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\AndroidManifest.xml:23:9-25:18
@@ -183,35 +183,35 @@
 97-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:11:21-69
 98
 99            <category android:name="android.intent.category.OPENABLE" />
-99-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-73
-99-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:23-70
+99-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-73
+99-->[:expo-document-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-document-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:23-70
 100
 101            <data android:mimeType="*/*" />
-101-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+101-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
 102        </intent>
 103    </queries>
 104
 105    <uses-permission android:name="android.permission.WAKE_LOCK" />
-105-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-68
-105-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:22-65
+105-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-68
+105-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:22-65
 106    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-106-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-79
-106-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:22-76
+106-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-79
+106-->[:react-native-firebase_auth] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\auth\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:22-76
 107    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-107-->[:react-native-network-info] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-network-info\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-76
-107-->[:react-native-network-info] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-network-info\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:22-73
+107-->[:react-native-network-info] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-network-info\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-76
+107-->[:react-native-network-info] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-network-info\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:22-73
 108    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-108-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-76
-108-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:22-73
+108-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-76
+108-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:22-73
 109    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-109-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-75
-109-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:22-72
+109-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:5-75
+109-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:22-72
 110    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-110-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-75
-110-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:22-72
+110-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:5-75
+110-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:22-72
 111    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
-111-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:5-90
-111-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:22-87
+111-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:5-90
+111-->[:expo-media-library] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-media-library\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:22-87
 112    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
 112-->[com.google.android.recaptcha:recaptcha:18.6.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\502d5fbd12e93c593a3108fe24cfe3ce\transformed\recaptcha-18.6.1\AndroidManifest.xml:9:5-98
 112-->[com.google.android.recaptcha:recaptcha:18.6.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\502d5fbd12e93c593a3108fe24cfe3ce\transformed\recaptcha-18.6.1\AndroidManifest.xml:9:22-95
@@ -226,742 +226,745 @@
 118    <uses-permission android:name="com.anonymous.ChatApp_Sophy.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
 118-->[androidx.core:core:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
 118-->[androidx.core:core:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
-119
-120    <application
-120-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:3-38:17
-121        android:name="com.anonymous.ChatApp_Sophy.MainApplication"
-121-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:16-47
-122        android:allowBackup="true"
-122-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:162-188
-123        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-123-->[androidx.core:core:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
-124        android:debuggable="true"
-125        android:extractNativeLibs="false"
-126        android:icon="@mipmap/ic_launcher"
-126-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:81-115
-127        android:label="@string/app_name"
-127-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:48-80
-128        android:requestLegacyExternalStorage="true"
-128-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:248-291
-129        android:roundIcon="@mipmap/ic_launcher_round"
-129-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:116-161
-130        android:supportsRtl="true"
-130-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:221-247
-131        android:theme="@style/AppTheme"
-131-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:189-220
-132        android:usesCleartextTraffic="true" >
-132-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:6:18-53
-133        <meta-data
-133-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:5-83
-134            android:name="expo.modules.updates.ENABLED"
-134-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:16-59
-135            android:value="false" />
-135-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:60-81
-136        <meta-data
-136-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:5-105
-137            android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH"
-137-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:16-80
-138            android:value="ALWAYS" />
-138-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:81-103
-139        <meta-data
-139-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:5-99
-140            android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS"
-140-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:16-79
-141            android:value="0" />
-141-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:80-97
-142
-143        <activity
-143-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:5-37:16
-144            android:name="com.anonymous.ChatApp_Sophy.MainActivity"
-144-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:15-43
-145            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
-145-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:44-134
-146            android:exported="true"
-146-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:256-279
-147            android:launchMode="singleTask"
-147-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:135-166
-148            android:screenOrientation="portrait"
-148-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:280-316
-149            android:theme="@style/Theme.App.SplashScreen"
-149-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:210-255
-150            android:windowSoftInputMode="adjustResize" >
-150-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:167-209
-151            <intent-filter>
-151-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:25:7-28:23
-152                <action android:name="android.intent.action.MAIN" />
-152-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:9-60
-152-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:17-58
-153
-154                <category android:name="android.intent.category.LAUNCHER" />
-154-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:27:9-68
-154-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:27:19-66
-155            </intent-filter>
-156            <intent-filter>
-156-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:29:7-36:23
-157                <action android:name="android.intent.action.VIEW" />
-157-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
-157-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
-158
-159                <category android:name="android.intent.category.DEFAULT" />
-159-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-159-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
-160                <category android:name="android.intent.category.BROWSABLE" />
-160-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
-160-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
-161
-162                <data android:scheme="myapp" />
-162-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-162-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
-163                <data android:scheme="com.anonymous.ChatApp_Sophy" />
-163-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-163-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
-164                <data android:scheme="exp+chatappsophy" />
-164-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-164-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
-165            </intent-filter>
-166        </activity>
-167
-168        <provider
-168-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-16:20
-169            android:name="com.reactnativecommunity.webview.RNCWebViewFileProvider"
-169-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-83
-170            android:authorities="com.anonymous.ChatApp_Sophy.fileprovider"
-170-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-64
-171            android:exported="false"
-171-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-37
-172            android:grantUriPermissions="true" >
-172-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-47
-173            <meta-data
-173-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
-174                android:name="android.support.FILE_PROVIDER_PATHS"
-174-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
-175                android:resource="@xml/file_provider_paths" />
-175-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
-176        </provider> <!-- Disable crashlytics by default so we can custom init with CrashlyticsNdk support -->
-177        <meta-data
-177-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:9-12:37
-178            android:name="firebase_crashlytics_collection_enabled"
-178-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-67
-179            android:value="false" />
-179-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-34
-180
-181        <provider
-181-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:9-18:38
-182            android:name="io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsInitProvider"
-182-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:13-104
-183            android:authorities="com.anonymous.ChatApp_Sophy.reactnativefirebasecrashlyticsinitprovider"
-183-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-94
-184            android:exported="false"
-184-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:17:13-37
-185            android:initOrder="98" />
-185-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:13-35
-186
-187        <meta-data
-187-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:9-11:36
-188            android:name="app_data_collection_default_enabled"
-188-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-63
-189            android:value="true" />
-189-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-33
-190
-191        <service
-191-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:9-21:19
-192            android:name="com.google.firebase.components.ComponentDiscoveryService"
-192-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-84
-193            android:directBootAware="true"
-193-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:13-43
-194            android:exported="false" >
-194-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-37
-195            <meta-data
-195-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:13-20:85
-196                android:name="com.google.firebase.components:io.invertase.firebase.app.ReactNativeFirebaseAppRegistrar"
-196-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:19:17-120
-197                android:value="com.google.firebase.components.ComponentRegistrar" />
-197-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:20:17-82
-198            <meta-data
-198-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:69:13-71:85
-199                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
-199-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:70:17-109
-200                android:value="com.google.firebase.components.ComponentRegistrar" />
-200-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:71:17-82
-201            <meta-data
-201-->[com.google.firebase:firebase-crashlytics-ndk:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\60174cb2f68ef1e10bb60a225f817dd6\transformed\firebase-crashlytics-ndk-19.4.2\AndroidManifest.xml:32:13-34:85
-202                android:name="com.google.firebase.components:com.google.firebase.crashlytics.ndk.CrashlyticsNdkRegistrar"
-202-->[com.google.firebase:firebase-crashlytics-ndk:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\60174cb2f68ef1e10bb60a225f817dd6\transformed\firebase-crashlytics-ndk-19.4.2\AndroidManifest.xml:33:17-122
-203                android:value="com.google.firebase.components.ComponentRegistrar" />
-203-->[com.google.firebase:firebase-crashlytics-ndk:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\60174cb2f68ef1e10bb60a225f817dd6\transformed\firebase-crashlytics-ndk-19.4.2\AndroidManifest.xml:34:17-82
-204            <meta-data
-204-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:15:13-17:85
-205                android:name="com.google.firebase.components:com.google.firebase.crashlytics.FirebaseCrashlyticsKtxRegistrar"
-205-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:16:17-126
-206                android:value="com.google.firebase.components.ComponentRegistrar" />
-206-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:17:17-82
-207            <meta-data
-207-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:18:13-20:85
-208                android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar"
-208-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:19:17-115
-209                android:value="com.google.firebase.components.ComponentRegistrar" />
-209-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:20:17-82
-210            <meta-data
-210-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:29:13-31:85
-211                android:name="com.google.firebase.components:com.google.firebase.sessions.FirebaseSessionsRegistrar"
-211-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:30:17-117
-212                android:value="com.google.firebase.components.ComponentRegistrar" />
-212-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:31:17-82
-213            <meta-data
-213-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:15:13-17:85
-214                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar"
-214-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:16:17-130
-215                android:value="com.google.firebase.components.ComponentRegistrar" />
-215-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:17:17-82
-216            <meta-data
-216-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:18:13-20:85
-217                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
-217-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:19:17-127
-218                android:value="com.google.firebase.components.ComponentRegistrar" />
-218-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:20:17-82
-219            <meta-data
-219-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\cb61d8ac65db84a92cf66c7aaeef8865\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:12:13-14:85
-220                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
-220-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\cb61d8ac65db84a92cf66c7aaeef8865\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:13:17-116
-221                android:value="com.google.firebase.components.ComponentRegistrar" />
-221-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\cb61d8ac65db84a92cf66c7aaeef8865\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:14:17-82
-222            <meta-data
-222-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:35:13-37:85
-223                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
-223-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:36:17-109
-224                android:value="com.google.firebase.components.ComponentRegistrar" />
-224-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:37:17-82
-225            <meta-data
-225-->[com.google.firebase:firebase-datatransport:19.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bc49079cee5a37b4828305215686ab8b\transformed\firebase-datatransport-19.0.0\AndroidManifest.xml:25:13-27:85
-226                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
-226-->[com.google.firebase:firebase-datatransport:19.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bc49079cee5a37b4828305215686ab8b\transformed\firebase-datatransport-19.0.0\AndroidManifest.xml:26:17-115
-227                android:value="com.google.firebase.components.ComponentRegistrar" />
-227-->[com.google.firebase:firebase-datatransport:19.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bc49079cee5a37b4828305215686ab8b\transformed\firebase-datatransport-19.0.0\AndroidManifest.xml:27:17-82
-228        </service>
-229
-230        <provider
-230-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:9-27:38
-231            android:name="io.invertase.firebase.app.ReactNativeFirebaseAppInitProvider"
-231-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:24:13-88
-232            android:authorities="com.anonymous.ChatApp_Sophy.reactnativefirebaseappinitprovider"
-232-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:25:13-86
-233            android:exported="false"
-233-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:26:13-37
-234            android:initOrder="99" />
-234-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:27:13-35
-235
-236        <activity
-236-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:9-25:20
-237            android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
-237-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-81
-238            android:exported="true"
-238-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-36
-239            android:launchMode="singleTask"
-239-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:13-44
-240            android:theme="@style/Theme.DevLauncher.LauncherActivity" >
-240-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-70
-241            <intent-filter>
-241-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:17:13-24:29
-242                <action android:name="android.intent.action.VIEW" />
-242-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
-242-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
-243
-244                <category android:name="android.intent.category.DEFAULT" />
-244-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-244-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
-245                <category android:name="android.intent.category.BROWSABLE" />
-245-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
-245-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
-246
-247                <data android:scheme="expo-dev-launcher" />
-247-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-247-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
-248            </intent-filter>
-249        </activity>
-250        <activity
-250-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:26:9-29:70
-251            android:name="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity"
-251-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:27:13-93
-252            android:screenOrientation="portrait"
-252-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:28:13-49
-253            android:theme="@style/Theme.DevLauncher.ErrorActivity" />
-253-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:29:13-67
-254        <activity
-254-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-21:20
-255            android:name="expo.modules.devmenu.DevMenuActivity"
-255-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-64
-256            android:exported="true"
-256-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-36
-257            android:launchMode="singleTask"
-257-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-44
-258            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" >
-258-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-75
-259            <intent-filter>
-259-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-20:29
-260                <action android:name="android.intent.action.VIEW" />
-260-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
-260-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
-261
-262                <category android:name="android.intent.category.DEFAULT" />
-262-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-262-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
-263                <category android:name="android.intent.category.BROWSABLE" />
-263-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
-263-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
-264
-265                <data android:scheme="expo-dev-menu" />
-265-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-265-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
-266            </intent-filter>
-267        </activity>
-268
-269        <provider
-269-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:21:9-30:20
-270            android:name="expo.modules.filesystem.FileSystemFileProvider"
-270-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:22:13-74
-271            android:authorities="com.anonymous.ChatApp_Sophy.FileSystemFileProvider"
-271-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:13-74
-272            android:exported="false"
-272-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:24:13-37
-273            android:grantUriPermissions="true" >
-273-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:25:13-47
-274            <meta-data
-274-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
-275                android:name="android.support.FILE_PROVIDER_PATHS"
-275-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
-276                android:resource="@xml/file_system_provider_paths" />
-276-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
-277        </provider>
-278
-279        <service
-279-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:28:9-40:19
-280            android:name="com.google.android.gms.metadata.ModuleDependencies"
-280-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:29:13-78
-281            android:enabled="false"
-281-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:30:13-36
-282            android:exported="false" >
-282-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:31:13-37
-283            <intent-filter>
-283-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:33:13-35:29
-284                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
-284-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:34:17-94
-284-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:34:25-91
-285            </intent-filter>
-286
-287            <meta-data
-287-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:37:13-39:36
-288                android:name="photopicker_activity:0:required"
-288-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:38:17-63
-289                android:value="" />
-289-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:39:17-33
-290        </service>
-291
-292        <activity
-292-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:42:9-44:59
-293            android:name="com.canhub.cropper.CropImageActivity"
-293-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:43:13-64
-294            android:exported="true"
-294-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:35:13-36
-295            android:theme="@style/Base.Theme.AppCompat" /> <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
-295-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:44:13-56
-296        <provider
-296-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:46:9-54:20
-297            android:name="expo.modules.imagepicker.fileprovider.ImagePickerFileProvider"
-297-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:47:13-89
-298            android:authorities="com.anonymous.ChatApp_Sophy.ImagePickerFileProvider"
-298-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:48:13-75
-299            android:exported="false"
-299-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:49:13-37
-300            android:grantUriPermissions="true" >
-300-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:50:13-47
-301            <meta-data
-301-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
-302                android:name="android.support.FILE_PROVIDER_PATHS"
-302-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
-303                android:resource="@xml/image_picker_provider_paths" />
-303-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
-304        </provider>
-305        <provider
-305-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:9-26:20
-306            android:name="expo.modules.sharing.SharingFileProvider"
-306-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:19:13-68
-307            android:authorities="com.anonymous.ChatApp_Sophy.SharingFileProvider"
-307-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:20:13-71
-308            android:exported="false"
-308-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:21:13-37
-309            android:grantUriPermissions="true" >
-309-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:22:13-47
-310            <meta-data
-310-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
-311                android:name="android.support.FILE_PROVIDER_PATHS"
-311-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
-312                android:resource="@xml/sharing_provider_paths" />
-312-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
-313        </provider>
-314
-315        <meta-data
-315-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:9-11:89
-316            android:name="org.unimodules.core.AppLoader#react-native-headless"
-316-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-79
-317            android:value="expo.modules.adapters.react.apploader.RNHeadlessAppLoader" />
-317-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-86
-318        <meta-data
-318-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:9-15:45
-319            android:name="com.facebook.soloader.enabled"
-319-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-57
-320            android:value="true" />
-320-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-33
-321
-322        <activity
-322-->[com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:19:9-21:40
-323            android:name="com.facebook.react.devsupport.DevSettingsActivity"
-323-->[com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:20:13-77
-324            android:exported="false" />
-324-->[com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:21:13-37
-325        <activity
-325-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:29:9-46:20
-326            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
-326-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:30:13-80
-327            android:excludeFromRecents="true"
-327-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:31:13-46
-328            android:exported="true"
-328-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:32:13-36
-329            android:launchMode="singleTask"
-329-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:33:13-44
-330            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
-330-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:34:13-72
-331            <intent-filter>
-331-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:35:13-45:29
-332                <action android:name="android.intent.action.VIEW" />
-332-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
-332-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
-333
-334                <category android:name="android.intent.category.DEFAULT" />
-334-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-334-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
-335                <category android:name="android.intent.category.BROWSABLE" />
-335-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
-335-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
-336
-337                <data
-337-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-338                    android:host="firebase.auth"
-339                    android:path="/"
-340                    android:scheme="genericidp" />
-340-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
-341            </intent-filter>
-342        </activity>
-343        <activity
-343-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:47:9-64:20
-344            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
-344-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:48:13-79
-345            android:excludeFromRecents="true"
-345-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:49:13-46
-346            android:exported="true"
-346-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:50:13-36
-347            android:launchMode="singleTask"
-347-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:51:13-44
-348            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
-348-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:52:13-72
-349            <intent-filter>
-349-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:53:13-63:29
-350                <action android:name="android.intent.action.VIEW" />
-350-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
-350-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
-351
-352                <category android:name="android.intent.category.DEFAULT" />
-352-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
-352-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
-353                <category android:name="android.intent.category.BROWSABLE" />
-353-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
-353-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
-354
-355                <data
-355-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
-356                    android:host="firebase.auth"
-357                    android:path="/"
-358                    android:scheme="recaptcha" />
-358-->D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
-359            </intent-filter>
-360        </activity>
-361
-362        <service
-362-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:24:9-32:19
-363            android:name="androidx.credentials.playservices.CredentialProviderMetadataHolder"
-363-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:25:13-94
-364            android:enabled="true"
-364-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:26:13-35
-365            android:exported="false" >
-365-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:27:13-37
-366            <meta-data
-366-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:29:13-31:104
-367                android:name="androidx.credentials.CREDENTIAL_PROVIDER_KEY"
-367-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:30:17-76
-368                android:value="androidx.credentials.playservices.CredentialProviderPlayServicesImpl" />
-368-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:31:17-101
-369        </service>
-370
-371        <activity
-371-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:34:9-41:20
-372            android:name="androidx.credentials.playservices.HiddenActivity"
-372-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:35:13-76
-373            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
-373-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:36:13-87
-374            android:enabled="true"
-374-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:37:13-35
-375            android:exported="false"
-375-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:38:13-37
-376            android:fitsSystemWindows="true"
-376-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:39:13-45
-377            android:theme="@style/Theme.Hidden" >
-377-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:40:13-48
-378        </activity>
-379        <activity
-379-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:23:9-27:75
-380            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
-380-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:24:13-93
-381            android:excludeFromRecents="true"
-381-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:25:13-46
-382            android:exported="false"
-382-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:26:13-37
-383            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-383-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:27:13-72
-384        <!--
-385            Service handling Google Sign-In user revocation. For apps that do not integrate with
-386            Google Sign-In, this service will never be started.
-387        -->
-388        <service
-388-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:33:9-37:51
-389            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
-389-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:34:13-89
-390            android:exported="true"
-390-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:35:13-36
-391            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
-391-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:36:13-107
-392            android:visibleToInstantApps="true" />
-392-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:37:13-48
-393        <service
-393-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:9:9-15:19
-394            android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
-394-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:10:13-91
-395            android:directBootAware="true"
-395-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:17:13-43
-396            android:exported="false" >
-396-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:11:13-37
-397            <meta-data
-397-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:12:13-14:85
-398                android:name="com.google.firebase.components:com.google.mlkit.vision.barcode.internal.BarcodeRegistrar"
-398-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:13:17-120
-399                android:value="com.google.firebase.components.ComponentRegistrar" />
-399-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:14:17-82
-400            <meta-data
-400-->[com.google.mlkit:vision-common:17.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a0b6d8a880fab9a6846a28619b2f7f97\transformed\vision-common-17.3.0\AndroidManifest.xml:12:13-14:85
-401                android:name="com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar"
-401-->[com.google.mlkit:vision-common:17.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a0b6d8a880fab9a6846a28619b2f7f97\transformed\vision-common-17.3.0\AndroidManifest.xml:13:17-124
-402                android:value="com.google.firebase.components.ComponentRegistrar" />
-402-->[com.google.mlkit:vision-common:17.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a0b6d8a880fab9a6846a28619b2f7f97\transformed\vision-common-17.3.0\AndroidManifest.xml:14:17-82
-403            <meta-data
-403-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:20:13-22:85
-404                android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar"
-404-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:21:17-120
-405                android:value="com.google.firebase.components.ComponentRegistrar" />
-405-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:22:17-82
-406        </service>
-407
-408        <provider
-408-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:9:9-13:38
-409            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
-409-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:10:13-78
-410            android:authorities="com.anonymous.ChatApp_Sophy.mlkitinitprovider"
-410-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:11:13-69
-411            android:exported="false"
-411-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:12:13-37
-412            android:initOrder="99" />
-412-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:13:13-35
-413
-414        <activity
-414-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:9-173
-415            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-415-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:19-85
-416            android:exported="false"
-416-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:146-170
-417            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-417-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:86-145
-418
-419        <service
-419-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:22:9-25:40
-420            android:name="com.google.firebase.sessions.SessionLifecycleService"
-420-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:23:13-80
-421            android:enabled="true"
-421-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:24:13-35
-422            android:exported="false" />
-422-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:25:13-37
-423
-424        <provider
-424-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:23:9-28:39
-425            android:name="com.google.firebase.provider.FirebaseInitProvider"
-425-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:24:13-77
-426            android:authorities="com.anonymous.ChatApp_Sophy.firebaseinitprovider"
-426-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:25:13-72
-427            android:directBootAware="true"
-427-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:26:13-43
-428            android:exported="false"
-428-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:27:13-37
-429            android:initOrder="100" />
-429-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:28:13-36
-430
-431        <uses-library
-431-->[androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\AndroidManifest.xml:29:9-31:40
-432            android:name="androidx.camera.extensions.impl"
-432-->[androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\AndroidManifest.xml:30:13-59
-433            android:required="false" />
-433-->[androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\AndroidManifest.xml:31:13-37
-434
-435        <service
-435-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:24:9-33:19
-436            android:name="androidx.camera.core.impl.MetadataHolderService"
-436-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:25:13-75
-437            android:enabled="false"
-437-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:26:13-36
-438            android:exported="false" >
-438-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:27:13-37
-439            <meta-data
-439-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:30:13-32:89
-440                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
-440-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:31:17-103
-441                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
-441-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:32:17-86
-442        </service>
-443
-444        <provider
-444-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:23:9-31:20
-445            android:name="com.canhub.cropper.CropFileProvider"
-445-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:24:13-63
-446            android:authorities="com.anonymous.ChatApp_Sophy.cropper.fileprovider"
-446-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:25:13-72
-447            android:exported="false"
-447-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:26:13-37
-448            android:grantUriPermissions="true" >
-448-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:27:13-47
-449            <meta-data
-449-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
-450                android:name="android.support.FILE_PROVIDER_PATHS"
-450-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
-451                android:resource="@xml/library_file_paths" />
-451-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\App\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
-452        </provider>
-453        <provider
-453-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-454            android:name="androidx.startup.InitializationProvider"
-454-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
-455            android:authorities="com.anonymous.ChatApp_Sophy.androidx-startup"
-455-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
-456            android:exported="false" >
-456-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
-457            <meta-data
-457-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
-458                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-458-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
-459                android:value="androidx.startup" />
-459-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
-460            <meta-data
-460-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
-461                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-461-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
-462                android:value="androidx.startup" />
-462-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
-463            <meta-data
-463-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
-464                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-464-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
-465                android:value="androidx.startup" />
-465-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
-466        </provider>
-467
-468        <meta-data
-468-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:9-122
-469            android:name="com.google.android.gms.version"
-469-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:20-65
-470            android:value="@integer/google_play_services_version" />
-470-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:66-119
-471
-472        <receiver
-472-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
-473            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-473-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
-474            android:directBootAware="false"
-474-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
-475            android:enabled="true"
-475-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
-476            android:exported="true"
-476-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
-477            android:permission="android.permission.DUMP" >
-477-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
-478            <intent-filter>
-478-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
-479                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-479-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-479-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
-480            </intent-filter>
-481            <intent-filter>
-481-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
-482                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-482-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-482-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
-483            </intent-filter>
-484            <intent-filter>
-484-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
-485                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-485-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-485-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
-486            </intent-filter>
-487            <intent-filter>
-487-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
-488                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-488-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-488-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
-489            </intent-filter>
-490        </receiver>
-491
-492        <service
-492-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:26:9-32:19
-493            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
-493-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:27:13-103
-494            android:exported="false" >
-494-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:28:13-37
-495            <meta-data
-495-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:29:13-31:39
-496                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
-496-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:30:17-94
-497                android:value="cct" />
-497-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:31:17-36
-498        </service>
-499        <service
-499-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:24:9-28:19
-500            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
-500-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:25:13-117
-501            android:exported="false"
-501-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:26:13-37
-502            android:permission="android.permission.BIND_JOB_SERVICE" >
-502-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:27:13-69
-503        </service>
-504
-505        <receiver
-505-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:30:9-32:40
-506            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
-506-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:31:13-132
-507            android:exported="false" /> <!-- The activities will be merged into the manifest of the hosting app. -->
-507-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:32:13-37
-508        <activity
-508-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:14:9-18:65
-509            android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
-509-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:15:13-93
-510            android:exported="false"
-510-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:16:13-37
-511            android:stateNotNeeded="true"
-511-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:17:13-42
-512            android:theme="@style/Theme.PlayCore.Transparent" />
-512-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:18:13-62
-513    </application>
-514
-515</manifest>
+119    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+119-->[com.android.installreferrer:installreferrer:1.1.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c4a5573d7fda1013fe17536c3cbe117a\transformed\installreferrer-1.1.2\AndroidManifest.xml:9:5-110
+119-->[com.android.installreferrer:installreferrer:1.1.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c4a5573d7fda1013fe17536c3cbe117a\transformed\installreferrer-1.1.2\AndroidManifest.xml:9:22-107
+120
+121    <application
+121-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:3-38:17
+122        android:name="com.anonymous.ChatApp_Sophy.MainApplication"
+122-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:16-47
+123        android:allowBackup="true"
+123-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:162-188
+124        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+124-->[androidx.core:core:1.13.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\e78865b704c148ddd77bf829bab096e7\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+125        android:debuggable="true"
+126        android:extractNativeLibs="false"
+127        android:icon="@mipmap/ic_launcher"
+127-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:81-115
+128        android:label="@string/app_name"
+128-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:48-80
+129        android:requestLegacyExternalStorage="true"
+129-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:248-291
+130        android:roundIcon="@mipmap/ic_launcher_round"
+130-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:116-161
+131        android:supportsRtl="true"
+131-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:221-247
+132        android:theme="@style/AppTheme"
+132-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:20:189-220
+133        android:usesCleartextTraffic="true" >
+133-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\debug\AndroidManifest.xml:6:18-53
+134        <meta-data
+134-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:5-83
+135            android:name="expo.modules.updates.ENABLED"
+135-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:16-59
+136            android:value="false" />
+136-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:21:60-81
+137        <meta-data
+137-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:5-105
+138            android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH"
+138-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:16-80
+139            android:value="ALWAYS" />
+139-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:22:81-103
+140        <meta-data
+140-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:5-99
+141            android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS"
+141-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:16-79
+142            android:value="0" />
+142-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:23:80-97
+143
+144        <activity
+144-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:5-37:16
+145            android:name="com.anonymous.ChatApp_Sophy.MainActivity"
+145-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:15-43
+146            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode"
+146-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:44-134
+147            android:exported="true"
+147-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:256-279
+148            android:launchMode="singleTask"
+148-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:135-166
+149            android:screenOrientation="portrait"
+149-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:280-316
+150            android:theme="@style/Theme.App.SplashScreen"
+150-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:210-255
+151            android:windowSoftInputMode="adjustResize" >
+151-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:24:167-209
+152            <intent-filter>
+152-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:25:7-28:23
+153                <action android:name="android.intent.action.MAIN" />
+153-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:9-60
+153-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:26:17-58
+154
+155                <category android:name="android.intent.category.LAUNCHER" />
+155-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:27:9-68
+155-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:27:19-66
+156            </intent-filter>
+157            <intent-filter>
+157-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:29:7-36:23
+158                <action android:name="android.intent.action.VIEW" />
+158-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
+158-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
+159
+160                <category android:name="android.intent.category.DEFAULT" />
+160-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+160-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+161                <category android:name="android.intent.category.BROWSABLE" />
+161-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
+161-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
+162
+163                <data android:scheme="myapp" />
+163-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+163-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+164                <data android:scheme="com.anonymous.ChatApp_Sophy" />
+164-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+164-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+165                <data android:scheme="exp+chatappsophy" />
+165-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+165-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+166            </intent-filter>
+167        </activity>
+168
+169        <provider
+169-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-16:20
+170            android:name="com.reactnativecommunity.webview.RNCWebViewFileProvider"
+170-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-83
+171            android:authorities="com.anonymous.ChatApp_Sophy.fileprovider"
+171-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-64
+172            android:exported="false"
+172-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-37
+173            android:grantUriPermissions="true" >
+173-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-47
+174            <meta-data
+174-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+175                android:name="android.support.FILE_PROVIDER_PATHS"
+175-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+176                android:resource="@xml/file_provider_paths" />
+176-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+177        </provider> <!-- Disable crashlytics by default so we can custom init with CrashlyticsNdk support -->
+178        <meta-data
+178-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:9-12:37
+179            android:name="firebase_crashlytics_collection_enabled"
+179-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-67
+180            android:value="false" />
+180-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-34
+181
+182        <provider
+182-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:9-18:38
+183            android:name="io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsInitProvider"
+183-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:13-104
+184            android:authorities="com.anonymous.ChatApp_Sophy.reactnativefirebasecrashlyticsinitprovider"
+184-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-94
+185            android:exported="false"
+185-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:17:13-37
+186            android:initOrder="98" />
+186-->[:react-native-firebase_crashlytics] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\crashlytics\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:13-35
+187
+188        <meta-data
+188-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:9-11:36
+189            android:name="app_data_collection_default_enabled"
+189-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-63
+190            android:value="true" />
+190-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-33
+191
+192        <service
+192-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:9-21:19
+193            android:name="com.google.firebase.components.ComponentDiscoveryService"
+193-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-84
+194            android:directBootAware="true"
+194-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:13-43
+195            android:exported="false" >
+195-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-37
+196            <meta-data
+196-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:13-20:85
+197                android:name="com.google.firebase.components:io.invertase.firebase.app.ReactNativeFirebaseAppRegistrar"
+197-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:19:17-120
+198                android:value="com.google.firebase.components.ComponentRegistrar" />
+198-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:20:17-82
+199            <meta-data
+199-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:69:13-71:85
+200                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
+200-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:70:17-109
+201                android:value="com.google.firebase.components.ComponentRegistrar" />
+201-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:71:17-82
+202            <meta-data
+202-->[com.google.firebase:firebase-crashlytics-ndk:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\60174cb2f68ef1e10bb60a225f817dd6\transformed\firebase-crashlytics-ndk-19.4.2\AndroidManifest.xml:32:13-34:85
+203                android:name="com.google.firebase.components:com.google.firebase.crashlytics.ndk.CrashlyticsNdkRegistrar"
+203-->[com.google.firebase:firebase-crashlytics-ndk:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\60174cb2f68ef1e10bb60a225f817dd6\transformed\firebase-crashlytics-ndk-19.4.2\AndroidManifest.xml:33:17-122
+204                android:value="com.google.firebase.components.ComponentRegistrar" />
+204-->[com.google.firebase:firebase-crashlytics-ndk:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\60174cb2f68ef1e10bb60a225f817dd6\transformed\firebase-crashlytics-ndk-19.4.2\AndroidManifest.xml:34:17-82
+205            <meta-data
+205-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:15:13-17:85
+206                android:name="com.google.firebase.components:com.google.firebase.crashlytics.FirebaseCrashlyticsKtxRegistrar"
+206-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:16:17-126
+207                android:value="com.google.firebase.components.ComponentRegistrar" />
+207-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:17:17-82
+208            <meta-data
+208-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:18:13-20:85
+209                android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar"
+209-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:19:17-115
+210                android:value="com.google.firebase.components.ComponentRegistrar" />
+210-->[com.google.firebase:firebase-crashlytics:19.4.2] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ff53a40dbebab540febab5e5d69f85fb\transformed\firebase-crashlytics-19.4.2\AndroidManifest.xml:20:17-82
+211            <meta-data
+211-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:29:13-31:85
+212                android:name="com.google.firebase.components:com.google.firebase.sessions.FirebaseSessionsRegistrar"
+212-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:30:17-117
+213                android:value="com.google.firebase.components.ComponentRegistrar" />
+213-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:31:17-82
+214            <meta-data
+214-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:15:13-17:85
+215                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsKtxRegistrar"
+215-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:16:17-130
+216                android:value="com.google.firebase.components.ComponentRegistrar" />
+216-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:17:17-82
+217            <meta-data
+217-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:18:13-20:85
+218                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+218-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:19:17-127
+219                android:value="com.google.firebase.components.ComponentRegistrar" />
+219-->[com.google.firebase:firebase-installations:18.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c123cd98014a9c177ae912a6fe39fec9\transformed\firebase-installations-18.0.0\AndroidManifest.xml:20:17-82
+220            <meta-data
+220-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\cb61d8ac65db84a92cf66c7aaeef8865\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:12:13-14:85
+221                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+221-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\cb61d8ac65db84a92cf66c7aaeef8865\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:13:17-116
+222                android:value="com.google.firebase.components.ComponentRegistrar" />
+222-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\cb61d8ac65db84a92cf66c7aaeef8865\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:14:17-82
+223            <meta-data
+223-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:35:13-37:85
+224                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+224-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:36:17-109
+225                android:value="com.google.firebase.components.ComponentRegistrar" />
+225-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:37:17-82
+226            <meta-data
+226-->[com.google.firebase:firebase-datatransport:19.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bc49079cee5a37b4828305215686ab8b\transformed\firebase-datatransport-19.0.0\AndroidManifest.xml:25:13-27:85
+227                android:name="com.google.firebase.components:com.google.firebase.datatransport.TransportRegistrar"
+227-->[com.google.firebase:firebase-datatransport:19.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bc49079cee5a37b4828305215686ab8b\transformed\firebase-datatransport-19.0.0\AndroidManifest.xml:26:17-115
+228                android:value="com.google.firebase.components.ComponentRegistrar" />
+228-->[com.google.firebase:firebase-datatransport:19.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\bc49079cee5a37b4828305215686ab8b\transformed\firebase-datatransport-19.0.0\AndroidManifest.xml:27:17-82
+229        </service>
+230
+231        <provider
+231-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:9-27:38
+232            android:name="io.invertase.firebase.app.ReactNativeFirebaseAppInitProvider"
+232-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:24:13-88
+233            android:authorities="com.anonymous.ChatApp_Sophy.reactnativefirebaseappinitprovider"
+233-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:25:13-86
+234            android:exported="false"
+234-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:26:13-37
+235            android:initOrder="99" />
+235-->[:react-native-firebase_app] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\@react-native-firebase\app\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:27:13-35
+236
+237        <activity
+237-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:9-25:20
+238            android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
+238-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-81
+239            android:exported="true"
+239-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-36
+240            android:launchMode="singleTask"
+240-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:13-44
+241            android:theme="@style/Theme.DevLauncher.LauncherActivity" >
+241-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:16:13-70
+242            <intent-filter>
+242-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:17:13-24:29
+243                <action android:name="android.intent.action.VIEW" />
+243-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
+243-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
+244
+245                <category android:name="android.intent.category.DEFAULT" />
+245-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+245-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+246                <category android:name="android.intent.category.BROWSABLE" />
+246-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
+246-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
+247
+248                <data android:scheme="expo-dev-launcher" />
+248-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+248-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+249            </intent-filter>
+250        </activity>
+251        <activity
+251-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:26:9-29:70
+252            android:name="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity"
+252-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:27:13-93
+253            android:screenOrientation="portrait"
+253-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:28:13-49
+254            android:theme="@style/Theme.DevLauncher.ErrorActivity" />
+254-->[:expo-dev-launcher] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-launcher\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:29:13-67
+255        <activity
+255-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:8:9-21:20
+256            android:name="expo.modules.devmenu.DevMenuActivity"
+256-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:13-64
+257            android:exported="true"
+257-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-36
+258            android:launchMode="singleTask"
+258-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-44
+259            android:theme="@style/Theme.AppCompat.Transparent.NoActionBar" >
+259-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:13-75
+260            <intent-filter>
+260-->[:expo-dev-menu] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-dev-menu\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-20:29
+261                <action android:name="android.intent.action.VIEW" />
+261-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
+261-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
+262
+263                <category android:name="android.intent.category.DEFAULT" />
+263-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+263-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+264                <category android:name="android.intent.category.BROWSABLE" />
+264-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
+264-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
+265
+266                <data android:scheme="expo-dev-menu" />
+266-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+266-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+267            </intent-filter>
+268        </activity>
+269
+270        <provider
+270-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:21:9-30:20
+271            android:name="expo.modules.filesystem.FileSystemFileProvider"
+271-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:22:13-74
+272            android:authorities="com.anonymous.ChatApp_Sophy.FileSystemFileProvider"
+272-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:23:13-74
+273            android:exported="false"
+273-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:24:13-37
+274            android:grantUriPermissions="true" >
+274-->[:expo-file-system] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-file-system\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:25:13-47
+275            <meta-data
+275-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+276                android:name="android.support.FILE_PROVIDER_PATHS"
+276-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+277                android:resource="@xml/file_system_provider_paths" />
+277-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+278        </provider>
+279
+280        <service
+280-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:28:9-40:19
+281            android:name="com.google.android.gms.metadata.ModuleDependencies"
+281-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:29:13-78
+282            android:enabled="false"
+282-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:30:13-36
+283            android:exported="false" >
+283-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:31:13-37
+284            <intent-filter>
+284-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:33:13-35:29
+285                <action android:name="com.google.android.gms.metadata.MODULE_DEPENDENCIES" />
+285-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:34:17-94
+285-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:34:25-91
+286            </intent-filter>
+287
+288            <meta-data
+288-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:37:13-39:36
+289                android:name="photopicker_activity:0:required"
+289-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:38:17-63
+290                android:value="" />
+290-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:39:17-33
+291        </service>
+292
+293        <activity
+293-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:42:9-44:59
+294            android:name="com.canhub.cropper.CropImageActivity"
+294-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:43:13-64
+295            android:exported="true"
+295-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:35:13-36
+296            android:theme="@style/Base.Theme.AppCompat" /> <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
+296-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:44:13-56
+297        <provider
+297-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:46:9-54:20
+298            android:name="expo.modules.imagepicker.fileprovider.ImagePickerFileProvider"
+298-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:47:13-89
+299            android:authorities="com.anonymous.ChatApp_Sophy.ImagePickerFileProvider"
+299-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:48:13-75
+300            android:exported="false"
+300-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:49:13-37
+301            android:grantUriPermissions="true" >
+301-->[:expo-image-picker] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-image-picker\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:50:13-47
+302            <meta-data
+302-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+303                android:name="android.support.FILE_PROVIDER_PATHS"
+303-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+304                android:resource="@xml/image_picker_provider_paths" />
+304-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+305        </provider>
+306        <provider
+306-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:18:9-26:20
+307            android:name="expo.modules.sharing.SharingFileProvider"
+307-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:19:13-68
+308            android:authorities="com.anonymous.ChatApp_Sophy.SharingFileProvider"
+308-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:20:13-71
+309            android:exported="false"
+309-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:21:13-37
+310            android:grantUriPermissions="true" >
+310-->[:expo-sharing] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-sharing\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:22:13-47
+311            <meta-data
+311-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+312                android:name="android.support.FILE_PROVIDER_PATHS"
+312-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+313                android:resource="@xml/sharing_provider_paths" />
+313-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+314        </provider>
+315
+316        <meta-data
+316-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:9:9-11:89
+317            android:name="org.unimodules.core.AppLoader#react-native-headless"
+317-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:10:13-79
+318            android:value="expo.modules.adapters.react.apploader.RNHeadlessAppLoader" />
+318-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:11:13-86
+319        <meta-data
+319-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:12:9-15:45
+320            android:name="com.facebook.soloader.enabled"
+320-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-57
+321            android:value="true" />
+321-->[:expo-modules-core] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\expo-modules-core\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:13-33
+322
+323        <activity
+323-->[com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:19:9-21:40
+324            android:name="com.facebook.react.devsupport.DevSettingsActivity"
+324-->[com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:20:13-77
+325            android:exported="false" />
+325-->[com.facebook.react:react-android:0.76.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\7299547a49d43bc4e1125332fc498a7a\transformed\react-android-0.76.7-debug\AndroidManifest.xml:21:13-37
+326        <activity
+326-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:29:9-46:20
+327            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
+327-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:30:13-80
+328            android:excludeFromRecents="true"
+328-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:31:13-46
+329            android:exported="true"
+329-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:32:13-36
+330            android:launchMode="singleTask"
+330-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:33:13-44
+331            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+331-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:34:13-72
+332            <intent-filter>
+332-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:35:13-45:29
+333                <action android:name="android.intent.action.VIEW" />
+333-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
+333-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
+334
+335                <category android:name="android.intent.category.DEFAULT" />
+335-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+335-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+336                <category android:name="android.intent.category.BROWSABLE" />
+336-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
+336-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
+337
+338                <data
+338-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+339                    android:host="firebase.auth"
+340                    android:path="/"
+341                    android:scheme="genericidp" />
+341-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+342            </intent-filter>
+343        </activity>
+344        <activity
+344-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:47:9-64:20
+345            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
+345-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:48:13-79
+346            android:excludeFromRecents="true"
+346-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:49:13-46
+347            android:exported="true"
+347-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:50:13-36
+348            android:launchMode="singleTask"
+348-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:51:13-44
+349            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+349-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:52:13-72
+350            <intent-filter>
+350-->[com.google.firebase:firebase-auth:23.2.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a3422875644747d4f68366f775bc2ef1\transformed\firebase-auth-23.2.0\AndroidManifest.xml:53:13-63:29
+351                <action android:name="android.intent.action.VIEW" />
+351-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:7-58
+351-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:15:15-56
+352
+353                <category android:name="android.intent.category.DEFAULT" />
+353-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:9-67
+353-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:31:19-65
+354                <category android:name="android.intent.category.BROWSABLE" />
+354-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:7-67
+354-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:16:17-65
+355
+356                <data
+356-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:7-37
+357                    android:host="firebase.auth"
+358                    android:path="/"
+359                    android:scheme="recaptcha" />
+359-->D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\android\app\src\main\AndroidManifest.xml:17:13-35
+360            </intent-filter>
+361        </activity>
+362
+363        <service
+363-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:24:9-32:19
+364            android:name="androidx.credentials.playservices.CredentialProviderMetadataHolder"
+364-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:25:13-94
+365            android:enabled="true"
+365-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:26:13-35
+366            android:exported="false" >
+366-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:27:13-37
+367            <meta-data
+367-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:29:13-31:104
+368                android:name="androidx.credentials.CREDENTIAL_PROVIDER_KEY"
+368-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:30:17-76
+369                android:value="androidx.credentials.playservices.CredentialProviderPlayServicesImpl" />
+369-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:31:17-101
+370        </service>
+371
+372        <activity
+372-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:34:9-41:20
+373            android:name="androidx.credentials.playservices.HiddenActivity"
+373-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:35:13-76
+374            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+374-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:36:13-87
+375            android:enabled="true"
+375-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:37:13-35
+376            android:exported="false"
+376-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:38:13-37
+377            android:fitsSystemWindows="true"
+377-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:39:13-45
+378            android:theme="@style/Theme.Hidden" >
+378-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\4a3d7d5a3a0ce7177b0c4e5a3d7af321\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:40:13-48
+379        </activity>
+380        <activity
+380-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:23:9-27:75
+381            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+381-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:24:13-93
+382            android:excludeFromRecents="true"
+382-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:25:13-46
+383            android:exported="false"
+383-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:26:13-37
+384            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+384-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:27:13-72
+385        <!--
+386            Service handling Google Sign-In user revocation. For apps that do not integrate with
+387            Google Sign-In, this service will never be started.
+388        -->
+389        <service
+389-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:33:9-37:51
+390            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+390-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:34:13-89
+391            android:exported="true"
+391-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:35:13-36
+392            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+392-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:36:13-107
+393            android:visibleToInstantApps="true" />
+393-->[com.google.android.gms:play-services-auth:21.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\45df7d4d3c383a14d6cab3fa71de24a8\transformed\play-services-auth-21.3.0\AndroidManifest.xml:37:13-48
+394        <service
+394-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:9:9-15:19
+395            android:name="com.google.mlkit.common.internal.MlKitComponentDiscoveryService"
+395-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:10:13-91
+396            android:directBootAware="true"
+396-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:17:13-43
+397            android:exported="false" >
+397-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:11:13-37
+398            <meta-data
+398-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:12:13-14:85
+399                android:name="com.google.firebase.components:com.google.mlkit.vision.barcode.internal.BarcodeRegistrar"
+399-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:13:17-120
+400                android:value="com.google.firebase.components.ComponentRegistrar" />
+400-->[com.google.android.gms:play-services-mlkit-barcode-scanning:18.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\ce4ee4f8706f2fbb83dede9a5297af7b\transformed\play-services-mlkit-barcode-scanning-18.3.1\AndroidManifest.xml:14:17-82
+401            <meta-data
+401-->[com.google.mlkit:vision-common:17.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a0b6d8a880fab9a6846a28619b2f7f97\transformed\vision-common-17.3.0\AndroidManifest.xml:12:13-14:85
+402                android:name="com.google.firebase.components:com.google.mlkit.vision.common.internal.VisionCommonRegistrar"
+402-->[com.google.mlkit:vision-common:17.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a0b6d8a880fab9a6846a28619b2f7f97\transformed\vision-common-17.3.0\AndroidManifest.xml:13:17-124
+403                android:value="com.google.firebase.components.ComponentRegistrar" />
+403-->[com.google.mlkit:vision-common:17.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\a0b6d8a880fab9a6846a28619b2f7f97\transformed\vision-common-17.3.0\AndroidManifest.xml:14:17-82
+404            <meta-data
+404-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:20:13-22:85
+405                android:name="com.google.firebase.components:com.google.mlkit.common.internal.CommonComponentRegistrar"
+405-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:21:17-120
+406                android:value="com.google.firebase.components.ComponentRegistrar" />
+406-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:22:17-82
+407        </service>
+408
+409        <provider
+409-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:9:9-13:38
+410            android:name="com.google.mlkit.common.internal.MlKitInitProvider"
+410-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:10:13-78
+411            android:authorities="com.anonymous.ChatApp_Sophy.mlkitinitprovider"
+411-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:11:13-69
+412            android:exported="false"
+412-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:12:13-37
+413            android:initOrder="99" />
+413-->[com.google.mlkit:common:18.11.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\fd3f51bed20228d31938be3b364c8c8c\transformed\common-18.11.0\AndroidManifest.xml:13:13-35
+414
+415        <activity
+415-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:9-173
+416            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+416-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:19-85
+417            android:exported="false"
+417-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:146-170
+418            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+418-->[com.google.android.gms:play-services-base:18.5.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\47e645ade275d59f1162c888d5350b58\transformed\play-services-base-18.5.0\AndroidManifest.xml:5:86-145
+419
+420        <service
+420-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:22:9-25:40
+421            android:name="com.google.firebase.sessions.SessionLifecycleService"
+421-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:23:13-80
+422            android:enabled="true"
+422-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:24:13-35
+423            android:exported="false" />
+423-->[com.google.firebase:firebase-sessions:2.1.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\9e3443345c21e96d918a05e5a45e11a0\transformed\firebase-sessions-2.1.0\AndroidManifest.xml:25:13-37
+424
+425        <provider
+425-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:23:9-28:39
+426            android:name="com.google.firebase.provider.FirebaseInitProvider"
+426-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:24:13-77
+427            android:authorities="com.anonymous.ChatApp_Sophy.firebaseinitprovider"
+427-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:25:13-72
+428            android:directBootAware="true"
+428-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:26:13-43
+429            android:exported="false"
+429-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:27:13-37
+430            android:initOrder="100" />
+430-->[com.google.firebase:firebase-common:21.0.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\c327421912ddcbea2e658de7b157cb61\transformed\firebase-common-21.0.0\AndroidManifest.xml:28:13-36
+431
+432        <uses-library
+432-->[androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\AndroidManifest.xml:29:9-31:40
+433            android:name="androidx.camera.extensions.impl"
+433-->[androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\AndroidManifest.xml:30:13-59
+434            android:required="false" />
+434-->[androidx.camera:camera-extensions:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\f97af363c857182f16a706aa4f7396a3\transformed\camera-extensions-1.5.0-alpha03\AndroidManifest.xml:31:13-37
+435
+436        <service
+436-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:24:9-33:19
+437            android:name="androidx.camera.core.impl.MetadataHolderService"
+437-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:25:13-75
+438            android:enabled="false"
+438-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:26:13-36
+439            android:exported="false" >
+439-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:27:13-37
+440            <meta-data
+440-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:30:13-32:89
+441                android:name="androidx.camera.core.impl.MetadataHolderService.DEFAULT_CONFIG_PROVIDER"
+441-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:31:17-103
+442                android:value="androidx.camera.camera2.Camera2Config$DefaultProvider" />
+442-->[androidx.camera:camera-camera2:1.5.0-alpha03] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\3e55811e947667e399e817e0efbf7433\transformed\camera-camera2-1.5.0-alpha03\AndroidManifest.xml:32:17-86
+443        </service>
+444
+445        <provider
+445-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:23:9-31:20
+446            android:name="com.canhub.cropper.CropFileProvider"
+446-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:24:13-63
+447            android:authorities="com.anonymous.ChatApp_Sophy.cropper.fileprovider"
+447-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:25:13-72
+448            android:exported="false"
+448-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:26:13-37
+449            android:grantUriPermissions="true" >
+449-->[com.github.CanHub:Android-Image-Cropper:4.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\5f477ecd607340272427ae54954180ee\transformed\Android-Image-Cropper-4.3.1\AndroidManifest.xml:27:13-47
+450            <meta-data
+450-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:13:13-15:63
+451                android:name="android.support.FILE_PROVIDER_PATHS"
+451-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:14:17-67
+452                android:resource="@xml/library_file_paths" />
+452-->[:react-native-webview] D:\NTN_TaiLieu\HK8\CNM\AppChat_Sophy\node_modules\react-native-webview\android\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:15:17-60
+453        </provider>
+454        <provider
+454-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+455            android:name="androidx.startup.InitializationProvider"
+455-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+456            android:authorities="com.anonymous.ChatApp_Sophy.androidx-startup"
+456-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+457            android:exported="false" >
+457-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+458            <meta-data
+458-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+459                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+459-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+460                android:value="androidx.startup" />
+460-->[androidx.emoji2:emoji2:1.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\6faf8de5aef97ae143f4568645c1bb18\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+461            <meta-data
+461-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
+462                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+462-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
+463                android:value="androidx.startup" />
+463-->[androidx.lifecycle:lifecycle-process:2.8.7] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\b8c6d7d76cbcb62e11b453a6848ce2d6\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
+464            <meta-data
+464-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+465                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+465-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+466                android:value="androidx.startup" />
+466-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+467        </provider>
+468
+469        <meta-data
+469-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:9-122
+470            android:name="com.google.android.gms.version"
+470-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:20-65
+471            android:value="@integer/google_play_services_version" />
+471-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\32df52c1ec5176c652d99a5cf55c252e\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:66-119
+472
+473        <receiver
+473-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+474            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+474-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+475            android:directBootAware="false"
+475-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+476            android:enabled="true"
+476-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+477            android:exported="true"
+477-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+478            android:permission="android.permission.DUMP" >
+478-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+479            <intent-filter>
+479-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+480                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+480-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+480-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+481            </intent-filter>
+482            <intent-filter>
+482-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+483                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+483-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+483-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+484            </intent-filter>
+485            <intent-filter>
+485-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+486                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+486-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+486-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+487            </intent-filter>
+488            <intent-filter>
+488-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+489                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+489-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+489-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\0c498e74c3326bf8909854b247702494\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+490            </intent-filter>
+491        </receiver>
+492
+493        <service
+493-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:26:9-32:19
+494            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+494-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:27:13-103
+495            android:exported="false" >
+495-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:28:13-37
+496            <meta-data
+496-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:29:13-31:39
+497                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+497-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:30:17-94
+498                android:value="cct" />
+498-->[com.google.android.datatransport:transport-backend-cct:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\8365099875fcaad1fa76d021d444de9e\transformed\transport-backend-cct-3.3.0\AndroidManifest.xml:31:17-36
+499        </service>
+500        <service
+500-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:24:9-28:19
+501            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+501-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:25:13-117
+502            android:exported="false"
+502-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:26:13-37
+503            android:permission="android.permission.BIND_JOB_SERVICE" >
+503-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:27:13-69
+504        </service>
+505
+506        <receiver
+506-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:30:9-32:40
+507            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+507-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:31:13-132
+508            android:exported="false" /> <!-- The activities will be merged into the manifest of the hosting app. -->
+508-->[com.google.android.datatransport:transport-runtime:3.3.0] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\151ee1ce1e0ca6f231adfa0fc16f3941\transformed\transport-runtime-3.3.0\AndroidManifest.xml:32:13-37
+509        <activity
+509-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:14:9-18:65
+510            android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+510-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:15:13-93
+511            android:exported="false"
+511-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:16:13-37
+512            android:stateNotNeeded="true"
+512-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:17:13-42
+513            android:theme="@style/Theme.PlayCore.Transparent" />
+513-->[com.google.android.play:core-common:2.0.3] C:\Users\ASUS\.gradle\caches\8.10.2\transforms\1743343564c0c08ab7d9c634879a72bc\transformed\core-common-2.0.3\AndroidManifest.xml:18:13-62
+514    </application>
+515
+516</manifest>

@@ -30,8 +30,14 @@ import com.reactnativecommunity.picker.RNCPickerPackage;
 import expo.modules.ExpoModulesPackage;
 // react-native-action-sheet
 import com.actionsheet.ActionSheetPackage;
+// react-native-device-info
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
+// react-native-encrypted-storage
+import com.emeraldsanto.encryptedstorage.RNEncryptedStoragePackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
+// react-native-keep-awake
+import com.corbt.keepawake.KCKeepAwakePackage;
 // react-native-network-info
 import com.pusherman.networkinfo.RNNetworkInfoPackage;
 // react-native-pager-view
@@ -44,6 +50,8 @@ import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 // react-native-sms
 import com.tkporter.sendsms.SendSMSPackage;
+// react-native-sound
+import com.zmxv.RNSound.RNSoundPackage;
 // react-native-vector-icons
 import com.oblador.vectoricons.VectorIconsPackage;
 // react-native-vision-camera
@@ -105,13 +113,17 @@ public class PackageList {
       new RNCPickerPackage(),
       new ExpoModulesPackage(),
       new ActionSheetPackage(),
+      new RNDeviceInfo(),
+      new RNEncryptedStoragePackage(),
       new RNGestureHandlerPackage(),
+      new KCKeepAwakePackage(),
       new RNNetworkInfoPackage(),
       new PagerViewPackage(),
       new ReanimatedPackage(),
       new SafeAreaContextPackage(),
       new RNScreensPackage(),
       new SendSMSPackage(),
+      new RNSoundPackage(),
       new VectorIconsPackage(),
       new CameraPackage(),
       new RNCWebViewPackage()
