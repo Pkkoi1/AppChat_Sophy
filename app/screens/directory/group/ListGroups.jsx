@@ -1,22 +1,30 @@
-import React, { useState } from "react";
-import { FlatList, RefreshControl, Text, View } from "react-native";
+import React, { useState, useContext, useEffect } from "react";
+import { FlatList, RefreshControl, Text, View, ActivityIndicator } from "react-native";
 import { Button, Menu, Divider } from "react-native-paper";
 import { MaterialIcons } from "@expo/vector-icons";
 import Group from "./Group";
 import SubMenu from "./SubMenu";
 import ListGroupStyle from "./ListGroupsStyle";
-import Groups from "../../../../assets/objects/group.json";
+import { AuthContext } from "../../../auth/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 const ListGroup = () => {
   const [sortCriteria, setSortCriteria] = useState("lastActivity");
   const [menuVisible, setMenuVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  
+  const { groups, groupsLoading, fetchGroups } = useContext(AuthContext);
+  const navigation = useNavigation();
 
-  const handlerRefresh = () => {
+  useEffect(() => {
+    // Fetch groups when component mounts
+    fetchGroups();
+  }, []);
+
+  const handlerRefresh = async () => {
     setRefreshing(true);
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 2000);
+    await fetchGroups();
+    setRefreshing(false);
   };
 
   const options = [
@@ -30,24 +38,69 @@ const ListGroup = () => {
     setMenuVisible(false);
   };
 
-  // Hàm sắp xếp danh sách nhóm
+  const handleGroupPress = (conversation) => {
+    navigation.navigate("Chat", {
+      conversation: conversation,
+      receiver: null,
+    });
+  };
+
   const getSortedGroups = () => {
-    let sortedGroups = [...Groups];
+    if (!groups || groups.length === 0) return [];
+
+    const sortedGroups = [...groups];
 
     if (sortCriteria === "lastActivity") {
       sortedGroups.sort((a, b) => {
-        const lastMessageA = a.messages?.[a.messages.length - 1]?.timestamp;
-        const lastMessageB = b.messages?.[b.messages.length - 1]?.timestamp;
-        return (
-          (lastMessageB ? Date.parse(lastMessageB) : 0) -
-          (lastMessageA ? Date.parse(lastMessageA) : 0)
-        );
+        const dateA = a.lastMessage?.createdAt ? new Date(a.lastMessage.createdAt) : new Date(0);
+        const dateB = b.lastMessage?.createdAt ? new Date(b.lastMessage.createdAt) : new Date(0);
+        return dateB - dateA;
       });
     } else if (sortCriteria === "groupName") {
-      sortedGroups.sort((a, b) => a.groupName.localeCompare(b.groupName));
+      sortedGroups.sort((a, b) => (a.groupName || "").localeCompare(b.groupName || ""));
+    } else if (sortCriteria === "adminGroups") {
+      const userId = groups[0]?.userId;
+      sortedGroups.sort((a, b) => {
+        const isAdminA = a.groupOwner === userId || (a.groupCoOwners && a.groupCoOwners.includes(userId));
+        const isAdminB = b.groupOwner === userId || (b.groupCoOwners && b.groupCoOwners.includes(userId));
+        return isAdminB - isAdminA;
+      });
     }
 
     return sortedGroups;
+  };
+
+  // Pre-calculate sorted groups
+  const sortedGroups = getSortedGroups();
+  const hasGroups = sortedGroups.length > 0;
+
+  // Show loading screen
+  if (groupsLoading && !refreshing && (!groups || groups.length === 0)) {
+    return (
+      <View style={ListGroupStyle.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={ListGroupStyle.loadingText}>Đang tải danh sách nhóm...</Text>
+      </View>
+    );
+  }
+
+  // Prepare data for FlatList
+  const listData = [
+    { isSubMenu: true, id: "submenu" },
+    { isSortHeader: true, id: "sortHeader" },
+    ...sortedGroups.map(group => ({ ...group, id: group.conversationId || `group-${group._id}` }))
+  ];
+
+  // Render empty state
+  const renderEmptyComponent = () => {
+    if (!hasGroups) {
+      return (
+        <View style={ListGroupStyle.emptyContainer}>
+          <Text style={ListGroupStyle.emptyText}>Bạn chưa tham gia nhóm nào</Text>
+        </View>
+      );
+    }
+    return null;
   };
 
   return (
@@ -56,18 +109,8 @@ const ListGroup = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={handlerRefresh} />
         }
-        data={[
-          { isSubMenu: true },
-          { isSortHeader: true },
-          ...getSortedGroups(),
-        ]}
-        keyExtractor={(item, index) =>
-          item.isSubMenu
-            ? "submenu"
-            : item.isSortHeader
-            ? "sortHeader"
-            : item.groupId || `group-${index}`
-        }
+        data={listData}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           if (item.isSubMenu) {
             return <SubMenu />;
@@ -77,7 +120,7 @@ const ListGroup = () => {
             return (
               <View style={ListGroupStyle.header}>
                 <Text style={ListGroupStyle.memberCount}>
-                  Nhóm đang tham gia ({Groups.length})
+                  Nhóm đang tham gia ({sortedGroups.length})
                 </Text>
 
                 <Menu
@@ -103,7 +146,7 @@ const ListGroup = () => {
                       key={index}
                       onPress={() => handleSortSelection(option.value)}
                       title={option.label}
-                      titleStyle={ListGroupStyle.menuItem} // Áp dụng màu chữ menu
+                      titleStyle={ListGroupStyle.menuItem}
                     />
                   ))}
                   <Divider style={ListGroupStyle.menuDivider} />
@@ -112,17 +155,18 @@ const ListGroup = () => {
             );
           }
 
-          const latestMessage = item.messages?.[item.messages.length - 1];
-
+          // For each group item
           return (
             <Group
               name={item.groupName}
-              avatar={item.groupAvatar}
-              message={latestMessage?.text || ""}
-              date={latestMessage?.timestamp || ""}
+              avatar={item.groupAvatarUrl}
+              message={item.lastMessage?.content || ""}
+              date={item.lastMessage?.createdAt || ""}
+              onPress={() => handleGroupPress(item)}
             />
           );
         }}
+        ListEmptyComponent={renderEmptyComponent}
       />
     </View>
   );

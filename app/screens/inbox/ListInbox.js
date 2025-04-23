@@ -23,26 +23,28 @@ const ListInbox = () => {
     }
   };
 
-  if (socket) {
+  if (socket && socket.connected) {
     socket.on("newMessage", async () => {
-      console.log("New message received. Refreshing conversations...");
+      console.log(
+        "New message received. Refreshing conversations list inbox..."
+      );
       await handlerRefresh(); // Refresh the conversation list
     });
   }
-  if (socket) {
+  if (socket && socket.connected) {
     socket.on("newConversation", async () => {
       console.log("New convertation received. Refreshing conversations...");
       await handlerRefresh(); // Refresh the conversation list
     });
   }
   useEffect(() => {
-    if (socket) {
+    if (socket && socket.connected) {
       // Listen for newMessage event
       socket.on("newMessage", async () => {
         console.log("New message received. Refreshing conversations...");
         await handlerRefresh(); // Refresh the conversation list
       });
-      if (socket) {
+      if (socket && socket.connected) {
         socket.on("newConversation", async () => {
           console.log("New convertation received. Refreshing conversations...");
           await handlerRefresh(); // Refresh the conversation list

@@ -16,7 +16,7 @@ export const fetchUserInfo = async (id) => {
       return null; // Trả về null nếu không tìm thấy người dùng
     }
   } catch (error) {
-    console.error("Error fetching user:", error);
+    // console.error("Error fetching user:", error);
     return null; // Trả về null nếu có lỗi
   }
 };

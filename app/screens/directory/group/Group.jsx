@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import GroupStyle from "./GroupStyle"; // Import style từ file riêng
+import AvatarUser from "../../../components/profile/AvatarUser"; // Import AvatarUser for fallback
 
 const getDayOfWeek = (date) => {
   const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
@@ -8,21 +9,28 @@ const getDayOfWeek = (date) => {
 };
 
 const formatDate = (timestamp) => {
-  const now = new Date();
-  const messageDate = new Date(timestamp);
-  const diffMs = now - messageDate;
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
-  const diffHours = Math.floor(diffMinutes / 60);
-  const diffDays = Math.floor(diffHours / 24);
+  if (!timestamp) return "";
+  
+  try {
+    const now = new Date();
+    const messageDate = new Date(timestamp);
+    const diffMs = now - messageDate;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
-  if (diffMinutes < 60) {
-    return `${diffMinutes} phút trước`;
-  } else if (diffHours < 24) {
-    return `${diffHours} giờ trước`;
-  } else if (diffDays < 7) {
-    return getDayOfWeek(messageDate);
-  } else {
-    return messageDate.toLocaleDateString("vi-VN");
+    if (diffMinutes < 60) {
+      return `${diffMinutes} phút trước`;
+    } else if (diffHours < 24) {
+      return `${diffHours} giờ trước`;
+    } else if (diffDays < 7) {
+      return getDayOfWeek(messageDate);
+    } else {
+      return messageDate.toLocaleDateString("vi-VN");
+    }
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
   }
 };
 
@@ -31,20 +39,29 @@ const truncateText = (text, maxLength) => {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
-const Group = ({ name, avatar, message, date }) => {
+const Group = ({ name, avatar, message, date, onPress }) => {
   return (
     <TouchableOpacity
-      onPress={() => console.log("Navigate to group chat: ", name)}
+      onPress={onPress || (() => console.log("Navigate to group chat: ", name))}
       activeOpacity={0.6}
-      style={GroupStyle.container} // Áp dụng style từ GroupStyle.js
+      style={GroupStyle.container}
     >
-      <Image source={{ uri: avatar }} style={GroupStyle.avatar} />
+      {avatar ? (
+        <Image source={{ uri: avatar }} style={GroupStyle.avatar} />
+      ) : (
+        <AvatarUser
+          fullName={name || "Nhóm"}
+          width={50}
+          height={50}
+          avtText={20}
+        />
+      )}
 
       <View style={GroupStyle.content}>
         {/* Hàng trên: Tên nhóm + Ngày */}
         <View style={GroupStyle.header}>
           <Text style={GroupStyle.groupName} numberOfLines={1}>
-            {truncateText(name, 20)}
+            {truncateText(name || "Nhóm không tên", 20)}
           </Text>
           <Text style={GroupStyle.date}>{formatDate(date)}</Text>
         </View>

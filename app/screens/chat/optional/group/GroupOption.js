@@ -2,39 +2,64 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Colors from "../../../../components/colors/Color";
 import { Ionicons } from "@expo/vector-icons";
-
-const friendGroupOptions = [
-  {
-    name: "Tạo nhóm với ",
-    icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
-  },
-  {
-    name: "Thêm vào nhóm",
-    icon: <Ionicons name="person-add-outline" size={20} color={Colors.gray} />,
-  },
-  {
-    name: "Xem nhóm chung",
-    icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
-  },
-];
-
-const groupsOption = [
-  {
-    name: "Xem thành viên",
-    icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
-  },
-  {
-    name: "Link nhóm",
-    icon: <Ionicons name="link-outline" size={20} color={Colors.gray} />,
-  },
-];
+import { useNavigation } from "@react-navigation/native";
 
 const GroupOption = ({ conversation, receiver }) => {
+  const navigation = useNavigation();
+
+  const handleCreateGroupWith = () => {
+    navigation.navigate("CreateNewGroup", {
+      preSelectedFriend: receiver // Pass the receiver as the pre-selected friend
+    });
+  };
+
+  const handleAddToGroups = () => {
+    navigation.navigate("AddFriendToGroups", {
+      friend: receiver,
+    });
+  };
+
+  const friendGroupOptions = [
+    {
+      name: "Tạo nhóm với ",
+      icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
+      action: handleCreateGroupWith
+    },
+    {
+      name: "Thêm vào nhóm",
+      icon: <Ionicons name="person-add-outline" size={20} color={Colors.gray} />,
+      action: handleAddToGroups
+    },
+    {
+      name: "Xem nhóm chung",
+      icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
+    },
+  ];
+
+  const groupsOption = [
+    {
+      name: `Xem thành viên (${conversation?.groupMembers?.length || 0})`,
+      icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
+      action: () =>
+        navigation.navigate("GroupMember", {
+          conversation,
+        }),
+    },
+    {
+      name: "Link nhóm",
+      icon: <Ionicons name="link-outline" size={20} color={Colors.gray} />,
+    },
+  ];
+  
   return (
     <View style={styles.container}>
       {conversation?.isGroup
         ? groupsOption.map((option, index) => (
-            <TouchableOpacity style={styles.groupButton} key={index}>
+            <TouchableOpacity
+              style={styles.groupButton}
+              key={index}
+              onPress={option.action}
+            >
               <View style={styles.buttonIcon}>{option.icon}</View>
               <View style={styles.textBorder}>
                 <Text style={styles.buttonText}>{option.name}</Text>
@@ -42,7 +67,11 @@ const GroupOption = ({ conversation, receiver }) => {
             </TouchableOpacity>
           ))
         : friendGroupOptions.map((option, index) => (
-            <TouchableOpacity style={styles.groupButton} key={index}>
+            <TouchableOpacity 
+              style={styles.groupButton} 
+              key={index}
+              onPress={option.action}
+            >
               <View style={styles.buttonIcon}>{option.icon}</View>
               <View style={styles.textBorder}>
                 <Text style={styles.buttonText}>

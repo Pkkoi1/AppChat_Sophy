@@ -32,7 +32,10 @@ const ListFriendStyle = StyleSheet.create({
   buttonAll: {
     marginRight: 10,
   },
-  buttonNew: {},
+  buttonNew: {
+    marginLeft: 10,
+
+  },
   friendList: {
     display: "flex",
     flexDirection: "column",

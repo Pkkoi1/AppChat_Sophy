@@ -10,7 +10,6 @@ import {
   Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as Contacts from "expo-contacts";
 import FriendSubMenu from "./SubMenu";
 import Friends from "./Friend";
 import { AuthContext } from "@/app/auth/AuthContext";
@@ -25,9 +24,15 @@ const ListFriends = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigation = useNavigation();
-  const { userInfo, handlerRefresh } = useContext(AuthContext);
-  const [phoneContacts, setPhoneContacts] = useState([]);
-  const [usersInDB, setUsersInDB] = useState([]);
+  const {
+    userInfo,
+    handlerRefresh,
+    phoneContacts, // Get phone contacts from context
+    usersInDB, // Get users in DB from context
+    getPhoneContacts, // Get the function from context
+    contactsLoading, // Get contacts loading state
+    contactsError, // Get contacts error state
+  } = useContext(AuthContext);
   const socket = useContext(SocketContext); // Thêm dòng này
 
   // Lấy danh sách bạn bè từ API
@@ -45,26 +50,28 @@ const ListFriends = () => {
     }
   }, [refreshing]);
 
-  if (socket) {
+  if (socket && socket.connected) {
     socket.on("newMessage", async () => {
-      console.log("New message received. Refreshing conversations...");
+      console.log(
+        "New message received. Refreshing conversations at listFriend..."
+      );
       await handlerRefresh(); // Refresh the conversation list
     });
   }
-  if (socket) {
+  if (socket && socket.connected) {
     socket.on("newConversation", async () => {
       console.log("New convertation received. Refreshing conversations...");
       await handlerRefresh(); // Refresh the conversation list
     });
   }
   useEffect(() => {
-    if (socket) {
+    if (socket && socket.connected) {
       // Listen for newMessage event
       socket.on("newMessage", async () => {
         console.log("New message received. Refreshing conversations...");
         await handlerRefresh(); // Refresh the conversation list
       });
-      if (socket) {
+      if (socket && socket.connected) {
         socket.on("newConversation", async () => {
           console.log("New convertation received. Refreshing conversations...");
           await handlerRefresh(); // Refresh the conversation list
@@ -73,74 +80,10 @@ const ListFriends = () => {
     }
   }, []);
 
-  // Lấy danh bạ điện thoại và tìm người dùng đã đăng ký app
-  const getPhoneContacts = async () => {
-    try {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === "granted") {
-        setLoading(true);
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
-        });
-
-        if (data.length > 0) {
-          const formattedContacts = data
-            .filter(
-              (contact) =>
-                contact.name &&
-                contact.phoneNumbers &&
-                contact.phoneNumbers.length > 0
-            )
-            .map((contact) => {
-              const phoneNumber = contact.phoneNumbers[0].number.replace(
-                /[\s\-()]/g,
-                ""
-              );
-              return {
-                _id: contact.id,
-                fullname: contact.name,
-                phone: phoneNumber,
-                isPhoneContact: true,
-              };
-            });
-
-          // Lấy danh sách số điện thoại
-          const phoneNumbers = formattedContacts.map((c) => c.phone);
-
-          // Gọi API searchUsersByPhones
-          try {
-            const users = await api.searchUsersByPhones(phoneNumbers);
-            setUsersInDB(users || []);
-          } catch (err) {
-            // Không cần setError ở đây, chỉ log
-          }
-
-          setPhoneContacts(formattedContacts);
-        } else {
-          setPhoneContacts([]);
-          setUsersInDB([]);
-        }
-      } else {
-        Alert.alert(
-          "Cần quyền truy cập danh bạ",
-          "Ứng dụng cần quyền truy cập danh bạ để hiển thị danh sách liên hệ của bạn",
-          [
-            { text: "Đóng", style: "cancel" },
-            { text: "Cài đặt", onPress: () => Linking.openSettings() },
-          ]
-        );
-      }
-    } catch (err) {
-      setError("Không thể truy cập danh bạ điện thoại: " + err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     fetchFriends();
-    getPhoneContacts();
-  }, [fetchFriends]);
+    getPhoneContacts(); // Call getPhoneContacts from AuthContext
+  }, [fetchFriends, getPhoneContacts]);
 
   // Lắng nghe sự kiện acceptedFriendRequest từ socket
   useEffect(() => {
@@ -157,7 +100,7 @@ const ListFriends = () => {
   const handlerRefreshList = () => {
     setRefreshing(true);
     fetchFriends();
-    getPhoneContacts();
+    getPhoneContacts(); // Call getPhoneContacts from AuthContext
   };
 
   // Hiển thị header
@@ -240,7 +183,7 @@ const ListFriends = () => {
 
   return (
     <View>
-      {loading && !refreshing ? (
+      {(loading || contactsLoading) && !refreshing ? (
         <ActivityIndicator
           size="large"
           color="#0000ff"
@@ -290,9 +233,9 @@ const ListFriends = () => {
           contentContainerStyle={ListFriendStyle.container}
         />
       )}
-      {error && (
+      {(error || contactsError) && (
         <Text style={{ color: "red", textAlign: "center", margin: 10 }}>
-          {error}
+          {error || contactsError}
         </Text>
       )}
     </View>
