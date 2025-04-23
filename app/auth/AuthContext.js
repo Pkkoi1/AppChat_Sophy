@@ -142,7 +142,8 @@ export const AuthProvider = ({ children }) => {
       const filteredConversations = conversationsResponse.data.filter(
         (conversation) =>
           !conversation.formerMembers.includes(userId) &&
-          !conversation.isDeleted
+          !conversation.isDeleted &&
+          (!conversation.isGroup || conversation.groupMembers.includes(userId)) // Ensure the user is part of the group if it's a group conversation
       );
 
       setConversations(filteredConversations);
@@ -169,7 +170,9 @@ export const AuthProvider = ({ children }) => {
       const filteredConversations = conversationsResponse.data.filter(
         (conversation) =>
           !conversation.formerMembers.includes(response.user.userId) &&
-          !conversation.isDeleted
+          !conversation.isDeleted &&
+          (!conversation.isGroup ||
+            conversation.groupMembers.includes(response.user.userId)) // Ensure the user is part of the group if it's a group conversation
       );
 
       setConversations(filteredConversations);
@@ -222,7 +225,9 @@ export const AuthProvider = ({ children }) => {
         const filteredConversations = conversationsResponse.data.filter(
           (conversation) =>
             !conversation.formerMembers.includes(userInfo?.userId) &&
-            !conversation.isDeleted
+            !conversation.isDeleted &&
+            (!conversation.isGroup ||
+              conversation.groupMembers.includes(userInfo?.userId)) // Ensure the user is part of the group if it's a group conversation
         );
 
         setConversations(filteredConversations);

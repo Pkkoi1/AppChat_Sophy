@@ -34,7 +34,9 @@ const Conversation = ({
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
   const [pinnedModalVisible, setPinnedModalVisible] = useState(false);
-  const pinnedMessages = messages.filter((msg) => msg.isPinned);
+  const pinnedMessages = messages.filter(
+    (msg) => msg && typeof msg === "object" && msg.isPinned
+  );
   const { userInfo } = useContext(AuthContext); // Assuming you have a UserContext to get user info
 
   const handleLongPress = (message) => {
@@ -71,7 +73,7 @@ const Conversation = ({
       <FlatList
         ref={flatListRef} // Use FlatList ref passed from MessageScreen
         data={messages}
-        keyExtractor={(item) => item.messageDetailId || item.message_id}
+        keyExtractor={(item) => item.messageDetailId}
         renderItem={({ item, index }) => {
           const prevMessage =
             index < messages.length - 1 ? messages[index + 1] : null;

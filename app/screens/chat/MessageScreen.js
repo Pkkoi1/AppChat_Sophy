@@ -204,7 +204,6 @@ const MessageScreen = ({ route, navigation }) => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     if (!conversation?.conversationId) {
       console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
@@ -252,24 +251,20 @@ const MessageScreen = ({ route, navigation }) => {
               content: pseudoMessage.content,
             });
           }
-          // Replace the pseudo message with the actual message from the API
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.messageDetailId === pseudoMessage.messageDetailId
-                ? res.message
-                : msg
-            )
-          );
-          await appendMessage(conversation.conversationId, res.message);
+          if (socket && socket.connected) {
+            // Replace the pseudo message with the actual message from the API
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
+            setMessages((prev) => [res, ...prev]);
+
+            await appendMessage(conversation.conversationId, res.message);
+          }
         }
-        saveMessages(
-          conversation.conversationId,
-          [pseudoMessage],
-          "before"
-        ).then(() => {
-          console.log("Lưu tin nhắn thành công vào cache.");
-        });
-        setSended((prev) => !prev); // Toggle sended state to trigger re-render
+
+        setSended((prev) => !prev);
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
         alert(
@@ -332,22 +327,20 @@ const MessageScreen = ({ route, navigation }) => {
 
         if (message.type === "image") {
           console.log("Bắt đầu gửi ảnh qua API...");
-          await api.sendImageMessage({
+          const res = await api.sendImageMessage({
             conversationId: pseudoMessage.conversationId,
             imageBase64: imageBase64,
           });
-          setMessages((prev) =>
-            prev.filter(
-              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-            )
-          );
-          saveMessages(
-            conversation.conversationId,
-            [pseudoMessage],
-            "before"
-          ).then(() => {
-            console.log("Lưu tin nhắn thành công vào cache.");
-          });
+          console.log("Gửi ảnh thành công:", res);
+          if (socket && socket.connected) {
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
+            setMessages((prev) => [res, ...prev]);
+            await appendMessage(conversation.conversationId, res);
+          }
         }
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);
@@ -400,24 +393,22 @@ const MessageScreen = ({ route, navigation }) => {
           const fileBase64 = `data:${message.mimeType};base64,${base64File}`;
           console.log("Chuyển đổi file sang Base64 thành công.");
 
-          await api.sendFileMessage({
+          const res = await api.sendFileMessage({
             conversationId: pseudoMessage.conversationId,
             fileBase64: fileBase64,
             fileName: message.fileName,
             fileType: message.mimeType,
           });
-          setMessages((prev) =>
-            prev.filter(
-              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-            )
-          );
-          saveMessages(
-            conversation.conversationId,
-            [pseudoMessage],
-            "before"
-          ).then(() => {
-            console.log("Lưu tin nhắn thành công vào cache.");
-          });
+          if (socket && socket.connected) {
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
+            setMessages((prev) => [pseudoMessage, ...prev]);
+            await appendMessage(conversation.conversationId, res);
+          }
+
           console.log("Gửi file thành công!");
         } catch (error) {
           console.error("Lỗi khi gửi file:", error);
@@ -463,19 +454,15 @@ const MessageScreen = ({ route, navigation }) => {
           attachment,
         });
         console.log("Gửi video thành công:", response);
-
-        setMessages((prev) =>
-          prev.filter(
-            (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-          )
-        );
-        saveMessages(
-          conversation.conversationId,
-          [pseudoMessage],
-          "before"
-        ).then(() => {
-          console.log("Lưu tin nhắn thành công vào cache.");
-        });
+        if (socket && socket.connected) {
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+          setMessages((prev) => [response, ...prev]);
+          await appendMessage(conversation.conversationId, response);
+        }
       } catch (error) {
         console.error("Lỗi khi gửi video:", error);
         Alert.alert(
