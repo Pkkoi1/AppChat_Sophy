@@ -3,7 +3,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+const API = `https://sophy-chatapp-be.onrender.com/api`;
+
 // const API = `http://192.168.1.17:3000/api`;
 
 let isRefreshing = false;
@@ -537,6 +539,7 @@ export const api = {
         content,
       });
 
+      console.log("Phản hồi từ API gửi tin nhắn:", response.data);
       if (response.status === 201) {
         return response.data; // Return the created message data
       } else {
@@ -719,6 +722,23 @@ export const api = {
       throw error;
     }
   },
+  addOwner: async (conversationId, userId) => {
+    try {
+      const response = await http.put(
+        `/conversations/group/set-owner/${userId}`,
+        {
+          conversationId,
+        }
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi bổ nhiệm thành viên làm nhóm trưởng:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   promoteToCoOwner: async (conversationId, userId) => {
     try {
       const response = await http.put(`/conversations/group/set-co-owner`, {
@@ -757,6 +777,18 @@ export const api = {
       return response.data; // Return the response data
     } catch (error) {
       console.error("Lỗi khi rời nhóm:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  deleteGroup: async (conversationId) => {
+    // /group/delete/:conversationId
+    try {
+      const response = await http.put(
+        `/conversations/group/delete/${conversationId}` // Assuming this is the correct endpoint
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error("Lỗi khi xóa nhóm:", error.response?.data || error.message);
       throw error;
     }
   },
@@ -938,14 +970,14 @@ export const api = {
   createGroupConversation: async (groupName, groupMembers) => {
     try {
       console.log("Creating group with:", { groupName, groupMembers }); // Log input
-  
+
       const response = await http.post("/conversations/group/create", {
         groupName,
         groupMembers,
       });
-  
+
       console.log("Group creation response:", response.data); // Log the response
-  
+
       return response.data;
     } catch (error) {
       console.error(
