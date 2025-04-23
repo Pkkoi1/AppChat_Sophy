@@ -139,8 +139,14 @@ export const AuthProvider = ({ children }) => {
 
     const conversationsResponse = await api.conversations();
     if (conversationsResponse && conversationsResponse.data) {
-      setConversations(conversationsResponse.data);
-      await saveConversations(conversationsResponse.data); // Lúc này userId đã có
+      const filteredConversations = conversationsResponse.data.filter(
+        (conversation) =>
+          !conversation.formerMembers.includes(userId) &&
+          !conversation.isDeleted
+      );
+
+      setConversations(filteredConversations);
+      await saveConversations(filteredConversations); // Lúc này userId đã có
     }
   };
 
@@ -157,10 +163,17 @@ export const AuthProvider = ({ children }) => {
       socket.emit("authenticate", response.user.userId);
     }
     await ensureStoragePermission();
+
     const conversationsResponse = await api.conversations();
     if (conversationsResponse && conversationsResponse.data) {
-      setConversations(conversationsResponse.data);
-      await saveConversations(conversationsResponse.data);
+      const filteredConversations = conversationsResponse.data.filter(
+        (conversation) =>
+          !conversation.formerMembers.includes(response.user.userId) &&
+          !conversation.isDeleted
+      );
+
+      setConversations(filteredConversations);
+      await saveConversations(filteredConversations);
     }
   };
 
@@ -206,8 +219,14 @@ export const AuthProvider = ({ children }) => {
     try {
       const conversationsResponse = await api.conversations();
       if (conversationsResponse && conversationsResponse.data) {
-        setConversations(conversationsResponse.data);
-        await saveConversations(conversationsResponse.data);
+        const filteredConversations = conversationsResponse.data.filter(
+          (conversation) =>
+            !conversation.formerMembers.includes(userInfo?.userId) &&
+            !conversation.isDeleted
+        );
+
+        setConversations(filteredConversations);
+        await saveConversations(filteredConversations);
       }
       // checkStoragePaths(); // Check storage paths after refreshing conversations
     } catch (error) {

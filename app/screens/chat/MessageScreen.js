@@ -231,38 +231,36 @@ const MessageScreen = ({ route, navigation }) => {
         createdAt: new Date().toISOString(),
         isReply: !!replyingTo,
         messageReplyId: replyingTo?.messageDetailId || null,
-        replyData: replyingTo || null, // Đảm bảo replyData không bị undefined
-
+        replyData: replyingTo || null, // Ensure replyData is not undefined
         sendStatus: "sending", // Initial status
       };
 
+      // Display the message immediately
       setMessages((prev) => [pseudoMessage, ...prev]);
 
       try {
+        let res;
         if (message.type === "text") {
           if (replyingTo && replyingTo.messageDetailId) {
-            const res = await api.replyMessage(
+            res = await api.replyMessage(
               replyingTo.messageDetailId,
               message?.content
             );
-            await appendMessage(conversation.conversationId, res.message);
-            setMessages((prev) =>
-              prev.filter(
-                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-              )
-            );
           } else {
-            const res = await api.sendMessage({
+            res = await api.sendMessage({
               conversationId: pseudoMessage.conversationId,
               content: pseudoMessage.content,
             });
-            await appendMessage(conversation.conversationId, res.message);
-            setMessages((prev) =>
-              prev.filter(
-                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-              )
-            );
           }
+          // Replace the pseudo message with the actual message from the API
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === pseudoMessage.messageDetailId
+                ? res.message
+                : msg
+            )
+          );
+          await appendMessage(conversation.conversationId, res.message);
         }
         saveMessages(
           conversation.conversationId,
@@ -279,6 +277,7 @@ const MessageScreen = ({ route, navigation }) => {
             error.response?.data?.message || error.message
           }. Vui lòng thử lại.`
         );
+        // Mark the pseudo message as failed
         setMessages((prev) =>
           prev.map((msg) =>
             msg.messageDetailId === pseudoMessage.messageDetailId

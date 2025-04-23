@@ -5,8 +5,10 @@ import {
   Feather,
 } from "@expo/vector-icons";
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import Colors from "../../../../components/colors/Color";
+import { api } from "@/app/api/api";
+import { useNavigation } from "@react-navigation/native";
 
 const options = [
   {
@@ -47,13 +49,44 @@ const options = [
 ];
 
 const BanAndRemoveOption = ({ conversation, receiver }) => {
+  const navigation = useNavigation();
+  const handleOptionPress = async (optionName) => {
+    if (optionName === "Rời nhóm") {
+      Alert.alert("Xác nhận", "Bạn có chắc chắn muốn rời nhóm không?", [
+        {
+          text: "Hủy",
+          style: "cancel",
+        },
+        {
+          text: "Đồng ý",
+          onPress: async () => {
+            try {
+              await api.leaveGroup(conversation.conversationId);
+              Alert.alert("Thành công", "Bạn đã rời nhóm.");
+              navigation.goBack(); // Navigate back after leaving the group
+            } catch (error) {
+              Alert.alert("Lỗi", "Không thể rời nhóm. Vui lòng thử lại sau.");
+              console.error("Lỗi khi rời nhóm:", error);
+            }
+          },
+        },
+      ]);
+    } else {
+      console.log(`Option "${optionName}" selected.`);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {options
         .filter((option) => option.includeGroup || !conversation?.isGroup)
         .filter((option) => option.name !== "Rời nhóm" || conversation?.isGroup)
         .map((option, index) => (
-          <TouchableOpacity style={styles.optionButton} key={index}>
+          <TouchableOpacity
+            style={styles.optionButton}
+            key={index}
+            onPress={() => handleOptionPress(option.name)}
+          >
             <View style={styles.iconContainer}>{option.icon}</View>
             <View style={styles.textContainer}>
               <Text style={[styles.optionText, { color: option.color }]}>
