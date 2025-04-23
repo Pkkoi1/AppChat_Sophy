@@ -36,6 +36,8 @@ import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import com.emeraldsanto.encryptedstorage.RNEncryptedStoragePackage;
 // react-native-gesture-handler
 import com.swmansion.gesturehandler.RNGestureHandlerPackage;
+// react-native-incall-manager
+import com.zxcpoiu.incallmanager.InCallManagerPackage;
 // react-native-keep-awake
 import com.corbt.keepawake.KCKeepAwakePackage;
 // react-native-network-info
@@ -56,6 +58,8 @@ import com.zmxv.RNSound.RNSoundPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 // react-native-vision-camera
 import com.mrousavy.camera.react.CameraPackage;
+// react-native-webrtc
+import com.oney.WebRTCModule.WebRTCModulePackage;
 // react-native-webview
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 
@@ -116,6 +120,7 @@ public class PackageList {
       new RNDeviceInfo(),
       new RNEncryptedStoragePackage(),
       new RNGestureHandlerPackage(),
+      new InCallManagerPackage(),
       new KCKeepAwakePackage(),
       new RNNetworkInfoPackage(),
       new PagerViewPackage(),
@@ -126,6 +131,7 @@ public class PackageList {
       new RNSoundPackage(),
       new VectorIconsPackage(),
       new CameraPackage(),
+      new WebRTCModulePackage(),
       new RNCWebViewPackage()
     ));
   }

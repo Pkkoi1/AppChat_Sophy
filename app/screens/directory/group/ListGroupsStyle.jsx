@@ -33,6 +33,24 @@ const ListGroupStyle = StyleSheet.create({
   menuDivider: {
     backgroundColor: "#ccc",
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#666',
+  },
+  emptyContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: '#666',
+    fontSize: 16,
+  },
 });
 
 export default ListGroupStyle;

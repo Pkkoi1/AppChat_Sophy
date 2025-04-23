@@ -36,6 +36,7 @@ const options = [
     name: "Thêm\n thành viên",
     icon: <AntDesign name="adduser" size={20} color="black" />,
     showIfGroup: true,
+    action: "addMember", // Thêm action cho thêm thành viên
   },
   {
     name: "Đổi\n hình nền",
@@ -194,6 +195,9 @@ const ConversationName = ({ receiver, conversation }) => {
         friend: receiver,
         requestSent: "friend",
       });
+    } else if (option.action === "addMember") {
+      // Thêm chức năng để điều hướng đến màn hình AddGroupMember
+      navigation.navigate("AddFriendToGroup", { conversation });
     }
   };
 

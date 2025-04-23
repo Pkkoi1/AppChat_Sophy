@@ -13,7 +13,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 
-const CreateNewGroup = ({ navigation }) => {
+const CreateNewGroup = ({ route, navigation }) => {
+  const { preSelectedFriend } = route.params || {};
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [friends, setFriends] = useState([]); // Danh sách bạn bè
@@ -26,6 +27,15 @@ const CreateNewGroup = ({ navigation }) => {
       try {
         const friendList = await api.getFriends();
         setFriends(friendList);
+        
+        // If a pre-selected friend was passed, add them to selectedFriends
+        if (preSelectedFriend) {
+          // Check if the pre-selected friend is in the friend list
+          const foundFriend = friendList.find(friend => friend.userId === preSelectedFriend.userId);
+          if (foundFriend) {
+            setSelectedFriends([foundFriend]);
+          }
+        }
       } catch (error) {
         console.error("Lỗi khi lấy danh sách bạn bè:", error);
         Alert.alert("Lỗi", "Không thể tải danh sách bạn bè.");
@@ -33,8 +43,10 @@ const CreateNewGroup = ({ navigation }) => {
     };
 
     loadFriends();
-  }, []);
+  }, [preSelectedFriend]);
 
+  // Rest of the component remains unchanged
+  
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchQuery.trim() !== "") {
@@ -86,8 +98,6 @@ const CreateNewGroup = ({ navigation }) => {
 
     try {
       setIsSearching(true);
-      // Log the information of selected friends before making the API call
-      console.log("Selected friends information:", selectedFriends);
       // Extract userIds instead of the entire friend object
       const memberIds = selectedFriends.map((friend) => friend.userId);
       const newGroup = await api.createGroupConversation(groupName, memberIds);
@@ -180,6 +190,8 @@ const CreateNewGroup = ({ navigation }) => {
     </View>
   );
 };
+
+// Styles remain unchanged
 
 const styles = StyleSheet.create({
   container: {

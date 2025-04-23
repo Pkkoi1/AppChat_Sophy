@@ -79,6 +79,7 @@
     "react-native-elements": "^3.4.3",
     "react-native-encrypted-storage": "^4.0.3",
     "react-native-gesture-handler": "~2.20.2",
+    "react-native-incall-manager": "^4.2.0",
     "react-native-international-phone-number": "^0.9.1",
     "react-native-keep-awake": "^4.0.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
@@ -96,6 +97,7 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-vision-camera": "^4.6.4",
     "react-native-web": "~0.19.13",
+    "react-native-webrtc": "^124.0.5",
     "react-native-webview": "13.12.5",
     "socket.io-client": "^4.8.1",
     "uuid": "^11.1.0"
