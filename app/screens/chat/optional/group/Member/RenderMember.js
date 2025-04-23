@@ -19,7 +19,7 @@ const RenderMember = ({
     item === conversation?.rules.ownerId
       ? "Trường nhóm"
       : conversation?.rules.coOwnerIds.includes(item)
-      ? "Nhóm phó"
+      ? "Phó nhóm"
       : "Thành viên";
 
   const renderAvatar = (userInfo, role) => {
@@ -40,7 +40,7 @@ const RenderMember = ({
             bordered={false}
           />
         )}
-        {(role === "Trường nhóm" || role === "Nhóm phó") && (
+        {(role === "Trường nhóm" || role === "Phó nhóm") && (
           <View style={styles.keyIconContainer}>
             <AntDesign
               name="key"
@@ -106,7 +106,7 @@ const RenderMember = ({
     }
   };
 
-  const handleAction = (action) => {
+  const handleAction = async (action) => {
     setOptionVisible(false);
     switch (action) {
       case "message":
@@ -116,7 +116,90 @@ const RenderMember = ({
         navigation.navigate("UserProfile", { friend: memberInfo });
         break;
       case "promote":
-        console.log("Promote to co-owner");
+        Alert.alert(
+          "Xác nhận",
+          `Bạn có chắc chắn muốn bổ nhiệm ${
+            memberInfo?.fullname || "thành viên"
+          } làm nhóm phó không?`,
+          [
+            {
+              text: "Hủy",
+              style: "cancel",
+            },
+            {
+              text: "Đồng ý",
+              onPress: async () => {
+                try {
+                  await api.promoteToCoOwner(
+                    conversation.conversationId,
+                    memberInfo.userId
+                  );
+                  Alert.alert(
+                    "Thành công",
+                    "Đã bổ nhiệm thành viên làm nhóm phó."
+                  );
+
+                  // Refresh the data after promotion
+                  const updatedConversation = await api.getConversationById(
+                    conversation.conversationId
+                  );
+                  if (updatedConversation) {
+                    conversation.rules.coOwnerIds =
+                      updatedConversation.rules.coOwnerIds;
+                  }
+                } catch (error) {
+                  Alert.alert(
+                    "Lỗi",
+                    "Không thể bổ nhiệm thành viên làm nhóm phó."
+                  );
+                }
+              },
+            },
+          ]
+        );
+        break;
+      case "removeCoOwner":
+        Alert.alert(
+          "Xác nhận",
+          `Bạn có chắc chắn muốn xóa vai trò nhóm phó của ${
+            memberInfo?.fullname || "thành viên"
+          } không?`,
+          [
+            {
+              text: "Hủy",
+              style: "cancel",
+            },
+            {
+              text: "Đồng ý",
+              onPress: async () => {
+                try {
+                  await api.removeCoOwner(
+                    conversation.conversationId,
+                    memberInfo.userId
+                  );
+                  Alert.alert(
+                    "Thành công",
+                    "Đã xóa vai trò nhóm phó của thành viên."
+                  );
+
+                  // Refresh the data after role removal
+                  const updatedConversation = await api.getConversationById(
+                    conversation.conversationId
+                  );
+                  if (updatedConversation) {
+                    conversation.rules.coOwnerIds =
+                      updatedConversation.rules.coOwnerIds;
+                  }
+                } catch (error) {
+                  Alert.alert(
+                    "Lỗi",
+                    "Không thể xóa vai trò nhóm phó của thành viên."
+                  );
+                }
+              },
+            },
+          ]
+        );
         break;
       case "block":
         console.log("Block member");
@@ -126,6 +209,29 @@ const RenderMember = ({
         break;
       default:
         break;
+    }
+  };
+
+  const getAvailableActions = () => {
+    if (userInfo?.userId === conversation?.rules.ownerId) {
+      // If the user is the group owner
+      if (role === "Phó nhóm") {
+        return ["removeCoOwner", "viewProfile", "block", "remove"]; // Only allow removing co-owner role
+      } else if (role === "Thành viên") {
+        return ["promote", "viewProfile", "block", "remove"]; // Allow promoting and other actions for regular members
+      } else {
+        return ["viewProfile"]; // Only allow viewing profiles for group owner
+      }
+    } else if (conversation?.rules.coOwnerIds.includes(userInfo?.userId)) {
+      // If the user is a co-owner
+      if (role === "Trường nhóm" || role === "Phó nhóm") {
+        return ["viewProfile"]; // Only allow viewing profiles for group owner or co-owners
+      } else {
+        return ["viewProfile", "block", "remove"]; // Allow limited actions for regular members
+      }
+    } else {
+      // Regular members can only view profiles
+      return ["viewProfile"];
     }
   };
 
@@ -145,6 +251,8 @@ const RenderMember = ({
         onClose={() => setOptionVisible(false)}
         memberInfo={memberInfo}
         onAction={handleAction}
+        isCoOwner={conversation?.rules.coOwnerIds.includes(item)} // Corrected to use `item` instead of `memberInfo.userId`
+        availableActions={getAvailableActions()} // Pass available actions based on role
       />
     </>
   );
@@ -155,8 +263,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 8,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#ddd",
+
     cursor: "pointer",
   },
   avatarContainer: {

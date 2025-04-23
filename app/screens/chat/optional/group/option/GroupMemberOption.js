@@ -4,7 +4,14 @@ import { BottomSheet } from "@rneui/themed";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-const GroupMemberOption = ({ isVisible, onClose, memberInfo, onAction }) => {
+const GroupMemberOption = ({
+  isVisible,
+  onClose,
+  memberInfo,
+  onAction,
+  isCoOwner,
+  availableActions,
+}) => {
   const renderAvatar = () => {
     const fullName = memberInfo?.fullname || "User";
     const url = memberInfo?.urlavatar;
@@ -23,6 +30,16 @@ const GroupMemberOption = ({ isVisible, onClose, memberInfo, onAction }) => {
     );
   };
 
+  const renderOption = (action, label) => (
+    <TouchableOpacity
+      key={action}
+      style={styles.option}
+      onPress={() => onAction(action)}
+    >
+      <Text style={styles.optionText}>{label}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <BottomSheet isVisible={isVisible} onBackdropPress={onClose}>
       <View style={styles.container}>
@@ -35,36 +52,18 @@ const GroupMemberOption = ({ isVisible, onClose, memberInfo, onAction }) => {
             {memberInfo?.fullname || "Không rõ"}
           </Text>
         </View>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => onAction("message")}
-        >
-          <Text style={styles.optionText}>Nhắn tin</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => onAction("viewProfile")}
-        >
-          <Text style={styles.optionText}>Xem trang cá nhân</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => onAction("promote")}
-        >
-          <Text style={styles.optionText}>Bổ nhiệm làm nhóm phó</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => onAction("block")}
-        >
-          <Text style={styles.optionText}>Chặn thành viên</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.option}
-          onPress={() => onAction("remove")}
-        >
-          <Text style={styles.optionText}>Xóa khỏi nhóm</Text>
-        </TouchableOpacity>
+        {availableActions.includes("message") &&
+          renderOption("message", "Nhắn tin")}
+        {availableActions.includes("viewProfile") &&
+          renderOption("viewProfile", "Xem trang cá nhân")}
+        {availableActions.includes("promote") &&
+          renderOption("promote", "Bổ nhiệm làm nhóm phó")}
+        {availableActions.includes("removeCoOwner") &&
+          renderOption("removeCoOwner", "Xóa vai trò nhóm phó")}
+        {availableActions.includes("block") &&
+          renderOption("block", "Chặn thành viên")}
+        {availableActions.includes("remove") &&
+          renderOption("remove", "Xóa khỏi nhóm")}
       </View>
     </BottomSheet>
   );

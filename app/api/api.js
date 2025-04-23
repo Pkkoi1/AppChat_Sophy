@@ -719,18 +719,44 @@ export const api = {
       throw error;
     }
   },
-
-  addCoOwner: async (conversationId, userId) => {
+  promoteToCoOwner: async (conversationId, userId) => {
+    try {
+      const response = await http.put(`/conversations/group/set-co-owner`, {
+        conversationId,
+        coOwnerIds: [userId], // Pass the userId as part of the coOwnerIds array
+      });
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi bổ nhiệm thành viên làm nhóm phó:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  removeCoOwner: async (conversationId, userId) => {
     try {
       const response = await http.put(
-        `/conversations/add-co-owner/${conversationId}/${userId}`
+        `/conversations/group/${conversationId}/remove-co-owner/${userId}`
       );
       return response.data; // Return the response data
     } catch (error) {
       console.error(
-        "Lỗi khi thêm đồng sở hữu cuộc trò chuyện:",
+        "Lỗi khi xóa quyền nhóm phó:",
         error.response?.data || error.message
       );
+      throw error;
+    }
+  },
+  leaveGroup: async (conversationId) => {
+    try {
+      // /group/:conversationId/leave
+      const response = await http.put(
+        `/conversations/group/${conversationId}/leave` // Assuming this is the correct endpoint
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error("Lỗi khi rời nhóm:", error.response?.data || error.message);
       throw error;
     }
   },
