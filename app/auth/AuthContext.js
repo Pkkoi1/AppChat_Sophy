@@ -4,16 +4,19 @@ import React, {
   useEffect,
   useContext,
   useRef,
+  useCallback, // Import useCallback
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../socket/SocketContext";
+import * as Contacts from "expo-contacts"; // Import Contacts
 import {
   checkStoragePaths,
   getConversations,
   pickExternalDirectory,
   saveConversations,
 } from "../storage/StorageService"; // Import storage helpers
+import { Alert, Linking } from "react-native";
 
 export const AuthContext = createContext();
 
@@ -24,6 +27,10 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [conversations, setConversations] = useState([]);
   const [background, setBackground] = useState(null);
+  const [phoneContacts, setPhoneContacts] = useState([]); // Add state for phone contacts
+  const [usersInDB, setUsersInDB] = useState([]); // Add state for users in DB
+  const [contactsLoading, setContactsLoading] = useState(false); // Add loading state for contacts
+  const [contactsError, setContactsError] = useState(null); // Add error state for contacts
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -213,6 +220,69 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.setItem("background", newBackground);
   };
 
+  // Function to fetch phone contacts
+  const getPhoneContacts = useCallback(async () => {
+    setContactsLoading(true);
+    setContactsError(null);
+    try {
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status === "granted") {
+        const { data } = await Contacts.getContactsAsync({
+          fields: [Contacts.Fields.PhoneNumbers, Contacts.Fields.Name],
+        });
+
+        if (data.length > 0) {
+          const formattedContacts = data
+            .filter(
+              (contact) =>
+                contact.name &&
+                contact.phoneNumbers &&
+                contact.phoneNumbers.length > 0
+            )
+            .map((contact) => {
+              const phoneNumber = contact.phoneNumbers[0].number.replace(
+                /[\s\-()]/g,
+                ""
+              );
+              return {
+                _id: contact.id,
+                fullname: contact.name,
+                phone: phoneNumber,
+                isPhoneContact: true,
+              };
+            });
+
+          const phoneNumbers = formattedContacts.map((c) => c.phone);
+
+          try {
+            const users = await api.searchUsersByPhones(phoneNumbers);
+            setUsersInDB(users || []);
+          } catch (err) {
+            console.error("Error searching users by phones:", err);
+          }
+
+          setPhoneContacts(formattedContacts);
+        } else {
+          setPhoneContacts([]);
+          setUsersInDB([]);
+        }
+      } else {
+        Alert.alert(
+          "Cần quyền truy cập danh bạ",
+          "Ứng dụng cần quyền truy cập danh bạ để hiển thị danh sách liên hệ của bạn",
+          [
+            { text: "Đóng", style: "cancel" },
+            { text: "Cài đặt", onPress: () => Linking.openSettings() },
+          ]
+        );
+      }
+    } catch (err) {
+      setContactsError("Không thể truy cập danh bạ điện thoại: " + err.message);
+    } finally {
+      setContactsLoading(false);
+    }
+  }, []); // Empty dependency array - this function doesn't depend on any state
+
   return (
     <AuthContext.Provider
       value={{
@@ -230,6 +300,11 @@ export const AuthProvider = ({ children }) => {
         handlerRefresh,
         updateBackground,
         flatListRef,
+        phoneContacts, // Provide phone contacts
+        usersInDB, // Provide users in DB
+        getPhoneContacts, // Provide the function
+        contactsLoading, // Provide loading state
+        contactsError, // Provide error state
       }}
     >
       {children}

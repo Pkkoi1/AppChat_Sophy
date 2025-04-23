@@ -51,6 +51,7 @@ import ShareMessage from "./screens/chat/share/ShareMessage";
 import SearchUser from "./screens/chat/search/SearrchUser";
 import UserInfo from "./screens/profile/userProfile/userInfo/UserInfo"; // Đảm bảo đường dẫn đúng
 import GroupMember from "./screens/chat/optional/group/Member/Index";
+import CreateNewGroup from "./screens/directory/group/createGroup/CreateNewGroup";
 
 const Stack = createNativeStackNavigator();
 
@@ -141,6 +142,7 @@ function RootLayout() {
               <Stack.Screen name="UserInfo" component={UserInfo} />
               {/* GroupMember */}
               <Stack.Screen name="GroupMember" component={GroupMember} />
+              <Stack.Screen name="CreateNewGroup" component={CreateNewGroup} />
 
               {/* Add other screens here */}
             </Stack.Navigator>

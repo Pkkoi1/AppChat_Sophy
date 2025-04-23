@@ -909,4 +909,24 @@ export const api = {
       throw error;
     }
   },
+  createGroupConversation: async (groupName, groupMembers) => {
+    try {
+      console.log("Creating group with:", { groupName, groupMembers }); // Log input
+  
+      const response = await http.post("/conversations/group/create", {
+        groupName,
+        groupMembers,
+      });
+  
+      console.log("Group creation response:", response.data); // Log the response
+  
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Error creating group conversation:",
+        error.response ? error.response.data : error.message
+      );
+      throw error;
+    }
+  },
 };
