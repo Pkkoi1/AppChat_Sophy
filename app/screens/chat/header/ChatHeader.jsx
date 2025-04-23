@@ -15,7 +15,7 @@ const ChatHeader = ({
 }) => {
   const [receiverName, setReceiverName] = useState("");
   const socket = useContext(SocketContext);
-  
+
   const handlerBack = () => {
     api.readMessage(conversation.conversationId);
     navigation.goBack();
@@ -28,7 +28,7 @@ const ChatHeader = ({
         : { receiver, conversation }),
     });
   };
-  
+
   const handleVoiceCall = () => {
     // Don't allow calls in group conversations
     if (conversation?.isGroup) {
@@ -36,15 +36,15 @@ const ChatHeader = ({
       console.log("Group calling not implemented yet");
       return;
     }
-    
+
     // Navigate to call screen with required parameters
     navigation.navigate("CallScreen", {
-      callType: 'voice',
+      callType: "voice",
       user: receiver,
       incoming: false,
     });
   };
-  
+
   const handleVideoCall = () => {
     // Don't allow calls in group conversations
     if (conversation?.isGroup) {
@@ -52,10 +52,10 @@ const ChatHeader = ({
       console.log("Group video calling not implemented yet");
       return;
     }
-    
+
     // Navigate to call screen with required parameters
     navigation.navigate("CallScreen", {
-      callType: 'video',
+      callType: "video",
       user: receiver,
       incoming: false,
     });
@@ -87,18 +87,24 @@ const ChatHeader = ({
             : lastActiveStatus || "Đang tải..."}
         </Text>
       </View>
-      <TouchableOpacity onPress={handleVoiceCall} disabled={conversation?.isGroup}>
-        <Feather 
-          name="phone" 
-          size={24} 
-          color={conversation?.isGroup ? "#cccccc" : "#ffffff"} 
+      <TouchableOpacity
+        onPress={handleVoiceCall}
+        disabled={conversation?.isGroup}
+      >
+        <Feather
+          name="phone"
+          size={24}
+          color={conversation?.isGroup ? "#ffffff" : "#ffffff"}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleVideoCall} disabled={conversation?.isGroup}>
-        <Ionicons 
-          name="videocam-outline" 
-          size={24} 
-          color={conversation?.isGroup ? "#cccccc" : "#ffffff"} 
+      <TouchableOpacity
+        onPress={handleVideoCall}
+        disabled={conversation?.isGroup}
+      >
+        <Ionicons
+          name="videocam-outline"
+          size={24}
+          color={conversation?.isGroup ? "#ffffff" : "#ffffff"}
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={handlerOptionScreen}>
