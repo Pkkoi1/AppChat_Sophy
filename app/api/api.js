@@ -792,6 +792,44 @@ export const api = {
       throw error;
     }
   },
+  changeGroupAvatar: async (conversationId, imageBase64) => {
+    try {
+      // /mobile/group/update/avatar/:conversationId
+      const response = await http.put(
+        `/conversations/mobile/group/update/avatar/${conversationId}`,
+        {
+          imageBase64, // Gửi ảnh dưới dạng base64
+        }
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi cập nhật ảnh đại diện nhóm:",
+        error.response?.data || error.message
+      );
+      // console.error("Hình ảnh đại diện nhóm không hợp lệ:", imageBase64);
+      throw error;
+    }
+  },
+  //Đổi tên nhóm
+  changeGroupName: async (conversationId, newName) => {
+    try {
+      // '/group/update/name/:conversationId
+      const response = await http.put(
+        `/conversations/group/update/name/${conversationId}`,
+        {
+          newName, // Gửi tên nhóm mới
+        }
+      );
+      return response.data; // Return the response data
+    } catch (error) {
+      console.error(
+        "Lỗi khi cập nhật tên nhóm:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   //Thêm mới vào đây
   getFriends: async () => {
     try {
@@ -989,19 +1027,27 @@ export const api = {
   },
   addUserToGroup: async (conversationId, userId) => {
     try {
-      const response = await http.put(`/conversations/group/${conversationId}/add/${userId}`);
+      const response = await http.put(
+        `/conversations/group/${conversationId}/add/${userId}`
+      );
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi thêm người dùng vào nhóm:", error.response?.data || error.message);
+      console.error(
+        "Lỗi khi thêm người dùng vào nhóm:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
   getGroups: async () => {
     try {
-      const response = await http.get('/conversations/groups');
+      const response = await http.get("/conversations/groups");
       return response.data;
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách nhóm:", error.response?.data || error.message);
+      console.error(
+        "Lỗi khi lấy danh sách nhóm:",
+        error.response?.data || error.message
+      );
       throw error;
     }
   },
