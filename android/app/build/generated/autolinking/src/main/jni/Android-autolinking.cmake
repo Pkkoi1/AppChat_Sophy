@@ -21,6 +21,7 @@ add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/@react-nativ
 add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/react-native-gesture-handler/android/build/generated/source/codegen/jni/" rngesturehandler_codegen_autolinked_build)
 
 
+
 add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/react-native-pager-view/android/build/generated/source/codegen/jni/" pagerview_autolinked_build)
 add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/" rnreanimated_autolinked_build)
 add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/react-native-safe-area-context/android/src/main/jni/" safeareacontext_autolinked_build)
@@ -28,6 +29,7 @@ add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/react-native
 
 
 add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/react-native-vector-icons/android/build/generated/source/codegen/jni/" RNVectorIconsSpec_autolinked_build)
+
 
 add_subdirectory("D:/NTN_TaiLieu/HK8/CNM/AppChat_Sophy/node_modules/react-native-webview/android/build/generated/source/codegen/jni/" RNCWebViewSpec_autolinked_build)
 
@@ -47,6 +49,7 @@ set(AUTOLINKED_LIBRARIES
   react_codegen_rngesturehandler_codegen
   
   
+  
   react_codegen_pagerview
   react_codegen_rnreanimated
   react_codegen_safeareacontext
@@ -54,6 +57,7 @@ set(AUTOLINKED_LIBRARIES
   
   
   react_codegen_RNVectorIconsSpec
+  
   
   react_codegen_RNCWebViewSpec
 )

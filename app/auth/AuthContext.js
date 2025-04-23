@@ -31,6 +31,8 @@ export const AuthProvider = ({ children }) => {
   const [usersInDB, setUsersInDB] = useState([]); // Add state for users in DB
   const [contactsLoading, setContactsLoading] = useState(false); // Add loading state for contacts
   const [contactsError, setContactsError] = useState(null); // Add error state for contacts
+  const [groups, setGroups] = useState([]); // Add state for groups
+  const [groupsLoading, setGroupsLoading] = useState(false); // Add loading state for groups
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -228,9 +230,10 @@ export const AuthProvider = ({ children }) => {
         setConversations(filteredConversations);
         await saveConversations(filteredConversations);
       }
-      // checkStoragePaths(); // Check storage paths after refreshing conversations
+      // Also refresh groups
+      await fetchGroups();
     } catch (error) {
-      console.error("Error refreshing conversations:", error);
+      console.error("Error refreshing data:", error);
     }
   };
 
@@ -302,6 +305,69 @@ export const AuthProvider = ({ children }) => {
     }
   }, []); // Empty dependency array - this function doesn't depend on any state
 
+  // Function to fetch groups
+  const fetchGroups = useCallback(async () => {
+    try {
+      setGroupsLoading(true);
+      const response = await api.getGroups();
+
+      if (response) {
+        // Sort groups by latest message timestamp
+        const sortedGroups = response.sort((a, b) => {
+          const dateA = a.lastMessage?.createdAt
+            ? new Date(a.lastMessage.createdAt)
+            : new Date(0);
+          const dateB = b.lastMessage?.createdAt
+            ? new Date(b.lastMessage.createdAt)
+            : new Date(0);
+          return dateB - dateA;
+        });
+
+        setGroups(sortedGroups);
+
+        // Save groups to AsyncStorage for offline access
+        await AsyncStorage.setItem("groups", JSON.stringify(sortedGroups));
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Error fetching groups:", error);
+
+      // Try to load from AsyncStorage if network request fails
+      try {
+        const cachedGroups = await AsyncStorage.getItem("groups");
+        if (cachedGroups) {
+          setGroups(JSON.parse(cachedGroups));
+        }
+      } catch (storageError) {
+        console.error("Error loading cached groups:", storageError);
+      }
+
+      return [];
+    } finally {
+      setGroupsLoading(false);
+    }
+  }, []);
+
+  // Load groups on initial load
+  useEffect(() => {
+    const loadCachedGroups = async () => {
+      try {
+        const cachedGroups = await AsyncStorage.getItem("groups");
+        if (cachedGroups) {
+          setGroups(JSON.parse(cachedGroups));
+        }
+      } catch (error) {
+        console.error("Error loading cached groups:", error);
+      }
+    };
+
+    if (userInfo?.userId) {
+      loadCachedGroups();
+      fetchGroups();
+    }
+  }, [userInfo?.userId]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -324,6 +390,9 @@ export const AuthProvider = ({ children }) => {
         getPhoneContacts, // Provide the function
         contactsLoading, // Provide loading state
         contactsError, // Provide error state
+        groups, // Provide groups
+        groupsLoading, // Provide groups loading state
+        fetchGroups, // Provide fetchGroups function
       }}
     >
       {children}

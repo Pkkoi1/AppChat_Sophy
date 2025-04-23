@@ -955,4 +955,22 @@ export const api = {
       throw error;
     }
   },
+  addUserToGroup: async (conversationId, userId) => {
+    try {
+      const response = await http.put(`/conversations/group/${conversationId}/add/${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi thêm người dùng vào nhóm:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  getGroups: async () => {
+    try {
+      const response = await http.get('/conversations/groups');
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách nhóm:", error.response?.data || error.message);
+      throw error;
+    }
+  },
 };

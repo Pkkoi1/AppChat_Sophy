@@ -21,25 +21,6 @@
                     }
                 },
                 {
-                    "source": "D:\\NTN_TaiLieu\\HK8\\CNM\\App\\AppChat_Sophy\\node_modules\\@react-native-community\\datetimepicker\\android\\build\\intermediates\\packaged_res\\debug\\packageDebugResources\\values-night-v8\\values-night-v8.xml",
-                    "from": {
-                        "startLines": "2,5",
-                        "startColumns": "4,4",
-                        "startOffsets": "55,200",
-                        "endLines": "4,7",
-                        "endColumns": "9,9",
-                        "endOffsets": "195,340"
-                    },
-                    "to": {
-                        "startLines": "5,8",
-                        "startColumns": "4,4",
-                        "startOffsets": "200,345",
-                        "endLines": "7,10",
-                        "endColumns": "9,9",
-                        "endOffsets": "340,485"
-                    }
-                },
-                {
                     "source": "C:\\Users\\ASUS\\.gradle\\caches\\8.10.2\\transforms\\71cd547f93f438ffaf1e84f2decc95c7\\transformed\\core-splashscreen-1.2.0-alpha02\\res\\values-night-v8\\values-night-v8.xml",
                     "from": {
                         "startLines": "2",
@@ -65,6 +46,25 @@
                         "startOffsets": "490,560,644,728,824,926,1028,4010",
                         "endColumns": "69,83,83,95,101,101,93,88",
                         "endOffsets": "555,639,723,819,921,1023,1117,4094"
+                    }
+                },
+                {
+                    "source": "D:\\NTN_TaiLieu\\HK8\\CNM\\AppChat_Sophy\\node_modules\\@react-native-community\\datetimepicker\\android\\build\\intermediates\\packaged_res\\debug\\packageDebugResources\\values-night-v8\\values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,5",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,200",
+                        "endLines": "4,7",
+                        "endColumns": "9,9",
+                        "endOffsets": "195,340"
+                    },
+                    "to": {
+                        "startLines": "5,8",
+                        "startColumns": "4,4",
+                        "startOffsets": "200,345",
+                        "endLines": "7,10",
+                        "endColumns": "9,9",
+                        "endOffsets": "340,485"
                     }
                 }
             ]
