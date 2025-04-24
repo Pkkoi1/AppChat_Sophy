@@ -163,6 +163,7 @@ const ListGroup = () => {
               message={item.lastMessage?.content || ""}
               date={item.lastMessage?.createdAt || ""}
               onPress={() => handleGroupPress(item)}
+              groupMembers={item.groupMembers} // Pass groupMembers to Group component
             />
           );
         }}

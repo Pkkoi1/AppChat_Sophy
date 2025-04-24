@@ -382,52 +382,49 @@ const UserProfile = ({ route }) => {
 
   const renderFriendStatus = () => {
     if (requestSent === "friend") {
-      return (
-        <View style={styles.friendContainer}>
-          <Text style={styles.statusText}>Phan Hoang Tan</Text>
-          <Text style={styles.statusText}>{friend?.phone || "0792764303"}</Text>
-          <Text style={styles.statusText}>
-            {friend?.email || "tan@gmail.com"}
-          </Text>
-          <TouchableOpacity
-            style={styles.messageButton}
-            onPress={handleCreateConversation}
-          >
-            <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
-            <Text style={styles.messageButtonText}>Nhắn tin</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
+  return (
+    <View style={styles.friendContainer}>
+      <Text style={styles.statusText}>Phan Hoang Tan</Text>
+      <Text style={styles.statusText}>{friend?.phone || "0792764303"}</Text>
+      <Text style={styles.statusText}>
+        {friend?.email || "tan@gmail.com"}
+      </Text>
+    </View>
+  );
+}
 
-    // Trang thai da gui loi moi ket ban
-    if (requestSent === "pending") {
-      return (
-        <View style={styles.buttonAndStatusContainer}>
-          <View style={styles.horizontalButtons}>
-            <TouchableOpacity
-              style={styles.messageButton}
-              onPress={handleCreateConversation}
-            >
-              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
-              <Text style={styles.messageButtonText}>Nhắn tin</Text>
-            </TouchableOpacity>
-            {loading ? (
+// Trang thai da gui loi moi ket ban
+if (requestSent === "pending") {
+  return (
+    <View style={styles.buttonAndStatusContainer}>
+      <View style={styles.horizontalButtons}>
+        <TouchableOpacity
+          style={styles.messageButton}
+          onPress={handleCreateConversation}
+        >
+          <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+          <Text style={styles.messageButtonText}>Nhắn tin</Text>
+        </TouchableOpacity>
+        <View style={styles.buttonWrapper}>
+          {loading ? (
+            <View style={styles.loaderContainer}>
               <ActivityIndicator size="small" color="#666" />
-            ) : (
-              <TouchableOpacity
-                style={styles.removeFriendButton}
-                onPress={handleCancelRequest}
-              >
-                <Ionicons name="person-remove-outline" size={20} color="#666" />
-                <Text style={styles.removeFriendButtonText}>Hủy kết bạn</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-          <View style={styles.divider} />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.addFriendButton}
+              onPress={handleCancelRequest}
+            >
+              <Ionicons name="person-remove-outline" size={20} color="#666" />
+              <Text style={styles.addFriendButtonText}>Hủy kết bạn</Text>
+            </TouchableOpacity>
+          )}
         </View>
-      );
-    }
+      </View>
+      <View style={styles.divider} />
+    </View>
+  );
+}
 
     if (requestSent === "accepted") {
       return (
@@ -1095,6 +1092,22 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flex: 1,
     marginLeft: 10, // Thêm dòng này cho cân đối
+  },
+  floatingMessageButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: Color.sophy,
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 5, // for Android shadow
+    shadowColor: "#000", // for iOS shadow
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
 });
 

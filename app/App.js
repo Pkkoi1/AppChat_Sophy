@@ -53,6 +53,8 @@ import CallScreen from "./screens/call/CallScreen";
 import IncomingCallHandler from "./components/call/IncomingCallHandler";
 import AddFriendToGroup from "./screens/directory/group/createGroup/AddFriendToGroup";
 import AddFriendToGroups from "./screens/directory/group/createGroup/AddFriendToGroups";
+import SameGroups from "./screens/chat/optional/group/samegroup/SameGroups";
+
 const Stack = createNativeStackNavigator();
 
 // Navigation Stack component
@@ -123,7 +125,13 @@ function AppNavigator() {
           headerShown: false,
         }}
       />
-      
+      <Stack.Screen
+        name="SameGroups"
+        component={SameGroups}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
 }
