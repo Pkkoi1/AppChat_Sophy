@@ -12,13 +12,14 @@ const GroupStyle = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    marginRight: 15,
   },
   content: {
     flex: 1,
     paddingBottom: 10,
     borderBottomWidth: 0.2,
     borderBottomColor: "#ddd",
+    marginLeft: 15,
+    margin: 5,
   },
   header: {
     flexDirection: "row",

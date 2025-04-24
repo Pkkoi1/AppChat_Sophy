@@ -1,11 +1,40 @@
-import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
 import Colors from "../../../../components/colors/Color";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { api } from "../../../../api/api";
+import { AuthContext } from "../../../../auth/AuthContext";
 
 const GroupOption = ({ conversation, receiver }) => {
   const navigation = useNavigation();
+  const { userInfo } = useContext(AuthContext);
+  const [isFriend, setIsFriend] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if receiver is a friend when component mounts
+    const checkIsFriend = async () => {
+      try {
+        if (!receiver || !receiver.userId) {
+          setIsFriend(false);
+          setLoading(false);
+          return;
+        }
+        
+        const friends = await api.getFriends();
+        const foundFriend = friends.some(friend => friend.userId === receiver.userId);
+        setIsFriend(foundFriend);
+      } catch (error) {
+        console.error("Error checking friendship status:", error);
+        setIsFriend(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkIsFriend();
+  }, [receiver]);
 
   const handleCreateGroupWith = () => {
     navigation.navigate("CreateNewGroup", {
@@ -18,8 +47,20 @@ const GroupOption = ({ conversation, receiver }) => {
       friend: receiver,
     });
   };
+  
+  const handleViewSameGroups = () => {
+    if (!receiver || !receiver.userId) {
+      Alert.alert("Lỗi", "Không thể xác định người dùng để xem nhóm chung");
+      return;
+    }
+    
+    navigation.navigate("SameGroups", {
+      friend: receiver,
+    });
+  };
 
-  const friendGroupOptions = [
+  // Only show friend-specific group options if receiver is a friend
+  const friendGroupOptions = isFriend ? [
     {
       name: "Tạo nhóm với ",
       icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
@@ -33,6 +74,14 @@ const GroupOption = ({ conversation, receiver }) => {
     {
       name: "Xem nhóm chung",
       icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
+      action: handleViewSameGroups
+    },
+  ] : [
+    // Only show "View common groups" if not friends
+    {
+      name: "Xem nhóm chung",
+      icon: <Ionicons name="people-outline" size={20} color={Colors.gray} />,
+      action: handleViewSameGroups
     },
   ];
 
@@ -50,6 +99,10 @@ const GroupOption = ({ conversation, receiver }) => {
       icon: <Ionicons name="link-outline" size={20} color={Colors.gray} />,
     },
   ];
+  
+  if (loading) {
+    return null; // Or a loading indicator
+  }
   
   return (
     <View style={styles.container}>

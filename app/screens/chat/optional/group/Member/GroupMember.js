@@ -1,29 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import { AuthContext } from "@/app/auth/AuthContext";
 import RenderMember from "./RenderMember";
 
-const GroupMember = ({ conversation }) => {
+const GroupMember = ({ conversation, onConversationUpdate }) => {
   const navigation = useNavigation();
   const { userInfo } = useContext(AuthContext);
   const [userInfos, setUserInfos] = useState({});
 
-  useEffect(() => {
-    const fetchAllUserInfo = async () => {
-      const userInfoMap = {};
-      for (const userId of conversation?.groupMembers || []) {
-        const userInfo = await fetchUserInfo(userId);
-        if (userInfo) {
-          userInfoMap[userId] = userInfo;
-        }
+  const fetchAllUserInfo = useCallback(async () => {
+    const userInfoMap = {};
+    for (const userId of conversation?.groupMembers || []) {
+      const userInfo = await fetchUserInfo(userId);
+      if (userInfo) {
+        userInfoMap[userId] = userInfo;
       }
-      setUserInfos(userInfoMap);
-    };
-
-    fetchAllUserInfo();
+    }
+    setUserInfos(userInfoMap);
   }, [conversation?.groupMembers]);
+
+  useEffect(() => {
+    fetchAllUserInfo();
+  }, [fetchAllUserInfo]);
 
   const sortedGroupMembers = conversation?.groupMembers?.sort((a, b) => {
     if (a === conversation?.rules.ownerId) return -1;
@@ -44,6 +44,7 @@ const GroupMember = ({ conversation }) => {
             userInfos={userInfos}
             navigation={navigation}
             conversation={conversation}
+            onConversationUpdate={onConversationUpdate}
           />
         )}
       />

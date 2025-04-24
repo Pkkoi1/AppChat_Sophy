@@ -14,6 +14,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { AuthContext } from "@/app/auth/AuthContext";
+import RenderGroupAvatar from "@/app/components/group/RenderGroupAvatar";
 
 const AddFriendToGroups = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,9 +49,7 @@ const AddFriendToGroups = ({ navigation, route }) => {
     }
   };
 
-  const handleCreateGroupWithUser = () => {
-    navigation.navigate("CreateGroup");
-  };
+
 
   const handleAddToGroups = async () => {
     if (selectedGroups.length === 0) {
@@ -86,11 +85,7 @@ const AddFriendToGroups = ({ navigation, route }) => {
           {item.groupAvatarUrl ? (
             <Image source={{ uri: item.groupAvatarUrl }} style={styles.groupAvatar} />
           ) : (
-            <View style={styles.groupAvatarPlaceholder}>
-              <Text style={styles.groupAvatarText}>
-                {item.groupName ? item.groupName.charAt(0) : ''}
-              </Text>
-            </View>
+            <RenderGroupAvatar members={item.groupMembers} width={50} height={50} avtText={20}/>
           )}
         </View>
         <View style={styles.groupInfo}>
@@ -104,12 +99,14 @@ const AddFriendToGroups = ({ navigation, route }) => {
   const renderHeader = () => (
     <TouchableOpacity
       style={styles.createGroupOption}
-      onPress={handleCreateGroupWithUser}
+      onPress={() => {
+        navigation.navigate("CreateNewGroup", { preSelectedFriend: friend });
+      }}
     >
       <View style={styles.createGroupIcon}>
         <Ionicons name="person-add" size={24} color="#1e90ff" />
       </View>
-      <Text style={styles.createGroupText}>Tạo nhóm với Khởi</Text>
+      <Text style={styles.createGroupText}>Tạo nhóm với {friend.fullname}</Text>
     </TouchableOpacity>
   );
 
