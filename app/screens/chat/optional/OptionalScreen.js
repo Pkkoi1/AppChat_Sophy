@@ -31,8 +31,14 @@ const OptionalScreen = () => {
       </View>
       <ScrollView>
         <ConversationName receiver={receiver} conversation={conversation} />
-        <Description isGroup={conversation?.isGroup} />
-        <GalleryOption isGroup={conversation?.isGroup} />
+        <Description
+          isGroup={conversation?.isGroup}
+          conversation={conversation}
+        />
+        <GalleryOption
+          isGroup={conversation?.isGroup}
+          conversation={conversation}
+        />
         {conversation?.isGroup &&
           conversation.rules?.ownerId === userInfo.userId && (
             <GroupSetting conversation={conversation} />
