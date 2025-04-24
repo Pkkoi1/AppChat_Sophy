@@ -4,18 +4,18 @@ import React, {
   useEffect,
   useContext,
   useRef,
-  useCallback, // Import useCallback
+  useCallback,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../socket/SocketContext";
-import * as Contacts from "expo-contacts"; // Import Contacts
+import * as Contacts from "expo-contacts";
 import {
   checkStoragePaths,
   getConversations,
   pickExternalDirectory,
   saveConversations,
-} from "../storage/StorageService"; // Import storage helpers
+} from "../storage/StorageService";
 import { Alert, Linking } from "react-native";
 
 export const AuthContext = createContext();
@@ -27,12 +27,12 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [conversations, setConversations] = useState([]);
   const [background, setBackground] = useState(null);
-  const [phoneContacts, setPhoneContacts] = useState([]); // Add state for phone contacts
-  const [usersInDB, setUsersInDB] = useState([]); // Add state for users in DB
-  const [contactsLoading, setContactsLoading] = useState(false); // Add loading state for contacts
-  const [contactsError, setContactsError] = useState(null); // Add error state for contacts
-  const [groups, setGroups] = useState([]); // Add state for groups
-  const [groupsLoading, setGroupsLoading] = useState(false); // Add loading state for groups
+  const [phoneContacts, setPhoneContacts] = useState([]);
+  const [usersInDB, setUsersInDB] = useState([]);
+  const [contactsLoading, setContactsLoading] = useState(false);
+  const [contactsError, setContactsError] = useState(null);
+  const [groups, setGroups] = useState([]);
+  const [groupsLoading, setGroupsLoading] = useState(false);
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -119,6 +119,198 @@ export const AuthProvider = ({ children }) => {
     return () => cleanupNewMessage();
   }, [socket]);
 
+  const checkLastMessageDifference = async (conversationId) => {
+    try {
+      // Lấy tin nhắn cuối cùng từ state cục bộ
+      const localConversation = conversations.find(
+        (conv) => conv.conversationId === conversationId
+      );
+      const localLastMessage = localConversation?.lastMessage || null;
+
+      // Lấy tin nhắn từ server
+      const response = await api.getAllMessages(conversationId);
+      if (!response || !response.messages) {
+        throw new Error("API không trả về dữ liệu tin nhắn hợp lệ.");
+      }
+
+      const serverMessages = response.messages.filter(
+        (m) => !m.hiddenFrom?.includes(userInfo?.userId)
+      );
+      const serverLastMessage = serverMessages[0] || null;
+
+      // So sánh
+      if (!localLastMessage && !serverLastMessage) {
+        console.log("Không có tin nhắn nào ở cả hai bên.");
+        return {
+          isDifferent: false,
+          details: "Không có tin nhắn ở cả hai bên",
+        };
+      }
+
+      if (!localLastMessage || !serverLastMessage) {
+        console.log("Một bên không có tin nhắn.");
+        return {
+          isDifferent: true,
+          details: `Cục bộ: ${
+            localLastMessage ? "Có tin nhắn" : "Không có"
+          }, Server: ${serverLastMessage ? "Có tin nhắn" : "Không có"}`,
+        };
+      }
+
+      const isDifferent =
+        localLastMessage.messageDetailId !==
+          serverLastMessage.messageDetailId ||
+        localLastMessage.content !== serverLastMessage.content ||
+        localLastMessage.createdAt !== serverLastMessage.createdAt;
+
+      if (isDifferent) {
+        console.log("Tin nhắn cuối cùng khác nhau:", {
+          local: {
+            id: localLastMessage.messageDetailId,
+            content: localLastMessage.content,
+            createdAt: localLastMessage.createdAt,
+          },
+          server: {
+            id: serverLastMessage.messageDetailId,
+            content: serverLastMessage.content,
+            createdAt: serverLastMessage.createdAt,
+          },
+        });
+      } else {
+        console.log("Tin nhắn cuối cùng khớp giữa client và server.");
+      }
+
+      return {
+        isDifferent,
+        details: isDifferent
+          ? `Cục bộ: ${localLastMessage.messageDetailId}, Server: ${serverLastMessage.messageDetailId}`
+          : "Tin nhắn khớp",
+      };
+    } catch (error) {
+      console.error("Lỗi kiểm tra tin nhắn cuối cùng:", error);
+      return {
+        isDifferent: true,
+        details: `Lỗi: ${error.message}`,
+      };
+    }
+  };
+
+  const addConversation = async (conversationData) => {
+    try {
+      // Kiểm tra dữ liệu đầu vào
+      if (!conversationData.conversationId) {
+        throw new Error("Thiếu conversationId.");
+      }
+
+      // Cập nhật cục bộ trước
+      const newConversation = {
+        ...conversationData,
+        isGroup: conversationData.isGroup || false,
+        groupMembers: conversationData.groupMembers || [],
+        lastMessage: null,
+        isDeleted: false,
+        formerMembers: [],
+      };
+
+      const updatedConversations = [newConversation, ...conversations];
+      setConversations(updatedConversations);
+      await saveConversations(updatedConversations);
+      console.log(
+        `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
+      );
+
+      // Gọi API để tạo trên server
+      const response = await api.createConversation(conversationData);
+      console.log(`Đã tạo cuộc trò chuyện trên server:`, response);
+
+      // Cập nhật socket
+      if (socket && socket.connected) {
+        socket.emit("conversationAdded", {
+          conversationId: conversationData.conversationId,
+          userId: userInfo?.userId,
+        });
+      }
+
+      // Kiểm tra tin nhắn cuối cùng (nếu có)
+      const { isDifferent } = await checkLastMessageDifference(
+        conversationData.conversationId
+      );
+      if (isDifferent) {
+        console.warn(
+          "Tin nhắn cuối không đồng bộ sau khi thêm cuộc trò chuyện."
+        );
+        await handlerRefresh();
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Lỗi khi thêm cuộc trò chuyện:", error);
+      Alert.alert(
+        "Lỗi",
+        `Không thể thêm cuộc trò chuyện: ${
+          error.response?.data?.message || error.message
+        }`
+      );
+
+      // Hoàn tác thay đổi cục bộ
+      const revertedConversations = conversations.filter(
+        (conv) => conv.conversationId !== conversationData.conversationId
+      );
+      setConversations(revertedConversations);
+      await saveConversations(revertedConversations);
+      throw error;
+    }
+  };
+
+  const removeConversation = async (conversationId) => {
+    try {
+      // Kiểm tra tin nhắn cuối trước khi xóa
+      const { isDifferent } = await checkLastMessageDifference(conversationId);
+      if (isDifferent) {
+        console.warn(
+          "Tin nhắn cuối không đồng bộ trước khi xóa cuộc trò chuyện."
+        );
+        await handlerRefresh();
+      }
+
+      // Cập nhật cục bộ
+      const updatedConversations = conversations.filter(
+        (conv) => conv.conversationId !== conversationId
+      );
+      setConversations(updatedConversations);
+      await saveConversations(updatedConversations);
+      console.log(`Đã xóa cuộc trò chuyện ${conversationId} cục bộ.`);
+
+      // Gọi API để xóa trên server
+      const response = await api.deleteConversation(conversationId);
+      console.log(`Đã xóa cuộc trò chuyện trên server:`, response);
+
+      // Cập nhật socket
+      if (socket && socket.connected) {
+        socket.emit("conversationRemoved", {
+          conversationId,
+          userId: userInfo?.userId,
+        });
+      }
+
+      return response;
+    } catch (error) {
+      console.error("Lỗi khi xóa cuộc trò chuyện:", error);
+      Alert.alert(
+        "Lỗi",
+        `Không thể xóa cuộc trò chuyện: ${
+          error.response?.data?.message || error.message
+        }`
+      );
+
+      // Hoàn tác thay đổi cục bộ
+      const revertedConversations = conversations;
+      setConversations(revertedConversations);
+      await saveConversations(revertedConversations);
+      throw error;
+    }
+  };
+
   const login = async (params) => {
     const response = await api.login(params);
     const { accessToken, refreshToken } = response.data.token;
@@ -127,10 +319,7 @@ export const AuthProvider = ({ children }) => {
     setaccessToken(accessToken);
     setRefreshToken(refreshToken);
 
-    // ✅ Lưu userId vào AsyncStorage để dùng cho lưu file
     await AsyncStorage.setItem("userId", userId);
-
-    // Lấy full thông tin user
     await getUserInfoById(userId);
 
     if (socket && userId) {
@@ -145,11 +334,11 @@ export const AuthProvider = ({ children }) => {
         (conversation) =>
           !conversation.formerMembers.includes(userId) &&
           !conversation.isDeleted &&
-          (!conversation.isGroup || conversation.groupMembers.includes(userId)) // Ensure the user is part of the group if it's a group conversation
+          (!conversation.isGroup || conversation.groupMembers.includes(userId))
       );
 
       setConversations(filteredConversations);
-      await saveConversations(filteredConversations); // Lúc này userId đã có
+      await saveConversations(filteredConversations);
     }
   };
 
@@ -174,7 +363,7 @@ export const AuthProvider = ({ children }) => {
           !conversation.formerMembers.includes(response.user.userId) &&
           !conversation.isDeleted &&
           (!conversation.isGroup ||
-            conversation.groupMembers.includes(response.user.userId)) // Ensure the user is part of the group if it's a group conversation
+            conversation.groupMembers.includes(response.user.userId))
       );
 
       setConversations(filteredConversations);
@@ -229,13 +418,12 @@ export const AuthProvider = ({ children }) => {
             !conversation.formerMembers.includes(userInfo?.userId) &&
             !conversation.isDeleted &&
             (!conversation.isGroup ||
-              conversation.groupMembers.includes(userInfo?.userId)) // Ensure the user is part of the group if it's a group conversation
+              conversation.groupMembers.includes(userInfo?.userId))
         );
 
         setConversations(filteredConversations);
         await saveConversations(filteredConversations);
       }
-      // Also refresh groups
       await fetchGroups();
     } catch (error) {
       console.error("Error refreshing data:", error);
@@ -247,7 +435,6 @@ export const AuthProvider = ({ children }) => {
     await AsyncStorage.setItem("background", newBackground);
   };
 
-  // Function to fetch phone contacts
   const getPhoneContacts = useCallback(async () => {
     setContactsLoading(true);
     setContactsError(null);
@@ -308,16 +495,14 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setContactsLoading(false);
     }
-  }, []); // Empty dependency array - this function doesn't depend on any state
+  }, []);
 
-  // Function to fetch groups
   const fetchGroups = useCallback(async () => {
     try {
       setGroupsLoading(true);
       const response = await api.getGroups();
 
       if (response) {
-        // Sort groups by latest message timestamp
         const sortedGroups = response.sort((a, b) => {
           const dateA = a.lastMessage?.createdAt
             ? new Date(a.lastMessage.createdAt)
@@ -329,16 +514,12 @@ export const AuthProvider = ({ children }) => {
         });
 
         setGroups(sortedGroups);
-
-        // Save groups to AsyncStorage for offline access
         await AsyncStorage.setItem("groups", JSON.stringify(sortedGroups));
       }
 
       return response;
     } catch (error) {
       console.error("Error fetching groups:", error);
-
-      // Try to load from AsyncStorage if network request fails
       try {
         const cachedGroups = await AsyncStorage.getItem("groups");
         if (cachedGroups) {
@@ -354,7 +535,6 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Load groups on initial load
   useEffect(() => {
     const loadCachedGroups = async () => {
       try {
@@ -390,14 +570,17 @@ export const AuthProvider = ({ children }) => {
         handlerRefresh,
         updateBackground,
         flatListRef,
-        phoneContacts, // Provide phone contacts
-        usersInDB, // Provide users in DB
-        getPhoneContacts, // Provide the function
-        contactsLoading, // Provide loading state
-        contactsError, // Provide error state
-        groups, // Provide groups
-        groupsLoading, // Provide groups loading state
-        fetchGroups, // Provide fetchGroups function
+        phoneContacts,
+        usersInDB,
+        getPhoneContacts,
+        contactsLoading,
+        contactsError,
+        groups,
+        groupsLoading,
+        fetchGroups,
+        addConversation, // Thêm hàm mới
+        removeConversation, // Thêm hàm mới
+        checkLastMessageDifference, // Thêm hàm mới
       }}
     >
       {children}
