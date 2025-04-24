@@ -86,20 +86,41 @@ const AddFriendToGroup = ({ route }) => {
       Alert.alert("Thông báo", "Vui lòng chọn ít nhất một người để thêm vào nhóm");
       return;
     }
-
+  
     setIsLoading(true);
     try {
       for (const friend of selectedFriends) {
         await api.addUserToGroup(conversation.conversationId, friend.userId);
       }
-      
+  
       Alert.alert(
-        "Thành công", 
+        "Thành công",
         `Đã thêm ${selectedFriends.length} người vào nhóm`,
-        [{ text: "OK", onPress: () => {
-          handlerRefresh();
-          navigation.goBack();
-        }}]
+        [{
+          text: "OK",
+          onPress: () => {
+            handlerRefresh();
+  
+            // Lọc danh sách bạn bè để loại bỏ những người vừa thêm
+            setFriends(prevFriends =>
+              prevFriends.filter(friend =>
+                !selectedFriends.some(selected => selected._id !== friend._id)
+              )
+            );
+  
+            // Lọc danh sách tìm kiếm để loại bỏ những người vừa thêm
+            setSearchResults(prevSearchResults =>
+              prevSearchResults.filter(friend =>
+                !selectedFriends.some(selected => selected._id !== friend._id)
+              )
+            );
+  
+            // Reset danh sách đã chọn
+            setSelectedFriends([]);
+  
+            navigation.goBack();
+          }
+        }]
       );
     } catch (error) {
       console.error("Lỗi khi thêm thành viên:", error);
@@ -108,7 +129,6 @@ const AddFriendToGroup = ({ route }) => {
       setIsLoading(false);
     }
   };
-
   // Nhóm bạn bè theo chữ cái đầu tiên
   const groupFriendsByFirstLetter = () => {
     const groupedData = [];
