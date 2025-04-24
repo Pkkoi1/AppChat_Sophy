@@ -86,38 +86,40 @@ export const AuthProvider = ({ children }) => {
     loadStorage();
   }, []);
 
-  const handleNewMessage = () => {
+  useEffect(() => {
     if (!socket) return;
 
-    socket.on(
-      "newMessage",
-      ({ conversationId: incomingConversationId, message }) => {
-        const formattedMessage = message._doc || message;
+    const handleNewMessage = ({
+      conversationId: incomingConversationId,
+      message,
+    }) => {
+      const formattedMessage = message._doc || message;
 
-        setConversations((prevConversations) =>
-          prevConversations.map((conv) =>
-            conv.conversationId === incomingConversationId
-              ? { ...conv, lastMessage: formattedMessage }
-              : conv
-          )
-        );
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === incomingConversationId
+            ? { ...conv, lastMessage: formattedMessage, unreadCount: [] }
+            : conv
+        )
+      );
 
-        flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
-        console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
-      }
-    );
-  };
+      flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
+      console.log("🟢 Nhận tin nhắn mới:", formattedMessage);
+    };
 
-  const cleanupNewMessage = () => {
-    if (socket) {
-      socket.off("newMessage");
-    }
-  };
+    const handleNewConversation = ({ conversation }) => {
+      console.log("🟢 Nhận cuộc trò chuyện mới:", conversation);
+      addConversation(conversation); // Thêm mới vào danh sách
+    };
 
-  useEffect(() => {
-    handleNewMessage();
-    return () => cleanupNewMessage();
-  }, [socket]);
+    socket.on("newMessage", handleNewMessage);
+    socket.on("newConversation", handleNewConversation);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.off("newConversation", handleNewConversation);
+    };
+  }, [socket, addConversation]);
 
   const checkLastMessageDifference = async (conversationId) => {
     try {
@@ -197,67 +199,32 @@ export const AuthProvider = ({ children }) => {
 
   const addConversation = async (conversationData) => {
     try {
-      // Kiểm tra dữ liệu đầu vào
       if (!conversationData.conversationId) {
         throw new Error("Thiếu conversationId.");
       }
 
-      // Cập nhật cục bộ trước
-      const newConversation = {
-        ...conversationData,
-        isGroup: conversationData.isGroup || false,
-        groupMembers: conversationData.groupMembers || [],
-        lastMessage: null,
-        isDeleted: false,
-        formerMembers: [],
-      };
+      // Deduplicate conversations based on conversationId
+      const updatedConversations = Array.from(
+        new Map(
+          [conversationData, ...conversations].map((conv) => [
+            conv.conversationId,
+            conv,
+          ])
+        ).values()
+      );
 
-      const updatedConversations = [newConversation, ...conversations];
       setConversations(updatedConversations);
       await saveConversations(updatedConversations);
       console.log(
         `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
       );
-
-      // Gọi API để tạo trên server
-      const response = await api.createConversation(conversationData);
-      console.log(`Đã tạo cuộc trò chuyện trên server:`, response);
-
-      // Cập nhật socket
-      if (socket && socket.connected) {
-        socket.emit("conversationAdded", {
-          conversationId: conversationData.conversationId,
-          userId: userInfo?.userId,
-        });
-      }
-
-      // Kiểm tra tin nhắn cuối cùng (nếu có)
-      const { isDifferent } = await checkLastMessageDifference(
-        conversationData.conversationId
-      );
-      if (isDifferent) {
-        console.warn(
-          "Tin nhắn cuối không đồng bộ sau khi thêm cuộc trò chuyện."
-        );
-        await handlerRefresh();
-      }
-
-      return response;
+      return conversationData;
     } catch (error) {
       console.error("Lỗi khi thêm cuộc trò chuyện:", error);
-      Alert.alert(
-        "Lỗi",
-        `Không thể thêm cuộc trò chuyện: ${
-          error.response?.data?.message || error.message
-        }`
-      );
 
-      // Hoàn tác thay đổi cục bộ
-      const revertedConversations = conversations.filter(
-        (conv) => conv.conversationId !== conversationData.conversationId
-      );
-      setConversations(revertedConversations);
-      await saveConversations(revertedConversations);
+      // Revert local changes in case of an error
+      setConversations(conversations);
+      await saveConversations(conversations);
       throw error;
     }
   };
@@ -552,6 +519,14 @@ export const AuthProvider = ({ children }) => {
       fetchGroups();
     }
   }, [userInfo?.userId]);
+
+  useEffect(() => {
+    if (socket && conversations.length > 0 && userInfo?.userId) {
+      const allIds = conversations.map((conv) => conv.conversationId);
+      socket.emit("joinUserConversations", allIds);
+      console.log("📡 Đã join tất cả conversations:", allIds);
+    }
+  }, [socket, conversations, userInfo?.userId]);
 
   return (
     <AuthContext.Provider

@@ -31,7 +31,7 @@ const Inbox = ({ conversation }) => {
   const [uid, setUid] = useState("");
 
   const getTimeDifference = (date) => {
-    if (!date) return "Không có tin nhắn"; // Handle null date
+    if (!date) return ""; // Handle null date
 
     const validDate = moment(new Date(date));
     if (!validDate.isValid()) {
@@ -246,7 +246,7 @@ const Inbox = ({ conversation }) => {
               ? `${senderName}: ${getMessageContent()}`
               : lastMessage?.isRecall
               ? "Đã thu hồi một tin nhắn"
-              : lastMessage?.content || "No messages yet"}
+              : lastMessage?.content || "Chưa có tin nhắn"}
           </Text>
           {hasUnreadMessages && (
             <View style={styles.unreadBadge}>

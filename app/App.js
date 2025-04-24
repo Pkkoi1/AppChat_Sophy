@@ -62,6 +62,8 @@ import ListImageFullView from "./features/fullImages/ListImageFullView";
 
 const Stack = createNativeStackNavigator();
 
+
+
 // Navigation Stack component
 function AppNavigator() {
   return (
