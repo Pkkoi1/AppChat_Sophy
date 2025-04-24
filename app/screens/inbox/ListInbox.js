@@ -41,7 +41,7 @@ const ListInbox = () => {
       };
 
       const handleGroupDeleted = async () => {
-        console.log("Group deleted. Refreshing conversations...");
+        console.log("Group deleted. Refreshing conversations 1...");
         await handlerRefresh();
       };
 
