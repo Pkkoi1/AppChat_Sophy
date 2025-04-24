@@ -74,15 +74,18 @@ const MessageScreen = ({ route, navigation }) => {
       socket.emit("joinUserConversations", [conversation.conversationId]);
       handleNewMessage(
         socket,
-        conversation.conversationId,
+        conversation,
         setMessages,
         flatListRef,
         saveMessages
       );
       socket.on("newMessage", async () => {
         api.readMessage(conversation.conversationId);
-
         await handlerRefresh();
+        console.log(
+          "Đã đọc tin nhắn trong cuộc trò chuyện:",
+          conversation.conversationId
+        );
       });
       if (socket) {
         socket.on("newConversation", async () => {
@@ -138,6 +141,28 @@ const MessageScreen = ({ route, navigation }) => {
           conversationId,
           messageId
         );
+      });
+      socket.on("groupAvatarChanged", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === data.messageDetailId
+                ? { ...msg, groupAvatar: data.groupAvatar }
+                : msg
+            )
+          );
+        }
+      });
+      socket.on("groupNameChanged", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          setMessages((prev) =>
+            prev.map((msg) =>
+              msg.messageDetailId === data.messageDetailId
+                ? { ...msg, groupName: data.groupName }
+                : msg
+            )
+          );
+        }
       });
       return () => {
         cleanupNewMessage(socket);
@@ -258,7 +283,7 @@ const MessageScreen = ({ route, navigation }) => {
                 (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
               )
             );
-            setMessages((prev) => [res, ...prev]);
+            // setMessages((prev) => [res, ...prev]);
 
             await appendMessage(conversation.conversationId, res.message);
           }
@@ -338,7 +363,7 @@ const MessageScreen = ({ route, navigation }) => {
                 (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
               )
             );
-            setMessages((prev) => [res, ...prev]);
+            // setMessages((prev) => [res, ...prev]);
             await appendMessage(conversation.conversationId, res);
           }
         }
@@ -443,7 +468,7 @@ const MessageScreen = ({ route, navigation }) => {
         createdAt: new Date().toISOString(),
         senderId: userInfo.userId,
         type: "video",
-        attachment,
+        attachment: { url: attachment },
         sendStatus: "sending",
       };
 
@@ -460,7 +485,7 @@ const MessageScreen = ({ route, navigation }) => {
               (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
             )
           );
-          setMessages((prev) => [response, ...prev]);
+          // setMessages((prev) => [response, ...prev]);
           await appendMessage(conversation.conversationId, response);
         }
       } catch (error) {
