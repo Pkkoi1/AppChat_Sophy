@@ -199,35 +199,32 @@ export const AuthProvider = ({ children }) => {
 
   const addConversation = async (conversationData) => {
     try {
-      // Kiểm tra dữ liệu đầu vào
       if (!conversationData.conversationId) {
         throw new Error("Thiếu conversationId.");
       }
 
-      // Cập nhật cục bộ trước
-      const newConversation = {
-        ...conversationData,
-        isGroup: conversationData.isGroup || false,
-        groupMembers: conversationData.groupMembers || [],
-        lastMessage: null,
-        isDeleted: false,
-        formerMembers: [],
-      };
+      // Deduplicate conversations based on conversationId
+      const updatedConversations = Array.from(
+        new Map(
+          [conversationData, ...conversations].map((conv) => [
+            conv.conversationId,
+            conv,
+          ])
+        ).values()
+      );
 
-      const updatedConversations = [newConversation, ...conversations];
       setConversations(updatedConversations);
       await saveConversations(updatedConversations);
       console.log(
         `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
       );
-      return newConversation;
+      return conversationData;
     } catch (error) {
       console.error("Lỗi khi thêm cuộc trò chuyện:", error);
 
-      // Hoàn tác thay đổi cục bộ
-      const revertedConversations = conversations;
-      setConversations(revertedConversations);
-      await saveConversations(revertedConversations);
+      // Revert local changes in case of an error
+      setConversations(conversations);
+      await saveConversations(conversations);
       throw error;
     }
   };

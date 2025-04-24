@@ -71,29 +71,21 @@ const Home = ({ route }) => {
         await handlerRefresh();
       };
 
-      const handleNewConversation = ({ conversation }) => {
-        console.log(
-          "New conversation received. Refreshing conversations at Home..."
-        );
-        addConversation(conversation);
-      };
-
       const handleGroupDeleted = async () => {
         console.log("Group deleted. Refreshing conversations...");
         await handlerRefresh();
       };
 
       socket.on("newMessage", handleNewMessage);
-      socket.on("newConversation", handleNewConversation);
       socket.on("groupDeleted", handleGroupDeleted);
 
       return () => {
         socket.off("newMessage", handleNewMessage);
-        socket.off("newConversation", handleNewConversation);
+        // socket.off("newConversation", handleNewConversation);
         socket.off("groupDeleted", handleGroupDeleted);
       };
     }
-  }, [socket]);
+  }, [socket, handlerRefresh, addConversation]);
 
   useEffect(() => {
     if (userInfo) {
