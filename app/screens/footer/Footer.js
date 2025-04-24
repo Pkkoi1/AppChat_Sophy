@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import FooterStyle from "./FooterStyle";
+import { SocketContext } from "@/app/socket/SocketContext";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 export const footerItem = [
   {
@@ -36,7 +38,8 @@ const Footer = ({ setCurrentScreen }) => {
   const initialScreen = footerItem[0].screen;
   const [selectedIcon, setSelectedIcon] = useState(initialScreen);
   const [unreadMessages, setUnreadMessages] = useState(3);
-
+  const socket = useContext(SocketContext); // Use SocketContext
+  const { userInfo, handlerRefresh, addConversation } = useContext(AuthContext);
   const [animations, setAnimations] = useState(
     footerItem.reduce((acc, item) => {
       acc[item.name] = new Animated.Value(1);
@@ -47,6 +50,39 @@ const Footer = ({ setCurrentScreen }) => {
   useEffect(() => {
     setCurrentScreen(initialScreen); // Cập nhật màn hình cha ngay từ đầu
   }, []);
+
+  // useEffect(() => {
+  //   if (socket && socket.connected) {
+  //     const handleNewMessage = async () => {
+  //       console.log(
+  //         "New message received. Refreshing conversations at Home..."
+  //       );
+  //       await handlerRefresh();
+  //     };
+
+  //     const handleNewConversation = ({ conversation }) => {
+  //       console.log(
+  //         "New conversation received. Refreshing conversations at Home..."
+  //       );
+  //       addConversation(conversation);
+  //     };
+
+  //     const handleGroupDeleted = async () => {
+  //       console.log("Group deleted. Refreshing conversations...");
+  //       await handlerRefresh();
+  //     };
+
+  //     socket.on("newMessage", handleNewMessage);
+  //     socket.on("newConversation", handleNewConversation);
+  //     socket.on("groupDeleted", handleGroupDeleted);
+
+  //     return () => {
+  //       socket.off("newMessage", handleNewMessage);
+  //       socket.off("newConversation", handleNewConversation);
+  //       socket.off("groupDeleted", handleGroupDeleted);
+  //     };
+  //   }
+  // }, [socket, handlerRefresh, addConversation]);
 
   const handlePress = (item) => {
     if (!item.screen) return;

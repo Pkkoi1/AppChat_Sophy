@@ -15,11 +15,8 @@ import { SocketContext } from "@/app/socket/SocketContext";
 
 const Home = ({ route }) => {
   const socket = useContext(SocketContext); // Use SocketContext
-
   const { userInfo, handlerRefresh, addConversation } = useContext(AuthContext);
-  const [refreshing, setRefreshing] = useState(false);
 
-  // Lấy thông tin người dùng từ AuthContext
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -65,43 +62,38 @@ const Home = ({ route }) => {
     }
   };
 
-  if (socket && socket.connected) {
-    socket.on("newMessage", async () => {
-      console.log("New message received. Refreshing conversations at Home...");
-      await handlerRefresh(); // Refresh the conversation list
-    });
-    socket.on("groupDeleted", async () => {
-      console.log("Group deleted. Refreshing conversations...");
-      // await handlerRefresh(); // Refresh the conversation list
-    });
-  }
-  if (socket && socket.connected) {
-    socket.on("newConversation", ({ conversation, timestamp }) => {
-      console.log("New conversation received. Refreshing conversations...");
-      addConversation(conversation); // Add the new conversation to the list
-    });
-  }
   useEffect(() => {
-    if (socket && socket.connected) {
-      // Listen for newMessage event
-      socket.on("newMessage", async () => {
-        console.log("New message received. Refreshing conversations...");
-        await handlerRefresh(); // Refresh the conversation list
-      });
-      if (socket && socket.connected) {
-        socket.on("newConversation", ({ conversation, timestamp }) => {
-          console.log("New conversation received. Refreshing conversations...");
-          addConversation(conversation); // Add the new conversation to the list
-        });
-      }
+    if (socket) {
+      const handleNewMessage = async () => {
+        console.log(
+          "New message received. Refreshing conversations at Home..."
+        );
+        await handlerRefresh();
+      };
+
+      const handleNewConversation = ({ conversation }) => {
+        console.log(
+          "New conversation received. Refreshing conversations at Home..."
+        );
+        addConversation(conversation);
+      };
+
+      const handleGroupDeleted = async () => {
+        console.log("Group deleted. Refreshing conversations...");
+        await handlerRefresh();
+      };
+
+      socket.on("newMessage", handleNewMessage);
+      socket.on("newConversation", handleNewConversation);
+      socket.on("groupDeleted", handleGroupDeleted);
+
+      return () => {
+        socket.off("newMessage", handleNewMessage);
+        socket.off("newConversation", handleNewConversation);
+        socket.off("groupDeleted", handleGroupDeleted);
+      };
     }
-    return () => {
-      if (socket && socket.connected) {
-        socket.off("newMessage");
-        socket.off("newConversation");
-      }
-    };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (userInfo) {

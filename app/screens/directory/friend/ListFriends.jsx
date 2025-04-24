@@ -32,6 +32,7 @@ const ListFriends = () => {
     getPhoneContacts, // Get the function from context
     contactsLoading, // Get contacts loading state
     contactsError, // Get contacts error state
+    addConversation,
   } = useContext(AuthContext);
   const socket = useContext(SocketContext); // Thêm dòng này
 
@@ -50,37 +51,41 @@ const ListFriends = () => {
     }
   }, [refreshing]);
 
-  if (socket && socket.connected) {
-    socket.on("newMessage", async () => {
-      console.log(
-        "New message received. Refreshing conversations at listFriend..."
-      );
-      await handlerRefresh(); // Refresh the conversation list
-    });
-    socket.on("newConversation", async () => {
-      console.log("New convertation received. Refreshing conversations...");
-      // await handlerRefresh(); // Refresh the conversation list
-    });
-    socket.on("groupDeleted", async () => {
-      console.log("Group deleted. Refreshing conversations...");
-      // await handlerRefresh(); // Refresh the conversation list
-    });
-  }
-  useEffect(() => {
-    if (socket && socket.connected) {
-      // Listen for newMessage event
-      socket.on("newMessage", async () => {
-        console.log("New message received. Refreshing conversations...");
-        await handlerRefresh(); // Refresh the conversation list
-      });
-      if (socket && socket.connected) {
-        socket.on("newConversation", async () => {
-          console.log("New convertation received. Refreshing conversations...");
-          // await handlerRefresh(); // Refresh the conversation list
-        });
-      }
-    }
-  }, []);
+  // if (socket && socket.connected) {
+  //   socket.on("newMessage", async () => {
+  //     console.log(
+  //       "New message received. Refreshing conversations at listFriend..."
+  //     );
+  //     await handlerRefresh(); // Refresh the conversation list
+  //   });
+  //   socket.on("newConversation", async () => {
+  //     console.log(
+  //       "New convertation received. Refreshing conversations listFriend..."
+  //     );
+  //     // await handlerRefresh(); // Refresh the conversation list
+  //   });
+  //   socket.on("groupDeleted", async () => {
+  //     console.log("Group deleted. Refreshing conversations...");
+  //     // await handlerRefresh(); // Refresh the conversation list
+  //   });
+  // }
+  // useEffect(() => {
+  //   if (socket && socket.connected) {
+  //     // Listen for newMessage event
+  //     socket.on("newMessage", async () => {
+  //       console.log("New message received. Refreshing conversations...");
+  //       await handlerRefresh(); // Refresh the conversation list
+  //     });
+  //   }
+  //   if (socket && socket.connected) {
+  //     socket.on("newConversation", ({ conversation, timestamp }) => {
+  //       console.log(
+  //         "New conversation received. Refreshing conversations at listFriend 1..."
+  //       );
+  //       addConversation(conversation); // Add the new conversation to the list
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     fetchFriends();
