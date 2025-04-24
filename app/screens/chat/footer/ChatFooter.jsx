@@ -70,13 +70,14 @@ const ChatFooter = ({
   }, [socket, conversation, setIsTyping, userInfo.userId]);
 
   const handleTyping = () => {
-    if (socket && conversation?.conversationId) {
+    if (socket) {
       socket.emit("typing", {
         conversationId: conversation.conversationId,
         userId: socket.userId,
         fullname: userInfo.fullname,
       });
-
+      // setIsTyping(true);
+      console.log("Người dùng đang nhập...");
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }

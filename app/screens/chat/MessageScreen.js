@@ -152,6 +152,11 @@ const MessageScreen = ({ route, navigation }) => {
             )
           );
         }
+        console.log(
+          "Nhận tin nhắn đã thay đổi ảnh nhóm qua socket:",
+          data.conversationId,
+          data.messageDetailId
+        );
       });
       socket.on("groupNameChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
@@ -286,9 +291,19 @@ const MessageScreen = ({ route, navigation }) => {
             // setMessages((prev) => [res, ...prev]);
 
             await appendMessage(conversation.conversationId, res.message);
+          } else if (res) {
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
+            setMessages((prev) => [res, ...prev]);
+            await appendMessage(conversation.conversationId, res.message);
+          } else {
+            console.error("Lỗi: Không nhận được phản hồi từ API.");
+            alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
           }
         }
-
         setSended((prev) => !prev);
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
@@ -365,6 +380,17 @@ const MessageScreen = ({ route, navigation }) => {
             );
             // setMessages((prev) => [res, ...prev]);
             await appendMessage(conversation.conversationId, res);
+          } else if (res) {
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
+            setMessages((prev) => [res, ...prev]);
+            await appendMessage(conversation.conversationId, res.message);
+          } else {
+            console.error("Lỗi: Không nhận được phản hồi từ API.");
+            alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
           }
         }
       } catch (error) {
@@ -432,6 +458,17 @@ const MessageScreen = ({ route, navigation }) => {
             );
             setMessages((prev) => [pseudoMessage, ...prev]);
             await appendMessage(conversation.conversationId, res);
+          } else if (res) {
+            setMessages((prev) =>
+              prev.filter(
+                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+              )
+            );
+            setMessages((prev) => [res, ...prev]);
+            await appendMessage(conversation.conversationId, res.message);
+          } else {
+            console.error("Lỗi: Không nhận được phản hồi từ API.");
+            alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
           }
 
           console.log("Gửi file thành công!");
@@ -487,6 +524,17 @@ const MessageScreen = ({ route, navigation }) => {
           );
           // setMessages((prev) => [response, ...prev]);
           await appendMessage(conversation.conversationId, response);
+        } else if (res) {
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+          setMessages((prev) => [res, ...prev]);
+          await appendMessage(conversation.conversationId, res.message);
+        } else {
+          console.error("Lỗi: Không nhận được phản hồi từ API.");
+          alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
         }
       } catch (error) {
         console.error("Lỗi khi gửi video:", error);

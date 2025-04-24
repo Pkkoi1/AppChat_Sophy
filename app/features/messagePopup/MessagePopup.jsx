@@ -187,6 +187,10 @@ const MessagePopup = ({
             console.log("Tin nhắn đã được thu hồi:", response);
 
             // Update the UI to mark the message as recalled
+            socket.emit("messageRecalled", {
+              conversationId: selectedMessage.conversationId,
+              messageId: selectedMessage.messageDetailId,
+            });
             setMessages((prevMessages) =>
               prevMessages.map((msg) =>
                 msg.messageDetailId === selectedMessage.messageDetailId
