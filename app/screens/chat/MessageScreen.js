@@ -39,7 +39,8 @@ import {
 } from "../../storage/StorageService";
 
 const MessageScreen = ({ route, navigation }) => {
-  const { userInfo, handlerRefresh, background } = useContext(AuthContext);
+  const { userInfo, handlerRefresh, background, checkLastMessageDifference } =
+    useContext(AuthContext);
   const socket = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
@@ -108,6 +109,12 @@ const MessageScreen = ({ route, navigation }) => {
           conversationId,
           messageId
         );
+      });
+
+      socket.on("groupDeleted", async () => {
+        console.log("Nhóm đã bị xóa. Đang làm mới cuộc trò chuyện...");
+        // await handlerRefresh(); // Refresh the conversation list
+        navigation.navigate("Home");
       });
 
       socket.on("messagePinned", ({ conversationId, messageId }) => {
@@ -195,6 +202,110 @@ const MessageScreen = ({ route, navigation }) => {
     }
   };
 
+  const addParticipant = async (userId) => {
+    if (!conversation?.conversationId) {
+      alert("Không thể thêm thành viên: Cuộc trò chuyện không tồn tại.");
+      return;
+    }
+
+    try {
+      // Check last message difference before adding participant
+      const { isDifferent } = await checkLastMessageDifference();
+      if (isDifferent) {
+        console.warn(
+          "Cảnh báo: Tin nhắn cuối cùng không đồng bộ trước khi thêm thành viên."
+        );
+        await fetchMessages(); // Refresh messages to ensure consistency
+      }
+
+      // Call API to add participant
+      const response = await api.addParticipantToGroup(
+        conversation.conversationId,
+        userId
+      );
+      console.log(`Đã thêm thành viên ${userId} vào nhóm:`, response);
+
+      // Emit socket event to notify other clients
+      if (socket && socket.connected) {
+        socket.emit("participantAdded", {
+          conversationId: conversation.conversationId,
+          userId,
+        });
+      }
+
+      // Refresh conversation list
+      await handlerRefresh();
+
+      // Verify last message consistency after adding participant
+      const postCheck = await checkLastMessageDifference();
+      if (postCheck.isDifferent) {
+        console.warn(
+          "Tin nhắn cuối cùng không đồng bộ sau khi thêm thành viên."
+        );
+        await fetchMessages();
+      }
+    } catch (error) {
+      console.error("Lỗi khi thêm thành viên:", error);
+      alert(
+        `Không thể thêm thành viên: ${
+          error.response?.data?.message || error.message
+        }`
+      );
+    }
+  };
+
+  const removeParticipant = async (userId) => {
+    if (!conversation?.conversationId) {
+      alert("Không thể xóa thành viên: Cuộc trò chuyện không tồn tại.");
+      return;
+    }
+
+    try {
+      // Check last message difference before removing participant
+      const { isDifferent } = await checkLastMessageDifference();
+      if (isDifferent) {
+        console.warn(
+          "Cảnh báo: Tin nhắn cuối cùng không đồng bộ trước khi xóa thành viên."
+        );
+        await fetchMessages(); // Refresh messages to ensure consistency
+      }
+
+      // Call API to remove participant
+      const response = await api.removeParticipantFromGroup(
+        conversation.conversationId,
+        userId
+      );
+      console.log(`Đã xóa thành viên ${userId} khỏi nhóm:`, response);
+
+      // Emit socket event to notify other clients
+      if (socket && socket.connected) {
+        socket.emit("participantRemoved", {
+          conversationId: conversation.conversationId,
+          userId,
+        });
+      }
+
+      // Refresh conversation list
+      await handlerRefresh();
+
+      // Verify last message consistency after removing participant
+      const postCheck = await checkLastMessageDifference();
+      if (postCheck.isDifferent) {
+        console.warn(
+          "Tin nhắn cuối cùng không đồng bộ sau khi xóa thành viên."
+        );
+        await fetchMessages();
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa thành viên:", error);
+      alert(
+        `Không thể xóa thành viên: ${
+          error.response?.data?.message || error.message
+        }`
+      );
+    }
+  };
+
   const fetchMessages = async () => {
     try {
       setIsLoading(true);
@@ -234,6 +345,7 @@ const MessageScreen = ({ route, navigation }) => {
       setIsLoading(false);
     }
   };
+
   useEffect(() => {
     if (!conversation?.conversationId) {
       console.error("Lỗi: Cuộc trò chuyện không tồn tại.");

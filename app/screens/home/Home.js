@@ -16,7 +16,7 @@ import { SocketContext } from "@/app/socket/SocketContext";
 const Home = ({ route }) => {
   const socket = useContext(SocketContext); // Use SocketContext
 
-  const { userInfo, handlerRefresh } = useContext(AuthContext);
+  const { userInfo, handlerRefresh, addConversation } = useContext(AuthContext);
   const [refreshing, setRefreshing] = useState(false);
 
   // Lấy thông tin người dùng từ AuthContext
@@ -67,14 +67,18 @@ const Home = ({ route }) => {
 
   if (socket && socket.connected) {
     socket.on("newMessage", async () => {
-      console.log("New message received. Refreshing conversations...");
+      console.log("New message received. Refreshing conversations at Home...");
       await handlerRefresh(); // Refresh the conversation list
+    });
+    socket.on("groupDeleted", async () => {
+      console.log("Group deleted. Refreshing conversations...");
+      // await handlerRefresh(); // Refresh the conversation list
     });
   }
   if (socket && socket.connected) {
-    socket.on("newConversation", async () => {
-      console.log("New convertation received. Refreshing conversations...");
-      await handlerRefresh(); // Refresh the conversation list
+    socket.on("newConversation", ({ conversation, timestamp }) => {
+      console.log("New conversation received. Refreshing conversations...");
+      addConversation(conversation); // Add the new conversation to the list
     });
   }
   useEffect(() => {
@@ -85,12 +89,18 @@ const Home = ({ route }) => {
         await handlerRefresh(); // Refresh the conversation list
       });
       if (socket && socket.connected) {
-        socket.on("newConversation", async () => {
-          console.log("New convertation received. Refreshing conversations...");
-          await handlerRefresh(); // Refresh the conversation list
+        socket.on("newConversation", ({ conversation, timestamp }) => {
+          console.log("New conversation received. Refreshing conversations...");
+          addConversation(conversation); // Add the new conversation to the list
         });
       }
     }
+    return () => {
+      if (socket && socket.connected) {
+        socket.off("newMessage");
+        socket.off("newConversation");
+      }
+    };
   }, []);
 
   useEffect(() => {

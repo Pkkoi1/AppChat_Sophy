@@ -6,7 +6,8 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import { SocketContext } from "@/app/socket/SocketContext";
 
 const ListInbox = () => {
-  const { conversations, handlerRefresh } = useContext(AuthContext); // Use handlerRefresh from AuthContext
+  const { conversations, handlerRefresh, addConversation } =
+    useContext(AuthContext); // Use handlerRefresh from AuthContext
   const socket = useContext(SocketContext); // Use SocketContext
   const [refreshing, setRefreshing] = useState(false);
 
@@ -26,15 +27,17 @@ const ListInbox = () => {
   if (socket && socket.connected) {
     socket.on("newMessage", async () => {
       console.log(
-        "New message received. Refreshing conversations list inbox..."
+        "New message received. Refreshing conversations at listInbox..."
       );
       await handlerRefresh(); // Refresh the conversation list
     });
-  }
-  if (socket && socket.connected) {
-    socket.on("newConversation", async () => {
-      console.log("New convertation received. Refreshing conversations...");
-      await handlerRefresh(); // Refresh the conversation list
+    socket.on("newConversation", ({ conversation, timestamp }) => {
+      console.log("New conversation received. Refreshing conversations...");
+      addConversation(conversation); // Add the new conversation to the list
+    });
+    socket.on("groupDeleted", async () => {
+      console.log("Group deleted. Refreshing conversations 1...");
+      // await handlerRefresh(); // Refresh the conversation list
     });
   }
   useEffect(() => {
@@ -45,9 +48,11 @@ const ListInbox = () => {
         await handlerRefresh(); // Refresh the conversation list
       });
       if (socket && socket.connected) {
-        socket.on("newConversation", async () => {
-          console.log("New convertation received. Refreshing conversations...");
-          await handlerRefresh(); // Refresh the conversation list
+        socket.on("newConversation", ({ conversation, timestamp }) => {
+          console.log(
+            "New conversation received. Refreshing conversations 1..."
+          );
+          addConversation(conversation); // Add the new conversation to the list
         });
       }
     }

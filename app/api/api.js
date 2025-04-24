@@ -1053,7 +1053,9 @@ export const api = {
   },
   getSameGroups: async (userId) => {
     try {
-      const response = await http.get(`/conversations/get-same-groups/${userId}`);
+      const response = await http.get(
+        `/conversations/get-same-groups/${userId}`
+      );
       return response.data;
     } catch (error) {
       console.error(
@@ -1063,48 +1065,50 @@ export const api = {
       throw error;
     }
   },
-    // Chặn thành viên khỏi nhóm
-    blockUserFromGroup: async (conversationId, userId) => {
-      try {
-        const response = await http.put(`/conversations/group/${conversationId}/block/${userId}`);
-        return response.data;
-      } catch (error) {
-        console.error(
-          "Lỗi khi chặn thành viên:",
-          error.response?.data || error.message
-        );
-        throw error;
-      }
-    },
-    
-    // Bỏ chặn thành viên khỏi nhóm
-    unblockUserFromGroup: async (conversationId, userId) => {
-      try {
-        const response = await http.put(`/conversations/group/${conversationId}/unblock/${userId}`);
-        return response.data;
-      } catch (error) {
-        console.error(
-          "Lỗi khi bỏ chặn thành viên:",
-          error.response?.data || error.message
-        );
-        throw error;
-      }
-    },
+  // Chặn thành viên khỏi nhóm
+  blockUserFromGroup: async (conversationId, userId) => {
+    try {
+      const response = await http.put(
+        `/conversations/group/${conversationId}/block/${userId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi chặn thành viên:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 
-    removeUserFromGroup: async (conversationId, userId) => {
-      try {
-        const response = await http.put(
-          `/conversations/group/${conversationId}/remove/${userId}`
-        );
-        return response.data;
-      } catch (error) {
-        console.error(
-          "Lỗi khi xóa thành viên khỏi nhóm:",
-          error.response?.data || error.message
-        );
-        throw error;
-      }
-    },
-    
+  // Bỏ chặn thành viên khỏi nhóm
+  unblockUserFromGroup: async (conversationId, userId) => {
+    try {
+      const response = await http.put(
+        `/conversations/group/${conversationId}/unblock/${userId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi bỏ chặn thành viên:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 
+  removeUserFromGroup: async (conversationId, userId) => {
+    try {
+      const response = await http.put(
+        `/conversations/group/${conversationId}/remove/${userId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi xóa thành viên khỏi nhóm:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

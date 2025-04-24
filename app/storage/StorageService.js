@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DIRECTORY_KEY = "SHOPY_DIRECTORY_URI";
 let isWriting = false;
-// ========== Chọn thư mục ========== //
+
 export const pickExternalDirectory = async () => {
   try {
     const dirUri =
@@ -54,7 +54,6 @@ const getBaseDir = async () => {
   return uri;
 };
 
-// ========== Định danh file theo user ========== //
 const getUserFileName = async () => {
   const userId = await AsyncStorage.getItem("userId");
   if (!userId) return null;
@@ -63,7 +62,7 @@ const getUserFileName = async () => {
 
 const readUserData = async () => {
   const fileName = await getUserFileName();
-  if (!fileName) return {}; // Trả về object rỗng nếu chưa đăng nhập
+  if (!fileName) return {};
   return (await readFile(fileName)) || {};
 };
 
@@ -76,24 +75,19 @@ const writeUserData = async (data) => {
   await writeFile(fileName, data);
 };
 
-// ========== Core File IO ========== //
-// Hàng đợi để quản lý các thao tác ghi
 const writeQueue = [];
 
 const writeFile = async (fileName, data) => {
-  // Tạo một promise để xếp hàng thao tác ghi
   const writePromise = new Promise(async (resolve, reject) => {
     const executeWrite = async () => {
       try {
         const dirUri = await getBaseDir();
 
-        // Làm sạch dữ liệu trước khi serialize
         const cleanData = JSON.parse(
           JSON.stringify(data, (key, value) => {
             if (typeof value === "undefined" || typeof value === "function") {
               return null;
             }
-            // Kiểm tra boolean
             if (
               typeof value === "boolean" &&
               value !== true &&
@@ -106,11 +100,10 @@ const writeFile = async (fileName, data) => {
           })
         );
 
-        // Serialize dữ liệu
         let content;
         try {
           content = JSON.stringify(cleanData, null, 2);
-          JSON.parse(content); // Kiểm tra JSON hợp lệ
+          JSON.parse(content);
         } catch (err) {
           console.error("❌ Lỗi serialize dữ liệu:", err);
           await debugFileContent(fileName);
@@ -144,12 +137,10 @@ const writeFile = async (fileName, data) => {
           console.log("✅ Tạo tệp mới:", fileUri);
         }
 
-        // Ghi tệp
         await FileSystem.writeAsStringAsync(fileUri, content, {
           encoding: FileSystem.EncodingType.UTF8,
         });
 
-        // Xóa tệp trùng lặp
         const duplicateFiles = files.filter((uri) => {
           const decodedUri = decodeURIComponent(uri);
           return (
@@ -178,7 +169,6 @@ const writeFile = async (fileName, data) => {
     writeQueue.push(executeWrite);
     if (!isWriting) {
       isWriting = true;
-      // Thực thi từng thao tác trong hàng đợi
       while (writeQueue.length > 0) {
         const nextWrite = writeQueue.shift();
         await nextWrite();
@@ -189,6 +179,7 @@ const writeFile = async (fileName, data) => {
 
   return writePromise;
 };
+
 const readFile = async (fileName) => {
   try {
     const dirUri = await getBaseDir();
@@ -215,10 +206,6 @@ const readFile = async (fileName) => {
     try {
       return JSON.parse(content);
     } catch (err) {
-      // console.warn("❌ Lỗi parse JSON:", err.message);
-      // console.log("📄 Nội dung tệp lỗi:", content.slice(0, 500), "...");
-
-      // Skip deletion if the file is in the Sophy directory
       if (!target.includes("Sophy")) {
         await FileSystem.deleteAsync(target, { idempotent: true });
         console.log("🗑️ Đã xóa tệp lỗi:", target);
@@ -233,6 +220,7 @@ const readFile = async (fileName) => {
     return null;
   }
 };
+
 export const debugFileContent = async (fileName) => {
   try {
     const dirUri = await getBaseDir();
@@ -268,7 +256,7 @@ export const debugFileContent = async (fileName) => {
     console.error("Lỗi khi đọc nội dung file:", err);
   }
 };
-// ========== Conversations ========== //
+
 export const getConversations = async () => {
   const data = await readUserData();
   return data.conversations || [];
@@ -282,7 +270,6 @@ export const saveConversations = async (conversations) => {
   return data.conversations;
 };
 
-// ========== Messages ========== //
 export const getMessages = async (conversationId) => {
   const data = await readUserData();
   return data.messages?.[conversationId] || [];
@@ -319,7 +306,6 @@ export const appendMessage = async (conversationId, message) => {
   return saveMessages(conversationId, [message], "before");
 };
 
-// ========== Friends ========== //
 export const getFriends = async () => {
   const data = await readUserData();
   return data.friends || [];
@@ -331,7 +317,6 @@ export const saveFriends = async (friends) => {
   await writeUserData(data);
 };
 
-// ========== Background ========== //
 export const getBackground = async () => {
   const data = await readUserData();
   return data.background || null;
@@ -343,7 +328,6 @@ export const saveBackground = async (bg) => {
   await writeUserData(data);
 };
 
-// ========== Attachments (để sau nếu cần) ========== //
 export const saveAttachment = async (uri, fileName) => {
   console.warn(
     "Chức năng lưu file đính kèm vào external chưa được hoàn thiện."
@@ -359,7 +343,6 @@ export const deleteAttachment = async (filePath) => {
   }
 };
 
-// ========== Clear ========== //
 export const clearAllStorage = async () => {
   try {
     await AsyncStorage.removeItem(DIRECTORY_KEY);

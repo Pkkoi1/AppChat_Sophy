@@ -57,11 +57,13 @@ const ListFriends = () => {
       );
       await handlerRefresh(); // Refresh the conversation list
     });
-  }
-  if (socket && socket.connected) {
     socket.on("newConversation", async () => {
       console.log("New convertation received. Refreshing conversations...");
-      await handlerRefresh(); // Refresh the conversation list
+      // await handlerRefresh(); // Refresh the conversation list
+    });
+    socket.on("groupDeleted", async () => {
+      console.log("Group deleted. Refreshing conversations...");
+      // await handlerRefresh(); // Refresh the conversation list
     });
   }
   useEffect(() => {
@@ -74,7 +76,7 @@ const ListFriends = () => {
       if (socket && socket.connected) {
         socket.on("newConversation", async () => {
           console.log("New convertation received. Refreshing conversations...");
-          await handlerRefresh(); // Refresh the conversation list
+          // await handlerRefresh(); // Refresh the conversation list
         });
       }
     }

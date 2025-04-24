@@ -69,7 +69,7 @@ const options = [
 ];
 
 const BanAndRemoveOption = ({ conversation, receiver }) => {
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, handlerRefresh } = useContext(AuthContext);
   const navigation = useNavigation();
   const [isOverlayVisible, setOverlayVisible] = useState(false);
   const [groupMembers, setGroupMembers] = useState([]);
@@ -258,7 +258,8 @@ const BanAndRemoveOption = ({ conversation, receiver }) => {
                 try {
                   await api.deleteGroup(conversation.conversationId); // Call API to delete the group
                   Alert.alert("Thành công", "Nhóm đã được giải tán.");
-                  navigation.goBack(); // Navigate back after dissolving the group
+                  navigation.navigate("Home");
+                  handlerRefresh();
                 } catch (error) {
                   Alert.alert(
                     "Lỗi",
