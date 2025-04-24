@@ -86,38 +86,40 @@ export const AuthProvider = ({ children }) => {
     loadStorage();
   }, []);
 
-  const handleNewMessage = () => {
+  useEffect(() => {
     if (!socket) return;
 
-    socket.on(
-      "newMessage",
-      ({ conversationId: incomingConversationId, message }) => {
-        const formattedMessage = message._doc || message;
+    const handleNewMessage = ({
+      conversationId: incomingConversationId,
+      message,
+    }) => {
+      const formattedMessage = message._doc || message;
 
-        setConversations((prevConversations) =>
-          prevConversations.map((conv) =>
-            conv.conversationId === incomingConversationId
-              ? { ...conv, lastMessage: formattedMessage }
-              : conv
-          )
-        );
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === incomingConversationId
+            ? { ...conv, lastMessage: formattedMessage, unreadCount: [] }
+            : conv
+        )
+      );
 
-        flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
-        console.log("Nhận tin nhắn mới qua socket:", formattedMessage);
-      }
-    );
-  };
+      flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
+      console.log("🟢 Nhận tin nhắn mới:", formattedMessage);
+    };
 
-  const cleanupNewMessage = () => {
-    if (socket) {
-      socket.off("newMessage");
-    }
-  };
+    const handleNewConversation = ({ conversation }) => {
+      console.log("🟢 Nhận cuộc trò chuyện mới:", conversation);
+      addConversation(conversation); // Thêm mới vào danh sách
+    };
 
-  useEffect(() => {
-    handleNewMessage();
-    return () => cleanupNewMessage();
-  }, [socket]);
+    socket.on("newMessage", handleNewMessage);
+    socket.on("newConversation", handleNewConversation);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.off("newConversation", handleNewConversation);
+    };
+  }, [socket, addConversation]);
 
   const checkLastMessageDifference = async (conversationId) => {
     try {
@@ -218,8 +220,7 @@ export const AuthProvider = ({ children }) => {
       console.log(
         `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
       );
-
-      return response;
+      return newConversation;
     } catch (error) {
       console.error("Lỗi khi thêm cuộc trò chuyện:", error);
 

@@ -89,13 +89,16 @@ const MessageScreen = ({ route, navigation }) => {
 
           // Mark the message as read
           api.readMessage(conversationId);
+          if (
+            conversationId === conversation.conversationId &&
+            message?.senderId !== userInfo?.userId // Đừng xử lý nếu chính mình gửi
+          ) {
+            // Update the messages state
+            setMessages((prevMessages) => [message, ...prevMessages]);
 
-          // Update the messages state
-          setMessages((prevMessages) => [message, ...prevMessages]);
-
-          // Optionally refresh the conversation list
-          await handlerRefresh();
-
+            // Optionally refresh the conversation list
+            await handlerRefresh();
+          }
           console.log("Tin nhắn mới:", {
             conversationId,
             message,
@@ -192,14 +195,14 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
       return () => {
-        socket.off("newMessage");
+        // socket.off("newMessage");
         socket.off("messageRecalled");
         socket.off("messagePinned");
         socket.off("messageUnpinned");
         socket.off("newConversation");
       };
     }
-  }, [socket, messages, sended]);
+  }, [socket, conversation, handlerRefresh]);
 
   const checkStorageSpace = async () => {
     try {
@@ -310,7 +313,7 @@ const MessageScreen = ({ route, navigation }) => {
                 (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
               )
             );
-            // setMessages((prev) => [res, ...prev]);
+            setMessages((prev) => [res, ...prev]);
 
             await appendMessage(conversation.conversationId, res.message);
           } else if (res) {
@@ -400,7 +403,7 @@ const MessageScreen = ({ route, navigation }) => {
                 (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
               )
             );
-            // setMessages((prev) => [res, ...prev]);
+            setMessages((prev) => [res, ...prev]);
             await appendMessage(conversation.conversationId, res);
           } else if (res) {
             setMessages((prev) =>
