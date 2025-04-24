@@ -69,7 +69,8 @@ const options = [
 ];
 
 const BanAndRemoveOption = ({ conversation, receiver }) => {
-  const { userInfo, handlerRefresh } = useContext(AuthContext);
+  const { userInfo, handlerRefresh, removeConversation } =
+    useContext(AuthContext); // Add removeConversation
   const navigation = useNavigation();
   const [isOverlayVisible, setOverlayVisible] = useState(false);
   const [groupMembers, setGroupMembers] = useState([]);
@@ -235,7 +236,34 @@ const BanAndRemoveOption = ({ conversation, receiver }) => {
   };
 
   const handleOptionPress = async (optionName) => {
-    if (optionName === "Rời nhóm") {
+    if (optionName === "Xóa lịch sử trò chuyện") {
+      Alert.alert(
+        "Xác nhận",
+        "Bạn có chắc chắn muốn xóa toàn bộ lịch sử trò chuyện không?",
+        [
+          {
+            text: "Hủy",
+            style: "cancel",
+          },
+          {
+            text: "Đồng ý",
+            onPress: async () => {
+              try {
+                await removeConversation(conversation.conversationId); // Call removeConversation
+                Alert.alert("Thành công", "Lịch sử trò chuyện đã được xóa.");
+                navigation.goBack(); // Navigate back after clearing history
+              } catch (error) {
+                Alert.alert(
+                  "Lỗi",
+                  "Không thể xóa lịch sử trò chuyện. Vui lòng thử lại."
+                );
+                console.error("Lỗi khi xóa lịch sử trò chuyện:", error);
+              }
+            },
+          },
+        ]
+      );
+    } else if (optionName === "Rời nhóm") {
       if (isOwner) {
         await fetchGroupMembers(); // Fetch group members before showing the overlay
         setOverlayVisible(true);

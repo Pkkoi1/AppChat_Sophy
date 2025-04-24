@@ -24,39 +24,38 @@ const ListInbox = () => {
     }
   };
 
-  if (socket && socket.connected) {
-    socket.on("newMessage", async () => {
-      console.log(
-        "New message received. Refreshing conversations at listInbox..."
-      );
-      await handlerRefresh(); // Refresh the conversation list
-    });
-    socket.on("newConversation", ({ conversation, timestamp }) => {
-      console.log("New conversation received. Refreshing conversations...");
-      addConversation(conversation); // Add the new conversation to the list
-    });
-    socket.on("groupDeleted", async () => {
-      console.log("Group deleted. Refreshing conversations 1...");
-      // await handlerRefresh(); // Refresh the conversation list
-    });
-  }
   useEffect(() => {
     if (socket && socket.connected) {
-      // Listen for newMessage event
-      socket.on("newMessage", async () => {
-        console.log("New message received. Refreshing conversations...");
-        await handlerRefresh(); // Refresh the conversation list
-      });
-      if (socket && socket.connected) {
-        socket.on("newConversation", ({ conversation, timestamp }) => {
-          console.log(
-            "New conversation received. Refreshing conversations 1..."
-          );
-          addConversation(conversation); // Add the new conversation to the list
-        });
-      }
+      const handleNewMessage = async () => {
+        console.log(
+          "New message received. Refreshing conversations at ListInbox..."
+        );
+        await handlerRefresh();
+      };
+
+      const handleNewConversation = ({ conversation }) => {
+        console.log(
+          "New conversation received. Refreshing conversations at ListInbox..."
+        );
+        addConversation(conversation);
+      };
+
+      const handleGroupDeleted = async () => {
+        console.log("Group deleted. Refreshing conversations 1...");
+        await handlerRefresh();
+      };
+
+      socket.on("newMessage", handleNewMessage);
+      socket.on("newConversation", handleNewConversation);
+      socket.on("groupDeleted", handleGroupDeleted);
+
+      return () => {
+        socket.off("newMessage", handleNewMessage);
+        socket.off("newConversation", handleNewConversation);
+        socket.off("groupDeleted", handleGroupDeleted);
+      };
     }
-  }, []);
+  }, [socket, handlerRefresh, addConversation]);
 
   return (
     <View style={{ flex: 1, width: "100%" }}>
