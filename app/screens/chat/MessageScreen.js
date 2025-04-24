@@ -176,6 +176,33 @@ const MessageScreen = ({ route, navigation }) => {
           );
         }
       });
+      socket.on('groupCoOwnerAdded', ({ conversationId, newCoOwnerIds }) => {
+          if (conversationId === conversation.conversationId) {
+              console.log('Đã thêm đồng chủ sở hữu:', newCoOwnerIds);
+              // Cập nhật state hoặc thông báo cho người dùng
+          }
+      });
+  
+      socket.on('groupCoOwnerRemoved', ({ conversationId, removedCoOwner }) => {
+          if (conversationId === conversation.conversationId) {
+              console.log('Đã xóa đồng chủ sở hữu:', removedCoOwner);
+              // Cập nhật state hoặc thông báo cho người dùng
+          }
+      });
+  
+      socket.on('userBlocked', ({ conversationId, blockedUserId }) => {
+          if (conversationId === conversation.conversationId) {
+              console.log('Người dùng đã bị chặn:', blockedUserId);
+              // Cập nhật state hoặc thông báo cho người dùng
+          }
+      });
+  
+      socket.on('userUnblocked', ({ conversationId, unblockedUserId }) => {
+          if (conversationId === conversation.conversationId) {
+              console.log('Người dùng đã được bỏ chặn:', unblockedUserId);
+              // Cập nhật state hoặc thông báo cho người dùng
+          }
+      });
       return () => {
         cleanupNewMessage(socket);
         socket.off("newMessage");
