@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { BottomSheet } from "@rneui/themed";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import AntDesign from "@expo/vector-icons/AntDesign";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const GroupMemberOption = ({
   isVisible,
@@ -13,8 +14,10 @@ const GroupMemberOption = ({
   availableActions,
 }) => {
   const renderAvatar = () => {
-    const fullName = memberInfo?.fullname || "User";
-    const url = memberInfo?.urlavatar;
+    const fullName = memberInfo?.fullName || "User";
+    const url = memberInfo?.urlAvatar;
+
+    const { changeRole } = useContext(AuthContext);
 
     return url ? (
       <Image source={{ uri: url }} style={styles.avatar} />
@@ -49,7 +52,7 @@ const GroupMemberOption = ({
         <View style={styles.header}>
           {renderAvatar()}
           <Text style={styles.memberName}>
-            {memberInfo?.fullname || "Không rõ"}
+            {memberInfo?.fullName || "Không rõ"}
           </Text>
         </View>
         {availableActions.includes("message") &&

@@ -5,6 +5,7 @@ import React, {
   useContext,
   useRef,
   useCallback,
+  memo,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }) => {
   const [contactsError, setContactsError] = useState(null);
   const [groups, setGroups] = useState([]);
   const [groupsLoading, setGroupsLoading] = useState(false);
+  const [groupMember, setGroupMember] = useState([]);
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -112,12 +114,130 @@ export const AuthProvider = ({ children }) => {
       addConversation(conversation); // Thêm mới vào danh sách
     };
 
+    const handleAvatarChange = ({ conversationId, newAvatar }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                groupAvatarUrl: newAvatar,
+                unreadCount: [],
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: "Ảnh nhóm đã thay đổi",
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`Đã cập nhật avatar cho cuộc trò chuyện ${conversationId}.`);
+    };
+
+    const handleNewGroupName = ({ conversationId, newName }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                groupName: newName,
+                unreadCount: [],
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: "Tên nhóm đã thay đổi",
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log("Đã đổi tên nhóm");
+    };
+
+    //   emitJoinGroup(conversationId, userId) {
+    //     this.io.to(conversationId).emit('userJoinedGroup', { conversationId, userId });
+    // }
+    const handleNewMemberJoined = ({ conversationId, userId }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [], // Set unreadCount to an empty array
+                groupMembers: [...conv.groupMembers, userId], // Add userId to groupMembers
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: "Một người vừa vào nhóm",
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`User ${userId} đã vào nhóm ${conversationId}`);
+    };
+
+    const handleMemberLeft = ({ conversationId, userId }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [], // Set unreadCount to an empty array
+                groupMembers: [...conv.groupMembers, userId], // Add userId to groupMembers
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: "Một người vừa rời nhóm",
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`User ${userId} vừa rời nhóm ${conversationId}`);
+    };
+    const handleMemberRemoved = ({ conversationId, userId }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [], // Set unreadCount to an empty array
+                groupMembers: [...conv.groupMembers, userId], // Add userId to groupMembers
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: "Một người vừa bị cho rời nhóm",
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`User ${userId} vừa bị cho rời nhóm ${conversationId}`);
+    };
     socket.on("newMessage", handleNewMessage);
     socket.on("newConversation", handleNewConversation);
+    socket.on("groupAvatarChanged", handleAvatarChange);
+    socket.on("groupNameChanged", handleNewGroupName);
+    socket.on("userJoinedGroup", handleNewMemberJoined);
+    socket.on("userAddedToGroup", handleNewMemberJoined);
+    socket.on("userLeftGroup", handleMemberLeft);
+    socket.on("userRemovedFromGroup", handleMemberRemoved);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
       socket.off("newConversation", handleNewConversation);
+      socket.off("groupAvatarChanged", handleAvatarChange);
+      socket.off("groupNameChanged", handleNewGroupName);
+      socket.off("userJoinedGroup", handleNewMemberJoined);
+      socket.off("userAddedToGroup", handleNewMemberJoined);
+      socket.off("userRemovedFromGroup", handleMemberRemoved);
+      socket.off("userLeftGroup", handleMemberLeft);
     };
   }, [socket, addConversation]);
 
@@ -278,6 +398,113 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateGroupMembers = async (conversationId, newMembers) => {
+    try {
+      if (!conversationId || !Array.isArray(newMembers)) {
+        throw new Error(
+          "Thiếu conversationId hoặc danh sách thành viên không hợp lệ."
+        );
+      }
+
+      // Update local state for conversations
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? { ...conv, groupMembers: [...conv.groupMembers, ...newMembers] }
+            : conv
+        )
+      );
+
+      // Update local state for groupMember
+      setGroupMember((prevMembers) => [
+        ...prevMembers,
+        ...newMembers.filter(
+          (newMember) =>
+            !prevMembers.some((member) => member.id === newMember.id)
+        ),
+      ]);
+
+      console.log(
+        `Đã thêm danh sách thành viên mới vào nhóm ${conversationId}:`,
+        newMembers
+      );
+    } catch (error) {
+      console.error("Lỗi khi thêm danh sách thành viên mới:", error);
+      throw error;
+    }
+  };
+
+  const changeRole = async (conversationId, memberId, newRole) => {
+    try {
+      if (!conversationId || !memberId || !newRole) {
+        throw new Error("Thiếu conversationId, memberId hoặc role.");
+      }
+
+      // Update local state
+      setGroupMember((prevMembers) =>
+        prevMembers.map((member) =>
+          member.id === memberId ? { ...member, role: newRole } : member
+        )
+      );
+
+      console.log(
+        `Đã thay đổi vai trò của thành viên ${memberId} thành ${newRole} trong nhóm ${conversationId}.`
+      );
+    } catch (error) {
+      console.error("Lỗi khi thay đổi vai trò thành viên:", error);
+      throw error;
+    }
+  };
+
+  const removeGroupMember = async (conversationId, memberId) => {
+    try {
+      if (!conversationId || !memberId) {
+        throw new Error("Thiếu conversationId hoặc memberId.");
+      }
+
+      // Update local state for conversations
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                groupMembers: conv.groupMembers.filter((id) => id !== memberId),
+              }
+            : conv
+        )
+      );
+
+      // Update local state for groupMember
+      setGroupMember((prevMembers) =>
+        prevMembers.filter((member) => member.id !== memberId)
+      );
+
+      console.log(`Đã xóa thành viên ${memberId} khỏi nhóm ${conversationId}.`);
+    } catch (error) {
+      console.error("Lỗi khi xóa thành viên nhóm:", error);
+      throw error;
+    }
+  };
+
+  const saveGroupMembers = async (conversationId, members) => {
+    try {
+      if (!conversationId || !Array.isArray(members)) {
+        throw new Error(
+          "Thiếu conversationId hoặc danh sách thành viên không hợp lệ."
+        );
+      }
+
+      // Save both member IDs and roles
+      setGroupMember(members);
+      console.log(
+        `Đã lưu danh sách thành viên nhóm với vai trò cho ${conversationId}:`,
+        members
+      );
+    } catch (error) {
+      console.error("Lỗi khi lưu danh sách thành viên nhóm:", error);
+      throw error;
+    }
+  };
   const login = async (params) => {
     const response = await api.login(params);
     const { accessToken, refreshToken } = response.data.token;
@@ -537,6 +764,7 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         conversations,
         background,
+        groupMember,
         register,
         login,
         logout,
@@ -556,6 +784,10 @@ export const AuthProvider = ({ children }) => {
         addConversation, // Thêm hàm mới
         removeConversation, // Thêm hàm mới
         checkLastMessageDifference, // Thêm hàm mới
+        updateGroupMembers, // Thêm hàm mới
+        removeGroupMember, // Thêm hàm mới
+        saveGroupMembers, // Thêm hàm mới
+        changeRole, // Thêm hàm mới
       }}
     >
       {children}

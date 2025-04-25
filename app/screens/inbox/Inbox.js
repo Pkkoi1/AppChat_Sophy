@@ -29,6 +29,8 @@ const Inbox = ({ conversation }) => {
   const [receiver, setReceiver] = useState(null);
   const [senderName, setSenderName] = useState("");
   const [uid, setUid] = useState("");
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
+  const [unreadCountValue, setUnreadCountValue] = useState(0);
 
   const getTimeDifference = (date) => {
     if (!date) return ""; // Handle null date
@@ -185,11 +187,13 @@ const Inbox = ({ conversation }) => {
     isGroup,
   ]);
 
-  // Check if the current user has unread messages
-  const userUnread = unreadCount?.find(
-    (entry) => entry.userId === userInfo.userId
-  );
-  const hasUnreadMessages = userUnread?.count > 0;
+  useEffect(() => {
+    const userUnread = unreadCount?.find(
+      (entry) => entry.userId === userInfo.userId
+    );
+    setHasUnreadMessages(userUnread?.count > 0);
+    setUnreadCountValue(userUnread?.count || 0);
+  }, [unreadCount, userInfo.userId, conversation]);
 
   return (
     <TouchableOpacity
@@ -250,7 +254,7 @@ const Inbox = ({ conversation }) => {
           </Text>
           {hasUnreadMessages && (
             <View style={styles.unreadBadge}>
-              <Text style={styles.unreadBadgeText}>{userUnread.count}</Text>
+              <Text style={styles.unreadBadgeText}>{unreadCountValue}</Text>
             </View>
           )}
         </View>

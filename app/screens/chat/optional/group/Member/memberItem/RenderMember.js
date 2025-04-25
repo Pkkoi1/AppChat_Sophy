@@ -1,31 +1,38 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useContext } from "react";
 import { View, Text, StyleSheet, Image, Alert } from "react-native";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import AntDesign from "@expo/vector-icons/AntDesign";
-import GroupMemberOption from "../option/GroupMemberOption";
+import GroupMemberOption from "../../option/GroupMemberOption";
 import { api } from "@/app/api/api";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const RenderMember = ({
   item,
   userInfo,
-  userInfos,
   navigation,
   conversation,
   onConversationUpdate,
 }) => {
   const [isOptionVisible, setOptionVisible] = useState(false);
-  const memberInfo = userInfos[item];
+  const { groupMember, changeRole, removeGroupMember } =
+    useContext(AuthContext);
+
+  // Lấy thông tin thành viên từ groupMember dựa trên id
+  const memberInfo = groupMember.find((member) => member.id === item);
+  console.log("Member Info:", memberInfo);
   const isCurrentUser = item === userInfo?.userId;
+
+  // Xác định vai trò
   const role =
-    item === conversation?.rules.ownerId
-      ? "Trường nhóm"
-      : conversation?.rules.coOwnerIds.includes(item)
+    memberInfo?.role === "owner"
+      ? "Trưởng nhóm"
+      : memberInfo?.role === "co-owner"
       ? "Phó nhóm"
       : "Thành viên";
 
-  const renderAvatar = (userInfo, role) => {
-    const fullName = userInfo?.fullname || "User";
-    const url = userInfo?.urlavatar;
+  const renderAvatar = (memberInfo, role) => {
+    const fullName = memberInfo?.fullName || "User";
+    const url = memberInfo?.urlAvatar;
 
     return (
       <View style={styles.avatarContainer}>
@@ -41,12 +48,12 @@ const RenderMember = ({
             bordered={false}
           />
         )}
-        {(role === "Trường nhóm" || role === "Phó nhóm") && (
+        {(role === "Trưởng nhóm" || role === "Phó nhóm") && (
           <View style={styles.keyIconContainer}>
             <AntDesign
               name="key"
               size={12}
-              color={role === "Trường nhóm" ? "yellow" : "white"}
+              color={role === "Trưởng nhóm" ? "yellow" : "white"}
               style={{ transform: [{ rotate: "180deg" }] }}
             />
           </View>
@@ -57,15 +64,15 @@ const RenderMember = ({
 
   const handleMemberClick = () => {
     if (isCurrentUser) {
-      navigation.navigate("MyProfile"); // Navigate to MyProfile if it's the current user
+      navigation.navigate("MyProfile");
     } else {
-      setOptionVisible(true); // Open options for other members
+      setOptionVisible(true);
     }
   };
 
   const handleCreateConversation = async () => {
     try {
-      if (!memberInfo?.userId) {
+      if (!memberInfo?.id) {
         Alert.alert(
           "Lỗi",
           "Không thể tạo cuộc trò chuyện: Không có ID người dùng."
@@ -73,30 +80,26 @@ const RenderMember = ({
         return;
       }
 
-      // Kiểm tra xem cuộc trò chuyện đã tồn tại chưa
       try {
         const existingConversation = await api.getConversationById(
-          memberInfo.conversationId
+          conversation.conversationId
         );
         if (existingConversation) {
-          // Nếu cuộc trò chuyện đã tồn tại, chuyển đến màn hình Chat với conversationId
           navigation.navigate("Chat", {
             conversation: existingConversation,
-            receiver: memberInfo,
+            receiver: { userId: memberInfo.id, fullName: memberInfo.fullName },
           });
           return;
         }
       } catch (error) {
-        // Nếu không tìm thấy cuộc trò chuyện, tiếp tục tạo mới
         console.log("Cuộc trò chuyện không tồn tại, tạo mới:", error);
       }
 
-      // Tạo cuộc trò chuyện mới nếu không tìm thấy cuộc trò chuyện cũ
-      const conversation = await api.createConversation(memberInfo.userId);
+      const conversation = await api.createConversation(memberInfo.id);
       if (conversation?.conversationId) {
         navigation.navigate("Chat", {
           conversation: conversation,
-          receiver: memberInfo,
+          receiver: { userId: memberInfo.id, fullName: memberInfo.fullName },
         });
       } else {
         Alert.alert("Lỗi", "Không thể tạo cuộc trò chuyện.");
@@ -112,36 +115,42 @@ const RenderMember = ({
       setOptionVisible(false);
       switch (action) {
         case "message":
-          handleCreateConversation(); // Use the handleCreateConversation function
+          handleCreateConversation();
           break;
         case "viewProfile":
-          navigation.navigate("UserProfile", { friend: memberInfo });
+          navigation.navigate("UserProfile", {
+            friend: {
+              userId: memberInfo.id,
+              fullName: memberInfo.fullName,
+              urlAvatar: memberInfo.urlAvatar,
+            },
+          });
           break;
         case "promote":
           Alert.alert(
             "Xác nhận",
             `Bạn có chắc chắn muốn bổ nhiệm ${
-              memberInfo?.fullname || "thành viên"
+              memberInfo?.fullName || "thành viên"
             } làm nhóm phó không?`,
             [
-              {
-                text: "Hủy",
-                style: "cancel",
-              },
+              { text: "Hủy", style: "cancel" },
               {
                 text: "Đồng ý",
                 onPress: async () => {
                   try {
                     await api.promoteToCoOwner(
                       conversation.conversationId,
-                      memberInfo.userId
+                      memberInfo.id
+                    );
+                    changeRole(
+                      conversation.conversationId,
+                      memberInfo.id,
+                      "co-owner"
                     );
                     Alert.alert(
                       "Thành công",
                       "Đã bổ nhiệm thành viên làm nhóm phó."
                     );
-
-                    // Refresh the data after promotion
                     const updatedConversation = await api.getConversationById(
                       conversation.conversationId
                     );
@@ -163,27 +172,27 @@ const RenderMember = ({
           Alert.alert(
             "Xác nhận",
             `Bạn có chắc chắn muốn xóa vai trò nhóm phó của ${
-              memberInfo?.fullname || "thành viên"
+              memberInfo?.fullName || "thành viên"
             } không?`,
             [
-              {
-                text: "Hủy",
-                style: "cancel",
-              },
+              { text: "Hủy", style: "cancel" },
               {
                 text: "Đồng ý",
                 onPress: async () => {
                   try {
                     await api.removeCoOwner(
                       conversation.conversationId,
-                      memberInfo.userId
+                      memberInfo.id
+                    );
+                    changeRole(
+                      conversation.conversationId,
+                      memberInfo.id,
+                      "member"
                     );
                     Alert.alert(
                       "Thành công",
                       "Đã xóa vai trò nhóm phó của thành viên."
                     );
-
-                    // Refresh the data after role removal
                     const updatedConversation = await api.getConversationById(
                       conversation.conversationId
                     );
@@ -205,13 +214,10 @@ const RenderMember = ({
           Alert.alert(
             "Xác nhận",
             `Bạn có chắc chắn muốn chặn ${
-              memberInfo?.fullname || "thành viên"
+              memberInfo?.fullName || "thành viên"
             } khỏi nhóm không?`,
             [
-              {
-                text: "Hủy",
-                style: "cancel",
-              },
+              { text: "Hủy", style: "cancel" },
               {
                 text: "Chặn",
                 style: "destructive",
@@ -219,16 +225,18 @@ const RenderMember = ({
                   try {
                     await api.blockUserFromGroup(
                       conversation.conversationId,
-                      memberInfo.userId
+                      memberInfo.id
+                    );
+                    removeGroupMember(
+                      conversation.conversationId,
+                      memberInfo.id
                     );
                     Alert.alert(
                       "Thành công",
                       `Đã chặn ${
-                        memberInfo?.fullname || "thành viên"
+                        memberInfo?.fullName || "thành viên"
                       } khỏi nhóm.`
                     );
-
-                    // Refresh the data after blocking
                     const updatedConversation = await api.getConversationById(
                       conversation.conversationId
                     );
@@ -247,13 +255,10 @@ const RenderMember = ({
           Alert.alert(
             "Xác nhận",
             `Bạn có chắc chắn muốn xóa ${
-              memberInfo?.fullname || "thành viên"
+              memberInfo?.fullName || "thành viên"
             } khỏi nhóm không?`,
             [
-              {
-                text: "Hủy",
-                style: "cancel",
-              },
+              { text: "Hủy", style: "cancel" },
               {
                 text: "Xóa",
                 style: "destructive",
@@ -261,16 +266,18 @@ const RenderMember = ({
                   try {
                     await api.removeUserFromGroup(
                       conversation.conversationId,
-                      memberInfo.userId
+                      memberInfo.id
+                    );
+                    removeGroupMember(
+                      conversation.conversationId,
+                      memberInfo.id
                     );
                     Alert.alert(
                       "Thành công",
                       `Đã xóa ${
-                        memberInfo?.fullname || "thành viên"
+                        memberInfo?.fullName || "thành viên"
                       } khỏi nhóm.`
                     );
-
-                    // Refresh the data after removing
                     const updatedConversation = await api.getConversationById(
                       conversation.conversationId
                     );
@@ -293,24 +300,25 @@ const RenderMember = ({
   );
 
   const getAvailableActions = useCallback(() => {
-    const actions = ["viewProfile", "message"]; // Always include viewProfile and message
+    const actions = ["viewProfile", "message"];
+    const currentUserRole = groupMember.find(
+      (m) => m.id === userInfo?.userId
+    )?.role;
 
-    if (userInfo?.userId === conversation?.rules.ownerId) {
-      // If the user is the group owner
+    if (currentUserRole === "owner") {
       if (role === "Phó nhóm") {
-        actions.push("removeCoOwner", "block", "remove"); // Only allow removing co-owner role
+        actions.push("removeCoOwner", "block", "remove");
       } else if (role === "Thành viên") {
-        actions.push("promote", "block", "remove"); // Allow promoting and other actions for regular members
+        actions.push("promote", "block", "remove");
       }
-    } else if (conversation?.rules.coOwnerIds.includes(userInfo?.userId)) {
-      // If the user is a co-owner
-      if (role !== "Trường nhóm" && role !== "Phó nhóm") {
-        actions.push("block", "remove"); // Allow limited actions for regular members
+    } else if (currentUserRole === "rored coowner") {
+      if (role === "Thành viên") {
+        actions.push("block", "remove");
       }
     }
 
     return actions;
-  }, [userInfo?.userId, conversation?.rules, role]);
+  }, [userInfo?.userId, groupMember, role]);
 
   return (
     <>
@@ -318,7 +326,7 @@ const RenderMember = ({
         {renderAvatar(memberInfo, role)}
         <View style={styles.infoContainer}>
           <Text style={styles.memberName}>
-            {isCurrentUser ? "Bạn" : memberInfo?.fullname || "Không rõ"}
+            {isCurrentUser ? "Bạn" : memberInfo?.fullName || "Không rõ"}
           </Text>
           <Text style={styles.memberRole}>{role}</Text>
         </View>
@@ -328,8 +336,8 @@ const RenderMember = ({
         onClose={() => setOptionVisible(false)}
         memberInfo={memberInfo}
         onAction={handleAction}
-        isCoOwner={conversation?.rules.coOwnerIds.includes(item)} // Corrected to use `item` instead of `memberInfo.userId`
-        availableActions={getAvailableActions()} // Pass available actions based on role
+        isCoOwner={role === "Phó nhóm"}
+        availableActions={getAvailableActions()}
       />
     </>
   );

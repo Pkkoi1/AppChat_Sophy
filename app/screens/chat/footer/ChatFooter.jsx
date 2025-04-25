@@ -46,10 +46,10 @@ const ChatFooter = ({
           userId !== "undefined"
         ) {
           setIsTyping(true);
-          console.log(
-            `Người dùng ${fullname} và ${userInfo.userId} đang nhập...`,
-            conversationId
-          );
+          // console.log(
+          //   `Người dùng ${fullname} và ${userInfo.userId} đang nhập...`,
+          //   conversationId
+          // );
         }
 
         if (userTypingTimeoutRef.current) {
