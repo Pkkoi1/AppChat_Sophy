@@ -50,8 +50,6 @@ const CreateNewGroup = ({ route, navigation }) => {
     loadFriends();
   }, [preSelectedFriend]);
 
-  // Rest of the component remains unchanged
-
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchQuery.trim() !== "") {
@@ -60,9 +58,11 @@ const CreateNewGroup = ({ route, navigation }) => {
           // Lấy danh sách bạn bè
           const friendList = await api.getFriends();
 
-          // Lọc danh sách bạn bè dựa trên số điện thoại (tìm kiếm tương đối)
-          const filteredFriends = friendList.filter((friend) =>
-            friend.phone?.toString().includes(searchQuery.trim())
+          // Lọc danh sách bạn bè dựa trên số điện thoại hoặc tên (tìm kiếm tương đối)
+          const filteredFriends = friendList.filter(
+            (friend) =>
+              friend.phone?.toString().includes(searchQuery.trim()) ||
+              friend.fullname?.toLowerCase().includes(searchQuery.trim().toLowerCase())
           );
 
           // Cập nhật kết quả tìm kiếm
@@ -93,9 +93,17 @@ const CreateNewGroup = ({ route, navigation }) => {
   };
 
   const handleCreateGroup = async () => {
+    let generatedGroupName = groupName;
+
     if (!groupName.trim()) {
-      Alert.alert("Lỗi", "Vui lòng nhập tên nhóm.");
-      return;
+      generatedGroupName = selectedFriends
+        .map((friend) => friend.fullname.split(" ").pop())
+        .join(", ");
+
+      if (!generatedGroupName) {
+        Alert.alert("Lỗi", "Vui lòng chọn thành viên.");
+        return;
+      }
     }
 
     if (selectedFriends.length === 0) {
@@ -107,7 +115,7 @@ const CreateNewGroup = ({ route, navigation }) => {
       setIsSearching(true);
       // Extract userIds instead of the entire friend object
       const memberIds = selectedFriends.map((friend) => friend.userId);
-      const newGroup = await api.createGroupConversation(groupName, memberIds);
+      const newGroup = await api.createGroupConversation(generatedGroupName, memberIds);
 
       if (newGroup) {
         Alert.alert("Thành công", "Nhóm đã được tạo!");
@@ -117,8 +125,7 @@ const CreateNewGroup = ({ route, navigation }) => {
         Alert.alert("Lỗi", "Không thể tạo nhóm.");
       }
     } catch (error) {
-      console.error("Lỗi khi tạo nhóm:", error);
-      Alert.alert("Lỗi", "Đã xảy ra lỗi khi tạo nhóm.");
+      Alert.alert("Lỗi", "Nhóm phải có 2 thành viên trở lên.");
     } finally {
       setIsSearching(false);
     }
