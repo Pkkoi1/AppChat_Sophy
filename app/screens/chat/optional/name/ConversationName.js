@@ -84,13 +84,6 @@ const ConversationName = ({ receiver, conversation }) => {
     : null;
 
   const pickImageForAvatar = async () => {
-    if (!isGroupOwnerOrCoOwner) {
-      Alert.alert(
-        "Lỗi",
-        "Chỉ nhóm trưởng hoặc nhóm phó mới được đổi ảnh đại diện."
-      );
-      return;
-    }
     setIsLoading(true);
     try {
       const permissionResult =
@@ -323,13 +316,6 @@ const ConversationName = ({ receiver, conversation }) => {
   };
 
   const handleRenameGroup = async () => {
-    if (!isGroupOwnerOrCoOwner) {
-      Alert.alert(
-        "Lỗi",
-        "Chỉ nhóm trưởng hoặc nhóm phó mới được đổi tên nhóm."
-      );
-      return;
-    }
     if (!newGroupName.trim()) {
       Alert.alert("Lỗi", "Tên nhóm không được để trống.");
       return;
@@ -397,42 +383,49 @@ const ConversationName = ({ receiver, conversation }) => {
                 resizeMode="cover"
               />
             )}
-            {isGroupOwnerOrCoOwner && (
-              <TouchableOpacity
-                style={styles.cameraButton}
-                onPress={pickImageForAvatar}
-              >
-                <AntDesign name="camerao" size={20} color="black" />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              style={styles.cameraButton}
+              onPress={pickImageForAvatar}
+            >
+              <AntDesign name="camerao" size={20} color="black" />
+            </TouchableOpacity>
           </View>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>{conversation.groupName}</Text>
-            {isGroupOwnerOrCoOwner && (
-              <TouchableOpacity
-                style={styles.pencilButton}
-                onPress={() => setIsRenameModalVisible(true)}
-              >
-                <EvilIcons name="pencil" size={20} color="black" />
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              style={styles.pencilButton}
+              onPress={() => setIsRenameModalVisible(true)}
+            >
+              <EvilIcons name="pencil" size={20} color="black" />
+            </TouchableOpacity>
           </View>
         </>
-      ) : receiver?.urlavatar ? (
-        <Image
-          source={{ uri: receiver.urlavatar }}
-          style={styles.avatar}
-          resizeMode="cover"
-        />
       ) : (
-        <AvatarUser
-          fullName={receiver?.fullname || "Người dùng không xác định"}
-          width={90}
-          height={90}
-          avtText={30}
-          shadow={false}
-          bordered={false}
-        />
+        <>
+          <View style={styles.avatarContainer}>
+            {receiver?.urlavatar ? (
+              <Image
+                source={{ uri: receiver.urlavatar }}
+                style={styles.avatar}
+                resizeMode="cover"
+              />
+            ) : (
+              <AvatarUser
+                fullName={receiver?.fullname || "Người dùng không xác định"}
+                width={90}
+                height={90}
+                avtText={30}
+                shadow={false}
+                bordered={false}
+              />
+            )}
+          </View>
+          <View style={styles.nameContainer}>
+            <Text style={styles.name}>
+              {receiver?.fullname || "Người dùng không xác định"}
+            </Text>
+          </View>
+        </>
       )}
       <View style={styles.optionsContainer}>
         {options.map((option, index) => {
