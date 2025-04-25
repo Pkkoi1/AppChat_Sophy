@@ -16,7 +16,11 @@ const OptionalScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { receiver, conversation } = route.params;
-  const { userInfo } = useContext(AuthContext);
+  const { userInfo, groupMember } = useContext(AuthContext);
+
+  const isOwner = groupMember.some(
+    (member) => member.id === userInfo.userId && member.role === "owner"
+  );
 
   return (
     <View style={styles.container}>
@@ -39,10 +43,9 @@ const OptionalScreen = () => {
           isGroup={conversation?.isGroup}
           conversation={conversation}
         />
-        {conversation?.isGroup &&
-          conversation.rules?.ownerId === userInfo.userId && (
-            <GroupSetting conversation={conversation} />
-          )}
+        {conversation?.isGroup && isOwner && (
+          <GroupSetting conversation={conversation} />
+        )}
         <GroupOption receiver={receiver} conversation={conversation} />
         <ConversationOption conversation={conversation} receiver={receiver} />
         <BanAndRemoveOption conversation={conversation} receiver={receiver} />

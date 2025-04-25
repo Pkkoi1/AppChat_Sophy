@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { Tab } from "@rneui/themed";
-import GroupMember from "./GroupMember";
-import BlockedMembers from "./BlockedMembers";
+import GroupMember from "./tabs/GroupMember";
+import BlockedMembers from "./tabs/BlockedMembers";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import Color from "@/app/components/colors/Color";
+import OwnerMember from "./tabs/OwnerMember";
 
 const Index = ({ route }) => {
   const [conversation, setConversation] = useState(route.params.conversation);
@@ -32,17 +33,18 @@ const Index = ({ route }) => {
         );
       case 1:
         return (
-          <View style={styles.contentContainer}>
-            <Text>Danh sách trường và phó nhóm</Text>
-          </View>
+          <OwnerMember
+            conversation={conversation}
+            onConversationUpdate={handleConversationUpdate}
+          />
         );
+      // case 2:
+      //   return (
+      //     <View style={styles.contentContainer}>
+      //       <Text>Danh sách đã mời</Text>
+      //     </View>
+      //   );
       case 2:
-        return (
-          <View style={styles.contentContainer}>
-            <Text>Danh sách đã mời</Text>
-          </View>
-        );
-      case 3:
         return (
           <BlockedMembers
             conversation={conversation}
@@ -66,7 +68,7 @@ const Index = ({ route }) => {
       >
         <Tab.Item title="Tất cả" titleStyle={styles.tabTitle} />
         <Tab.Item title={"Trường và phó nhóm"} titleStyle={styles.tabTitle} />
-        <Tab.Item title="Đã mời" titleStyle={styles.tabTitle} />
+        {/* <Tab.Item title="Đã mời" titleStyle={styles.tabTitle} /> */}
         <Tab.Item title="Đã chặn" titleStyle={styles.tabTitle} />
       </Tab>
       <View style={styles.contentContainer}>{renderContent()}</View>

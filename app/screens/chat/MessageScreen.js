@@ -37,10 +37,16 @@ import {
   saveMessages,
   appendMessage,
 } from "../../storage/StorageService";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const MessageScreen = ({ route, navigation }) => {
-  const { userInfo, handlerRefresh, background, checkLastMessageDifference } =
-    useContext(AuthContext);
+  const {
+    userInfo,
+    handlerRefresh,
+    background,
+    groupMember,
+    saveGroupMembers,
+  } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
@@ -73,13 +79,7 @@ const MessageScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (socket && conversation?.conversationId) {
       socket.emit("joinUserConversations", [conversation.conversationId]);
-      // handleNewMessage(
-      //   socket,
-      //   conversation,
-      //   setMessages,
-      //   flatListRef,
-      //   saveMessages
-      // );
+
       socket.on("newMessage", async ({ conversationId, message, sender }) => {
         if (conversationId === conversation.conversationId) {
           console.log(
@@ -129,12 +129,6 @@ const MessageScreen = ({ route, navigation }) => {
         );
       });
 
-      socket.on("groupDeleted", async () => {
-        console.log("Nhóm đã bị xóa. Đang làm mới cuộc trò chuyện...");
-        // await handlerRefresh(); // Refresh the conversation list
-        navigation.navigate("Home");
-      });
-
       socket.on("messagePinned", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
@@ -169,64 +163,284 @@ const MessageScreen = ({ route, navigation }) => {
       });
       socket.on("groupAvatarChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.messageDetailId === data.messageDetailId
-                ? { ...msg, groupAvatar: data.groupAvatar }
-                : msg
-            )
-          );
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "avatarChange",
+              actorId: userInfo?.userId,
+              targetIds: [],
+              content: "Hình nền nhóm đã được thay đổi.",
+            },
+            content: "Hình nền nhóm đã được thay đổi.",
+
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+
+          setMessages((prev) => {
+            const updatedMessages = [pseudoMessage, ...prev];
+            console.log("Updated messages:", updatedMessages);
+            return updatedMessages;
+          });
         }
-        console.log(
-          "Nhận tin nhắn đã thay đổi ảnh nhóm qua socket:",
-          data.conversationId,
-          data.messageDetailId
-        );
       });
       socket.on("groupNameChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              msg.messageDetailId === data.messageDetailId
-                ? { ...msg, groupName: data.groupName }
-                : msg
-            )
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "nameChange",
+              actorId: userInfo?.userId,
+              targetIds: [],
+              content: `Tên nhóm đã được đổi thành "${data.newName}".`,
+            },
+            content: `Tên nhóm đã được đổi thành "${data.newName}".`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+
+          setMessages((prev) => {
+            const updatedMessages = [pseudoMessage, ...prev];
+            console.log(
+              "Updated messages after group name change:",
+              updatedMessages
+            );
+            return updatedMessages;
+          });
+        }
+      });
+      socket.on("userAddedToGroup", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "userAdded",
+              actorId: data.addedByUser,
+              targetIds: [data.addedUser],
+              content: `Một thành viên mới đã được thêm vào nhóm.`,
+            },
+            content: `Một thành viên mới đã được thêm vào nhóm.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(
+            `User ${data.addedUser} đã được thêm vào nhóm ${data.conversationId}`
           );
         }
       });
-      socket.on('groupCoOwnerAdded', ({ conversationId, newCoOwnerIds }) => {
-          if (conversationId === conversation.conversationId) {
-              console.log('Đã thêm đồng chủ sở hữu:', newCoOwnerIds);
-              // Cập nhật state hoặc thông báo cho người dùng
-          }
+
+      socket.on("userLeftGroup", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "userLeft",
+              actorId: data.userId,
+              targetIds: [],
+              content: `Một thành viên đã rời nhóm.`,
+            },
+            content: `Một thành viên đã rời nhóm.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(`User ${data.userId} đã rời nhóm ${data.conversationId}`);
+        }
       });
-  
-      socket.on('groupCoOwnerRemoved', ({ conversationId, removedCoOwner }) => {
-          if (conversationId === conversation.conversationId) {
-              console.log('Đã xóa đồng chủ sở hữu:', removedCoOwner);
-              // Cập nhật state hoặc thông báo cho người dùng
-          }
+
+      socket.on("userRemovedFromGroup", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "userRemoved",
+              actorId: data.kickedByUser,
+              targetIds: [data.kickedUser],
+              content: `Một thành viên đã bị xóa khỏi nhóm.`,
+            },
+            content: `Một thành viên đã bị xóa khỏi nhóm.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(
+            `User ${data.kickedUser} đã bị xóa khỏi nhóm ${data.conversationId}`
+          );
+        }
       });
-  
-      socket.on('userBlocked', ({ conversationId, blockedUserId }) => {
-          if (conversationId === conversation.conversationId) {
-              console.log('Người dùng đã bị chặn:', blockedUserId);
-              // Cập nhật state hoặc thông báo cho người dùng
-          }
+
+      socket.on("groupOwnerChanged", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "ownerChange",
+              actorId: data.newOwner,
+              targetIds: [],
+              content: `Nhóm trưởng đã được truyền lại.`,
+            },
+            content: `Nhóm trưởng đã được truyền lại.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(
+            `Nhóm trưởng đã được truyền lại cho user ${data.newOwner} trong nhóm ${data.conversationId}`
+          );
+        }
       });
-  
-      socket.on('userUnblocked', ({ conversationId, unblockedUserId }) => {
-          if (conversationId === conversation.conversationId) {
-              console.log('Người dùng đã được bỏ chặn:', unblockedUserId);
-              // Cập nhật state hoặc thông báo cho người dùng
-          }
+
+      socket.on("groupCoOwnerAdded", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "coOwnerAdded",
+              actorId: null,
+              targetIds: data.newCoOwnerIds,
+              content: `Nhóm phó đã được thêm.`,
+            },
+            content: `Nhóm phó đã được thêm.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(
+            `Nhóm phó đã được thêm: ${data.newCoOwnerIds.join(
+              ", "
+            )} trong nhóm ${data.conversationId}`
+          );
+        }
       });
+
+      socket.on("groupCoOwnerRemoved", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "coOwnerRemoved",
+              actorId: null,
+              targetIds: data.removedCoOwnerIds,
+              content: `Nhóm phó đã bị loại bỏ.`,
+            },
+            content: `Nhóm phó đã bị loại bỏ.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(
+            `Nhóm phó đã bị loại bỏ: ${data.removedCoOwnerIds.join(
+              ", "
+            )} trong nhóm ${data.conversationId}`
+          );
+        }
+      });
+
+      socket.on("groupDeleted", () => {
+        console.log("Nhóm đã bị xóa. Đang điều hướng về trang chính...");
+        navigation.navigate("Home");
+      });
+
+      socket.on("userBlocked", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "userBlocked",
+              actorId: null,
+              targetIds: [data.blockedUserId],
+              content: `Một thành viên đã bị chặn.`,
+            },
+            content: `Một thành viên đã bị chặn.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(
+            `User ${data.blockedUserId} đã bị chặn trong nhóm ${data.conversationId}`
+          );
+        }
+      });
+
+      socket.on("userUnblocked", (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "userUnblocked",
+              actorId: null,
+              targetIds: [data.unblockedUserId],
+              content: `Một thành viên đã được bỏ chặn.`,
+            },
+            content: `Một thành viên đã được bỏ chặn.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+          console.log(
+            `User ${data.unblockedUserId} đã được bỏ chặn trong nhóm ${data.conversationId}`
+          );
+        }
+      });
+
       return () => {
-        // socket.off("newMessage");
+        socket.off("newMessage");
         socket.off("messageRecalled");
         socket.off("messagePinned");
         socket.off("messageUnpinned");
         socket.off("newConversation");
+        socket.off("groupAvatarChanged");
+        socket.off("groupNameChanged");
+        socket.off("userAddedToGroup");
+        socket.off("userLeftGroup");
+        socket.off("userRemovedFromGroup");
+        socket.off("groupOwnerChanged");
+        socket.off("groupCoOwnerAdded");
+        socket.off("groupCoOwnerRemoved");
+        socket.off("groupDeleted");
+        socket.off("userBlocked");
+        socket.off("userUnblocked");
       };
     }
   }, [socket, conversation, handlerRefresh]);
@@ -659,6 +873,38 @@ const MessageScreen = ({ route, navigation }) => {
       prevProps.senderId === nextProps.senderId
     );
   });
+
+  const addGroupMember = async (conversation) => {
+    if (conversation?.isGroup && Array.isArray(conversation.groupMembers)) {
+      const membersWithRoles = await Promise.all(
+        conversation.groupMembers.map(async (memberId) => {
+          const memberInfo = await fetchUserInfo(memberId);
+          return {
+            id: memberId,
+            role:
+              memberId === conversation.rules?.ownerId
+                ? "owner"
+                : conversation.rules?.coOwnerIds?.includes(memberId)
+                ? "co-owner"
+                : "member",
+            fullName: memberInfo?.fullname || "Unknown",
+            urlAvatar: memberInfo?.urlavatar || null,
+          };
+        })
+      );
+      saveGroupMembers(conversation.conversationId, membersWithRoles);
+      console.log(
+        "Đã lưu danh sách thành viên nhóm với vai trò, tên và avatar:",
+        membersWithRoles
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (conversation?.isGroup) {
+      addGroupMember(conversation);
+    }
+  }, [conversation]);
 
   return (
     <View style={{ flex: 1 }}>
