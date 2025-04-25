@@ -127,7 +127,7 @@ const writeFile = async (fileName, data) => {
         let fileUri;
         if (existingFileUri) {
           fileUri = existingFileUri;
-          console.log("🔄 Sử dụng tệp hiện có:", fileUri);
+          // console.log("🔄 Sử dụng tệp hiện có:", fileUri);
         } else {
           fileUri = await StorageAccessFramework.createFileAsync(
             dirUri,
@@ -157,7 +157,7 @@ const writeFile = async (fileName, data) => {
           console.log("🗑️ Đã xóa tệp trùng lặp:", duplicate);
         }
 
-        console.log("✅ Đã ghi dữ liệu vào:", fileUri);
+        // console.log("✅ Đã ghi dữ liệu vào:", fileUri);
         resolve();
       } catch (err) {
         console.error("❌ Lỗi ghi tệp:", err);
@@ -208,14 +208,14 @@ const readFile = async (fileName) => {
     } catch (err) {
       if (!target.includes("Sophy")) {
         await FileSystem.deleteAsync(target, { idempotent: true });
-        console.log("🗑️ Đã xóa tệp lỗi:", target);
+        // console.log("🗑️ Đã xóa tệp lỗi:", target);
       } else {
-        console.warn("⚠️ Bỏ qua xóa tệp trong thư mục Sophy:", target);
+        // console.warn("⚠️ Bỏ qua xóa tệp trong thư mục Sophy:", target);
       }
       return null;
     }
   } catch (err) {
-    console.error("❌ Lỗi đọc tệp:", err);
+    // console.error("❌ Lỗi đọc tệp:", err);
     await handleStorageError(err);
     return null;
   }

@@ -236,7 +236,7 @@ const MessageItem = ({
           <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
           {replyType === "text" ? (
             <Text style={MessageItemStyle.replyContent}>{replyContent}</Text>
-          ) : replyType === "image" ? (
+          ) : replyType === "image" || "text-with-image" ? (
             <Text style={MessageItemStyle.replyContent}>[Hình ảnh]</Text>
           ) : replyType === "file" ? (
             <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
@@ -295,7 +295,7 @@ const MessageItem = ({
               style={MessageItemStyle.content}
             />
           )
-        ) : type === "image" ? (
+        ) : type === "image" || "text-with-image" ? (
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("FullScreenImageViewer", {

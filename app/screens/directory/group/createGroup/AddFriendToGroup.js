@@ -15,6 +15,7 @@ import { api } from "../../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { useNavigation } from "@react-navigation/native";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const AddFriendToGroup = ({ route }) => {
   const { conversation } = route.params;
@@ -23,7 +24,7 @@ const AddFriendToGroup = ({ route }) => {
   const [friends, setFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFriends, setSelectedFriends] = useState([]);
-  const { handlerRefresh } = useContext(AuthContext);
+  const { handlerRefresh, updateGroupMembers } = useContext(AuthContext);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -35,17 +36,17 @@ const AddFriendToGroup = ({ route }) => {
     try {
       setIsLoading(true);
       const friendList = await api.getFriends();
-      
+
       // Lọc ra bạn bè không có trong nhóm hiện tại
-      const filteredFriends = friendList.filter(friend => 
-        !conversation.groupMembers.includes(friend.userId)
+      const filteredFriends = friendList.filter(
+        (friend) => !conversation.groupMembers.includes(friend.userId)
       );
-      
+
       // Sắp xếp bạn bè theo tên
-      filteredFriends.sort((a, b) => 
+      filteredFriends.sort((a, b) =>
         (a.fullname || "").localeCompare(b.fullname || "")
       );
-      
+
       setFriends(filteredFriends);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách bạn bè:", error);
@@ -62,9 +63,12 @@ const AddFriendToGroup = ({ route }) => {
     }
 
     const delaySearch = setTimeout(() => {
-      const results = friends.filter(friend => 
-        (friend.fullname || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (friend.phone || "").includes(searchQuery)
+      const results = friends.filter(
+        (friend) =>
+          (friend.fullname || "")
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          (friend.phone || "").includes(searchQuery)
       );
       setSearchResults(results);
     }, 300);
@@ -74,8 +78,10 @@ const AddFriendToGroup = ({ route }) => {
 
   const handleContactClick = (friend) => {
     // Toggle selection
-    if (selectedFriends.some(item => item._id === friend._id)) {
-      setSelectedFriends(selectedFriends.filter(item => item._id !== friend._id));
+    if (selectedFriends.some((item) => item._id === friend._id)) {
+      setSelectedFriends(
+        selectedFriends.filter((item) => item._id !== friend._id)
+      );
     } else {
       setSelectedFriends([...selectedFriends, friend]);
     }
@@ -83,44 +89,66 @@ const AddFriendToGroup = ({ route }) => {
 
   const handleAddToGroup = async () => {
     if (selectedFriends.length === 0) {
-      Alert.alert("Thông báo", "Vui lòng chọn ít nhất một người để thêm vào nhóm");
+      Alert.alert(
+        "Thông báo",
+        "Vui lòng chọn ít nhất một người để thêm vào nhóm"
+      );
       return;
     }
-  
+
     setIsLoading(true);
     try {
+      const addedMembers = [];
       for (const friend of selectedFriends) {
         await api.addUserToGroup(conversation.conversationId, friend.userId);
+        const memberInfo = await fetchUserInfo(friend.userId);
+        addedMembers.push({
+          id: friend.userId,
+          fullName: memberInfo?.fullname || "Unknown",
+          urlAvatar: memberInfo?.urlavatar || null,
+          role: "member",
+        });
       }
-  
+
+      // Save added members to groupMember using updateGroupMembers
+      await updateGroupMembers(conversation.conversationId, addedMembers);
+
       Alert.alert(
         "Thành công",
         `Đã thêm ${selectedFriends.length} người vào nhóm`,
-        [{
-          text: "OK",
-          onPress: () => {
-            handlerRefresh();
-  
-            // Lọc danh sách bạn bè để loại bỏ những người vừa thêm
-            setFriends(prevFriends =>
-              prevFriends.filter(friend =>
-                !selectedFriends.some(selected => selected._id !== friend._id)
-              )
-            );
-  
-            // Lọc danh sách tìm kiếm để loại bỏ những người vừa thêm
-            setSearchResults(prevSearchResults =>
-              prevSearchResults.filter(friend =>
-                !selectedFriends.some(selected => selected._id !== friend._id)
-              )
-            );
-  
-            // Reset danh sách đã chọn
-            setSelectedFriends([]);
-  
-            navigation.goBack();
-          }
-        }]
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              handlerRefresh();
+
+              // Lọc danh sách bạn bè để loại bỏ những người vừa thêm
+              setFriends((prevFriends) =>
+                prevFriends.filter(
+                  (friend) =>
+                    !selectedFriends.some(
+                      (selected) => selected._id === friend._id
+                    )
+                )
+              );
+
+              // Lọc danh sách tìm kiếm để loại bỏ những người vừa thêm
+              setSearchResults((prevSearchResults) =>
+                prevSearchResults.filter(
+                  (friend) =>
+                    !selectedFriends.some(
+                      (selected) => selected._id === friend._id
+                    )
+                )
+              );
+
+              // Reset danh sách đã chọn
+              setSelectedFriends([]);
+
+              navigation.goBack();
+            },
+          },
+        ]
       );
     } catch (error) {
       console.error("Lỗi khi thêm thành viên:", error);
@@ -133,33 +161,35 @@ const AddFriendToGroup = ({ route }) => {
   const groupFriendsByFirstLetter = () => {
     const groupedData = [];
     const sections = {};
-    
+
     const dataSource = searchQuery.trim() !== "" ? searchResults : friends;
-    
-    dataSource.forEach(friend => {
+
+    dataSource.forEach((friend) => {
       const firstLetter = (friend.fullname || " ")[0].toUpperCase();
       if (!sections[firstLetter]) {
         sections[firstLetter] = [];
         groupedData.push({
           title: firstLetter,
-          data: sections[firstLetter]
+          data: sections[firstLetter],
         });
       }
       sections[firstLetter].push(friend);
     });
-    
+
     // Sắp xếp các section theo thứ tự bảng chữ cái
     groupedData.sort((a, b) => a.title.localeCompare(b.title));
-    
+
     return groupedData;
   };
 
   const renderFriendItem = ({ item }) => {
-    const isSelected = selectedFriends.some(friend => friend._id === item._id);
-    
+    const isSelected = selectedFriends.some(
+      (friend) => friend._id === item._id
+    );
+
     return (
-      <TouchableOpacity 
-        style={styles.friendItem} 
+      <TouchableOpacity
+        style={styles.friendItem}
         onPress={() => handleContactClick(item)}
       >
         {item.urlavatar ? (
@@ -170,14 +200,16 @@ const AddFriendToGroup = ({ route }) => {
             width={50}
             height={50}
             avtText={20}
+            shadow={false}
+            bordered={true}
           />
         )}
-        
+
         <View style={styles.friendInfo}>
           <Text style={styles.friendName}>{item.fullname || "Người dùng"}</Text>
           {item.phone && <Text style={styles.phone}>{item.phone}</Text>}
         </View>
-        
+
         <View style={[styles.circle, isSelected && styles.selectedCircle]}>
           {isSelected && <Ionicons name="checkmark" size={16} color="white" />}
         </View>
@@ -205,7 +237,10 @@ const AddFriendToGroup = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
         <View style={styles.titleContainer}>
@@ -215,7 +250,12 @@ const AddFriendToGroup = ({ route }) => {
       </View>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
+        <Ionicons
+          name="search"
+          size={20}
+          color="#888"
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Tìm tên hoặc số điện thoại"
@@ -237,7 +277,7 @@ const AddFriendToGroup = ({ route }) => {
           renderItem={({ item }) => (
             <View>
               {renderSectionHeader(item)}
-              {item.data.map(friend => (
+              {item.data.map((friend) => (
                 <View key={friend._id}>
                   {renderFriendItem({ item: friend })}
                 </View>
@@ -248,7 +288,11 @@ const AddFriendToGroup = ({ route }) => {
       )}
 
       {selectedFriends.length > 0 && (
-        <TouchableOpacity style={styles.addButton} onPress={handleAddToGroup} disabled={isLoading}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={handleAddToGroup}
+          disabled={isLoading}
+        >
           <Text style={styles.addButtonText}>Thêm vào nhóm</Text>
         </TouchableOpacity>
       )}

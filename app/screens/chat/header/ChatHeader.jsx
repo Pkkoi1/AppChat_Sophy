@@ -5,6 +5,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { api } from "@/app/api/api";
 import { SocketContext } from "@/app/socket/SocketContext";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const ChatHeader = ({
   user_id,
@@ -15,9 +16,14 @@ const ChatHeader = ({
 }) => {
   const [receiverName, setReceiverName] = useState("");
   const socket = useContext(SocketContext);
+  const { groupMember } = useContext(AuthContext);
 
   const handlerBack = () => {
     api.readMessage(conversation.conversationId);
+    socket.on("newMessage");
+    socket.on("groupAvatarChanged");
+    socket.on("groupNameChanged");
+
     navigation.goBack();
   };
 
@@ -83,7 +89,7 @@ const ChatHeader = ({
         </Text>
         <Text style={ChatHeaderStyle.subText}>
           {conversation?.isGroup
-            ? `${conversation.groupMembers?.length || 0} thành viên`
+            ? `${groupMember?.length || 0} thành viên`
             : lastActiveStatus || "Đang tải..."}
         </Text>
       </View>
