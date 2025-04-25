@@ -76,13 +76,21 @@ const Home = ({ route }) => {
         await handlerRefresh();
       };
 
+      const handleAvatarChange = async ({ conversationId, newAvatar }) => {
+        console.log(
+          `Avatar changed for conversation ${conversationId}. Refreshing...`
+        );
+        // await handlerRefresh();
+      };
+
       socket.on("newMessage", handleNewMessage);
       socket.on("groupDeleted", handleGroupDeleted);
+      socket.on("groupAvatarChanged", handleAvatarChange);
 
       return () => {
         socket.off("newMessage", handleNewMessage);
-        // socket.off("newConversation", handleNewConversation);
         socket.off("groupDeleted", handleGroupDeleted);
+        socket.off("groupAvatarChanged", handleAvatarChange);
       };
     }
   }, [socket, handlerRefresh, addConversation]);

@@ -1,27 +1,40 @@
-import React, { useContext, useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { View, FlatList, StyleSheet, RefreshControl, Text } from "react-native";
-import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native"; 
-import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import {
+  useNavigation,
+  useFocusEffect,
+  useRoute,
+} from "@react-navigation/native";
 import { AuthContext } from "@/app/auth/AuthContext";
-import RenderMember from "./RenderMember";
+import RenderMember from "../memberItem/RenderMember";
 import { api } from "@/app/api/api";
 
-const GroupMember = ({ conversation: initialConversation, onConversationUpdate }) => {
+const GroupMember = ({
+  conversation: initialConversation,
+  onConversationUpdate,
+}) => {
   const navigation = useNavigation();
-  const route = useRoute(); // Thêm dòng này để lấy route object
-  const { userInfo } = useContext(AuthContext);
-  const [userInfos, setUserInfos] = useState({});
+  const route = useRoute();
+  const { userInfo, groupMember } = useContext(AuthContext);
   const [refreshing, setRefreshing] = useState(false);
   const [conversation, setConversation] = useState(initialConversation);
   const [error, setError] = useState(null);
 
-  // Fetch conversation data from API
+  // Fetch conversation data
   const fetchConversationData = useCallback(async () => {
     if (!conversation?.conversationId) return;
-    
+
     setRefreshing(true);
     try {
-      const updatedConversation = await api.getConversationById(conversation.conversationId);
+      const updatedConversation = await api.getConversationById(
+        conversation.conversationId
+      );
       if (updatedConversation) {
         setConversation(updatedConversation);
         onConversationUpdate?.(updatedConversation);
@@ -35,22 +48,26 @@ const GroupMember = ({ conversation: initialConversation, onConversationUpdate }
     }
   }, [conversation?.conversationId, onConversationUpdate]);
 
-  // Cập nhật từ initialConversation khi prop thay đổi
+  // Update conversation when initialConversation changes
   useEffect(() => {
     if (initialConversation) {
       setConversation(initialConversation);
     }
   }, [initialConversation]);
 
-  // Kiểm tra route.params an toàn
+  // Handle route params safely
   useEffect(() => {
     if (route?.params?.updatedConversation) {
       setConversation(route.params.updatedConversation);
       onConversationUpdate?.(route.params.updatedConversation);
     }
-  }, [route?.params?.updatedConversation, route?.params?.refreshTrigger, onConversationUpdate]);
+  }, [
+    route?.params?.updatedConversation,
+    route?.params?.refreshTrigger,
+    onConversationUpdate,
+  ]);
 
-  // Tự động load dữ liệu khi màn hình được focus
+  // Automatically load data when the screen is focused
   useFocusEffect(
     useCallback(() => {
       if (route?.params?.updatedConversation) {
@@ -59,37 +76,34 @@ const GroupMember = ({ conversation: initialConversation, onConversationUpdate }
       } else {
         fetchConversationData();
       }
-    }, [fetchConversationData, route?.params?.updatedConversation, route?.params?.refreshTrigger])
+    }, [
+      fetchConversationData,
+      route?.params?.updatedConversation,
+      route?.params?.refreshTrigger,
+    ])
   );
-
-  const fetchAllUserInfo = useCallback(async () => {
-    const userInfoMap = {};
-    for (const userId of conversation?.groupMembers || []) {
-      const userInfo = await fetchUserInfo(userId);
-      if (userInfo) {
-        userInfoMap[userId] = userInfo;
-      }
-    }
-    setUserInfos(userInfoMap);
-  }, [conversation?.groupMembers]);
-
-  useEffect(() => {
-    fetchAllUserInfo();
-  }, [fetchAllUserInfo]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    Promise.all([fetchConversationData(), fetchAllUserInfo()])
-      .finally(() => setRefreshing(false));
-  }, [fetchConversationData, fetchAllUserInfo]);
+    fetchConversationData().finally(() => setRefreshing(false));
+  }, [fetchConversationData]);
 
+  // Sort groupMember, prioritize owner
   const sortedGroupMembers = useMemo(() => {
-    return conversation?.groupMembers?.sort((a, b) => {
-      if (a === conversation?.rules.ownerId) return -1;
-      if (b === conversation?.rules.ownerId) return 1;
+    return groupMember.sort((a, b) => {
+      if (a.role === "owner") return -1;
+      if (b.role === "owner") return 1;
       return 0;
     });
-  }, [conversation?.groupMembers, conversation?.rules?.ownerId]);
+  }, [groupMember]);
+
+  useEffect(() => {
+    if (groupMember.length === 0) {
+      setError("Không có thành viên nhóm");
+    } else {
+      setError(null);
+    }
+  }, [groupMember]);
 
   if (error) {
     return (
@@ -104,12 +118,11 @@ const GroupMember = ({ conversation: initialConversation, onConversationUpdate }
       <FlatList
         style={{ padding: 16 }}
         data={sortedGroupMembers}
-        keyExtractor={(item) => item}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <RenderMember
-            item={item}
+            item={item.id}
             userInfo={userInfo}
-            userInfos={userInfos}
             navigation={navigation}
             conversation={conversation}
             onConversationUpdate={onConversationUpdate}
@@ -129,13 +142,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   errorText: {
-    color: 'red',
+    color: "red",
     fontSize: 16,
-  }
+  },
 });
 
 export default GroupMember;
