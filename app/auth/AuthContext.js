@@ -17,7 +17,9 @@ import {
   pickExternalDirectory,
   saveConversations,
 } from "../storage/StorageService";
+
 import { Alert, Linking } from "react-native";
+import { fetchName } from "../components/getUserInfo/UserName";
 
 export const AuthContext = createContext();
 
@@ -159,7 +161,8 @@ export const AuthProvider = ({ children }) => {
     //   emitJoinGroup(conversationId, userId) {
     //     this.io.to(conversationId).emit('userJoinedGroup', { conversationId, userId });
     // }
-    const handleNewMemberJoined = ({ conversationId, userId }) => {
+    const handleNewMemberJoined = async ({ conversationId, userId }) => {
+      const userName = await fetchName(userId); // Fetch the user's name
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
@@ -169,7 +172,7 @@ export const AuthProvider = ({ children }) => {
                 groupMembers: [...conv.groupMembers, userId], // Add userId to groupMembers
                 lastMessage: {
                   ...conv.lastMessage,
-                  content: "Một người vừa vào nhóm",
+                  content: `${userName} vừa vào nhóm`, // Use the fetched name
                   senderId: null,
                   createdAt: new Date().toISOString(), // Set to current timestamp
                 },
@@ -177,20 +180,24 @@ export const AuthProvider = ({ children }) => {
             : conv
         )
       );
-      console.log(`User ${userId} đã vào nhóm ${conversationId}`);
+      console.log(`User ${userName} đã vào nhóm ${conversationId}`);
     };
 
-    const handleMemberLeft = ({ conversationId, userId }) => {
+    const handleUserAdded = async ({
+      conversationId,
+      addedUser,
+      addedByUser,
+    }) => {
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
                 unreadCount: [], // Set unreadCount to an empty array
-                groupMembers: [...conv.groupMembers, userId], // Add userId to groupMembers
+                groupMembers: [...conv.groupMembers, addedUser.userId], // Add userId to groupMembers
                 lastMessage: {
                   ...conv.lastMessage,
-                  content: "Một người vừa rời nhóm",
+                  content: `${addedByUser.fullname} đã thêm ${addedUser.fullname} vào nhóm`, // Use the fetched names
                   senderId: null,
                   createdAt: new Date().toISOString(), // Set to current timestamp
                 },
@@ -198,19 +205,23 @@ export const AuthProvider = ({ children }) => {
             : conv
         )
       );
-      console.log(`User ${userId} vừa rời nhóm ${conversationId}`);
+      console.log(
+        `User ${addedUser.fullname} đã được thêm vào nhóm ${conversationId}`
+      );
     };
-    const handleMemberRemoved = ({ conversationId, userId }) => {
+
+    const handleMemberLeft = async ({ conversationId, userId }) => {
+      const userName = await fetchName(userId); // Fetch the user's name
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
                 unreadCount: [], // Set unreadCount to an empty array
-                groupMembers: [...conv.groupMembers, userId], // Add userId to groupMembers
+                groupMembers: conv.groupMembers.filter((id) => id !== userId), // Remove the userId from groupMembers
                 lastMessage: {
                   ...conv.lastMessage,
-                  content: "Một người vừa bị cho rời nhóm",
+                  content: `${userName} đã rời nhóm`, // Use the fetched name
                   senderId: null,
                   createdAt: new Date().toISOString(), // Set to current timestamp
                 },
@@ -218,16 +229,197 @@ export const AuthProvider = ({ children }) => {
             : conv
         )
       );
-      console.log(`User ${userId} vừa bị cho rời nhóm ${conversationId}`);
+      console.log(`User ${userName} đã rời nhóm ${conversationId}`);
     };
+
+    const handleMemberRemoved = async ({
+      conversationId,
+      kickedUser,
+      kickedByUser,
+    }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [], // Set unreadCount to an empty array
+                groupMembers: conv.groupMembers.filter(
+                  (id) => id !== kickedUser.userId
+                ), // Remove the userId from groupMembers
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${kickedUser.fullname} đã bị ${kickedByUser.fullname} xóa khỏi nhóm`, // Use the fetched name
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `${kickedUser.fullname} đã bị ${kickedByUser.fullname} xóa khỏi nhóm`
+      );
+    };
+
+    const handleOwnerChange = async ({ conversationId, newOwner }) => {
+      const userName = await fetchName(newOwner); // Fetch the user's name
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [], // Set unreadCount to an empty array
+                rules: {
+                  ...conv.rules,
+                  ownerId: newOwner, // Update the ownerId in rules
+                },
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đang là nhóm trường`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `Nhóm trưởng đã được truyền lại cho user ${newOwner} trong nhóm ${conversationId}`
+      );
+    };
+
+    const handleAddCoOwner = async ({ conversationId, newCoOwnerIds }) => {
+      const userName = await fetchName(newCoOwnerIds); // Fetch the user's name
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [], // Set unreadCount to an empty array
+                rules: {
+                  ...conv.rules,
+                  coOwnerIds: [...conv.rules.coOwnerIds, ...newCoOwnerIds], // Add new co-owner IDs to the existing list
+                },
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã làm nhóm phó`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `Nhóm phó đã được thêm: ${newCoOwnerIds.join(
+          ", "
+        )} trong nhóm ${conversationId}`
+      );
+    };
+    const handleRemoveCoOwner = async ({ conversationId, removedCoOwner }) => {
+      const userName = await fetchName(removedCoOwner); // Fetch the user's name
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [], // Set unreadCount to an empty array
+                rules: {
+                  ...conv.rules,
+                  coOwnerIds: conv.rules.coOwnerIds.filter(
+                    (id) => !removedCoOwner.includes(id) // Remove the specified co-owner IDs
+                  ),
+                },
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã không còn là nhóm phó`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `Nhóm phó đã bị loại bỏ: ${removedCoOwner.join(
+          ", "
+        )} trong nhóm ${conversationId}`
+      );
+    };
+
+    const handleGroupDeleted = ({ conversationId }) => {
+      setConversations(
+        (prevConversations) =>
+          prevConversations.filter(
+            (conv) => conv.conversationId !== conversationId
+          ) // Remove the deleted group from conversations
+      );
+      console.log(`Nhóm ${conversationId} đã bị xóa`);
+    };
+
+    const handleUserBlocked = async ({ conversationId, blockedUserId }) => {
+      const userName = await fetchName(blockedUserId); // Fetch the user's name
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                blocked: [...conv.blocked, blockedUserId], // Add the blocked user to the blocked list
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã bị chặn khỏi nhóm`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`User ${userName} đã bị chặn trong nhóm ${conversationId}`);
+    };
+
+    const handleUserUnblocked = async ({ conversationId, unblockedUserId }) => {
+      const userName = await fetchName(unblockedUserId); // Fetch the user's name
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                blocked: conv.blocked.filter((id) => id !== unblockedUserId), // Remove the unblocked user from the blocked list
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã được gỡ chặn khỏi nhóm`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(), // Set to current timestamp
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `User ${userName} đã được bỏ chặn trong nhóm ${conversationId}`
+      );
+    };
+
     socket.on("newMessage", handleNewMessage);
     socket.on("newConversation", handleNewConversation);
     socket.on("groupAvatarChanged", handleAvatarChange);
     socket.on("groupNameChanged", handleNewGroupName);
     socket.on("userJoinedGroup", handleNewMemberJoined);
-    socket.on("userAddedToGroup", handleNewMemberJoined);
+    socket.on("userAddedToGroup", handleUserAdded);
     socket.on("userLeftGroup", handleMemberLeft);
     socket.on("userRemovedFromGroup", handleMemberRemoved);
+    socket.on("groupOwnerChanged", handleOwnerChange);
+    socket.on("groupCoOwnerAdded", handleAddCoOwner);
+    socket.on("groupCoOwnerRemoved", handleRemoveCoOwner);
+    socket.on("groupDeleted", handleGroupDeleted);
+    socket.on("userBlocked", handleUserBlocked);
+    socket.on("userUnblocked", handleUserUnblocked);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
@@ -235,9 +427,15 @@ export const AuthProvider = ({ children }) => {
       socket.off("groupAvatarChanged", handleAvatarChange);
       socket.off("groupNameChanged", handleNewGroupName);
       socket.off("userJoinedGroup", handleNewMemberJoined);
-      socket.off("userAddedToGroup", handleNewMemberJoined);
+      socket.off("userAddedToGroup", handleUserAdded);
       socket.off("userRemovedFromGroup", handleMemberRemoved);
       socket.off("userLeftGroup", handleMemberLeft);
+      socket.off("groupOwnerChanged", handleOwnerChange);
+      socket.off("groupCoOwnerAdded", handleAddCoOwner);
+      socket.off("groupCoOwnerRemoved", handleRemoveCoOwner);
+      socket.off("groupDeleted", handleGroupDeleted);
+      socket.off("userBlocked", handleUserBlocked);
+      socket.off("userUnblocked", handleUserUnblocked);
     };
   }, [socket, addConversation]);
 
