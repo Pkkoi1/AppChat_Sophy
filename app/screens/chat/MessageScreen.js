@@ -18,6 +18,7 @@ import {
   ImageBackground,
   InteractionManager,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import ChatHeader from "./header/ChatHeader";
 import SearchHeader from "./optional/name/searchMessage/SearchHeader";
@@ -46,6 +47,7 @@ const MessageScreen = ({ route, navigation }) => {
     background,
     groupMember,
     saveGroupMembers,
+    changeRole,
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
@@ -267,26 +269,35 @@ const MessageScreen = ({ route, navigation }) => {
 
       socket.on("userRemovedFromGroup", (data) => {
         if (data.conversationId === conversation.conversationId) {
-          const pseudoMessage = {
-            _id: `temp_${Date.now()}`,
-            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
-            conversationId: data.conversationId,
-            type: "notification",
-            notification: {
-              type: "userRemoved",
-              actorId: data.kickedByUser,
-              targetIds: [data.kickedUser],
+          if (data.kickedUser.userId === userInfo.userId) {
+            handlerRefresh();
+
+            Alert.alert(
+              "Bạn đã bị xóa khỏi nhóm. Đang điều hướng về trang chính..."
+            );
+            navigation.navigate("Home");
+          } else {
+            const pseudoMessage = {
+              _id: `temp_${Date.now()}`,
+              messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+              conversationId: data.conversationId,
+              type: "notification",
+              notification: {
+                type: "userRemoved",
+                actorId: data.kickedByUser,
+                targetIds: [data.kickedUser],
+                content: `Một thành viên đã bị xóa khỏi nhóm.`,
+              },
               content: `Một thành viên đã bị xóa khỏi nhóm.`,
-            },
-            content: `Một thành viên đã bị xóa khỏi nhóm.`,
-            createdAt: new Date().toISOString(),
-            senderId: null,
-            sendStatus: "sent",
-          };
-          setMessages((prev) => [pseudoMessage, ...prev]);
-          console.log(
-            `User ${data.kickedUser} đã bị xóa khỏi nhóm ${data.conversationId}`
-          );
+              createdAt: new Date().toISOString(),
+              senderId: null,
+              sendStatus: "sent",
+            };
+            setMessages((prev) => [pseudoMessage, ...prev]);
+            console.log(
+              `User ${data.kickedUser} đã bị xóa khỏi nhóm ${data.conversationId}`
+            );
+          }
         }
       });
 
@@ -309,6 +320,7 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          changeRole(conversation.conversationId, data.newOwner, "owner");
           console.log(
             `Nhóm trưởng đã được truyền lại cho user ${data.newOwner} trong nhóm ${data.conversationId}`
           );
@@ -334,6 +346,11 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          changeRole(
+            conversation.conversationId,
+            data.newCoOwnerIds.join(", "),
+            "co-owner"
+          );
           console.log(
             `Nhóm phó đã được thêm: ${data.newCoOwnerIds.join(
               ", "
@@ -361,6 +378,11 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          changeRole(
+            conversation.conversationId,
+            data.removedCoOwner,
+            "member"
+          );
           console.log(
             `Nhóm phó đã bị loại bỏ: ${data.removedCoOwnerIds.join(
               ", "
@@ -370,57 +392,43 @@ const MessageScreen = ({ route, navigation }) => {
       });
 
       socket.on("groupDeleted", () => {
-        console.log("Nhóm đã bị xóa. Đang điều hướng về trang chính...");
+        handlerRefresh();
+
+        Alert.alert("Nhóm đã bị xóa. Đang điều hướng về trang chính...");
         navigation.navigate("Home");
       });
 
       socket.on("userBlocked", (data) => {
         if (data.conversationId === conversation.conversationId) {
-          const pseudoMessage = {
-            _id: `temp_${Date.now()}`,
-            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
-            conversationId: data.conversationId,
-            type: "notification",
-            notification: {
-              type: "userBlocked",
-              actorId: null,
-              targetIds: [data.blockedUserId],
-              content: `Một thành viên đã bị chặn.`,
-            },
-            content: `Một thành viên đã bị chặn.`,
-            createdAt: new Date().toISOString(),
-            senderId: null,
-            sendStatus: "sent",
-          };
-          setMessages((prev) => [pseudoMessage, ...prev]);
-          console.log(
-            `User ${data.blockedUserId} đã bị chặn trong nhóm ${data.conversationId}`
-          );
-        }
-      });
+          if (data.blockedUserId === userInfo.userId) {
+            handlerRefresh();
 
-      socket.on("userUnblocked", (data) => {
-        if (data.conversationId === conversation.conversationId) {
-          const pseudoMessage = {
-            _id: `temp_${Date.now()}`,
-            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
-            conversationId: data.conversationId,
-            type: "notification",
-            notification: {
-              type: "userUnblocked",
-              actorId: null,
-              targetIds: [data.unblockedUserId],
-              content: `Một thành viên đã được bỏ chặn.`,
-            },
-            content: `Một thành viên đã được bỏ chặn.`,
-            createdAt: new Date().toISOString(),
-            senderId: null,
-            sendStatus: "sent",
-          };
-          setMessages((prev) => [pseudoMessage, ...prev]);
-          console.log(
-            `User ${data.unblockedUserId} đã được bỏ chặn trong nhóm ${data.conversationId}`
-          );
+            Alert.alert(
+              "Bạn đã bị chặn khỏi nhóm. Đang điều hướng về trang chính..."
+            );
+            navigation.navigate("Home");
+          } else {
+            const pseudoMessage = {
+              _id: `temp_${Date.now()}`,
+              messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+              conversationId: data.conversationId,
+              type: "notification",
+              notification: {
+                type: "userBlocked",
+                actorId: null,
+                targetIds: [data.blockedUserId],
+                content: `Một thành viên đã bị chặn.`,
+              },
+              content: `Một thành viên đã bị chặn.`,
+              createdAt: new Date().toISOString(),
+              senderId: null,
+              sendStatus: "sent",
+            };
+            setMessages((prev) => [pseudoMessage, ...prev]);
+            console.log(
+              `User ${data.blockedUserId} đã bị chặn trong nhóm ${data.conversationId}`
+            );
+          }
         }
       });
 

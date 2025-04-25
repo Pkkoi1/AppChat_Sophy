@@ -237,28 +237,63 @@ export const AuthProvider = ({ children }) => {
       kickedUser,
       kickedByUser,
     }) => {
-      setConversations((prevConversations) =>
-        prevConversations.map((conv) =>
-          conv.conversationId === conversationId
-            ? {
-                ...conv,
-                unreadCount: [], // Set unreadCount to an empty array
-                groupMembers: conv.groupMembers.filter(
-                  (id) => id !== kickedUser.userId
-                ), // Remove the userId from groupMembers
-                lastMessage: {
-                  ...conv.lastMessage,
-                  content: `${kickedUser.fullname} đã bị ${kickedByUser.fullname} xóa khỏi nhóm`, // Use the fetched name
-                  senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
-                },
-              }
-            : conv
-        )
-      );
-      console.log(
-        `${kickedUser.fullname} đã bị ${kickedByUser.fullname} xóa khỏi nhóm`
-      );
+      if (kickedUser.userId === userInfo?.userId) {
+        console.log("Bạn đã bị xóa khỏi nhóm. Xóa cuộc trò chuyện...");
+        setConversations((prevConversations) =>
+          prevConversations.filter(
+            (conv) => conv.conversationId !== conversationId
+          )
+        );
+      } else {
+        setConversations((prevConversations) =>
+          prevConversations.map((conv) =>
+            conv.conversationId === conversationId
+              ? {
+                  ...conv,
+                  unreadCount: [],
+                  groupMembers: conv.groupMembers.filter(
+                    (id) => id !== kickedUser.userId
+                  ),
+                  lastMessage: {
+                    ...conv.lastMessage,
+                    content: `${kickedUser.fullname} đã bị ${kickedByUser.fullname} xóa khỏi nhóm`,
+                    senderId: null,
+                    createdAt: new Date().toISOString(),
+                  },
+                }
+              : conv
+          )
+        );
+      }
+    };
+
+    const handleUserBlocked = async ({ conversationId, blockedUserId }) => {
+      if (blockedUserId === userInfo?.userId) {
+        console.log("Bạn đã bị chặn khỏi nhóm. Xóa cuộc trò chuyện...");
+        setConversations((prevConversations) =>
+          prevConversations.filter(
+            (conv) => conv.conversationId !== conversationId
+          )
+        );
+      } else {
+        const userName = await fetchName(blockedUserId);
+        setConversations((prevConversations) =>
+          prevConversations.map((conv) =>
+            conv.conversationId === conversationId
+              ? {
+                  ...conv,
+                  blocked: [...conv.blocked, blockedUserId],
+                  lastMessage: {
+                    ...conv.lastMessage,
+                    content: `${userName} đã bị chặn khỏi nhóm`,
+                    senderId: null,
+                    createdAt: new Date().toISOString(),
+                  },
+                }
+              : conv
+          )
+        );
+      }
     };
 
     const handleOwnerChange = async ({ conversationId, newOwner }) => {
@@ -358,28 +393,6 @@ export const AuthProvider = ({ children }) => {
           ) // Remove the deleted group from conversations
       );
       console.log(`Nhóm ${conversationId} đã bị xóa`);
-    };
-
-    const handleUserBlocked = async ({ conversationId, blockedUserId }) => {
-      const userName = await fetchName(blockedUserId); // Fetch the user's name
-
-      setConversations((prevConversations) =>
-        prevConversations.map((conv) =>
-          conv.conversationId === conversationId
-            ? {
-                ...conv,
-                blocked: [...conv.blocked, blockedUserId], // Add the blocked user to the blocked list
-                lastMessage: {
-                  ...conv.lastMessage,
-                  content: `${userName} đã bị chặn khỏi nhóm`,
-                  senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
-                },
-              }
-            : conv
-        )
-      );
-      console.log(`User ${userName} đã bị chặn trong nhóm ${conversationId}`);
     };
 
     const handleUserUnblocked = async ({ conversationId, unblockedUserId }) => {
@@ -646,7 +659,7 @@ export const AuthProvider = ({ children }) => {
       );
 
       console.log(
-        `Đã thay đổi vai trò của thành viên ${memberId} thành ${newRole} trong nhóm ${conversationId}.`
+        `Đã thay đổi vai trò của thành viên ${memberId} thành ${newRole} trong nhóm ${conversationId}. \n Danh sách ${groupMember}`
       );
     } catch (error) {
       console.error("Lỗi khi thay đổi vai trò thành viên:", error);
