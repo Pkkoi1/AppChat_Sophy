@@ -59,8 +59,19 @@ const ConversationName = ({ receiver, conversation }) => {
   const [isRenameModalVisible, setIsRenameModalVisible] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { handlerRefresh, updateBackground, background } =
-    useContext(AuthContext);
+  const {
+    handlerRefresh,
+    updateBackground,
+    background,
+    userInfo,
+    groupMember,
+  } = useContext(AuthContext);
+
+  const isGroupOwnerOrCoOwner = groupMember.some(
+    (member) =>
+      member.id === userInfo?.userId &&
+      (member.role === "owner" || member.role === "co-owner")
+  );
 
   const defaultGroupAvatar = require("../../../../../assets/images/default-group-avatar.jpg");
 
@@ -73,6 +84,13 @@ const ConversationName = ({ receiver, conversation }) => {
     : null;
 
   const pickImageForAvatar = async () => {
+    if (!isGroupOwnerOrCoOwner) {
+      Alert.alert(
+        "Lỗi",
+        "Chỉ nhóm trưởng hoặc nhóm phó mới được đổi ảnh đại diện."
+      );
+      return;
+    }
     setIsLoading(true);
     try {
       const permissionResult =
@@ -305,6 +323,13 @@ const ConversationName = ({ receiver, conversation }) => {
   };
 
   const handleRenameGroup = async () => {
+    if (!isGroupOwnerOrCoOwner) {
+      Alert.alert(
+        "Lỗi",
+        "Chỉ nhóm trưởng hoặc nhóm phó mới được đổi tên nhóm."
+      );
+      return;
+    }
     if (!newGroupName.trim()) {
       Alert.alert("Lỗi", "Tên nhóm không được để trống.");
       return;
@@ -363,30 +388,34 @@ const ConversationName = ({ receiver, conversation }) => {
               <Image
                 source={
                   selectedImage
-                    ? { uri: selectedImage } // Ưu tiên selectedImage nếu có
+                    ? { uri: selectedImage }
                     : conversation?.isGroup && conversation.groupAvatarUrl
-                    ? { uri: conversation.groupAvatarUrl } // Nếu không, dùng groupAvatarUrl
-                    : defaultGroupAvatar // Fallback về default nếu cả hai đều không có
+                    ? { uri: conversation.groupAvatarUrl }
+                    : defaultGroupAvatar
                 }
                 style={styles.avatar}
                 resizeMode="cover"
               />
             )}
-            <TouchableOpacity
-              style={styles.cameraButton}
-              onPress={pickImageForAvatar}
-            >
-              <AntDesign name="camerao" size={20} color="black" />
-            </TouchableOpacity>
+            {isGroupOwnerOrCoOwner && (
+              <TouchableOpacity
+                style={styles.cameraButton}
+                onPress={pickImageForAvatar}
+              >
+                <AntDesign name="camerao" size={20} color="black" />
+              </TouchableOpacity>
+            )}
           </View>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>{conversation.groupName}</Text>
-            <TouchableOpacity
-              style={styles.pencilButton}
-              onPress={() => setIsRenameModalVisible(true)}
-            >
-              <EvilIcons name="pencil" size={20} color="black" />
-            </TouchableOpacity>
+            {isGroupOwnerOrCoOwner && (
+              <TouchableOpacity
+                style={styles.pencilButton}
+                onPress={() => setIsRenameModalVisible(true)}
+              >
+                <EvilIcons name="pencil" size={20} color="black" />
+              </TouchableOpacity>
+            )}
           </View>
         </>
       ) : receiver?.urlavatar ? (

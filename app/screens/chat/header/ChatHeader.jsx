@@ -23,6 +23,16 @@ const ChatHeader = ({
     socket.on("newMessage");
     socket.on("groupAvatarChanged");
     socket.on("groupNameChanged");
+    socket.on("userJoinedGroup");
+    socket.on("userAddedToGroup");
+    socket.on("userLeftGroup");
+    socket.on("userRemovedFromGroup");
+    socket.on("groupOwnerChanged");
+    socket.on("groupCoOwnerAdded");
+    socket.on("groupCoOwnerRemoved");
+    socket.on("groupDeleted");
+    socket.on("userBlocked");
+    socket.on("userUnblocked");
 
     navigation.goBack();
   };
