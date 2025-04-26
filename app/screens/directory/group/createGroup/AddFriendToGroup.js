@@ -151,8 +151,7 @@ const AddFriendToGroup = ({ route }) => {
         ]
       );
     } catch (error) {
-      console.error("Lỗi khi thêm thành viên:", error);
-      Alert.alert("Lỗi", "Không thể thêm thành viên vào nhóm.");
+      Alert.alert("Lỗi", "Không được quyền thêm thành viên này vào nhóm do thành viên đã bị chặn.");
     } finally {
       setIsLoading(false);
     }
