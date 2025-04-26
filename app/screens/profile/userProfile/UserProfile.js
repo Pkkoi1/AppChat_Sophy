@@ -41,6 +41,7 @@ const UserProfile = ({ route }) => {
   const { friend, requestSent: initialRequestSent } = route.params || {};
   const [requestSent, setRequestSent] = useState(initialRequestSent || null);
 
+  console.log("Nhận: ", friend);
   useEffect(() => {
     setRequestSent(initialRequestSent || null);
   }, [initialRequestSent]);
@@ -382,49 +383,53 @@ const UserProfile = ({ route }) => {
 
   const renderFriendStatus = () => {
     if (requestSent === "friend") {
-  return (
-    <View style={styles.friendContainer}>
-      <Text style={styles.statusText}>Phan Hoang Tan</Text>
-      <Text style={styles.statusText}>{friend?.phone || "0792764303"}</Text>
-      <Text style={styles.statusText}>
-        {friend?.email || "tan@gmail.com"}
-      </Text>
-    </View>
-  );
-}
-
-// Trang thai da gui loi moi ket ban
-if (requestSent === "pending") {
-  return (
-    <View style={styles.buttonAndStatusContainer}>
-      <View style={styles.horizontalButtons}>
-        <TouchableOpacity
-          style={styles.messageButton}
-          onPress={handleCreateConversation}
-        >
-          <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
-          <Text style={styles.messageButtonText}>Nhắn tin</Text>
-        </TouchableOpacity>
-        <View style={styles.buttonWrapper}>
-          {loading ? (
-            <View style={styles.loaderContainer}>
-              <ActivityIndicator size="small" color="#666" />
-            </View>
-          ) : (
-            <TouchableOpacity
-              style={styles.addFriendButton}
-              onPress={handleCancelRequest}
-            >
-              <Ionicons name="person-remove-outline" size={20} color="#666" />
-              <Text style={styles.addFriendButtonText}>Hủy kết bạn</Text>
-            </TouchableOpacity>
-          )}
+      return (
+        <View style={styles.friendContainer}>
+          <Text style={styles.statusText}>Phan Hoang Tan</Text>
+          <Text style={styles.statusText}>{friend?.phone || "0792764303"}</Text>
+          <Text style={styles.statusText}>
+            {friend?.email || "tan@gmail.com"}
+          </Text>
         </View>
-      </View>
-      <View style={styles.divider} />
-    </View>
-  );
-}
+      );
+    }
+
+    // Trang thai da gui loi moi ket ban
+    if (requestSent === "pending") {
+      return (
+        <View style={styles.buttonAndStatusContainer}>
+          <View style={styles.horizontalButtons}>
+            <TouchableOpacity
+              style={styles.messageButton}
+              onPress={handleCreateConversation}
+            >
+              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+              <Text style={styles.messageButtonText}>Nhắn tin</Text>
+            </TouchableOpacity>
+            <View style={styles.buttonWrapper}>
+              {loading ? (
+                <View style={styles.loaderContainer}>
+                  <ActivityIndicator size="small" color="#666" />
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.addFriendButton}
+                  onPress={handleCancelRequest}
+                >
+                  <Ionicons
+                    name="person-remove-outline"
+                    size={20}
+                    color="#666"
+                  />
+                  <Text style={styles.addFriendButtonText}>Hủy kết bạn</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+          <View style={styles.divider} />
+        </View>
+      );
+    }
 
     if (requestSent === "accepted") {
       return (

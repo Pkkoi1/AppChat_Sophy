@@ -5,6 +5,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import GroupMemberOption from "../../option/GroupMemberOption";
 import { api } from "@/app/api/api";
 import { AuthContext } from "@/app/auth/AuthContext";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const RenderMember = ({
   item,
@@ -19,8 +20,19 @@ const RenderMember = ({
 
   // Lấy thông tin thành viên từ groupMember dựa trên id
   const memberInfo = groupMember.find((member) => member.id === item);
-  console.log("Member Info:", memberInfo);
+  // console.log("Member Info:", memberInfo);
   const isCurrentUser = item === userInfo?.userId;
+
+  const fetchUserInfoById = async (id) => {
+    try {
+      const res = await fetchUserInfo(id);
+      console.log("User Info:", res);
+      return res;
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+      return null; // Trả về null nếu có lỗi
+    }
+  };
 
   // Xác định vai trò
   const role =
@@ -118,13 +130,17 @@ const RenderMember = ({
           handleCreateConversation();
           break;
         case "viewProfile":
-          navigation.navigate("UserProfile", {
-            friend: {
-              userId: memberInfo.id,
-              fullName: memberInfo.fullName,
-              urlAvatar: memberInfo.urlAvatar,
-            },
-          });
+          try {
+            const friendInfo = await fetchUserInfoById(memberInfo.id); // Resolve the promise
+            console.log("Friend truyền đi", friendInfo);
+            navigation.navigate("UserProfile", {
+              friend: friendInfo,
+              requestSent: "friend",
+            });
+          } catch (error) {
+            console.error("Lỗi khi lấy thông tin bạn bè:", error);
+            Alert.alert("Lỗi", "Không thể lấy thông tin bạn bè.");
+          }
           break;
         case "promote":
           Alert.alert(
