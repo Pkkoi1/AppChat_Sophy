@@ -330,7 +330,13 @@ const ConversationName = ({ receiver, conversation }) => {
 
       await api.changeGroupName(conversationId, newGroupName);
 
-      Alert.alert("Thành công", "Tên nhóm đã được cập nhật!");
+      // Update the group name in the conversation object
+      conversation.groupName = newGroupName;
+
+      Alert.alert(
+        "Thành công",
+        `Tên nhóm đã được đổi thành "${newGroupName}"!`
+      );
       setIsRenameModalVisible(false);
       handlerRefresh();
     } catch (error) {

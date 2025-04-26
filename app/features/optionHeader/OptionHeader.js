@@ -1,16 +1,31 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { SocketContext } from "@/app/socket/SocketContext";
 
 const OptionHeader = ({ title, previousScreen }) => {
   const navigation = useNavigation();
+  const socket = useContext(SocketContext);
 
   const handleGoBack = () => {
     if (previousScreen) {
       navigation.navigate(previousScreen); // Quay lại màn hình trước với dữ liệu
     } else {
+      socket.on("newMessage");
+      socket.on("groupAvatarChanged");
+      socket.on("groupNameChanged");
+      socket.on("userJoinedGroup");
+      socket.on("userAddedToGroup");
+      socket.on("userLeftGroup");
+      socket.on("userRemovedFromGroup");
+      socket.on("groupOwnerChanged");
+      socket.on("groupCoOwnerAdded");
+      socket.on("groupCoOwnerRemoved");
+      socket.on("groupDeleted");
+      socket.on("userBlocked");
+      socket.on("userUnblocked");
       navigation.goBack(); // Quay lại màn hình trước mặc định
     }
   };

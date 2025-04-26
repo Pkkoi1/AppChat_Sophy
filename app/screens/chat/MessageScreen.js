@@ -188,6 +188,7 @@ const MessageScreen = ({ route, navigation }) => {
             console.log("Updated messages:", updatedMessages);
             return updatedMessages;
           });
+          conversation.groupAvatarUrl = data.newAvatar;
         }
       });
       socket.on("groupNameChanged", (data) => {
@@ -239,7 +240,7 @@ const MessageScreen = ({ route, navigation }) => {
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
           console.log(
-            `User ${data.addedUser} đã được thêm vào nhóm ${data.conversationId}`
+            `User ${data.addedUser} đã được thêm vào nhóm 1 ${data.conversationId}`
           );
         }
       });
