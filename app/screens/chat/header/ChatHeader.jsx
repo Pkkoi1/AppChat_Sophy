@@ -22,6 +22,7 @@ const ChatHeader = ({
     api.readMessage(conversation.conversationId);
     socket.on("newMessage");
     socket.on("groupAvatarChanged");
+    socket.on("newConversation");
     socket.on("groupNameChanged");
     socket.on("userJoinedGroup");
     socket.on("userAddedToGroup");

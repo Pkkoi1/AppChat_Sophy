@@ -241,10 +241,10 @@ const MessageScreen = ({ route, navigation }) => {
           setMessages((prev) => [pseudoMessage, ...prev]);
 
           // Fetch user info and update groupMember
-          const newMemberInfo = await fetchUserInfo(data.addedUser);
+          const newMemberInfo = await fetchUserInfo(data.addedUser.userId);
           if (newMemberInfo) {
             const newMember = {
-              id: data.addedUser,
+              id: data.addedUser.userId,
               role: "member",
               fullName: newMemberInfo.fullname,
               urlAvatar: newMemberInfo.urlavatar,
@@ -277,6 +277,11 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          const updatedGroupMembers = groupMember.filter(
+            (member) => member.id !== data.userId
+          );
+          saveGroupMembers(conversation.conversationId, updatedGroupMembers);
+
           console.log(`User ${data.userId} đã rời nhóm ${data.conversationId}`);
         }
       });
@@ -406,10 +411,10 @@ const MessageScreen = ({ route, navigation }) => {
               fullName: unblockedUserInfo.fullname,
               urlAvatar: unblockedUserInfo.urlavatar,
             };
-            saveGroupMembers(conversation.conversationId, [
-              ...groupMember,
-              unblockedMember,
-            ]);
+            // saveGroupMembers(conversation.conversationId, [
+            //   ...groupMember,
+            //   unblockedMember,
+            // ]);
             console.log("User unblocked and added to group:", unblockedMember);
           }
         }
