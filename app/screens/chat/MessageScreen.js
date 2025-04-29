@@ -220,7 +220,7 @@ const MessageScreen = ({ route, navigation }) => {
           });
         }
       });
-      socket.on("userAddedToGroup", (data) => {
+      socket.on("userAddedToGroup", async (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
             _id: `temp_${Date.now()}`,
@@ -239,9 +239,22 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
-          console.log(
-            `User ${data.addedUser} đã được thêm vào nhóm 1 ${data.conversationId}`
-          );
+
+          // Fetch user info and update groupMember
+          const newMemberInfo = await fetchUserInfo(data.addedUser.userId);
+          if (newMemberInfo) {
+            const newMember = {
+              id: data.addedUser.userId,
+              role: "member",
+              fullName: newMemberInfo.fullname,
+              urlAvatar: newMemberInfo.urlavatar,
+            };
+            saveGroupMembers(conversation.conversationId, [
+              ...groupMember,
+              newMember,
+            ]);
+            console.log("User added to group:", newMember);
+          }
         }
       });
 
@@ -264,6 +277,11 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          const updatedGroupMembers = groupMember.filter(
+            (member) => member.id !== data.userId
+          );
+          saveGroupMembers(conversation.conversationId, updatedGroupMembers);
+
           console.log(`User ${data.userId} đã rời nhóm ${data.conversationId}`);
         }
       });
@@ -295,8 +313,14 @@ const MessageScreen = ({ route, navigation }) => {
               sendStatus: "sent",
             };
             setMessages((prev) => [pseudoMessage, ...prev]);
+
+            // Remove the member from groupMember
+            const updatedGroupMembers = groupMember.filter(
+              (member) => member.id !== data.kickedUser.userId
+            );
+            saveGroupMembers(conversation.conversationId, updatedGroupMembers);
             console.log(
-              `User ${data.kickedUser} đã bị xóa khỏi nhóm ${data.conversationId}`
+              `User ${data.kickedUser.userId} đã bị xóa khỏi nhóm ${data.conversationId}`
             );
           }
         }
@@ -357,6 +381,42 @@ const MessageScreen = ({ route, navigation }) => {
               ", "
             )} trong nhóm ${data.conversationId}`
           );
+        }
+      });
+      socket.on("userUnblocked", async (data) => {
+        if (data.conversationId === conversation.conversationId) {
+          const pseudoMessage = {
+            _id: `temp_${Date.now()}`,
+            messageDetailId: `notif-${data.conversationId}-${Date.now()}`,
+            conversationId: data.conversationId,
+            type: "notification",
+            notification: {
+              type: "userAdded",
+              targetIds: [data.unblockedUserId],
+              content: `Một thành viên mới đã được thêm vào nhóm.`,
+            },
+            content: `Một thành viên mới đã được thêm vào nhóm.`,
+            createdAt: new Date().toISOString(),
+            senderId: null,
+            sendStatus: "sent",
+          };
+          setMessages((prev) => [pseudoMessage, ...prev]);
+
+          // Fetch user info and update groupMember
+          const unblockedUserInfo = await fetchUserInfo(data.unblockedUserId);
+          if (unblockedUserInfo) {
+            const unblockedMember = {
+              id: data.unblockedUserId,
+              role: "member",
+              fullName: unblockedUserInfo.fullname,
+              urlAvatar: unblockedUserInfo.urlavatar,
+            };
+            // saveGroupMembers(conversation.conversationId, [
+            //   ...groupMember,
+            //   unblockedMember,
+            // ]);
+            console.log("User unblocked and added to group:", unblockedMember);
+          }
         }
       });
 
@@ -426,6 +486,12 @@ const MessageScreen = ({ route, navigation }) => {
               sendStatus: "sent",
             };
             setMessages((prev) => [pseudoMessage, ...prev]);
+
+            // Remove the member from groupMember
+            const updatedGroupMembers = groupMember.filter(
+              (member) => member.id !== data.blockedUserId
+            );
+            saveGroupMembers(conversation.conversationId, updatedGroupMembers);
             console.log(
               `User ${data.blockedUserId} đã bị chặn trong nhóm ${data.conversationId}`
             );
