@@ -7,17 +7,11 @@ import React, {
   memo,
 } from "react";
 import {
-  SafeAreaView,
   View,
   Text,
-  Platform,
   StyleSheet,
-  KeyboardAvoidingView,
-  TextInput,
   StatusBar,
   ImageBackground,
-  InteractionManager,
-  TouchableOpacity,
   Alert,
 } from "react-native";
 import ChatHeader from "./header/ChatHeader";
@@ -33,11 +27,6 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { SocketContext } from "@/app/socket/SocketContext";
 import { cleanupNewMessage, handleNewMessage } from "@/app/socket/SocketEvent";
-import {
-  getMessages,
-  saveMessages,
-  appendMessage,
-} from "../../storage/StorageService";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const MessageScreen = ({ route, navigation }) => {
@@ -48,6 +37,8 @@ const MessageScreen = ({ route, navigation }) => {
     groupMember,
     saveGroupMembers,
     changeRole,
+    getMessages,
+    saveMessages,
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
@@ -58,9 +49,8 @@ const MessageScreen = ({ route, navigation }) => {
   const [isSearching, setIsSearching] = useState(startSearch || false);
   const [highlightedMessageIds, setHighlightedMessageIds] = useState([]);
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
-  const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
-  const [replyingTo, setReplyingTo] = useState(null); // State cho tin nhắn đang trả lời
-  const flatListRef = useRef(null); // Attach FlatList ref here
+  const [replyingTo, setReplyingTo] = useState(null);
+  const flatListRef = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
@@ -93,12 +83,10 @@ const MessageScreen = ({ route, navigation }) => {
           api.readMessage(conversationId);
           if (
             conversationId === conversation.conversationId &&
-            message?.senderId !== userInfo?.userId // Đừng xử lý nếu chính mình gửi
+            message?.senderId !== userInfo?.userId
           ) {
-            // Update the messages state
             setMessages((prevMessages) => [message, ...prevMessages]);
-
-            // Optionally refresh the conversation list
+            await saveMessages(conversationId, [message], "before");
             await handlerRefresh();
           }
           console.log("Tin nhắn mới:", {
@@ -108,12 +96,12 @@ const MessageScreen = ({ route, navigation }) => {
           });
         }
       });
-      if (socket) {
-        socket.on("newConversation", async () => {
-          console.log("New convertation received. Refreshing conversations...");
-          await handlerRefresh(); // Refresh the conversation list
-        });
-      }
+
+      socket.on("newConversation", async () => {
+        console.log("New conversation received. Refreshing conversations...");
+        await handlerRefresh();
+      });
+
       socket.on("messageRecalled", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
@@ -147,6 +135,7 @@ const MessageScreen = ({ route, navigation }) => {
           messageId
         );
       });
+
       socket.on("messageUnpinned", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
@@ -163,6 +152,7 @@ const MessageScreen = ({ route, navigation }) => {
           messageId
         );
       });
+
       socket.on("groupAvatarChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -177,7 +167,6 @@ const MessageScreen = ({ route, navigation }) => {
               content: "Hình nền nhóm đã được thay đổi.",
             },
             content: "Hình nền nhóm đã được thay đổi.",
-
             createdAt: new Date().toISOString(),
             senderId: null,
             sendStatus: "sent",
@@ -191,6 +180,7 @@ const MessageScreen = ({ route, navigation }) => {
           conversation.groupAvatarUrl = data.newAvatar;
         }
       });
+
       socket.on("groupNameChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -213,13 +203,14 @@ const MessageScreen = ({ route, navigation }) => {
           setMessages((prev) => {
             const updatedMessages = [pseudoMessage, ...prev];
             console.log(
-              "Updated messages after group name change:",
+              "Updated messages before group name change:",
               updatedMessages
             );
             return updatedMessages;
           });
         }
       });
+
       socket.on("userAddedToGroup", async (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -239,8 +230,8 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          saveMessages(conversation.conversationId, [pseudoMessage], "before");
 
-          // Fetch user info and update groupMember
           const newMemberInfo = await fetchUserInfo(data.addedUser.userId);
           if (newMemberInfo) {
             const newMember = {
@@ -277,6 +268,8 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          saveMessages(conversation.conversationId, [pseudoMessage], "before");
+
           const updatedGroupMembers = groupMember.filter(
             (member) => member.id !== data.userId
           );
@@ -290,7 +283,6 @@ const MessageScreen = ({ route, navigation }) => {
         if (data.conversationId === conversation.conversationId) {
           if (data.kickedUser.userId === userInfo.userId) {
             handlerRefresh();
-
             Alert.alert(
               "Bạn đã bị xóa khỏi nhóm. Đang điều hướng về trang chính..."
             );
@@ -313,8 +305,12 @@ const MessageScreen = ({ route, navigation }) => {
               sendStatus: "sent",
             };
             setMessages((prev) => [pseudoMessage, ...prev]);
+            saveMessages(
+              conversation.conversationId,
+              [pseudoMessage],
+              "before"
+            );
 
-            // Remove the member from groupMember
             const updatedGroupMembers = groupMember.filter(
               (member) => member.id !== data.kickedUser.userId
             );
@@ -345,6 +341,7 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          saveMessages(conversation.conversationId, [pseudoMessage], "before");
           changeRole(conversation.conversationId, data.newOwner, "owner");
           console.log(
             `Nhóm trưởng đã được truyền lại cho user ${data.newOwner} trong nhóm ${data.conversationId}`
@@ -371,6 +368,7 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          saveMessages(conversation.conversationId, [pseudoMessage], "before");
           changeRole(
             conversation.conversationId,
             data.newCoOwnerIds.join(", "),
@@ -383,6 +381,7 @@ const MessageScreen = ({ route, navigation }) => {
           );
         }
       });
+
       socket.on("userUnblocked", async (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -401,8 +400,8 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          saveMessages(conversation.conversationId, [pseudoMessage], "before");
 
-          // Fetch user info and update groupMember
           const unblockedUserInfo = await fetchUserInfo(data.unblockedUserId);
           if (unblockedUserInfo) {
             const unblockedMember = {
@@ -411,10 +410,6 @@ const MessageScreen = ({ route, navigation }) => {
               fullName: unblockedUserInfo.fullname,
               urlAvatar: unblockedUserInfo.urlavatar,
             };
-            // saveGroupMembers(conversation.conversationId, [
-            //   ...groupMember,
-            //   unblockedMember,
-            // ]);
             console.log("User unblocked and added to group:", unblockedMember);
           }
         }
@@ -439,6 +434,7 @@ const MessageScreen = ({ route, navigation }) => {
             sendStatus: "sent",
           };
           setMessages((prev) => [pseudoMessage, ...prev]);
+          saveMessages(conversation.conversationId, [pseudoMessage], "before");
           changeRole(
             conversation.conversationId,
             data.removedCoOwner,
@@ -454,7 +450,6 @@ const MessageScreen = ({ route, navigation }) => {
 
       socket.on("groupDeleted", () => {
         handlerRefresh();
-
         Alert.alert("Nhóm đã bị xóa. Đang điều hướng về trang chính...");
         navigation.navigate("Home");
       });
@@ -463,7 +458,6 @@ const MessageScreen = ({ route, navigation }) => {
         if (data.conversationId === conversation.conversationId) {
           if (data.blockedUserId === userInfo.userId) {
             handlerRefresh();
-
             Alert.alert(
               "Bạn đã bị chặn khỏi nhóm. Đang điều hướng về trang chính..."
             );
@@ -486,8 +480,12 @@ const MessageScreen = ({ route, navigation }) => {
               sendStatus: "sent",
             };
             setMessages((prev) => [pseudoMessage, ...prev]);
+            saveMessages(
+              conversation.conversationId,
+              [pseudoMessage],
+              "before"
+            );
 
-            // Remove the member from groupMember
             const updatedGroupMembers = groupMember.filter(
               (member) => member.id !== data.blockedUserId
             );
@@ -518,51 +516,29 @@ const MessageScreen = ({ route, navigation }) => {
         socket.off("userUnblocked");
       };
     }
-  }, [socket, conversation, handlerRefresh]);
-
-  const checkStorageSpace = async () => {
-    try {
-      const info = await FileSystem.getInfoAsync(FileSystem.documentDirectory);
-      if (info.exists && info.totalSpace && info.freeSpace) {
-        const freeSpaceMB = info.freeSpace / (1024 * 1024); // Chuyển đổi sang MB
-        console.log(`Dung lượng trống: ${freeSpaceMB.toFixed(2)} MB`);
-        return freeSpaceMB > 10; // Đảm bảo còn ít nhất 10MB trống
-      }
-      return true; // Nếu không lấy được thông tin, giả định đủ bộ nhớ
-    } catch (error) {
-      console.error("Lỗi khi kiểm tra bộ nhớ:", error);
-      return true; // Nếu lỗi, giả định đủ bộ nhớ
-    }
-  };
+  }, [socket, conversation, handlerRefresh, userInfo, saveMessages]);
 
   const fetchMessages = async () => {
     try {
       setIsLoading(true);
 
-      // Kiểm tra bộ nhớ trước khi tải tin nhắn
-      const hasEnoughSpace = await checkStorageSpace();
-      if (!hasEnoughSpace) {
-        alert("Bộ nhớ không đủ. Vui lòng giải phóng dung lượng và thử lại.");
-        return;
-      }
-
-      // Bước 1: Load từ cache
+      // Load from context
       const cached = await getMessages(conversation.conversationId);
-      setMessages(cached || []); // Đảm bảo cached không phải undefined
+      setMessages(cached || []);
+      // console.log("Tin nhắn đã tải từ context:", cached);
 
-      // Bước 2: Gọi API lấy mới
+      // (Tùy chọn) Nếu cần làm mới từ API
       const response = await api.getAllMessages(conversation.conversationId);
-
-      if (!response || !response.messages) {
-        throw new Error("API không trả về dữ liệu tin nhắn hợp lệ.");
+      if (response && response.messages) {
+        const filtered = response.messages.filter(
+          (m) => !m.hiddenFrom?.includes(userInfo.userId)
+        );
+        const updated = await saveMessages(
+          conversation.conversationId,
+          filtered
+        );
+        setMessages(updated || []);
       }
-
-      const filtered = response.messages.filter(
-        (m) => !m.hiddenFrom?.includes(userInfo.userId)
-      );
-
-      const updated = await saveMessages(conversation.conversationId, filtered);
-      setMessages(updated || []); // Đảm bảo updated không phải undefined
     } catch (error) {
       console.error("Lỗi khi tải tin nhắn:", error);
       alert(
@@ -592,7 +568,7 @@ const MessageScreen = ({ route, navigation }) => {
       }
 
       const pseudoMessage = {
-        _id: `temp_${Date.now()}`, // Temporary ID for local rendering
+        _id: `temp_${Date.now()}`,
         messageDetailId: `msg_${Date.now()}`,
         senderId: userInfo.userId,
         conversationId: conversation.conversationId,
@@ -601,12 +577,12 @@ const MessageScreen = ({ route, navigation }) => {
         createdAt: new Date().toISOString(),
         isReply: !!replyingTo,
         messageReplyId: replyingTo?.messageDetailId || null,
-        replyData: replyingTo || null, // Ensure replyData is not undefined
-        sendStatus: "sending", // Initial status
+        replyData: replyingTo || null,
+        sendStatus: "sending",
       };
 
-      // Display the message immediately
       setMessages((prev) => [pseudoMessage, ...prev]);
+      // await saveMessages(conversation.conversationId, [pseudoMessage], "before");
 
       try {
         let res;
@@ -623,15 +599,13 @@ const MessageScreen = ({ route, navigation }) => {
             });
           }
           if (socket && socket.connected) {
-            // Replace the pseudo message with the actual message from the API
             setMessages((prev) =>
               prev.filter(
                 (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
               )
             );
             setMessages((prev) => [res, ...prev]);
-
-            await appendMessage(conversation.conversationId, res.message);
+            await saveMessages(conversation.conversationId, [res], "before");
           } else if (res) {
             setMessages((prev) =>
               prev.filter(
@@ -639,7 +613,7 @@ const MessageScreen = ({ route, navigation }) => {
               )
             );
             setMessages((prev) => [res, ...prev]);
-            await appendMessage(conversation.conversationId, res.message);
+            await saveMessages(conversation.conversationId, [res], "before");
           } else {
             console.error("Lỗi: Không nhận được phản hồi từ API.");
             alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
@@ -653,7 +627,6 @@ const MessageScreen = ({ route, navigation }) => {
             error.response?.data?.message || error.message
           }. Vui lòng thử lại.`
         );
-        // Mark the pseudo message as failed
         setMessages((prev) =>
           prev.map((msg) =>
             msg.messageDetailId === pseudoMessage.messageDetailId
@@ -665,7 +638,7 @@ const MessageScreen = ({ route, navigation }) => {
         setReplyingTo(null);
       }
     },
-    [conversation, userInfo.userId, replyingTo]
+    [conversation, userInfo.userId, replyingTo, saveMessages]
   );
 
   const handleSendImage = useCallback(
@@ -694,6 +667,7 @@ const MessageScreen = ({ route, navigation }) => {
         return;
       }
       setMessages((prev) => [pseudoMessage, ...prev]);
+      // await saveMessages(conversation.conversationId, [pseudoMessage], "before");
 
       try {
         console.log("Đọc file ảnh từ URI:", message.attachment);
@@ -720,7 +694,7 @@ const MessageScreen = ({ route, navigation }) => {
               )
             );
             setMessages((prev) => [res, ...prev]);
-            await appendMessage(conversation.conversationId, res);
+            await saveMessages(conversation.conversationId, [res], "before");
           } else if (res) {
             setMessages((prev) =>
               prev.filter(
@@ -728,7 +702,7 @@ const MessageScreen = ({ route, navigation }) => {
               )
             );
             setMessages((prev) => [res, ...prev]);
-            await appendMessage(conversation.conversationId, res.message);
+            await saveMessages(conversation.conversationId, [res], "before");
           } else {
             console.error("Lỗi: Không nhận được phản hồi từ API.");
             alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
@@ -750,7 +724,7 @@ const MessageScreen = ({ route, navigation }) => {
         );
       }
     },
-    [conversation, userInfo.userId]
+    [conversation, userInfo.userId, saveMessages]
   );
 
   const handleSendFile = useCallback(
@@ -772,6 +746,7 @@ const MessageScreen = ({ route, navigation }) => {
       };
 
       setMessages((prev) => [pseudoMessage, ...prev]);
+      // await saveMessages(conversation.conversationId, [pseudoMessage], "before");
 
       if (message.type === "file") {
         try {
@@ -797,8 +772,8 @@ const MessageScreen = ({ route, navigation }) => {
                 (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
               )
             );
-            setMessages((prev) => [pseudoMessage, ...prev]);
-            await appendMessage(conversation.conversationId, res);
+            setMessages((prev) => [res, ...prev]);
+            await saveMessages(conversation.conversationId, [res], "before");
           } else if (res) {
             setMessages((prev) =>
               prev.filter(
@@ -806,7 +781,7 @@ const MessageScreen = ({ route, navigation }) => {
               )
             );
             setMessages((prev) => [res, ...prev]);
-            await appendMessage(conversation.conversationId, res.message);
+            await saveMessages(conversation.conversationId, [res], "before");
           } else {
             console.error("Lỗi: Không nhận được phản hồi từ API.");
             alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
@@ -830,7 +805,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       }
     },
-    [conversation, userInfo.userId]
+    [conversation, userInfo.userId, saveMessages]
   );
 
   const handleSendVideo = useCallback(
@@ -851,6 +826,8 @@ const MessageScreen = ({ route, navigation }) => {
       };
 
       setMessages((prev) => [pseudoMessage, ...prev]);
+      // await saveMessages(conversation.conversationId, [pseudoMessage], "before");
+
       try {
         const response = await api.sendFileVideoMessage({
           conversationId: conversation.conversationId,
@@ -863,16 +840,16 @@ const MessageScreen = ({ route, navigation }) => {
               (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
             )
           );
-          // setMessages((prev) => [response, ...prev]);
-          await appendMessage(conversation.conversationId, response);
-        } else if (res) {
+          setMessages((prev) => [response, ...prev]);
+          await saveMessages(conversation.conversationId, [response], "before");
+        } else if (response) {
           setMessages((prev) =>
             prev.filter(
               (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
             )
           );
-          setMessages((prev) => [res, ...prev]);
-          await appendMessage(conversation.conversationId, res.message);
+          setMessages((prev) => [response, ...prev]);
+          await saveMessages(conversation.conversationId, [response], "before");
         } else {
           console.error("Lỗi: Không nhận được phản hồi từ API.");
           alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
@@ -894,11 +871,11 @@ const MessageScreen = ({ route, navigation }) => {
         );
       }
     },
-    [conversation, userInfo.userId]
+    [conversation, userInfo.userId, saveMessages]
   );
 
   const handleReply = (message) => {
-    setReplyingTo(message); // Cập nhật tin nhắn đang trả lời
+    setReplyingTo(message);
   };
 
   const scrollToMessage = (messageId) => {
@@ -915,22 +892,19 @@ const MessageScreen = ({ route, navigation }) => {
         flatListRef.current.scrollToIndex({
           index: index,
           animated: true,
-          viewPosition: 0.5, // Vị trí hiển thị tin nhắn ở giữa màn hình
+          viewPosition: 0.5,
         });
         setHighlightedMessageId(messageId);
 
-        // Reset highlightedMessageId sau 2 giây
         setTimeout(() => setHighlightedMessageId(null), 2000);
       } catch (error) {
         console.warn("Lỗi cuộn đến message:", error.message);
 
-        // Fallback nếu lỗi out-of-range
         flatListRef.current.scrollToOffset({
-          offset: Math.max(0, index * 80), // Tính toán offset dựa trên chiều cao item
+          offset: Math.max(0, index * 80),
           animated: true,
         });
 
-        // Đảm bảo tin nhắn được highlight sau fallback
         setHighlightedMessageId(messageId);
         setTimeout(() => setHighlightedMessageId(null), 2000);
       }
@@ -940,7 +914,6 @@ const MessageScreen = ({ route, navigation }) => {
   const effectiveBackground = background || conversation?.background || null;
 
   const MemoizedConversation = memo(Conversation, (prevProps, nextProps) => {
-    // So sánh các props để tránh render lại không cần thiết
     return (
       prevProps.messages === nextProps.messages &&
       prevProps.highlightedMessageId === nextProps.highlightedMessageId &&
@@ -1001,15 +974,15 @@ const MessageScreen = ({ route, navigation }) => {
             setMessages={setMessages}
             senderId={userInfo.userId}
             highlightedMessageIds={highlightedMessageIds}
-            highlightedMessageId={highlightedMessageId} // Pass highlightedMessageId
+            highlightedMessageId={highlightedMessageId}
             searchQuery={searchQuery}
             receiver={receiver}
             onTyping={isTyping}
             onReply={handleReply}
-            flatListRef={flatListRef} // Pass FlatList ref to Conversation
-            onScrollToMessage={scrollToMessage} // Pass scrollToMessage to Conversation
-            conversationId={conversation.conversationId} // Truyền conversationId
-            fetchMessages={fetchMessages} // Truyền fetchMessages
+            flatListRef={flatListRef}
+            onScrollToMessage={scrollToMessage}
+            conversationId={conversation.conversationId}
+            fetchMessages={fetchMessages}
           />
         ) : (
           <View style={MessageScreenStyle.loadingContainer}>
