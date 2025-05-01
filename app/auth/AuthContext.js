@@ -11,13 +11,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../socket/SocketContext";
 import * as Contacts from "expo-contacts";
-import {
-  checkStoragePaths,
-  getConversations,
-  pickExternalDirectory,
-  saveConversations,
-} from "../storage/StorageService";
-
 import { Alert, Linking } from "react-native";
 import { fetchName } from "../components/getUserInfo/UserName";
 
@@ -41,20 +34,6 @@ export const AuthProvider = ({ children }) => {
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
 
-  const ensureStoragePermission = async () => {
-    const savedUri = await AsyncStorage.getItem("SHOPY_DIRECTORY_URI");
-    if (!savedUri) {
-      try {
-        const pickedUri = await pickExternalDirectory();
-        console.log("📁 Thư mục đã chọn:", pickedUri);
-      } catch (err) {
-        console.error("❌ Không thể chọn thư mục lưu trữ:", err.message);
-      }
-    } else {
-      console.log("📁 Đã có thư mục lưu trữ:", savedUri);
-    }
-  };
-
   useEffect(() => {
     const loadStorage = async () => {
       try {
@@ -70,11 +49,6 @@ export const AuthProvider = ({ children }) => {
           setaccessToken(token[1]);
           setRefreshToken(refresh[1]);
           setUserInfo(JSON.parse(user[1]));
-        }
-
-        const cachedConversations = await getConversations();
-        if (cachedConversations?.length > 0) {
-          setConversations(cachedConversations);
         }
 
         if (storedBackground[1]) {
@@ -102,7 +76,12 @@ export const AuthProvider = ({ children }) => {
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === incomingConversationId
-            ? { ...conv, lastMessage: formattedMessage, unreadCount: [] }
+            ? {
+                ...conv,
+                lastMessage: formattedMessage,
+                unreadCount: [],
+                messages: [formattedMessage, ...(conv.messages || [])],
+              }
             : conv
         )
       );
@@ -113,7 +92,7 @@ export const AuthProvider = ({ children }) => {
 
     const handleNewConversation = ({ conversation }) => {
       console.log("🟢 Nhận cuộc trò chuyện mới:", conversation);
-      addConversation(conversation); // Thêm mới vào danh sách
+      addConversation({ ...conversation, messages: [] });
     };
 
     const handleAvatarChange = ({ conversationId, newAvatar }) => {
@@ -128,7 +107,7 @@ export const AuthProvider = ({ children }) => {
                   ...conv.lastMessage,
                   content: "Ảnh nhóm đã thay đổi",
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -149,7 +128,7 @@ export const AuthProvider = ({ children }) => {
                   ...conv.lastMessage,
                   content: "Tên nhóm đã thay đổi",
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -158,23 +137,20 @@ export const AuthProvider = ({ children }) => {
       console.log("Đã đổi tên nhóm");
     };
 
-    //   emitJoinGroup(conversationId, userId) {
-    //     this.io.to(conversationId).emit('userJoinedGroup', { conversationId, userId });
-    // }
     const handleNewMemberJoined = async ({ conversationId, userId }) => {
-      const userName = await fetchName(userId); // Fetch the user's name
+      const userName = await fetchName(userId);
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
-                unreadCount: [], // Set unreadCount to an empty array
-                groupMembers: [...conv.groupMembers, userId], // Add userId to groupMembers
+                unreadCount: [],
+                groupMembers: [...conv.groupMembers, userId],
                 lastMessage: {
                   ...conv.lastMessage,
-                  content: `${userName} vừa vào nhóm`, // Use the fetched name
+                  content: `${userName} vừa vào nhóm`,
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -193,13 +169,13 @@ export const AuthProvider = ({ children }) => {
           conv.conversationId === conversationId
             ? {
                 ...conv,
-                unreadCount: [], // Set unreadCount to an empty array
-                groupMembers: [...conv.groupMembers, addedUser.userId], // Add userId to groupMembers
+                unreadCount: [],
+                groupMembers: [...conv.groupMembers, addedUser.userId],
                 lastMessage: {
                   ...conv.lastMessage,
-                  content: `${addedByUser.fullname} đã thêm ${addedUser.fullname} vào nhóm`, // Use the fetched names
+                  content: `${addedByUser.fullname} đã thêm ${addedUser.fullname} vào nhóm`,
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -211,19 +187,19 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleMemberLeft = async ({ conversationId, userId }) => {
-      const userName = await fetchName(userId); // Fetch the user's name
+      const userName = await fetchName(userId);
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
-                unreadCount: [], // Set unreadCount to an empty array
-                groupMembers: conv.groupMembers.filter((id) => id !== userId), // Remove the userId from groupMembers
+                unreadCount: [],
+                groupMembers: conv.groupMembers.filter((id) => id !== userId),
                 lastMessage: {
                   ...conv.lastMessage,
-                  content: `${userName} đã rời nhóm`, // Use the fetched name
+                  content: `${userName} đã rời nhóm`,
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -297,23 +273,22 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleOwnerChange = async ({ conversationId, newOwner }) => {
-      const userName = await fetchName(newOwner); // Fetch the user's name
-
+      const userName = await fetchName(newOwner);
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
-                unreadCount: [], // Set unreadCount to an empty array
+                unreadCount: [],
                 rules: {
                   ...conv.rules,
-                  ownerId: newOwner, // Update the ownerId in rules
+                  ownerId: newOwner,
                 },
                 lastMessage: {
                   ...conv.lastMessage,
-                  content: `${userName} đang là nhóm trường`,
+                  content: `${userName} đang là nhóm trưởng`,
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -325,23 +300,22 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleAddCoOwner = async ({ conversationId, newCoOwnerIds }) => {
-      const userName = await fetchName(newCoOwnerIds); // Fetch the user's name
-
+      const userName = await fetchName(newCoOwnerIds);
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
-                unreadCount: [], // Set unreadCount to an empty array
+                unreadCount: [],
                 rules: {
                   ...conv.rules,
-                  coOwnerIds: [...conv.rules.coOwnerIds, ...newCoOwnerIds], // Add new co-owner IDs to the existing list
+                  coOwnerIds: [...conv.rules.coOwnerIds, ...newCoOwnerIds],
                 },
                 lastMessage: {
                   ...conv.lastMessage,
                   content: `${userName} đã làm nhóm phó`,
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -353,26 +327,26 @@ export const AuthProvider = ({ children }) => {
         )} trong nhóm ${conversationId}`
       );
     };
-    const handleRemoveCoOwner = async ({ conversationId, removedCoOwner }) => {
-      const userName = await fetchName(removedCoOwner); // Fetch the user's name
 
+    const handleRemoveCoOwner = async ({ conversationId, removedCoOwner }) => {
+      const userName = await fetchName(removedCoOwner);
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
-                unreadCount: [], // Set unreadCount to an empty array
+                unreadCount: [],
                 rules: {
                   ...conv.rules,
                   coOwnerIds: conv.rules.coOwnerIds.filter(
-                    (id) => !removedCoOwner.includes(id) // Remove the specified co-owner IDs
+                    (id) => !removedCoOwner.includes(id)
                   ),
                 },
                 lastMessage: {
                   ...conv.lastMessage,
                   content: `${userName} đã không còn là nhóm phó`,
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -386,29 +360,27 @@ export const AuthProvider = ({ children }) => {
     };
 
     const handleGroupDeleted = ({ conversationId }) => {
-      setConversations(
-        (prevConversations) =>
-          prevConversations.filter(
-            (conv) => conv.conversationId !== conversationId
-          ) // Remove the deleted group from conversations
+      setConversations((prevConversations) =>
+        prevConversations.filter(
+          (conv) => conv.conversationId !== conversationId
+        )
       );
       console.log(`Nhóm ${conversationId} đã bị xóa`);
     };
 
     const handleUserUnblocked = async ({ conversationId, unblockedUserId }) => {
-      const userName = await fetchName(unblockedUserId); // Fetch the user's name
-
+      const userName = await fetchName(unblockedUserId);
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
             ? {
                 ...conv,
-                blocked: conv.blocked.filter((id) => id !== unblockedUserId), // Remove the unblocked user from the blocked list
+                blocked: conv.blocked.filter((id) => id !== unblockedUserId),
                 lastMessage: {
                   ...conv.lastMessage,
                   content: `${userName} đã được gỡ chặn khỏi nhóm`,
                   senderId: null,
-                  createdAt: new Date().toISOString(), // Set to current timestamp
+                  createdAt: new Date().toISOString(),
                 },
               }
             : conv
@@ -454,13 +426,11 @@ export const AuthProvider = ({ children }) => {
 
   const checkLastMessageDifference = async (conversationId) => {
     try {
-      // Lấy tin nhắn cuối cùng từ state cục bộ
       const localConversation = conversations.find(
         (conv) => conv.conversationId === conversationId
       );
       const localLastMessage = localConversation?.lastMessage || null;
 
-      // Lấy tin nhắn từ server
       const response = await api.getAllMessages(conversationId);
       if (!response || !response.messages) {
         throw new Error("API không trả về dữ liệu tin nhắn hợp lệ.");
@@ -471,7 +441,6 @@ export const AuthProvider = ({ children }) => {
       );
       const serverLastMessage = serverMessages[0] || null;
 
-      // So sánh
       if (!localLastMessage && !serverLastMessage) {
         console.log("Không có tin nhắn nào ở cả hai bên.");
         return {
@@ -534,35 +503,36 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Thiếu conversationId.");
       }
 
-      // Deduplicate conversations based on conversationId
       const updatedConversations = Array.from(
         new Map(
-          [conversationData, ...conversations].map((conv) => [
-            conv.conversationId,
-            conv,
-          ])
+          [{ ...conversationData, messages: [] }, ...conversations].map(
+            (conv) => [conv.conversationId, conv]
+          )
         ).values()
       );
 
       setConversations(updatedConversations);
-      await saveConversations(updatedConversations);
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(updatedConversations)
+      );
       console.log(
         `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
       );
       return conversationData;
     } catch (error) {
       console.error("Lỗi khi thêm cuộc trò chuyện:", error);
-
-      // Revert local changes in case of an error
       setConversations(conversations);
-      await saveConversations(conversations);
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(conversations)
+      );
       throw error;
     }
   };
 
   const removeConversation = async (conversationId) => {
     try {
-      // Kiểm tra tin nhắn cuối trước khi xóa
       const { isDifferent } = await checkLastMessageDifference(conversationId);
       if (isDifferent) {
         console.warn(
@@ -571,19 +541,19 @@ export const AuthProvider = ({ children }) => {
         await handlerRefresh();
       }
 
-      // Cập nhật cục bộ
       const updatedConversations = conversations.filter(
         (conv) => conv.conversationId !== conversationId
       );
       setConversations(updatedConversations);
-      await saveConversations(updatedConversations);
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(updatedConversations)
+      );
       console.log(`Đã xóa cuộc trò chuyện ${conversationId} cục bộ.`);
 
-      // Gọi API để xóa trên server
       const response = await api.deleteConversation(conversationId);
       console.log(`Đã xóa cuộc trò chuyện trên server:`, response);
 
-      // Cập nhật socket
       if (socket && socket.connected) {
         socket.emit("conversationRemoved", {
           conversationId,
@@ -601,10 +571,12 @@ export const AuthProvider = ({ children }) => {
         }`
       );
 
-      // Hoàn tác thay đổi cục bộ
       const revertedConversations = conversations;
       setConversations(revertedConversations);
-      await saveConversations(revertedConversations);
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(revertedConversations)
+      );
       throw error;
     }
   };
@@ -617,7 +589,6 @@ export const AuthProvider = ({ children }) => {
         );
       }
 
-      // Update local state for conversations
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
@@ -626,7 +597,6 @@ export const AuthProvider = ({ children }) => {
         )
       );
 
-      // Update local state for groupMember
       setGroupMember((prevMembers) => [
         ...prevMembers,
         ...newMembers.filter(
@@ -651,7 +621,6 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Thiếu conversationId, memberId hoặc role.");
       }
 
-      // Update local state
       setGroupMember((prevMembers) =>
         prevMembers.map((member) =>
           member.id === memberId ? { ...member, role: newRole } : member
@@ -673,7 +642,6 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Thiếu conversationId hoặc memberId.");
       }
 
-      // Update local state for conversations
       setConversations((prevConversations) =>
         prevConversations.map((conv) =>
           conv.conversationId === conversationId
@@ -685,7 +653,6 @@ export const AuthProvider = ({ children }) => {
         )
       );
 
-      // Update local state for groupMember
       setGroupMember((prevMembers) =>
         prevMembers.filter((member) => member.id !== memberId)
       );
@@ -705,7 +672,6 @@ export const AuthProvider = ({ children }) => {
         );
       }
 
-      // Save both member IDs and roles
       setGroupMember(members);
       console.log(
         `Đã lưu danh sách thành viên nhóm với vai trò cho ${conversationId}:`,
@@ -716,66 +682,215 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+
+  const getMessages = async (conversationId) => {
+    try {
+      const conversation = conversations.find(
+        (conv) => conv.conversationId === conversationId
+      );
+      return conversation?.messages || [];
+    } catch (error) {
+      console.error("Lỗi khi lấy tin nhắn:", error);
+      return [];
+    }
+  };
+
+  const saveMessages = async (
+    conversationId,
+    newMessages,
+    direction = "before"
+  ) => {
+    try {
+      if (!conversationId || !Array.isArray(newMessages)) {
+        throw new Error("Invalid conversationId or newMessages.");
+      }
+
+      // Find the conversation
+      const conversation = conversations.find(
+        (conv) => conv.conversationId === conversationId
+      );
+      if (!conversation) {
+        console.warn(`Conversation ${conversationId} not found.`);
+        return [];
+      }
+
+      // Get existing messages
+      const oldMessages = conversation.messages || [];
+
+      // Merge new messages
+      const merged =
+        direction === "after"
+          ? [...oldMessages, ...newMessages]
+          : [...newMessages, ...oldMessages];
+
+      // Remove duplicates based on messageDetailId, but preserve temporary messages
+      const deduped = Array.from(
+        new Map(
+          merged
+            .filter((m) => m && (m.messageDetailId || m._id)) // Allow messages with _id (temporary)
+            .map((m) => [m.messageDetailId || m._id, m])
+        ).values()
+      );
+
+      // Limit the number of messages to prevent memory issues
+      const MAX_MESSAGES = 1000;
+      const limited = deduped.slice(-MAX_MESSAGES);
+
+      // Update the conversation with the new messages
+      const updatedConversations = conversations.map((conv) =>
+        conv.conversationId === conversationId
+          ? { ...conv, messages: limited }
+          : conv
+      );
+
+      // Update state
+      setConversations(updatedConversations);
+
+      // Persist to AsyncStorage
+      await AsyncStorage.setItem(
+        "conversations",
+        JSON.stringify(updatedConversations)
+      );
+
+  
+
+      console.log(
+        `💾 Saved ${newMessages.length} messages for conversation ${conversationId}`
+      );
+      console.log(`📦 Total messages after merge: ${limited.length}`);
+
+      return limited;
+    } catch (error) {
+      console.error("Error saving messages:", error);
+      throw error;
+    }
+  };
   const login = async (params) => {
-    const response = await api.login(params);
-    const { accessToken, refreshToken } = response.data.token;
-    const userId = response.data.user.userId;
+    try {
+      const response = await api.login(params);
+      const { accessToken, refreshToken } = response.data.token;
+      const userId = response.data.user.userId;
 
-    setaccessToken(accessToken);
-    setRefreshToken(refreshToken);
+      setaccessToken(accessToken);
+      setRefreshToken(refreshToken);
 
-    await AsyncStorage.setItem("userId", userId);
-    await getUserInfoById(userId);
+      await AsyncStorage.setItem("userId", userId);
+      await getUserInfoById(userId);
 
-    if (socket && userId) {
-      socket.emit("authenticate", userId);
-    }
+      if (socket && userId) {
+        socket.emit("authenticate", userId);
+      }
 
-    await ensureStoragePermission();
+      // Lấy danh sách cuộc trò chuyện
+      const conversationsResponse = await api.conversations();
+      if (conversationsResponse && conversationsResponse.data) {
+        const filteredConversations = conversationsResponse.data
+          .filter(
+            (conversation) =>
+              !conversation.formerMembers.includes(userId) &&
+              !conversation.isDeleted &&
+              (!conversation.isGroup ||
+                conversation.groupMembers.includes(userId))
+          )
+          .map((conv) => ({ ...conv, messages: [] })); // Khởi tạo messages rỗng
 
-    const conversationsResponse = await api.conversations();
-    if (conversationsResponse && conversationsResponse.data) {
-      const filteredConversations = conversationsResponse.data.filter(
-        (conversation) =>
-          !conversation.formerMembers.includes(userId) &&
-          !conversation.isDeleted &&
-          (!conversation.isGroup || conversation.groupMembers.includes(userId))
-      );
+        // Lấy tin nhắn cho từng cuộc trò chuyện
+        const conversationsWithMessages = await Promise.all(
+          filteredConversations.map(async (conv) => {
+            try {
+              const messagesResponse = await api.getAllMessages(
+                conv.conversationId
+              );
+              if (messagesResponse && messagesResponse.messages) {
+                const filteredMessages = messagesResponse.messages
+                  .filter((m) => !m.hiddenFrom?.includes(userId))
+                  .slice(0, 50); // Giới hạn 50 tin nhắn mới nhất để tối ưu
+                return { ...conv, messages: filteredMessages };
+              }
+              return conv; // Nếu không lấy được tin nhắn, giữ nguyên
+            } catch (error) {
+              console.error(
+                `Lỗi khi lấy tin nhắn cho cuộc trò chuyện ${conv.conversationId}:`,
+                error
+              );
+              return conv; // Nếu lỗi, trả về cuộc trò chuyện không thay đổi
+            }
+          })
+        );
 
-      setConversations(filteredConversations);
-      await saveConversations(filteredConversations);
+        setConversations(conversationsWithMessages);
+        await AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(conversationsWithMessages)
+        );
+
+        console.log("Đã tải và lưu tin nhắn cho tất cả cuộc trò chuyện.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi đăng nhập:", error);
+      throw error;
     }
   };
-
   const register = async (params) => {
-    const response = await api.registerAccount(params);
-    const { accessToken, refreshToken } = response.token;
+    try {
+      const response = await api.registerAccount(params);
+      const { accessToken, refreshToken } = response.token;
 
-    setaccessToken(accessToken);
-    setRefreshToken(refreshToken);
+      setaccessToken(accessToken);
+      setRefreshToken(refreshToken);
 
-    await getUserInfoById(response.user.userId);
+      await getUserInfoById(response.user.userId);
 
-    if (socket && response.user.userId) {
-      socket.emit("authenticate", response.user.userId);
-    }
-    await ensureStoragePermission();
+      if (socket && response.user.userId) {
+        socket.emit("authenticate", response.user.userId);
+      }
 
-    const conversationsResponse = await api.conversations();
-    if (conversationsResponse && conversationsResponse.data) {
-      const filteredConversations = conversationsResponse.data.filter(
-        (conversation) =>
-          !conversation.formerMembers.includes(response.user.userId) &&
-          !conversation.isDeleted &&
-          (!conversation.isGroup ||
-            conversation.groupMembers.includes(response.user.userId))
-      );
+      const conversationsResponse = await api.conversations();
+      if (conversationsResponse && conversationsResponse.data) {
+        const filteredConversations = conversationsResponse.data
+          .filter(
+            (conversation) =>
+              !conversation.formerMembers.includes(response.user.userId) &&
+              !conversation.isDeleted &&
+              (!conversation.isGroup ||
+                conversation.groupMembers.includes(response.user.userId))
+          )
+          .map((conv) => ({ ...conv, messages: [] }));
 
-      setConversations(filteredConversations);
-      await saveConversations(filteredConversations);
+        const conversationsWithMessages = await Promise.all(
+          filteredConversations.map(async (conv) => {
+            try {
+              const messagesResponse = await api.getAllMessages(
+                conv.conversationId
+              );
+              if (messagesResponse && messagesResponse.messages) {
+                const filteredMessages = messagesResponse.messages
+                  .filter((m) => !m.hiddenFrom?.includes(response.user.userId))
+                  .slice(0, 50);
+                return { ...conv, messages: filteredMessages };
+              }
+              return conv;
+            } catch (error) {
+              console.error(
+                `Lỗi khi lấy tin nhắn cho cuộc trò chuyện ${conv.conversationId}:`,
+                error
+              );
+              return conv;
+            }
+          })
+        );
+
+        setConversations(conversationsWithMessages);
+        await AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(conversationsWithMessages)
+        );
+      }
+    } catch (error) {
+      console.error("Lỗi khi đăng ký:", error);
+      throw error;
     }
   };
-
   const logout = async () => {
     try {
       await api.logout();
@@ -818,16 +933,27 @@ export const AuthProvider = ({ children }) => {
     try {
       const conversationsResponse = await api.conversations();
       if (conversationsResponse && conversationsResponse.data) {
-        const filteredConversations = conversationsResponse.data.filter(
-          (conversation) =>
-            !conversation.formerMembers.includes(userInfo?.userId) &&
-            !conversation.isDeleted &&
-            (!conversation.isGroup ||
-              conversation.groupMembers.includes(userInfo?.userId))
-        );
+        const filteredConversations = conversationsResponse.data
+          .filter(
+            (conversation) =>
+              !conversation.formerMembers.includes(userInfo?.userId) &&
+              !conversation.isDeleted &&
+              (!conversation.isGroup ||
+                conversation.groupMembers.includes(userInfo?.userId))
+          )
+          .map((conv) => ({
+            ...conv,
+            messages:
+              conversations.find(
+                (c) => c.conversationId === conv.conversationId
+              )?.messages || [],
+          }));
 
         setConversations(filteredConversations);
-        await saveConversations(filteredConversations);
+        await AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(filteredConversations)
+        );
       }
       await fetchGroups();
     } catch (error) {
@@ -992,13 +1118,15 @@ export const AuthProvider = ({ children }) => {
         groups,
         groupsLoading,
         fetchGroups,
-        addConversation, // Thêm hàm mới
-        removeConversation, // Thêm hàm mới
-        checkLastMessageDifference, // Thêm hàm mới
-        updateGroupMembers, // Thêm hàm mới
-        removeGroupMember, // Thêm hàm mới
-        saveGroupMembers, // Thêm hàm mới
-        changeRole, // Thêm hàm mới
+        addConversation,
+        removeConversation,
+        checkLastMessageDifference,
+        updateGroupMembers,
+        removeGroupMember,
+        saveGroupMembers,
+        changeRole,
+        getMessages,
+        saveMessages,
       }}
     >
       {children}

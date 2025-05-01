@@ -4,8 +4,8 @@ import { DATABASE_API, MY_IP } from "@env";
 
 // Use your actual backend URL
 // const SOCKET_SERVER_URL = `http://192.168.1.17:3000`; // Replace with your local IP or production URL
-const SOCKET_SERVER_URL = `http://${MY_IP}:3000` || DATABASE_API; // Replace with your local IP or production URL
-// const SOCKET_SERVER_URL = `https://sophy-chatapp-be.onrender.com`;
+// const SOCKET_SERVER_URL = `http://${MY_IP}:3000` || DATABASE_API; // Replace with your local IP or production URL
+const SOCKET_SERVER_URL = `https://sophy-chatapp-be.onrender.com`;
 
 export const SocketContext = createContext(null);
 
