@@ -85,8 +85,24 @@ const MessageScreen = ({ route, navigation }) => {
             conversationId === conversation.conversationId &&
             message?.senderId !== userInfo?.userId
           ) {
+            // Thêm tin nhắn mới vào danh sách
             setMessages((prevMessages) => [message, ...prevMessages]);
-            await saveMessages(conversationId, [message], "before");
+
+            // Lưu tin nhắn và làm mới danh sách tin nhắn
+            const updatedMessages = await saveMessages(
+              conversationId,
+              [message],
+              "before",
+              (savedMessages) => {
+                setMessages(savedMessages); // Cập nhật trạng thái messages từ callback
+              }
+            );
+
+            // Nếu không có callback, sử dụng giá trị trả về
+            if (updatedMessages.length > 0) {
+              setMessages(updatedMessages);
+            }
+
             await handlerRefresh();
           }
           console.log("Tin nhắn mới:", {
@@ -524,20 +540,28 @@ const MessageScreen = ({ route, navigation }) => {
 
       // Load from context
       const cached = await getMessages(conversation.conversationId);
-      setMessages(cached || []);
-      // console.log("Tin nhắn đã tải từ context:", cached);
+      if (cached && cached.length > 0) {
+        setMessages(cached);
+        // console.log("Tin nhắn đã tải từ context:", cached);
+      }
 
-      // (Tùy chọn) Nếu cần làm mới từ API
+      // Làm mới từ API để đồng bộ
       const response = await api.getAllMessages(conversation.conversationId);
       if (response && response.messages) {
         const filtered = response.messages.filter(
           (m) => !m.hiddenFrom?.includes(userInfo.userId)
         );
-        const updated = await saveMessages(
+        const updatedMessages = await saveMessages(
           conversation.conversationId,
-          filtered
+          filtered,
+          "before",
+          (savedMessages) => {
+            setMessages(savedMessages); // Cập nhật trạng thái messages từ callback
+          }
         );
-        setMessages(updated || []);
+        if (updatedMessages.length > 0) {
+          setMessages(updatedMessages);
+        }
       }
     } catch (error) {
       console.error("Lỗi khi tải tin nhắn:", error);
@@ -582,11 +606,6 @@ const MessageScreen = ({ route, navigation }) => {
       };
 
       setMessages((prev) => [pseudoMessage, ...prev]);
-      // await saveMessages(
-      //   conversation.conversationId,
-      //   [pseudoMessage],
-      //   "before"
-      // );
 
       try {
         let res;
@@ -602,28 +621,31 @@ const MessageScreen = ({ route, navigation }) => {
               content: pseudoMessage.content,
             });
           }
-          if (socket && socket.connected) {
-            setMessages((prev) =>
-              prev.filter(
-                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-              )
-            );
-            setMessages((prev) => [res, ...prev]);
-            await saveMessages(conversation.conversationId, [res], "before");
-          } else if (res) {
-            setMessages((prev) =>
-              prev.filter(
-                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-              )
-            );
-            setMessages((prev) => [res, ...prev]);
-            await saveMessages(conversation.conversationId, [res], "before");
-          } else {
-            console.error("Lỗi: Không nhận được phản hồi từ API.");
-            alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
+          console.log("Phản hồi từ API gửi tin nhắn:", res);
+
+          // Xóa pseudoMessage và thêm tin nhắn thực
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+          setMessages((prev) => [res, ...prev]);
+
+          // Lưu tin nhắn và làm mới danh sách tin nhắn
+          const updatedMessages = await saveMessages(
+            conversation.conversationId,
+            [res],
+            "before",
+            (savedMessages) => {
+              setMessages(savedMessages); // Cập nhật trạng thái messages từ callback
+            }
+          );
+
+          // Nếu không có callback, sử dụng giá trị trả về
+          if (updatedMessages.length > 0) {
+            setMessages(updatedMessages);
           }
         }
-        setSended((prev) => !prev);
       } catch (error) {
         console.error("Lỗi gửi tin nhắn:", error);
         alert(
@@ -642,9 +664,8 @@ const MessageScreen = ({ route, navigation }) => {
         setReplyingTo(null);
       }
     },
-    [conversation, userInfo.userId, replyingTo, saveMessages]
+    [conversation, userInfo.userId, replyingTo, saveMessages, getMessages]
   );
-
   const handleSendImage = useCallback(
     async (message) => {
       if (!conversation?.conversationId) {
@@ -671,7 +692,6 @@ const MessageScreen = ({ route, navigation }) => {
         return;
       }
       setMessages((prev) => [pseudoMessage, ...prev]);
-      // await saveMessages(conversation.conversationId, [pseudoMessage], "before");
 
       try {
         console.log("Đọc file ảnh từ URI:", message.attachment);
@@ -684,33 +704,34 @@ const MessageScreen = ({ route, navigation }) => {
         const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
         console.log("Chuyển đổi ảnh sang Base64 thành công.");
 
-        if (message.type === "image") {
-          console.log("Bắt đầu gửi ảnh qua API...");
-          const res = await api.sendImageMessage({
-            conversationId: pseudoMessage.conversationId,
-            imageBase64: imageBase64,
-          });
-          console.log("Gửi ảnh thành công:", res);
-          if (socket && socket.connected) {
-            setMessages((prev) =>
-              prev.filter(
-                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-              )
-            );
-            setMessages((prev) => [res, ...prev]);
-            await saveMessages(conversation.conversationId, [res], "before");
-          } else if (res) {
-            setMessages((prev) =>
-              prev.filter(
-                (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
-              )
-            );
-            setMessages((prev) => [res, ...prev]);
-            await saveMessages(conversation.conversationId, [res], "before");
-          } else {
-            console.error("Lỗi: Không nhận được phản hồi từ API.");
-            alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
+        console.log("Bắt đầu gửi ảnh qua API...");
+        const res = await api.sendImageMessage({
+          conversationId: pseudoMessage.conversationId,
+          imageBase64: imageBase64,
+        });
+        console.log("Gửi ảnh thành công:", res);
+
+        // Xóa pseudoMessage và thêm tin nhắn thực
+        setMessages((prev) =>
+          prev.filter(
+            (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+          )
+        );
+        setMessages((prev) => [res, ...prev]);
+
+        // Lưu tin nhắn và làm mới danh sách tin nhắn
+        const updatedMessages = await saveMessages(
+          conversation.conversationId,
+          [res],
+          "before",
+          (savedMessages) => {
+            setMessages(savedMessages); // Cập nhật trạng thái messages từ callback
           }
+        );
+
+        // Nếu không có callback, sử dụng giá trị trả về
+        if (updatedMessages.length > 0) {
+          setMessages(updatedMessages);
         }
       } catch (error) {
         console.error("Lỗi khi gửi ảnh:", error);
@@ -809,7 +830,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       }
     },
-    [conversation, userInfo.userId, saveMessages]
+    [conversation, userInfo.userId, saveMessages, getMessages]
   );
 
   const handleSendVideo = useCallback(
@@ -875,7 +896,7 @@ const MessageScreen = ({ route, navigation }) => {
         );
       }
     },
-    [conversation, userInfo.userId, saveMessages]
+    [conversation, userInfo.userId, saveMessages, getMessages]
   );
 
   const handleReply = (message) => {
@@ -990,7 +1011,11 @@ const MessageScreen = ({ route, navigation }) => {
           />
         ) : (
           <View style={MessageScreenStyle.loadingContainer}>
-            <Text style={MessageScreenStyle.loadingText}>Đang tải...</Text>
+            {isLoading ? (
+              <Text style={MessageScreenStyle.loadingText}>Đang tải...</Text>
+            ) : (
+              <Text style={MessageScreenStyle.emptyText}>Không có tin nhắn</Text>
+            )}
           </View>
         )}
         <ChatFooter

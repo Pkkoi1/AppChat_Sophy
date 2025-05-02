@@ -684,78 +684,94 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ✅ Hàm lưu tin nhắn theo từng cuộc trò chuyện vào AsyncStorage
-  const saveMessages = async (
-    conversationId,
-    newMessages,
-    direction = "before"
-  ) => {
-    try {
-      if (!conversationId || !Array.isArray(newMessages)) {
-        throw new Error("Thiếu conversationId hoặc newMessages không hợp lệ.");
-      }
+  const saveMessages = useCallback(
+    async (
+      conversationId,
+      newMessages,
+      position = "before",
+      onSaveComplete
+    ) => {
+      try {
+        // console.log("Tin nhắn đang được lưu:", newMessages);
 
-      // Lấy danh sách cuộc trò chuyện hiện tại
-      const conversationsJSON = await AsyncStorage.getItem("conversations");
-      const conversations = conversationsJSON
-        ? JSON.parse(conversationsJSON)
-        : [];
+        // Lấy danh sách conversations từ AsyncStorage
+        const conversationsJSON = await AsyncStorage.getItem("conversations");
+        let allConversations = conversationsJSON
+          ? JSON.parse(conversationsJSON)
+          : [];
 
-      const targetConversation = conversations.find(
-        (conv) => conv.conversationId === conversationId
-      );
-
-      if (!targetConversation) {
-        console.warn(
-          `Không tìm thấy cuộc trò chuyện ${conversationId} để lưu tin nhắn.`
+        // Tìm cuộc trò chuyện tương ứng
+        const conversationIndex = allConversations.findIndex(
+          (conv) => conv.conversationId === conversationId
         );
-        return;
-      }
 
-      const existingMessages = targetConversation.messages || [];
-
-      const mergedMessages =
-        direction === "after"
-          ? [...existingMessages, ...newMessages]
-          : [...newMessages, ...existingMessages];
-
-      const uniqueMessages = Array.from(
-        new Map(
-          mergedMessages.map((m) => [m.messageDetailId || m._id, m])
-        ).values()
-      );
-
-      const MAX_MESSAGES = 1000;
-      const limitedMessages = uniqueMessages.slice(-MAX_MESSAGES);
-
-      console.log("Tin nhắn dang được lưu:", limitedMessages);
-      const updatedConversations = conversations.map((conv) => {
-        if (conv.conversationId === conversationId) {
-          console.log("✅ Đã tìm thấy cuộc trò chuyện:", {
-            conversationId: conv.conversationId,
-            oldMessageCount: conv.messages?.length || 0,
-            newMessageCount: limitedMessages.length,
-          });
-          return { ...conv, messages: limitedMessages };
-        } else {
-          return conv;
+        if (conversationIndex === -1) {
+          console.warn("Không tìm thấy cuộc trò chuyện:", conversationId);
+          return [];
         }
-      });
-     
-      await AsyncStorage.setItem(
-        "conversations",
-        JSON.stringify(updatedConversations)
-      );
 
-      console.log(
-        `💾 Đã lưu ${newMessages.length} tin nhắn cho cuộc trò chuyện ${conversationId}`
-      );
-      return limitedMessages;
-    } catch (error) {
-      console.error("Lỗi khi lưu tin nhắn:", error);
-      throw error;
-    }
-  };
+        const conversation = allConversations[conversationIndex];
+        const existingMessages = conversation.messages || [];
 
+        // Lọc tin nhắn mới để tránh trùng lặp (dựa trên messageDetailId)
+        const uniqueNewMessages = newMessages.filter(
+          (newMsg) =>
+            !existingMessages.some(
+              (existingMsg) =>
+                existingMsg.messageDetailId === newMsg.messageDetailId
+            )
+        );
+
+        if (uniqueNewMessages.length === 0) {
+          // console.log("Không có tin nhắn mới để lưu (trùng lặp).");
+          return existingMessages;
+        }
+
+        // Thêm tin nhắn mới vào danh sách (theo position: "before" hoặc "after")
+        let updatedMessages;
+        if (position === "before") {
+          updatedMessages = [...uniqueNewMessages, ...existingMessages];
+        } else {
+          updatedMessages = [...existingMessages, ...uniqueNewMessages];
+        }
+
+        // Cập nhật lastMessage và messages cho cuộc trò chuyện
+        const updatedConversation = {
+          ...conversation,
+          messages: updatedMessages,
+          lastMessage: uniqueNewMessages[0] || conversation.lastMessage,
+        };
+
+        // Cập nhật danh sách conversations
+        allConversations[conversationIndex] = updatedConversation;
+
+        // Lưu lại vào AsyncStorage
+        await AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(allConversations)
+        );
+
+        // Cập nhật trạng thái conversations trong AuthContext
+        setConversations(allConversations);
+
+        // console.log(
+        //   `💾 Đã lưu ${uniqueNewMessages.length} tin nhắn cho cuộc trò chuyện ${conversationId}`
+        // );
+        // console.log("Danh sách tin nhắn sau khi lưu:", updatedMessages);
+
+        // Gọi callback nếu được cung cấp
+        if (onSaveComplete) {
+          onSaveComplete(updatedMessages);
+        }
+
+        return updatedMessages;
+      } catch (error) {
+        console.error("Lỗi khi lưu tin nhắn:", error);
+        return [];
+      }
+    },
+    [setConversations]
+  );
   // ✅ Hàm lấy tin nhắn từ AsyncStorage theo conversationId
   const getMessages = async (conversationId) => {
     try {
