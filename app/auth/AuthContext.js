@@ -683,18 +683,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const getMessages = async (conversationId) => {
-    try {
-      const conversation = conversations.find(
-        (conv) => conv.conversationId === conversationId
-      );
-      return conversation?.messages || [];
-    } catch (error) {
-      console.error("Lỗi khi lấy tin nhắn:", error);
-      return [];
-    }
-  };
-
+  // ✅ Hàm lưu tin nhắn theo từng cuộc trò chuyện vào AsyncStorage
   const saveMessages = async (
     conversationId,
     newMessages,
@@ -702,67 +691,104 @@ export const AuthProvider = ({ children }) => {
   ) => {
     try {
       if (!conversationId || !Array.isArray(newMessages)) {
-        throw new Error("Invalid conversationId or newMessages.");
+        throw new Error("Thiếu conversationId hoặc newMessages không hợp lệ.");
       }
 
-      // Find the conversation
-      const conversation = conversations.find(
+      // Lấy danh sách cuộc trò chuyện hiện tại
+      const conversationsJSON = await AsyncStorage.getItem("conversations");
+      const conversations = conversationsJSON
+        ? JSON.parse(conversationsJSON)
+        : [];
+
+      const targetConversation = conversations.find(
         (conv) => conv.conversationId === conversationId
       );
-      if (!conversation) {
-        console.warn(`Conversation ${conversationId} not found.`);
-        return [];
+
+      if (!targetConversation) {
+        console.warn(
+          `Không tìm thấy cuộc trò chuyện ${conversationId} để lưu tin nhắn.`
+        );
+        return;
       }
 
-      // Get existing messages
-      const oldMessages = conversation.messages || [];
+      const existingMessages = targetConversation.messages || [];
 
-      // Merge new messages
-      const merged =
+      const mergedMessages =
         direction === "after"
-          ? [...oldMessages, ...newMessages]
-          : [...newMessages, ...oldMessages];
+          ? [...existingMessages, ...newMessages]
+          : [...newMessages, ...existingMessages];
 
-      // Remove duplicates based on messageDetailId, but preserve temporary messages
-      const deduped = Array.from(
+      const uniqueMessages = Array.from(
         new Map(
-          merged
-            .filter((m) => m && (m.messageDetailId || m._id)) // Allow messages with _id (temporary)
-            .map((m) => [m.messageDetailId || m._id, m])
+          mergedMessages.map((m) => [m.messageDetailId || m._id, m])
         ).values()
       );
 
-      // Limit the number of messages to prevent memory issues
       const MAX_MESSAGES = 1000;
-      const limited = deduped.slice(-MAX_MESSAGES);
+      const limitedMessages = uniqueMessages.slice(-MAX_MESSAGES);
 
-      // Update the conversation with the new messages
-      const updatedConversations = conversations.map((conv) =>
-        conv.conversationId === conversationId
-          ? { ...conv, messages: limited }
-          : conv
-      );
-
-      // Update state
-      setConversations(updatedConversations);
-
-      // Persist to AsyncStorage
+      console.log("Tin nhắn dang được lưu:", limitedMessages);
+      const updatedConversations = conversations.map((conv) => {
+        if (conv.conversationId === conversationId) {
+          console.log("✅ Đã tìm thấy cuộc trò chuyện:", {
+            conversationId: conv.conversationId,
+            oldMessageCount: conv.messages?.length || 0,
+            newMessageCount: limitedMessages.length,
+          });
+          return { ...conv, messages: limitedMessages };
+        } else {
+          return conv;
+        }
+      });
+     
       await AsyncStorage.setItem(
         "conversations",
         JSON.stringify(updatedConversations)
       );
 
-  
-
       console.log(
-        `💾 Saved ${newMessages.length} messages for conversation ${conversationId}`
+        `💾 Đã lưu ${newMessages.length} tin nhắn cho cuộc trò chuyện ${conversationId}`
       );
-      console.log(`📦 Total messages after merge: ${limited.length}`);
-
-      return limited;
+      return limitedMessages;
     } catch (error) {
-      console.error("Error saving messages:", error);
+      console.error("Lỗi khi lưu tin nhắn:", error);
       throw error;
+    }
+  };
+
+  // ✅ Hàm lấy tin nhắn từ AsyncStorage theo conversationId
+  const getMessages = async (conversationId) => {
+    try {
+      const conversationsJSON = await AsyncStorage.getItem("conversations");
+      const conversations = conversationsJSON
+        ? JSON.parse(conversationsJSON)
+        : [];
+      const conversation = conversations.find(
+        (conv) => conv.conversationId === conversationId
+      );
+      return conversation?.messages || [];
+    } catch (error) {
+      console.error("Lỗi khi lấy tin nhắn từ AsyncStorage:", error);
+      return [];
+    }
+  };
+
+  // ✅ Hàm xóa tin nhắn (nếu cần)
+  const clearMessages = async (conversationId) => {
+    try {
+      const conversationsJSON = await AsyncStorage.getItem("conversations");
+      const conversations = conversationsJSON
+        ? JSON.parse(conversationsJSON)
+        : [];
+      const updated = conversations.map((conv) =>
+        conv.conversationId === conversationId
+          ? { ...conv, messages: [] }
+          : conv
+      );
+      await AsyncStorage.setItem("conversations", JSON.stringify(updated));
+      console.log(`🧹 Đã xóa tin nhắn cuộc trò chuyện ${conversationId}`);
+    } catch (error) {
+      console.error("Lỗi khi xóa tin nhắn:", error);
     }
   };
   const login = async (params) => {
