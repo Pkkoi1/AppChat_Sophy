@@ -582,7 +582,11 @@ const MessageScreen = ({ route, navigation }) => {
       };
 
       setMessages((prev) => [pseudoMessage, ...prev]);
-      // await saveMessages(conversation.conversationId, [pseudoMessage], "before");
+      // await saveMessages(
+      //   conversation.conversationId,
+      //   [pseudoMessage],
+      //   "before"
+      // );
 
       try {
         let res;
