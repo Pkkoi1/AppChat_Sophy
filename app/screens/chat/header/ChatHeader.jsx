@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { api } from "@/app/api/api";
-import { SocketContext } from "@/app/socket/SocketContext";
+import { SocketContext } from "../../../socket/SocketContext";
 import { AuthContext } from "@/app/auth/AuthContext";
 
 const ChatHeader = ({
@@ -19,6 +19,8 @@ const ChatHeader = ({
   const { groupMember } = useContext(AuthContext);
 
   const handlerBack = () => {
+    navigation.goBack();
+
     api.readMessage(conversation.conversationId);
     socket.on("newMessage");
     socket.on("groupAvatarChanged");
@@ -34,8 +36,6 @@ const ChatHeader = ({
     socket.on("groupDeleted");
     socket.on("userBlocked");
     socket.on("userUnblocked");
-
-    navigation.goBack();
   };
 
   const handlerOptionScreen = () => {

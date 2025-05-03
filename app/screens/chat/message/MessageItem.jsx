@@ -295,20 +295,7 @@ const MessageItem = ({
               style={MessageItemStyle.content}
             />
           )
-        ) : type === "image" || "text-with-image" ? (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("FullScreenImageViewer", {
-                imageUrl: attachment?.url || errorImage,
-              })
-            }
-          >
-            <Image
-              source={{ uri: attachment?.url || errorImage }}
-              style={MessageItemStyle.image}
-            />
-          </TouchableOpacity>
-        ) : type === "file" ? (
+        ) : type === "file" ? ( // Correctly handle file type
           <View style={MessageItemStyle.fileContainer}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
@@ -331,6 +318,19 @@ const MessageItem = ({
               <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
             </TouchableOpacity>
           </View>
+        ) : type === "image" || type === "text-with-image" ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: attachment?.url || errorImage,
+              })
+            }
+          >
+            <Image
+              source={{ uri: attachment?.url || errorImage }}
+              style={MessageItemStyle.image}
+            />
+          </TouchableOpacity>
         ) : type === "video" ? (
           <View>
             <Video
