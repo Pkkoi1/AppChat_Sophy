@@ -67,29 +67,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
 
-    const handleNewMessage = ({
-      conversationId: incomingConversationId,
-      message,
-    }) => {
-      const formattedMessage = message._doc || message;
-
-      setConversations((prevConversations) =>
-        prevConversations.map((conv) =>
-          conv.conversationId === incomingConversationId
-            ? {
-                ...conv,
-                lastMessage: formattedMessage,
-                unreadCount: [],
-                messages: [formattedMessage, ...(conv.messages || [])],
-              }
-            : conv
-        )
-      );
-
-      flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
-      console.log("🟢 Nhận tin nhắn mới:", formattedMessage);
-    };
-
     const handleNewConversation = ({ conversation }) => {
       console.log("🟢 Nhận cuộc trò chuyện mới:", conversation);
       addConversation({ ...conversation, messages: [] });
@@ -391,7 +368,6 @@ export const AuthProvider = ({ children }) => {
       );
     };
 
-    socket.on("newMessage", handleNewMessage);
     socket.on("newConversation", handleNewConversation);
     socket.on("groupAvatarChanged", handleAvatarChange);
     socket.on("groupNameChanged", handleNewGroupName);
@@ -407,22 +383,21 @@ export const AuthProvider = ({ children }) => {
     socket.on("userUnblocked", handleUserUnblocked);
 
     return () => {
-      socket.off("newMessage", handleNewMessage);
-      socket.off("newConversation", handleNewConversation);
-      socket.off("groupAvatarChanged", handleAvatarChange);
-      socket.off("groupNameChanged", handleNewGroupName);
-      socket.off("userJoinedGroup", handleNewMemberJoined);
-      socket.off("userAddedToGroup", handleUserAdded);
-      socket.off("userRemovedFromGroup", handleMemberRemoved);
-      socket.off("userLeftGroup", handleMemberLeft);
-      socket.off("groupOwnerChanged", handleOwnerChange);
-      socket.off("groupCoOwnerAdded", handleAddCoOwner);
-      socket.off("groupCoOwnerRemoved", handleRemoveCoOwner);
-      socket.off("groupDeleted", handleGroupDeleted);
-      socket.off("userBlocked", handleUserBlocked);
-      socket.off("userUnblocked", handleUserUnblocked);
+      socket.off("newConversation");
+      socket.off("groupAvatarChanged");
+      socket.off("groupNameChanged");
+      socket.off("userJoinedGroup");
+      socket.off("userAddedToGroup");
+      socket.off("userRemovedFromGroup");
+      socket.off("userLeftGroup");
+      socket.off("groupOwnerChanged");
+      socket.off("groupCoOwnerAdded");
+      socket.off("groupCoOwnerRemoved");
+      socket.off("groupDeleted");
+      socket.off("userBlocked");
+      socket.off("userUnblocked");
     };
-  }, [socket, addConversation]);
+  }, [socket, addConversation, userInfo]);
 
   const checkLastMessageDifference = async (conversationId) => {
     try {
@@ -683,7 +658,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Hàm lưu tin nhắn theo từng cuộc trò chuyện vào AsyncStorage
   const saveMessages = useCallback(
     async (
       conversationId,
@@ -692,7 +666,10 @@ export const AuthProvider = ({ children }) => {
       onSaveComplete
     ) => {
       try {
-        // console.log("Tin nhắn đang được lưu:", newMessages);
+        console.log(
+          "Bắt đầu lưu tin nhắn:",
+          newMessages.map((msg) => msg.content)
+        );
 
         // Lấy danh sách conversations từ AsyncStorage
         const conversationsJSON = await AsyncStorage.getItem("conversations");
@@ -700,7 +677,7 @@ export const AuthProvider = ({ children }) => {
           ? JSON.parse(conversationsJSON)
           : [];
 
-        // Tìm cuộc trò chuyện tương ứng
+        // Tìm cuộc trò chuyện
         const conversationIndex = allConversations.findIndex(
           (conv) => conv.conversationId === conversationId
         );
@@ -713,53 +690,74 @@ export const AuthProvider = ({ children }) => {
         const conversation = allConversations[conversationIndex];
         const existingMessages = conversation.messages || [];
 
-        // Lọc tin nhắn mới để tránh trùng lặp (dựa trên messageDetailId)
-        const uniqueNewMessages = newMessages.filter(
-          (newMsg) =>
-            !existingMessages.some(
-              (existingMsg) =>
-                existingMsg.messageDetailId === newMsg.messageDetailId
-            )
+        // Sắp xếp tin nhắn mới theo createdAt (mới nhất trước)
+        const sortedNewMessages = [...newMessages].sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
 
-        if (uniqueNewMessages.length === 0) {
-          // console.log("Không có tin nhắn mới để lưu (trùng lặp).");
-          return existingMessages;
-        }
-
-        // Thêm tin nhắn mới vào danh sách (theo position: "before" hoặc "after")
+        // Hợp nhất tin nhắn mới và cũ
         let updatedMessages;
         if (position === "before") {
-          updatedMessages = [...uniqueNewMessages, ...existingMessages];
+          updatedMessages = [...sortedNewMessages, ...existingMessages];
         } else {
-          updatedMessages = [...existingMessages, ...uniqueNewMessages];
+          updatedMessages = [...existingMessages, ...sortedNewMessages];
         }
 
-        // Cập nhật lastMessage và messages cho cuộc trò chuyện
+        // Loại bỏ trùng lặp dựa trên messageDetailId
+        updatedMessages = Array.from(
+          new Map(
+            updatedMessages.map((msg) => [msg.messageDetailId, msg])
+          ).values()
+        ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        // Cập nhật conversation với messages và lastMessage
         const updatedConversation = {
           ...conversation,
           messages: updatedMessages,
-          lastMessage: uniqueNewMessages[0] || conversation.lastMessage,
+          lastMessage:
+            sortedNewMessages[0] ||
+            updatedMessages[0] ||
+            conversation.lastMessage,
         };
 
-        // Cập nhật danh sách conversations
         allConversations[conversationIndex] = updatedConversation;
 
-        // Lưu lại vào AsyncStorage
+        // Sắp xếp lại conversations dựa trên lastMessage.createdAt
+        allConversations = allConversations.sort((a, b) => {
+          const timeA = a.lastMessage?.createdAt
+            ? new Date(a.lastMessage.createdAt)
+            : new Date(0);
+          const timeB = b.lastMessage?.createdAt
+            ? new Date(b.lastMessage.createdAt)
+            : new Date(0);
+          return timeB - timeA; // Mới nhất trước
+        });
+
+        // Lưu vào AsyncStorage với khóa tạm thời để tránh xung đột
+        const tempKey = `conversations_temp_${Date.now()}`;
+        await AsyncStorage.setItem(tempKey, JSON.stringify(allConversations));
         await AsyncStorage.setItem(
           "conversations",
           JSON.stringify(allConversations)
         );
+        await AsyncStorage.removeItem(tempKey); // Xóa khóa tạm
 
-        // Cập nhật trạng thái conversations trong AuthContext
-        setConversations(allConversations);
+        // Cập nhật trạng thái conversations
+        setConversations([...allConversations]);
 
-        // console.log(
-        //   `💾 Đã lưu ${uniqueNewMessages.length} tin nhắn cho cuộc trò chuyện ${conversationId}`
-        // );
-        // console.log("Danh sách tin nhắn sau khi lưu:", updatedMessages);
+        console.log(
+          `💾 Đã lưu ${newMessages.length} tin nhắn cho cuộc trò chuyện ${conversationId}`
+        );
+        console.log(
+          "Danh sách tin nhắn sau khi lưu:",
+          updatedMessages.map((msg) => msg.content)
+        );
+        console.log(
+          "Cuộc trò chuyện được cập nhật, lastMessage:",
+          updatedConversation.lastMessage?.content
+        );
 
-        // Gọi callback nếu được cung cấp
+        // Gọi callback
         if (onSaveComplete) {
           onSaveComplete(updatedMessages);
         }
@@ -772,7 +770,7 @@ export const AuthProvider = ({ children }) => {
     },
     [setConversations]
   );
-  // ✅ Hàm lấy tin nhắn từ AsyncStorage theo conversationId
+
   const getMessages = async (conversationId) => {
     try {
       const conversationsJSON = await AsyncStorage.getItem("conversations");
@@ -789,7 +787,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Hàm xóa tin nhắn (nếu cần)
   const clearMessages = async (conversationId) => {
     try {
       const conversationsJSON = await AsyncStorage.getItem("conversations");
@@ -807,6 +804,7 @@ export const AuthProvider = ({ children }) => {
       console.error("Lỗi khi xóa tin nhắn:", error);
     }
   };
+
   const login = async (params) => {
     try {
       const response = await api.login(params);
@@ -834,7 +832,7 @@ export const AuthProvider = ({ children }) => {
               (!conversation.isGroup ||
                 conversation.groupMembers.includes(userId))
           )
-          .map((conv) => ({ ...conv, messages: [] })); // Khởi tạo messages rỗng
+          .map((conv) => ({ ...conv, messages: [] }));
 
         // Lấy tin nhắn cho từng cuộc trò chuyện
         const conversationsWithMessages = await Promise.all(
@@ -846,16 +844,16 @@ export const AuthProvider = ({ children }) => {
               if (messagesResponse && messagesResponse.messages) {
                 const filteredMessages = messagesResponse.messages
                   .filter((m) => !m.hiddenFrom?.includes(userId))
-                  .slice(0, 50); // Giới hạn 50 tin nhắn mới nhất để tối ưu
+                  .slice(0, 50);
                 return { ...conv, messages: filteredMessages };
               }
-              return conv; // Nếu không lấy được tin nhắn, giữ nguyên
+              return conv;
             } catch (error) {
               console.error(
                 `Lỗi khi lấy tin nhắn cho cuộc trò chuyện ${conv.conversationId}:`,
                 error
               );
-              return conv; // Nếu lỗi, trả về cuộc trò chuyện không thay đổi
+              return conv;
             }
           })
         );
@@ -873,6 +871,7 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+
   const register = async (params) => {
     try {
       const response = await api.registerAccount(params);
@@ -933,6 +932,7 @@ export const AuthProvider = ({ children }) => {
       throw error;
     }
   };
+
   const logout = async () => {
     try {
       await api.logout();
