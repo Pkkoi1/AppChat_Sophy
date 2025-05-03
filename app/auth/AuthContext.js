@@ -343,10 +343,10 @@ export const AuthProvider = ({ children }) => {
       onSaveComplete
     ) => {
       try {
-        console.log(
-          "Bắt đầu lưu tin nhắn:",
-          newMessages.map((msg) => msg.content)
-        );
+        // console.log(
+        //   "Bắt đầu lưu tin nhắn:",
+        //   newMessages.map((msg) => msg.content)
+        // );
 
         // Lấy danh sách conversations từ AsyncStorage
         const conversationsJSON = await AsyncStorage.getItem("conversations");
@@ -422,17 +422,17 @@ export const AuthProvider = ({ children }) => {
         // Cập nhật trạng thái conversations
         setConversations([...allConversations]);
 
-        console.log(
-          `💾 Đã lưu ${newMessages.length} tin nhắn cho cuộc trò chuyện ${conversationId}`
-        );
-        console.log(
-          "Danh sách tin nhắn sau khi lưu:",
-          updatedMessages.map((msg) => msg.content)
-        );
-        console.log(
-          "Cuộc trò chuyện được cập nhật, lastMessage:",
-          updatedConversation.lastMessage?.content
-        );
+        // console.log(
+        //   `💾 Đã lưu ${newMessages.length} tin nhắn cho cuộc trò chuyện ${conversationId}`
+        // );
+        // console.log(
+        //   "Danh sách tin nhắn sau khi lưu:",
+        //   updatedMessages.map((msg) => msg.content)
+        // );
+        // console.log(
+        //   "Cuộc trò chuyện được cập nhật, lastMessage:",
+        //   updatedConversation.lastMessage?.content
+        // );
 
         // Gọi callback
         if (onSaveComplete) {
