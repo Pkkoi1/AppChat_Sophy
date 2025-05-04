@@ -1,50 +1,42 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { View, ActivityIndicator } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const AuthLoading = ({ navigation }) => {
+  const { userInfo, isLoading } = useContext(AuthContext);
+
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        // Lấy dữ liệu userInfo từ AsyncStorage
-        const userInfoString = await AsyncStorage.getItem("userInfo");
-        console.log("userInfoString from AsyncStorage:", userInfoString);
+        // Wait until AuthContext has finished loading
+        if (isLoading) {
+          console.log("AuthContext is still loading...");
+          return;
+        }
 
-        // Kiểm tra xem userInfoString có tồn tại và không rỗng
-        if (userInfoString) {
-          let userInfo;
-          try {
-            userInfo = JSON.parse(userInfoString); // Parse chuỗi JSON thành object
-            console.log("Parsed userInfo:", userInfo.fullname);
-          } catch (parseError) {
-            console.error("Lỗi khi parse userInfo:", parseError);
-            navigation.replace("Main");
-            return;
-          }
-
-          // Kiểm tra xem userInfo có các thuộc tính cần thiết
-          if (userInfo && userInfo.userId && userInfo.fullname) {
-            console.log("userInfo hợp lệ, điều hướng đến Home");
-            navigation.replace("Home", {
-              userId: userInfo.userId,
-              userName: userInfo.fullname,
-              phone: userInfo.phone || "",
-            });
-          } else {
-            console.log("userInfo không hợp lệ, điều hướng về Main");
-            navigation.replace("Main");
-          }
+        // Check if userInfo is valid
+        if (userInfo && userInfo.userId && userInfo.fullname) {
+          console.log(
+            "Valid userInfo found in AuthContext:",
+            userInfo.fullname
+          );
+          navigation.replace("Home", {
+            userId: userInfo.userId,
+            userName: userInfo.fullname,
+            phone: userInfo.phone || "",
+          });
         } else {
-          console.log("Không tìm thấy userInfo, điều hướng về Main");
+          console.log("No valid userInfo in AuthContext, navigating to Main");
           navigation.replace("Main");
         }
-      } catch (e) {
-        console.error("Lỗi khi kiểm tra login:", e);
+      } catch (error) {
+        console.error("Error during login check:", error);
         navigation.replace("Main");
       }
     };
+
     checkLogin();
-  }, [navigation]);
+  }, [navigation, userInfo, isLoading]);
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

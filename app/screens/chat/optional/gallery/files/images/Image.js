@@ -12,14 +12,33 @@ import moment from "moment"; // Import moment for date formatting
 
 const ImageTab = ({ conversation }) => {
   const navigation = useNavigation();
-  const images = conversation?.listImage || [];
+
+  // Combine images, GIFs, and videos
+  const images = [
+    ...(conversation?.listImage || []),
+    ...(
+      conversation?.listFile?.filter((file) => {
+        const isImageOrGif = file.name?.match(/\.(gif|png|jpe?g)$/i);
+        const isVideo = file.name?.match(/\.(mp4|mov|avi|mkv)$/i);
+        return isImageOrGif || isVideo;
+      }) || []
+    ).map((file) => ({
+      url: file.downloadUrl,
+      createdAt: file.createdAt,
+    })),
+  ];
 
   if (images.length === 0) {
     return <Text style={styles.noDataText}>Không có hình ảnh</Text>;
   }
 
+  // Sort images by date (newest to oldest)
+  const sortedImages = images.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
   // Group images by date
-  const groupedImages = images.reduce((groups, image) => {
+  const groupedImages = sortedImages.reduce((groups, image) => {
     const date = moment(image.createdAt).format("YYYY-MM-DD");
     if (!groups[date]) {
       groups[date] = [];
@@ -34,10 +53,9 @@ const ImageTab = ({ conversation }) => {
   }));
 
   const handleImagePress = (index) => {
-    const reversedIndex = images.length - index - 1; // Adjust index for reversed list
     navigation.navigate("ListImageFullView", {
-      images: images.reverse(), // Pass the entire list of images
-      initialIndex: index, // Pass the corrected index
+      images: sortedImages, // Pass the sorted list of images
+      initialIndex: index, // Pass the correct index
     });
   };
 
@@ -51,7 +69,7 @@ const ImageTab = ({ conversation }) => {
             {moment(item.date).format("DD/MM/YYYY")}
           </Text>
           <FlatList
-            data={item.images.reverse()} // Reverse to show the latest images first
+            data={item.images} // No need to reverse, already sorted
             keyExtractor={(image, index) => index.toString()}
             numColumns={3}
             renderItem={({ item: image, index }) => (

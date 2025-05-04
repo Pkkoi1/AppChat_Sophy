@@ -54,8 +54,13 @@ const handleDownload = async (fileUrl, fileName, downloadUrl) => {
 const FileTab = ({ conversation }) => {
   const files = conversation?.listFile || [];
 
-  // Filter out invalid files (where both name and downloadUrl are null)
-  const validFiles = files.filter((file) => file.name || file.downloadUrl);
+  // Filter out invalid files and exclude images, videos, and GIFs
+  const validFiles = files.filter((file) => {
+    const fileName = file.name || "";
+    const fileType = fileName.split(".").pop()?.toLowerCase();
+    const isMedia = ["jpg", "jpeg", "png", "gif", "mp4", "mov", "avi", "mkv"].includes(fileType);
+    return (file.name || file.downloadUrl) && !isMedia;
+  });
 
   if (validFiles.length === 0) {
     return <Text style={styles.noDataText}>Không có tệp nào</Text>;
@@ -79,10 +84,6 @@ const FileTab = ({ conversation }) => {
   const renderFileIcon = (file) => {
     const fileName = file.name || "";
     const fileType = fileName.split(".").pop()?.toLowerCase();
-
-    if (!file.name && file.downloadUrl?.includes(".mp4")) {
-      return <Icon name="video" type="feather" size={24} color="#f39c12" />;
-    }
 
     if (fileType === "pdf")
       return (
