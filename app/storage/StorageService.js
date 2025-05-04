@@ -62,7 +62,6 @@ const getUserFileName = async () => {
 
 const readUserData = async () => {
   const fileName = await getUserFileName();
-  console.log("Đang đọc file:", fileName);
   if (!fileName) return {};
   return (await readFile(fileName)) || {};
 };
@@ -84,6 +83,18 @@ const writeFile = async (fileName, data) => {
       try {
         const dirUri = await getBaseDir();
 
+        // Kiểm tra cấu trúc dữ liệu
+        if (!data || typeof data !== "object") {
+          throw new Error("Dữ liệu không hợp lệ: phải là một object");
+        }
+        if (!data.messages) {
+          data.messages = {};
+        }
+        if (!data.conversations) {
+          data.conversations = [];
+        }
+
+        // Làm sạch dữ liệu
         const cleanData = JSON.parse(
           JSON.stringify(data, (key, value) => {
             if (typeof value === "undefined" || typeof value === "function") {
@@ -104,7 +115,7 @@ const writeFile = async (fileName, data) => {
         let content;
         try {
           content = JSON.stringify(cleanData, null, 2);
-          JSON.parse(content);
+          JSON.parse(content); // Xác thực JSON hợp lệ
         } catch (err) {
           console.error("❌ Lỗi serialize dữ liệu:", err);
           await debugFileContent(fileName);
@@ -125,9 +136,21 @@ const writeFile = async (fileName, data) => {
           );
         });
 
+        // Sao lưu file hiện tại nếu tồn tại
         let fileUri;
         if (existingFileUri) {
           fileUri = existingFileUri;
+          try {
+            const backupDir = `${dirUri}/backup`;
+            await FileSystem.makeDirectoryAsync(backupDir, {
+              intermediates: true,
+            });
+            const backupFile = `${backupDir}/${cleanFileName}.${Date.now()}.bak`;
+            await FileSystem.copyAsync({ from: fileUri, to: backupFile });
+            console.log("✅ Đã sao lưu file:", backupFile);
+          } catch (backupErr) {
+            console.warn("⚠️ Không thể sao lưu file:", backupErr);
+          }
         } else {
           fileUri = await StorageAccessFramework.createFileAsync(
             dirUri,
@@ -137,10 +160,12 @@ const writeFile = async (fileName, data) => {
           console.log("✅ Tạo tệp mới:", fileUri);
         }
 
+        // Ghi file
         await FileSystem.writeAsStringAsync(fileUri, content, {
           encoding: FileSystem.EncodingType.UTF8,
         });
 
+        // Xóa các file trùng lặp
         const duplicateFiles = files.filter((uri) => {
           const decodedUri = decodeURIComponent(uri);
           return (
@@ -157,6 +182,7 @@ const writeFile = async (fileName, data) => {
           console.log("🗑️ Đã xóa tệp trùng lặp:", duplicate);
         }
 
+        console.log("✅ Đã ghi dữ liệu vào:", fileUri);
         resolve();
       } catch (err) {
         console.error("❌ Lỗi ghi tệp:", err);
@@ -184,6 +210,7 @@ const readFile = async (fileName) => {
     const dirUri = await getBaseDir();
     const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
     const cleanFileName = fileName;
+
     const target = files.find((f) => {
       const decoded = decodeURIComponent(f);
       return (
@@ -201,29 +228,65 @@ const readFile = async (fileName) => {
         "📂 Tệp hiện có:",
         files.map((f) => decodeURIComponent(f))
       );
+      return { messages: {}, conversations: [] }; // Trả về dữ liệu mặc định
     }
 
     const content = await FileSystem.readAsStringAsync(target, {
       encoding: FileSystem.EncodingType.UTF8,
     });
-    // console.log("📄 Đã đọc tệp:", target);
-    // console.log("📄 Nội dung tệp:", content);
-    if (!content) return null;
+    console.log("📄 Nội dung tệp:", content);
+    if (!content) return { messages: {}, conversations: [] };
 
     try {
-      return content.message;
-    } catch (err) {
-      if (!target.includes("Sophy")) {
-        await FileSystem.deleteAsync(target, { idempotent: true });
-      } else {
-        console.warn("⚠️ Bỏ qua xóa tệp trong thư mục Sophy:", target);
+      const parsedContent = JSON.parse(content);
+      // Kiểm tra cấu trúc dữ liệu
+      if (!parsedContent.messages) {
+        parsedContent.messages = {};
       }
-      return null;
+      if (!parsedContent.conversations) {
+        parsedContent.conversations = [];
+      }
+      return parsedContent;
+    } catch (err) {
+      console.error("❌ Lỗi khi parse JSON:", err);
+      console.log("🔍 Nội dung file gây lỗi:", content);
+
+      // Sao lưu file lỗi
+      try {
+        const backupDir = `${dirUri}/backup`;
+        await FileSystem.makeDirectoryAsync(backupDir, { intermediates: true });
+        const backupFile = `${backupDir}/${cleanFileName}.${Date.now()}.error.bak`;
+        await FileSystem.copyAsync({ from: target, to: backupFile });
+        console.log("✅ Đã sao lưu file lỗi:", backupFile);
+      } catch (backupErr) {
+        console.warn("⚠️ Không thể sao lưu file lỗi:", backupErr);
+      }
+
+      // Thử sửa JSON
+      try {
+        // Loại bỏ các ký tự không hợp lệ và thử parse lại
+        const cleanedContent = content
+          .replace(/[\u0000-\u001F]+/g, "") // Loại bỏ ký tự điều khiển
+          .replace(/,\s*}/g, "}") // Sửa dấu phẩy thừa
+          .replace(/,\s*]/g, "]"); // Sửa dấu phẩy thừa
+        const parsedPartial = JSON.parse(cleanedContent);
+        if (!parsedPartial.messages) {
+          parsedPartial.messages = {};
+        }
+        if (!parsedPartial.conversations) {
+          parsedPartial.conversations = [];
+        }
+        console.log("✅ Đã sửa và parse JSON:", parsedPartial);
+        return parsedPartial;
+      } catch (partialErr) {
+        console.error("❌ Không thể sửa JSON:", partialErr);
+        return { messages: {}, conversations: [] }; // Trả về dữ liệu mặc định
+      }
     }
   } catch (err) {
     console.error("❌ Lỗi đọc tệp:", err);
     await handleStorageError(err);
-    return null;
+    return { messages: {}, conversations: [] };
   }
 };
 
@@ -233,13 +296,16 @@ export const debugFileContent = async (fileName) => {
     const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
     const cleanFileName = fileName.replace(/ \(\d+\)\.json$/, ".json");
     const target = files.find((f) => {
-      const decoded = decodeURIComponent(f);
+      const decodedUri = decodeURIComponent(f);
       return (
-        decoded.includes(`/${cleanFileName}`) ||
-        decoded.includes(`%2F${cleanFileName}`)
+        decodedUri.endsWith(`/${cleanFileName}`) ||
+        decodedUri.match(
+          new RegExp(
+            `/${cleanFileName.replace(".json", "")}\\s*\\(\\d+\\)\\.json$`
+          )
+        )
       );
     });
-
     if (!target) {
       console.log("❌ Không tìm thấy file:", fileName);
       return;
@@ -270,26 +336,27 @@ export const saveConversations = async (conversations) => {
   const MAX_CONVERSATIONS = 100;
   data.conversations = conversations.slice(0, MAX_CONVERSATIONS);
   await writeUserData(data);
-  const verify = await readUserData();
-  console.log("✅ Đã lưu, kiểm tra lại messages:", verify.messages);
-
   return data.conversations;
 };
 
 export const getMessages = async (conversationId) => {
   const data = await readUserData();
-  const messages = data.messages?.[conversationId] || [];
-  console.log("Data từ readUserData:", data);
+  console.log("📂 Dữ liệu từ readUserData:", JSON.stringify(data));
+  if (!data || !data.messages) {
+    console.warn("⚠️ Không có dữ liệu messages trong readUserData:", data);
+    return [];
+  }
 
-  // Ensure messages are returned as an array
+  const messages = data.messages?.[conversationId] || [];
+  console.log("📩 Tin nhắn từ readUserData:", messages);
   if (Array.isArray(messages) && messages.length > 0) {
     return messages.map((msg) => ({
       ...msg,
-      replyData: msg.replyData || null, // Ensure replyData is not undefined
+      replyData: msg.replyData || null,
     }));
   }
 
-  // Fallback to lastMessage if no messages are found
+  // Nếu không có tin nhắn, thử lấy từ conversation
   const conversation = data.conversations?.find(
     (conv) => conv.conversationId === conversationId
   );
@@ -304,7 +371,6 @@ export const getMessages = async (conversationId) => {
       },
     ];
   }
-
   return [];
 };
 
@@ -313,14 +379,33 @@ export const saveMessages = async (
   newMessages,
   direction = "after"
 ) => {
+  if (!conversationId || !Array.isArray(newMessages)) {
+    console.error("❌ conversationId hoặc newMessages không hợp lệ");
+    return [];
+  }
+
+  // Kiểm tra tính hợp lệ của newMessages
+  const validMessages = newMessages.filter((msg) => {
+    if (!msg || !msg.messageDetailId || !msg.content || !msg.createdAt) {
+      console.warn("⚠️ Tin nhắn không hợp lệ:", msg);
+      return false;
+    }
+    return true;
+  });
+
+  if (validMessages.length === 0) {
+    console.warn("⚠️ Không có tin nhắn hợp lệ để lưu");
+    return [];
+  }
+
   const data = await readUserData();
   const oldMessages = data.messages?.[conversationId] || [];
 
-  // Loại bỏ tin nhắn trùng lặp dựa trên messageDetailId
+  // Gộp tin nhắn
   const merged =
     direction === "before"
-      ? [...newMessages, ...oldMessages]
-      : [...oldMessages, ...newMessages];
+      ? [...validMessages, ...oldMessages]
+      : [...oldMessages, ...validMessages];
   const deduped = Array.from(
     new Map(
       merged
@@ -331,41 +416,23 @@ export const saveMessages = async (
 
   // Giới hạn số lượng tin nhắn
   const MAX_MESSAGES = 1000;
-  const limited = deduped.slice(0, MAX_MESSAGES);
+  const limited = deduped
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    .slice(-MAX_MESSAGES);
 
-  // Khởi tạo messages nếu chưa tồn tại
+  // Cập nhật dữ liệu
   if (!data.messages) data.messages = {};
   data.messages[conversationId] = limited;
 
-  // Cập nhật lastMessage trong conversation
-  const latestMessage = limited.find(
-    (m) => m.messageDetailId === limited[limited.length - 1]?.messageDetailId
-  );
-  if (latestMessage) {
-    const conversation = data.conversations?.find(
-      (conv) => conv.conversationId === conversationId
-    );
-    if (conversation) {
-      conversation.lastMessage = {
-        content: latestMessage.content,
-        type: latestMessage.type,
-        senderId: latestMessage.senderId,
-        createdAt: latestMessage.createdAt,
-      };
-      conversation.newestMessageId = latestMessage.messageDetailId;
-      conversation.lastChange = latestMessage.createdAt;
-    }
+  // Ghi dữ liệu
+  try {
+    await writeUserData(data);
+    console.log("✅ Đã lưu tin nhắn cho conversation:", conversationId);
+    return limited;
+  } catch (err) {
+    console.error("❌ Lỗi khi lưu tin nhắn:", err);
+    return [];
   }
-
-  await writeUserData(data);
-  const verify = await readUserData();
-  console.log("✅ Đã lưu, kiểm tra lại messages:", verify.messages);
-
-  console.log("💾 Đang lưu tin nhắn cho:", conversationId);
-  console.log("🔢 Số lượng mới:", newMessages.length);
-  console.log("📦 Tổng sau merge:", limited.length);
-
-  return limited;
 };
 
 export const appendMessage = async (conversationId, message) => {
@@ -381,8 +448,6 @@ export const saveFriends = async (friends) => {
   const data = await readUserData();
   data.friends = friends;
   await writeUserData(data);
-  const verify = await readUserData();
-  console.log("✅ Đã lưu, kiểm tra lại messages:", verify.messages);
 };
 
 export const getBackground = async () => {
@@ -394,8 +459,6 @@ export const saveBackground = async (bg) => {
   const data = await readUserData();
   data.background = bg;
   await writeUserData(data);
-  const verify = await readUserData();
-  console.log("✅ Đã lưu, kiểm tra lại messages:", verify.messages);
 };
 
 export const saveAttachment = async (uri, fileName) => {

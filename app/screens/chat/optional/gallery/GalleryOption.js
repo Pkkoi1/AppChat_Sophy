@@ -23,9 +23,29 @@ const groupOptions = [
 
 const GalleryOption = ({ isGroup, conversation }) => {
   const navigation = useNavigation(); // Initialize navigation
-  const images = conversation?.listImage
-    ?.slice(-4) // Get the last 4 images
-    .reverse(); // Reverse to display from the latest to the oldest
+
+  // Combine images, GIFs, and videos
+  const allMedia = [
+    ...(conversation?.listImage || []),
+    ...(
+      conversation?.listFile?.filter((file) => {
+        const isImageOrGif = file.name?.match(/\.(gif|png|jpe?g)$/i);
+        const isVideo = file.name?.match(/\.(mp4|mov|avi|mkv)$/i);
+        return isImageOrGif || isVideo;
+      }) || []
+    ).map((file) => ({
+      url: file.downloadUrl,
+      createdAt: file.createdAt,
+    })),
+  ];
+
+  // Sort media by date (newest to oldest)
+  const sortedMedia = allMedia.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  // Get the last 4 items
+  const images = sortedMedia.slice(0, 4);
 
   const hasImages = images && images.length > 0;
 

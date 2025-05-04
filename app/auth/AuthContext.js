@@ -36,6 +36,10 @@ export const AuthProvider = ({ children }) => {
   const flatListRef = useRef(null);
 
   useEffect(() => {
+    clearStorage();
+  }, []);
+
+  useEffect(() => {
     const loadStorage = async () => {
       try {
         const [token, refresh, user, storedBackground] =
@@ -75,6 +79,15 @@ export const AuthProvider = ({ children }) => {
     );
     return cleanup;
   }, [socket, userInfo, setConversations, saveMessages, addConversation]);
+
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      console.log("Đã xóa sạch dữ liệu AsyncStorage");
+    } catch (e) {
+      console.error("Lỗi khi xóa AsyncStorage:", e);
+    }
+  };
 
   const checkLastMessageDifference = async (conversationId) => {
     try {
@@ -612,6 +625,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      await clearStorage();
       await api.logout();
     } catch (error) {
       console.error("Lỗi khi logout:", error.message);

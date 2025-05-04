@@ -37,9 +37,9 @@ export const footerItem = [
 const Footer = ({ setCurrentScreen }) => {
   const initialScreen = footerItem[0].screen;
   const [selectedIcon, setSelectedIcon] = useState(initialScreen);
-  const [unreadMessages, setUnreadMessages] = useState(3);
+  const [unreadMessages, setUnreadMessages] = useState(0); // Số lượng tin nhắn chưa đọc
   const socket = useContext(SocketContext); // Use SocketContext
-  const { userInfo, handlerRefresh, addConversation } = useContext(AuthContext);
+  const { userInfo, conversations } = useContext(AuthContext); // Lấy conversations từ AuthContext
   const [animations, setAnimations] = useState(
     footerItem.reduce((acc, item) => {
       acc[item.name] = new Animated.Value(1);
@@ -51,38 +51,21 @@ const Footer = ({ setCurrentScreen }) => {
     setCurrentScreen(initialScreen); // Cập nhật màn hình cha ngay từ đầu
   }, []);
 
-  // useEffect(() => {
-  //   if (socket && socket.connected) {
-  //     const handleNewMessage = async () => {
-  //       console.log(
-  //         "New message received. Refreshing conversations at Home..."
-  //       );
-  //       await handlerRefresh();
-  //     };
-
-  //     const handleNewConversation = ({ conversation }) => {
-  //       console.log(
-  //         "New conversation received. Refreshing conversations at Home..."
-  //       );
-  //       addConversation(conversation);
-  //     };
-
-  //     const handleGroupDeleted = async () => {
-  //       console.log("Group deleted. Refreshing conversations...");
-  //       await handlerRefresh();
-  //     };
-
-  //     socket.on("newMessage", handleNewMessage);
-  //     socket.on("newConversation", handleNewConversation);
-  //     socket.on("groupDeleted", handleGroupDeleted);
-
-  //     return () => {
-  //       socket.off("newMessage", handleNewMessage);
-  //       socket.off("newConversation", handleNewConversation);
-  //       socket.off("groupDeleted", handleGroupDeleted);
-  //     };
-  //   }
-  // }, [socket, handlerRefresh, addConversation]);
+  useEffect(() => {
+    // Tính số lượng cuộc trò chuyện chưa đọc
+    if (conversations && userInfo) {
+      const unreadCount = conversations.reduce((count, conversation) => {
+        if (
+          conversation.unreadCount &&
+          conversation.unreadCount.includes(userInfo.userId)
+        ) {
+          return count + 1;
+        }
+        return count;
+      }, 0);
+      setUnreadMessages(unreadCount);
+    }
+  }, [conversations, userInfo]);
 
   const handlePress = (item) => {
     if (!item.screen) return;
