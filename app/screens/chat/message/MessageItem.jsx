@@ -250,6 +250,47 @@ const MessageItem = ({
     );
   };
 
+  const isLink = (text) => {
+    const urlRegex =
+      /\b(https?:\/\/[^\s]+|www\.[^\s]+|[^\s]+\.(com|net|org|io|gov|edu|vn|co))\b/gi;
+    return urlRegex.test(text);
+  };
+
+  const handleLinkPress = async (url) => {
+    // Ensure the URL starts with "http://" or "https://"
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = `https://${url}`;
+    }
+    if (await Linking.canOpenURL(url)) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert("Không thể mở link", url);
+    }
+  };
+
+  const renderTextWithLinks = (text) => {
+    const urlRegex =
+      /\b(https?:\/\/[^\s]+|www\.[^\s]+|[^\s]+\.(com|net|org|io|gov|edu|vn|co))\b/gi;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, index) => {
+      if (isLink(part)) {
+        return (
+          <TouchableOpacity key={index} onPress={() => handleLinkPress(part)}>
+            <Text style={[MessageItemStyle.content, { color: "#3f88f2" }]}>
+              {part}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
+      return (
+        <Text key={index} style={MessageItemStyle.content}>
+          {part}
+        </Text>
+      );
+    });
+  };
+
   const renderContent = () => {
     const { type, content, attachment, isRecall, isReply } = message;
 
@@ -265,37 +306,14 @@ const MessageItem = ({
       );
     }
 
-    const isLink = (text) => {
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      return urlRegex.test(text);
-    };
-
-    const handleLinkPress = async (url) => {
-      if (await Linking.canOpenURL(url)) {
-        await Linking.openURL(url);
-      } else {
-        Alert.alert("Không thể mở link", url);
-      }
-    };
-
     return (
       <>
         {isReply && renderReplyContent()}
         {type === "text" ? (
-          isLink(content) ? (
-            <TouchableOpacity onPress={() => handleLinkPress(content)}>
-              <Text style={[MessageItemStyle.content, { color: "#3f88f2" }]}>
-                {content}
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <HighlightText
-              text={content}
-              highlight={searchQuery}
-              style={MessageItemStyle.content}
-            />
-          )
-        ) : type === "file" ? ( // Correctly handle file type
+          <View style={MessageItemStyle.textContainer}>
+            {renderTextWithLinks(content)}
+          </View>
+        ) : type === "file" ? (
           <View style={MessageItemStyle.fileContainer}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 10 }}

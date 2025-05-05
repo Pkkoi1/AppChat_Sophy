@@ -7,6 +7,8 @@ import RenderGroupAvatar from "@/app/components/group/RenderGroupAvatar";
 import { AuthContext } from "@/app/auth/AuthContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { api } from "@/app/api/api";
+import InboxOptions from "../../features/messagePopup/InboxOptions";
+import { Dialog } from "@rneui/themed"; // Import Dialog from @rneui/themed
 
 const DEFAULT_AVATAR = "https://example.com/default-avatar.png"; // Replace with actual default avatar URL
 
@@ -22,6 +24,7 @@ const Inbox = ({ conversation }) => {
     receiverId,
     isGroup,
     groupMembers,
+    creatorId, // Access creatorId from conversation
     unreadCount, // Access unreadCount from conversation
   } = conversation;
 
@@ -31,6 +34,9 @@ const Inbox = ({ conversation }) => {
   const [uid, setUid] = useState("");
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
   const [unreadCountValue, setUnreadCountValue] = useState(0);
+  const [showOptions, setShowOptions] = useState(false);
+
+  const isCreator = userInfo?.userId === creatorId; // Check if the user is the creator
 
   const getTimeDifference = (date) => {
     if (!date) return ""; // Handle null date
@@ -195,71 +201,125 @@ const Inbox = ({ conversation }) => {
     setUnreadCountValue(userUnread?.count || 0);
   }, [unreadCount, userInfo.userId, conversation]);
 
+  const handleMute = () => {
+    console.log("Tắt thông báo");
+    setShowOptions(false);
+  };
+
+  const handleHide = () => {
+    console.log("Ẩn cuộc trò chuyện");
+    setShowOptions(false);
+  };
+
+  const handleDelete = () => {
+    console.log("Xóa cuộc trò chuyện");
+    setShowOptions(false);
+  };
+
+  const handlePin = () => {
+    console.log("Ghim cuộc trò chuyện");
+    setShowOptions(false);
+  };
+
+  const handleLeaveGroup = () => {
+    console.log("Rời nhóm");
+    setShowOptions(false);
+  };
+
+  const handleDisbandGroup = () => {
+    console.log("Giải tán nhóm");
+    setShowOptions(false);
+  };
+
   return (
-    <TouchableOpacity
-      onPress={() => {
-        readMessage(conversationId); // Mark the message as read when pressed
-        updateBackground(conversation?.background); // Update background before navigating
-        navigation.navigate("Chat", {
-          conversation: conversation,
-          receiver: isGroup ? null : receiver,
-        });
-      }}
-      activeOpacity={0.6}
-      style={styles.container}
-    >
-      <View style={styles.avatarContainer}>
-        {isGroup ? (
-          groupAvatarUrl ? (
-            <Image source={{ uri: groupAvatarUrl }} style={styles.avatar} />
+    <>
+      <TouchableOpacity
+        onPress={() => {
+          readMessage(conversationId); // Mark the message as read when pressed
+          updateBackground(conversation?.background); // Update background before navigating
+          navigation.navigate("Chat", {
+            conversation: conversation,
+            receiver: isGroup ? null : receiver,
+          });
+        }}
+        onLongPress={() => setShowOptions(true)} // Show options on long press
+        activeOpacity={0.6}
+        style={[styles.container, showOptions && styles.highlighted]} // Highlight when options are shown
+      >
+        <View style={styles.avatarContainer}>
+          {isGroup ? (
+            groupAvatarUrl ? (
+              <Image source={{ uri: groupAvatarUrl }} style={styles.avatar} />
+            ) : (
+              <RenderGroupAvatar members={groupMembers} />
+            )
+          ) : receiver?.urlavatar ? (
+            <Image
+              source={{ uri: receiver?.urlavatar }}
+              style={styles.avatar}
+            />
           ) : (
-            <RenderGroupAvatar members={groupMembers} />
-          )
-        ) : receiver?.urlavatar ? (
-          <Image source={{ uri: receiver?.urlavatar }} style={styles.avatar} />
-        ) : (
-          <AvatarUser
-            fullName={receiver?.fullname || "User"}
-            width={50}
-            height={50}
-            avtText={20}
-            shadow={false}
-            bordered={false}
-          />
-        )}
-      </View>
-      <View style={{ flex: 1 }}>
-        <View style={styles.header}>
-          <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
-            {isGroup ? groupName : receiver?.fullname || "Unknown"}
-          </Text>
-          <Text style={styles.time}>
-            {getTimeDifference(lastMessage?.createdAt)}
-          </Text>
-        </View>
-        <View style={styles.messageRow}>
-          <Text
-            style={[
-              styles.message,
-              hasUnreadMessages && styles.unreadMessage, // Apply bold styling if unread
-            ]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            {lastMessage?.senderId
-              ? `${senderName}: ${getMessageContent()}`
-              : lastMessage?.isRecall
-              ? "Đã thu hồi một tin nhắn"
-              : lastMessage?.content || "Chưa có tin nhắn"}
-          </Text>
-          {hasUnreadMessages && (
-            <View style={styles.unreadBadge}>
-              <Text style={styles.unreadBadgeText}>{unreadCountValue}</Text>
-            </View>
+            <AvatarUser
+              fullName={receiver?.fullname || "User"}
+              width={50}
+              height={50}
+              avtText={20}
+              shadow={false}
+              bordered={false}
+            />
           )}
         </View>
-      </View>
-    </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+          <View style={styles.header}>
+            <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">
+              {isGroup ? groupName : receiver?.fullname || "Unknown"}
+            </Text>
+            <Text style={styles.time}>
+              {getTimeDifference(lastMessage?.createdAt)}
+            </Text>
+          </View>
+          <View style={styles.messageRow}>
+            <Text
+              style={[
+                styles.message,
+                hasUnreadMessages && styles.unreadMessage, // Apply bold styling if unread
+              ]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {lastMessage?.senderId
+                ? `${senderName}: ${getMessageContent()}`
+                : lastMessage?.isRecall
+                ? "Đã thu hồi một tin nhắn"
+                : lastMessage?.content || "Chưa có tin nhắn"}
+            </Text>
+            {hasUnreadMessages && (
+              <View style={styles.unreadBadge}>
+                <Text style={styles.unreadBadgeText}>{unreadCountValue}</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      <Dialog
+        isVisible={showOptions}
+        onBackdropPress={() => setShowOptions(false)} // Close dialog on backdrop press
+      >
+        <InboxOptions
+          isGroup={isGroup}
+          isCreator={isCreator} // Pass isCreator to InboxOptions
+          conversation={conversation}
+          onMute={handleMute}
+          onHide={handleHide}
+          onDelete={handleDelete}
+          onPin={handlePin}
+          onLeaveGroup={handleLeaveGroup}
+          onDisbandGroup={handleDisbandGroup}
+          onClose={() => setShowOptions(false)}
+        />
+      </Dialog>
+    </>
   );
 };
 
@@ -272,6 +332,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
     borderBottomColor: "#ddd",
     backgroundColor: "white",
+  },
+  highlighted: {
+    backgroundColor: "#f0f8ff", // Light blue background for highlighting
   },
   avatarContainer: {
     marginRight: 20,
