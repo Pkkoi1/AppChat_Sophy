@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -12,8 +12,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const CreateNewGroup = ({ route, navigation }) => {
+  const { userInfo, handlerRefresh } = useContext(AuthContext);
+
   const { preSelectedFriend } = route.params || {};
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -27,11 +30,13 @@ const CreateNewGroup = ({ route, navigation }) => {
       try {
         const friendList = await api.getFriends();
         setFriends(friendList);
-        
+
         // If a pre-selected friend was passed, add them to selectedFriends
         if (preSelectedFriend) {
           // Check if the pre-selected friend is in the friend list
-          const foundFriend = friendList.find(friend => friend.userId === preSelectedFriend.userId);
+          const foundFriend = friendList.find(
+            (friend) => friend.userId === preSelectedFriend.userId
+          );
           if (foundFriend) {
             setSelectedFriends([foundFriend]);
           }
@@ -45,8 +50,6 @@ const CreateNewGroup = ({ route, navigation }) => {
     loadFriends();
   }, [preSelectedFriend]);
 
-  // Rest of the component remains unchanged
-  
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
       if (searchQuery.trim() !== "") {
@@ -55,9 +58,11 @@ const CreateNewGroup = ({ route, navigation }) => {
           // Lấy danh sách bạn bè
           const friendList = await api.getFriends();
 
-          // Lọc danh sách bạn bè dựa trên số điện thoại (tìm kiếm tương đối)
-          const filteredFriends = friendList.filter((friend) =>
-            friend.phone?.toString().includes(searchQuery.trim())
+          // Lọc danh sách bạn bè dựa trên số điện thoại hoặc tên (tìm kiếm tương đối)
+          const filteredFriends = friendList.filter(
+            (friend) =>
+              friend.phone?.toString().includes(searchQuery.trim()) ||
+              friend.fullname?.toLowerCase().includes(searchQuery.trim().toLowerCase())
           );
 
           // Cập nhật kết quả tìm kiếm
@@ -79,16 +84,26 @@ const CreateNewGroup = ({ route, navigation }) => {
   const handleContactClick = (contact) => {
     // Toggle selection
     if (selectedFriends.some((friend) => friend._id === contact._id)) {
-      setSelectedFriends(selectedFriends.filter((friend) => friend._id !== contact._id));
+      setSelectedFriends(
+        selectedFriends.filter((friend) => friend._id !== contact._id)
+      );
     } else {
       setSelectedFriends([...selectedFriends, contact]);
     }
   };
 
   const handleCreateGroup = async () => {
+    let generatedGroupName = groupName;
+
     if (!groupName.trim()) {
-      Alert.alert("Lỗi", "Vui lòng nhập tên nhóm.");
-      return;
+      generatedGroupName = selectedFriends
+        .map((friend) => friend.fullname.split(" ").pop())
+        .join(", ");
+
+      if (!generatedGroupName) {
+        Alert.alert("Lỗi", "Vui lòng chọn thành viên.");
+        return;
+      }
     }
 
     if (selectedFriends.length === 0) {
@@ -100,27 +115,32 @@ const CreateNewGroup = ({ route, navigation }) => {
       setIsSearching(true);
       // Extract userIds instead of the entire friend object
       const memberIds = selectedFriends.map((friend) => friend.userId);
-      const newGroup = await api.createGroupConversation(groupName, memberIds);
+      const newGroup = await api.createGroupConversation(generatedGroupName, memberIds);
 
       if (newGroup) {
         Alert.alert("Thành công", "Nhóm đã được tạo!");
-        navigation.goBack(); // Navigate back to the previous screen
+        navigation.navigate("Home");
+        handlerRefresh(); // Refresh the friend list or any other necessary data
       } else {
         Alert.alert("Lỗi", "Không thể tạo nhóm.");
       }
     } catch (error) {
-      console.error("Lỗi khi tạo nhóm:", error);
-      Alert.alert("Lỗi", "Đã xảy ra lỗi khi tạo nhóm.");
+      Alert.alert("Lỗi", "Nhóm phải có 2 thành viên trở lên.");
     } finally {
       setIsSearching(false);
     }
   };
 
   const renderFriendItem = ({ item }) => {
-    const isSelected = selectedFriends.some((friend) => friend._id === item._id);
+    const isSelected = selectedFriends.some(
+      (friend) => friend._id === item._id
+    );
 
     return (
-      <TouchableOpacity style={styles.friendItem} onPress={() => handleContactClick(item)}>
+      <TouchableOpacity
+        style={styles.friendItem}
+        onPress={() => handleContactClick(item)}
+      >
         {item.urlavatar ? (
           <Image source={{ uri: item.urlavatar }} style={styles.avatar} />
         ) : (
@@ -184,7 +204,10 @@ const CreateNewGroup = ({ route, navigation }) => {
       />
 
       {/* Create Group Button */}
-      <TouchableOpacity style={styles.createGroupButton} onPress={handleCreateGroup}>
+      <TouchableOpacity
+        style={styles.createGroupButton}
+        onPress={handleCreateGroup}
+      >
         <Text style={styles.createGroupButtonText}>Tạo Nhóm</Text>
       </TouchableOpacity>
     </View>
@@ -201,7 +224,7 @@ const styles = StyleSheet.create({
   },
   groupNameInput: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginHorizontal: 10,
     marginBottom: 10,
@@ -262,24 +285,24 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'gray',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "gray",
+    alignItems: "center",
+    justifyContent: "center",
   },
   selectedCircle: {
-    backgroundColor: '#007bff',
-    borderColor: '#007bff',
+    backgroundColor: "#007bff",
+    borderColor: "#007bff",
   },
   createGroupButton: {
-    backgroundColor: '#28a745',
+    backgroundColor: "#28a745",
     paddingVertical: 12,
     marginHorizontal: 10,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
   },
   createGroupButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
   },
 });

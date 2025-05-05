@@ -1,6 +1,6 @@
 export const handleNewMessage = (
   socket,
-  conversationId,
+  conversation,
   setMessages,
   flatListRef,
   saveMessages
@@ -8,24 +8,38 @@ export const handleNewMessage = (
   if (!socket) return;
 
   socket.on("newMessage", (newMessage) => {
+    console.log("Nhận tin nhắn mới qua socket:", newMessage.message);
     if (
-      !newMessage?._id ||
-      !newMessage?.messageDetailId ||
-      newMessage?.isPinned === undefined
+      !newMessage?.message.messageDetailId ||
+      newMessage?.message.isPinned === undefined
     ) {
-      console.warn("Invalid message received:", newMessage);
+      console.warn("Invalid message received:", newMessage.message);
       return;
     }
     setMessages((prev) => {
       const filteredMessages = prev.filter(
         (msg) =>
           !msg._id?.startsWith("temp_") ||
-          msg.content !== newMessage.content ||
-          msg.createdAt !== newMessage.createdAt
+          msg.content !== newMessage.message.content ||
+          msg.createdAt !== newMessage.message.createdAt
       );
-      return [newMessage, ...filteredMessages].filter((msg) => msg);
+      return [newMessage.message, ...filteredMessages].filter((msg) => msg);
     });
   });
+  // socket.on("messageRecalled", ({ conversationId, messageId }) => {
+  //   if (conversationId === conversation.conversationId) {
+  //     setMessages((prev) =>
+  //       prev.map((msg) =>
+  //         msg.messageDetailId === messageId ? { ...msg, isRecall: true } : msg
+  //       )
+  //     );
+  //   }
+  //   console.log(
+  //     "Nhận tin nhắn đã thu hồi qua socket:",
+  //     conversationId,
+  //     messageId
+  //   );
+  // });
 };
 
 export const cleanupNewMessage = (socket) => {

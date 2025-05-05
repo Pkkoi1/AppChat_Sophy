@@ -9,19 +9,15 @@ import Diary from "../diary/Diary";
 import HeadView from "../header/Header";
 import Footer from "../footer/Footer";
 import HomeStyle from "./HomeStyle";
-import { AuthContext } from "../../auth/AuthContext"; // Import useAuth hook
 import Loading from "@/app/components/loading/Loading";
 import { SocketContext } from "@/app/socket/SocketContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Home = ({ route }) => {
-  const socket = useContext(SocketContext); // Use SocketContext
-
-  const { userInfo, handlerRefresh } = useContext(AuthContext);
-  const [refreshing, setRefreshing] = useState(false);
-
-  // Lấy thông tin người dùng từ AuthContext
+const Home = ({ route, navigation }) => {
+  const socket = useContext(SocketContext);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [userInfo, setUserInfo] = useState(null);
 
   const screens = [
     {
@@ -65,45 +61,87 @@ const Home = ({ route }) => {
     }
   };
 
-  if (socket && socket.connected) {
-    socket.on("newMessage", async () => {
-      console.log("New message received. Refreshing conversations...");
-      await handlerRefresh(); // Refresh the conversation list
-    });
-  }
-  if (socket && socket.connected) {
-    socket.on("newConversation", async () => {
-      console.log("New convertation received. Refreshing conversations...");
-      await handlerRefresh(); // Refresh the conversation list
-    });
-  }
+  // Lấy userInfo từ AsyncStorage
   useEffect(() => {
-    if (socket && socket.connected) {
-      // Listen for newMessage event
-      socket.on("newMessage", async () => {
-        console.log("New message received. Refreshing conversations...");
-        await handlerRefresh(); // Refresh the conversation list
-      });
-      if (socket && socket.connected) {
-        socket.on("newConversation", async () => {
-          console.log("New convertation received. Refreshing conversations...");
-          await handlerRefresh(); // Refresh the conversation list
-        });
+    const fetchUserInfo = async () => {
+      try {
+        const userInfoString = await AsyncStorage.getItem("userInfo");
+        console.log("userInfoString from AsyncStorage:", userInfoString);
+
+        if (userInfoString) {
+          const parsedUserInfo = JSON.parse(userInfoString);
+          console.log("Parsed userInfo:", parsedUserInfo);
+
+          if (
+            parsedUserInfo &&
+            parsedUserInfo.userId &&
+            parsedUserInfo.fullname
+          ) {
+            setUserInfo(parsedUserInfo);
+          } else {
+            console.log("userInfo không hợp lệ, điều hướng về Main");
+            navigation.replace("Main");
+          }
+        } else {
+          console.log("Không tìm thấy userInfo, điều hướng về Main");
+          navigation.replace("Main");
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy userInfo từ AsyncStorage:", error);
+        navigation.replace("Main");
+      } finally {
+        setIsLoading(false);
       }
-    }
-  }, []);
+    };
 
+    fetchUserInfo();
+  }, [navigation]);
+
+  // Xử lý sự kiện socket
   useEffect(() => {
-    if (userInfo) {
-      setIsLoading(false); // Nếu có user info, không cần loading
-    }
+    if (socket) {
+      const handleNewMessage = async () => {
+        console.log(
+          "New message received. Refreshing conversations at Home..."
+        );
+        // Gọi API hoặc hàm để làm mới danh sách cuộc trò chuyện
+      };
 
-    // Kiểm tra nếu có tham số `screen` được truyền
+      const handleGroupDeleted = async () => {
+        console.log("Group deleted. Refreshing conversations...");
+        // Gọi API hoặc hàm để làm mới danh sách cuộc trò chuyện
+      };
+
+      const handleAvatarChange = async ({ conversationId, newAvatar }) => {
+        console.log(
+          `Avatar changed for conversation ${conversationId}. Refreshing...`
+        );
+        // Gọi API hoặc hàm để cập nhật avatar nhóm
+      };
+
+      socket.on("newMessage", handleNewMessage);
+      socket.on("groupDeleted", handleGroupDeleted);
+      socket.on("groupAvatarChanged", handleAvatarChange);
+
+      return () => {
+        socket.off("newMessage", handleNewMessage);
+        socket.off("groupDeleted", handleGroupDeleted);
+        socket.off("groupAvatarChanged", handleAvatarChange);
+      };
+    }
+  }, [socket]);
+
+  // Xử lý tham số screen từ route
+  useEffect(() => {
     const initialScreen = route.params?.screen;
     if (initialScreen) {
       setCurrentScreen(initialScreen);
     }
-  }, [userInfo, route.params]);
+  }, [route.params]);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <View style={HomeStyle.homeContainer}>

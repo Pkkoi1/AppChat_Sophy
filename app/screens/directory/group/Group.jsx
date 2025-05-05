@@ -2,6 +2,7 @@ import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import GroupStyle from "./GroupStyle"; // Import style từ file riêng
 import AvatarUser from "../../../components/profile/AvatarUser"; // Import AvatarUser for fallback
+import RenderGroupAvatar from "@/app/components/group/RenderGroupAvatar";
 
 const getDayOfWeek = (date) => {
   const days = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
@@ -39,7 +40,7 @@ const truncateText = (text, maxLength) => {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
-const Group = ({ name, avatar, message, date, onPress }) => {
+const Group = ({ name, avatar, message, date, onPress, groupMembers }) => {
   return (
     <TouchableOpacity
       onPress={onPress || (() => console.log("Navigate to group chat: ", name))}
@@ -49,12 +50,7 @@ const Group = ({ name, avatar, message, date, onPress }) => {
       {avatar ? (
         <Image source={{ uri: avatar }} style={GroupStyle.avatar} />
       ) : (
-        <AvatarUser
-          fullName={name || "Nhóm"}
-          width={50}
-          height={50}
-          avtText={20}
-        />
+        <RenderGroupAvatar members={groupMembers} width={50} height={50} avtText={20}   />
       )}
 
       <View style={GroupStyle.content}>

@@ -53,7 +53,16 @@ import CallScreen from "./screens/call/CallScreen";
 import IncomingCallHandler from "./components/call/IncomingCallHandler";
 import AddFriendToGroup from "./screens/directory/group/createGroup/AddFriendToGroup";
 import AddFriendToGroups from "./screens/directory/group/createGroup/AddFriendToGroups";
+
+import SameGroups from "./screens/chat/optional/group/samegroup/SameGroups";
+
+
+import File from "./screens/chat/optional/gallery/files/File";
+import ListImageFullView from "./features/fullImages/ListImageFullView";
+
 const Stack = createNativeStackNavigator();
+
+
 
 // Navigation Stack component
 function AppNavigator() {
@@ -82,33 +91,57 @@ function AppNavigator() {
       <Stack.Screen name="Diary" component={Diary} />
       <Stack.Screen name="MyProfile" component={MyProfile} />
       <Stack.Screen name="Setting" component={Setting} />
-      <Stack.Screen name="ReceivedFriendRequests" component={ReceivedFriendRequests} />
+      <Stack.Screen
+        name="ReceivedFriendRequests"
+        component={ReceivedFriendRequests}
+      />
       <Stack.Screen name="UserProfile" component={UserProfile} />
       <Stack.Screen name="AddFriend" component={AddFriend} />
       <Stack.Screen name="AcceptFriend" component={AcceptFriend} />
-      <Stack.Screen name="Options" component={Options} options={{ animation: "slide_from_right" }} />
+      <Stack.Screen
+        name="Options"
+        component={Options}
+        options={{ animation: "slide_from_right" }}
+      />
       <Stack.Screen name="Verify" component={Verify} />
       <Stack.Screen name="ScanQR" component={ScanQR} />
       <Stack.Screen name="VerificationCode" component={VerificationCode} />
       <Stack.Screen name="CreateNewPassword" component={CreateNewPassword} />
-      <Stack.Screen name="AccountAndSecurity" component={AccountAndSecurityScreen} />
+      <Stack.Screen
+        name="AccountAndSecurity"
+        component={AccountAndSecurityScreen}
+      />
       <Stack.Screen name="Personal" component={Personal} />
       <Stack.Screen name="Edit" component={Edit} />
       <Stack.Screen name="UpdatePassword" component={UpdatePassword} />
-      <Stack.Screen name="EnterAvatar" component={EnterAvatar} options={{ animation: "slide_from_right" }} />
+      <Stack.Screen
+        name="EnterAvatar"
+        component={EnterAvatar}
+        options={{ animation: "slide_from_right" }}
+      />
       <Stack.Screen name="LoginByQR" component={LoginByQR} />
       <Stack.Screen name="MyProfileSetting" component={MyProfileSetting} />
       <Stack.Screen name="Infomation" component={Infomation} />
       <Stack.Screen name="ZaloFAQScreen" component={ZaloFAQScreen} />
-      <Stack.Screen name="FullScreenImageViewer" component={FullScreenImageViewer} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="FullScreenImageViewer"
+        component={FullScreenImageViewer}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="ShareMessage" component={ShareMessage} />
       <Stack.Screen name="SearchUser" component={SearchUser} />
       <Stack.Screen name="UserInfo" component={UserInfo} />
       <Stack.Screen name="GroupMember" component={GroupMember} />
       <Stack.Screen name="CreateNewGroup" component={CreateNewGroup} />
-      
+      {/* File */}
+      <Stack.Screen name="File" component={File} />
+      <Stack.Screen name="ListImageFullView" component={ListImageFullView} />
       {/* Add CallScreen to the navigator */}
-      <Stack.Screen name="CallScreen" component={CallScreen} options={{ headerShown: false }} />
+      <Stack.Screen
+        name="CallScreen"
+        component={CallScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="AddFriendToGroup"
         component={AddFriendToGroup}
@@ -123,7 +156,14 @@ function AppNavigator() {
           headerShown: false,
         }}
       />
-      
+      <Stack.Screen
+        name="SameGroups"
+        component={SameGroups}
+        options={{
+          headerShown: false,
+        }}
+      />
+
     </Stack.Navigator>
   );
 }

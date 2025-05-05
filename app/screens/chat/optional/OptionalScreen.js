@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Text, View, StyleSheet, ScrollView } from "react-native";
 import ConversationName from "./name/ConversationName";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -9,11 +9,18 @@ import GroupOption from "./group/GroupOption";
 import ConversationOption from "./conversationOption/ConversationOption";
 import BanAndRemoveOption from "./banAndRemove/BanAndRemoveOption";
 import Colors from "../../../components/colors/Color";
+import { AuthContext } from "@/app/auth/AuthContext";
+import GroupSetting from "./groupSetting/GroupSetting";
 
 const OptionalScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { receiver, conversation } = route.params;
+  const { userInfo, groupMember } = useContext(AuthContext);
+
+  const isOwner = groupMember.some(
+    (member) => member.id === userInfo.userId && member.role === "owner"
+  );
 
   return (
     <View style={styles.container}>
@@ -28,11 +35,20 @@ const OptionalScreen = () => {
       </View>
       <ScrollView>
         <ConversationName receiver={receiver} conversation={conversation} />
-        <Description isGroup={conversation?.isGroup} />
-        <GalleryOption isGroup={conversation?.isGroup} />
+        <Description
+          isGroup={conversation?.isGroup}
+          conversation={conversation}
+        />
+        <GalleryOption
+          isGroup={conversation?.isGroup}
+          conversation={conversation}
+        />
+        {conversation?.isGroup && isOwner && (
+          <GroupSetting conversation={conversation} />
+        )}
         <GroupOption receiver={receiver} conversation={conversation} />
         <ConversationOption conversation={conversation} receiver={receiver} />
-        <BanAndRemoveOption  conversation={conversation} receiver={receiver} />
+        <BanAndRemoveOption conversation={conversation} receiver={receiver} />
       </ScrollView>
     </View>
   );

@@ -4,7 +4,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { api } from "@/app/api/api";
-import { SocketContext } from "@/app/socket/SocketContext";
+import { SocketContext } from "../../../socket/SocketContext";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const ChatHeader = ({
   user_id,
@@ -15,10 +16,26 @@ const ChatHeader = ({
 }) => {
   const [receiverName, setReceiverName] = useState("");
   const socket = useContext(SocketContext);
-  
+  const { groupMember } = useContext(AuthContext);
+
   const handlerBack = () => {
-    api.readMessage(conversation.conversationId);
     navigation.goBack();
+
+    api.readMessage(conversation.conversationId);
+    socket.on("newMessage");
+    socket.on("groupAvatarChanged");
+    socket.on("newConversation");
+    socket.on("groupNameChanged");
+    socket.on("userJoinedGroup");
+    socket.on("userAddedToGroup");
+    socket.on("userLeftGroup");
+    socket.on("userRemovedFromGroup");
+    socket.on("groupOwnerChanged");
+    socket.on("groupCoOwnerAdded");
+    socket.on("groupCoOwnerRemoved");
+    socket.on("groupDeleted");
+    socket.on("userBlocked");
+    socket.on("userUnblocked");
   };
 
   const handlerOptionScreen = () => {
@@ -28,7 +45,7 @@ const ChatHeader = ({
         : { receiver, conversation }),
     });
   };
-  
+
   const handleVoiceCall = () => {
     // Don't allow calls in group conversations
     if (conversation?.isGroup) {
@@ -36,15 +53,15 @@ const ChatHeader = ({
       console.log("Group calling not implemented yet");
       return;
     }
-    
+
     // Navigate to call screen with required parameters
     navigation.navigate("CallScreen", {
-      callType: 'voice',
+      callType: "voice",
       user: receiver,
       incoming: false,
     });
   };
-  
+
   const handleVideoCall = () => {
     // Don't allow calls in group conversations
     if (conversation?.isGroup) {
@@ -52,10 +69,10 @@ const ChatHeader = ({
       console.log("Group video calling not implemented yet");
       return;
     }
-    
+
     // Navigate to call screen with required parameters
     navigation.navigate("CallScreen", {
-      callType: 'video',
+      callType: "video",
       user: receiver,
       incoming: false,
     });
@@ -83,22 +100,28 @@ const ChatHeader = ({
         </Text>
         <Text style={ChatHeaderStyle.subText}>
           {conversation?.isGroup
-            ? `${conversation.groupMembers?.length || 0} thành viên`
+            ? `${groupMember?.length || 0} thành viên`
             : lastActiveStatus || "Đang tải..."}
         </Text>
       </View>
-      <TouchableOpacity onPress={handleVoiceCall} disabled={conversation?.isGroup}>
-        <Feather 
-          name="phone" 
-          size={24} 
-          color={conversation?.isGroup ? "#cccccc" : "#ffffff"} 
+      <TouchableOpacity
+        onPress={handleVoiceCall}
+        disabled={conversation?.isGroup}
+      >
+        <Feather
+          name="phone"
+          size={24}
+          color={conversation?.isGroup ? "#ffffff" : "#ffffff"}
         />
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleVideoCall} disabled={conversation?.isGroup}>
-        <Ionicons 
-          name="videocam-outline" 
-          size={24} 
-          color={conversation?.isGroup ? "#cccccc" : "#ffffff"} 
+      <TouchableOpacity
+        onPress={handleVideoCall}
+        disabled={conversation?.isGroup}
+      >
+        <Ionicons
+          name="videocam-outline"
+          size={24}
+          color={conversation?.isGroup ? "#ffffff" : "#ffffff"}
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={handlerOptionScreen}>

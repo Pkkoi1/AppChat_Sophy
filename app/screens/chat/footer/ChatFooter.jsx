@@ -46,10 +46,10 @@ const ChatFooter = ({
           userId !== "undefined"
         ) {
           setIsTyping(true);
-          console.log(
-            `Người dùng ${fullname} và ${userInfo.userId} đang nhập...`,
-            conversationId
-          );
+          // console.log(
+          //   `Người dùng ${fullname} và ${userInfo.userId} đang nhập...`,
+          //   conversationId
+          // );
         }
 
         if (userTypingTimeoutRef.current) {
@@ -70,13 +70,14 @@ const ChatFooter = ({
   }, [socket, conversation, setIsTyping, userInfo.userId]);
 
   const handleTyping = () => {
-    if (socket && conversation?.conversationId) {
+    if (socket) {
       socket.emit("typing", {
         conversationId: conversation.conversationId,
         userId: socket.userId,
         fullname: userInfo.fullname,
       });
-
+      // setIsTyping(true);
+      console.log("Người dùng đang nhập...");
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current);
       }
@@ -129,8 +130,17 @@ const ChatFooter = ({
         console.log("Đã chọn file:", selectedFile);
 
         const mime = selectedFile.mimeType || "";
+        const fileName = selectedFile.name || "";
+        const fileExtension = fileName.split(".").pop()?.toLowerCase();
 
-        if (mime.startsWith("video")) {
+        if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
+          // Send as an image
+          onSendImage?.({
+            type: "image",
+            attachment: selectedFile.uri,
+            fileName: fileName,
+          });
+        } else if (mime.startsWith("video")) {
           try {
             const attachment = await uploadVideoToCloudinary(selectedFile);
             onSendVideo?.({ ...attachment });
@@ -148,7 +158,7 @@ const ChatFooter = ({
           onSendFile?.({
             type: "file",
             attachment: selectedFile.uri,
-            fileName: selectedFile.name,
+            fileName: fileName,
             mimeType: mime,
           });
         }
@@ -258,21 +268,23 @@ const ChatFooter = ({
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.All,
-        // allowsEditing: true,
         quality: 0.5,
       });
 
       if (!result.canceled && result.assets?.length > 0) {
         const selectedMedia = result.assets[0];
-        if (selectedMedia.type === "video") {
+        const fileExtension = selectedMedia.uri.split(".").pop()?.toLowerCase();
+
+        if (["jpg", "jpeg", "png", "gif"].includes(fileExtension)) {
+          // Send as an image
+          onSendImage({ type: "image", attachment: selectedMedia.uri });
+        } else if (selectedMedia.type === "video") {
           try {
             const attachment = await uploadVideoToCloudinary(selectedMedia);
             onSendVideo({ ...attachment });
           } catch (error) {
             Alert.alert("Lỗi", "Không thể tải video lên. Vui lòng thử lại.");
           }
-        } else if (selectedMedia.type === "image") {
-          onSendImage({ type: "image", attachment: selectedMedia.uri });
         }
       } else {
         console.log("Người dùng hủy hoặc không chọn gì.");

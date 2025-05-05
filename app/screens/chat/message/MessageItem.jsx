@@ -236,7 +236,7 @@ const MessageItem = ({
           <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
           {replyType === "text" ? (
             <Text style={MessageItemStyle.replyContent}>{replyContent}</Text>
-          ) : replyType === "image" ? (
+          ) : replyType === "image" || "text-with-image" ? (
             <Text style={MessageItemStyle.replyContent}>[Hình ảnh]</Text>
           ) : replyType === "file" ? (
             <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
@@ -248,6 +248,47 @@ const MessageItem = ({
         </View>
       </TouchableOpacity>
     );
+  };
+
+  const isLink = (text) => {
+    const urlRegex =
+      /\b(https?:\/\/[^\s]+|www\.[^\s]+|[^\s]+\.(com|net|org|io|gov|edu|vn|co))\b/gi;
+    return urlRegex.test(text);
+  };
+
+  const handleLinkPress = async (url) => {
+    // Ensure the URL starts with "http://" or "https://"
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      url = `https://${url}`;
+    }
+    if (await Linking.canOpenURL(url)) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert("Không thể mở link", url);
+    }
+  };
+
+  const renderTextWithLinks = (text) => {
+    const urlRegex =
+      /\b(https?:\/\/[^\s]+|www\.[^\s]+|[^\s]+\.(com|net|org|io|gov|edu|vn|co))\b/gi;
+    const parts = text.split(urlRegex);
+
+    return parts.map((part, index) => {
+      if (isLink(part)) {
+        return (
+          <TouchableOpacity key={index} onPress={() => handleLinkPress(part)}>
+            <Text style={[MessageItemStyle.content, { color: "#3f88f2" }]}>
+              {part}
+            </Text>
+          </TouchableOpacity>
+        );
+      }
+      return (
+        <Text key={index} style={MessageItemStyle.content}>
+          {part}
+        </Text>
+      );
+    });
   };
 
   const renderContent = () => {
@@ -265,49 +306,13 @@ const MessageItem = ({
       );
     }
 
-    const isLink = (text) => {
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      return urlRegex.test(text);
-    };
-
-    const handleLinkPress = async (url) => {
-      if (await Linking.canOpenURL(url)) {
-        await Linking.openURL(url);
-      } else {
-        Alert.alert("Không thể mở link", url);
-      }
-    };
-
     return (
       <>
         {isReply && renderReplyContent()}
         {type === "text" ? (
-          isLink(content) ? (
-            <TouchableOpacity onPress={() => handleLinkPress(content)}>
-              <Text style={[MessageItemStyle.content, { color: "#3f88f2" }]}>
-                {content}
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <HighlightText
-              text={content}
-              highlight={searchQuery}
-              style={MessageItemStyle.content}
-            />
-          )
-        ) : type === "image" ? (
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("FullScreenImageViewer", {
-                imageUrl: attachment?.url || errorImage,
-              })
-            }
-          >
-            <Image
-              source={{ uri: attachment?.url || errorImage }}
-              style={MessageItemStyle.image}
-            />
-          </TouchableOpacity>
+          <View style={MessageItemStyle.textContainer}>
+            {renderTextWithLinks(content)}
+          </View>
         ) : type === "file" ? (
           <View style={MessageItemStyle.fileContainer}>
             <View
@@ -331,6 +336,19 @@ const MessageItem = ({
               <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
             </TouchableOpacity>
           </View>
+        ) : type === "image" || type === "text-with-image" ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: attachment?.url || errorImage,
+              })
+            }
+          >
+            <Image
+              source={{ uri: attachment?.url || errorImage }}
+              style={MessageItemStyle.image}
+            />
+          </TouchableOpacity>
         ) : type === "video" ? (
           <View>
             <Video

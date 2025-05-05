@@ -6,20 +6,21 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  Modal,
-  Button,
   Alert,
-  ActivityIndicator, // Import ActivityIndicator
+  ActivityIndicator,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Octicons from "@expo/vector-icons/Octicons";
+import EvilIcons from "@expo/vector-icons/EvilIcons";
+import { Overlay } from "@rneui/themed";
 import { AuthContext } from "@/app/auth/AuthContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
-import * as ImagePicker from "expo-image-picker"; // Thêm expo-image-picker
-import * as FileSystem from "expo-file-system"; // Thêm expo-file-system để chuyển ảnh sang base64
-import { api } from "@/app/api/api"; // Nhập API
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
+import { api } from "@/app/api/api";
 
 const options = [
   {
@@ -36,12 +37,12 @@ const options = [
     name: "Thêm\n thành viên",
     icon: <AntDesign name="adduser" size={20} color="black" />,
     showIfGroup: true,
-    action: "addMember", // Thêm action cho thêm thành viên
+    action: "addMember",
   },
   {
     name: "Đổi\n hình nền",
     icon: <Octicons name="paintbrush" size={20} color="black" />,
-    action: "changeBackground", // Thêm action cho đổi hình nền
+    action: "changeBackground",
   },
   {
     name: "Tắt\n thông báo",
@@ -51,13 +52,26 @@ const options = [
 
 const ConversationName = ({ receiver, conversation }) => {
   const navigation = useNavigation();
-  const [selectedImage, setSelectedImage] = useState(null); // Lưu URI ảnh đã chọn
-  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false); // Trạng thái modal xem trước
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [isBackgroundOptionModalVisible, setIsBackgroundOptionModalVisible] =
-    useState(false); // Modal trạng thái chọn hình/xóa hình
-  const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
-  const { handlerRefresh, updateBackground, background } =
-    useContext(AuthContext); // Use handlerRefresh from AuthContext
+    useState(false);
+  const [isRenameModalVisible, setIsRenameModalVisible] = useState(false);
+  const [newGroupName, setNewGroupName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    handlerRefresh,
+    updateBackground,
+    background,
+    userInfo,
+    groupMember,
+  } = useContext(AuthContext);
+
+  const isGroupOwnerOrCoOwner = groupMember.some(
+    (member) =>
+      member.id === userInfo?.userId &&
+      (member.role === "owner" || member.role === "co-owner")
+  );
 
   const defaultGroupAvatar = require("../../../../../assets/images/default-group-avatar.jpg");
 
@@ -69,41 +83,164 @@ const ConversationName = ({ receiver, conversation }) => {
     ? { uri: receiver.urlavatar }
     : null;
 
-  // Hàm mở thư viện chọn ảnh
-  const pickImage = async () => {
-    setIsLoading(true); // Bắt đầu loading
+  const pickImageForAvatar = async () => {
+    setIsLoading(true);
     try {
       const permissionResult =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        Alert.alert("Lỗi", "Cần cấp quyền truy cập thư viện ảnh!");
+      const cameraPermissionResult =
+        await ImagePicker.requestCameraPermissionsAsync();
+
+      if (!permissionResult.granted || !cameraPermissionResult.granted) {
+        Alert.alert("Lỗi", "Cần cấp quyền truy cập thư viện ảnh và máy ảnh!");
         return;
       }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [4, 6],
+      Alert.alert(
+        "Chọn nguồn ảnh",
+        "Bạn muốn chọn ảnh từ thư viện hay chụp ảnh mới?",
+        [
+          {
+            text: "Thư viện",
+            onPress: async () => {
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+              });
 
-        quality: 1,
-      });
+              if (!result.canceled && result.assets[0].uri) {
+                await handleConfirmChangeAvatar(result.assets[0].uri);
+              }
+            },
+          },
+          {
+            text: "Chụp ảnh",
+            onPress: async () => {
+              const result = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 1,
+              });
 
-      if (!result.canceled && result.assets[0].uri) {
-        setSelectedImage(result.assets[0].uri);
-        setIsPreviewModalVisible(true); // Mở modal xem trước
-      }
+              if (!result.canceled && result.assets[0].uri) {
+                await handleConfirmChangeAvatar(result.assets[0].uri);
+              }
+            },
+          },
+          { text: "Hủy", style: "cancel" },
+        ]
+      );
     } finally {
-      setIsLoading(false); // Kết thúc loading
+      setIsLoading(false);
     }
   };
 
-  // Hàm xử lý xác nhận đổi hình nền
+  const handleConfirmChangeAvatar = async (imageUri) => {
+    setIsLoading(true);
+    try {
+      const base64Image = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const conversationId = conversation?.conversationId;
+      if (!conversationId) {
+        throw new Error(
+          `Không thể lấy conversationId từ conversation. ${conversation}`
+        );
+      }
+
+      const response = await api.changeGroupAvatar(
+        conversationId,
+        `data:image/jpeg;base64,${base64Image}`
+      );
+      console.log("Đã cập nhật ảnh đại diện nhóm:", response); // Debug thông báo thành công
+      console.log("API Response:", response); // Debug giá trị response
+      console.log("New Avatar URL:", response?.conversation.groupAvatarUrl); // Debug URL avatar mới
+
+      if (!response?.conversation.groupAvatarUrl) {
+        throw new Error("API không trả về groupAvatarUrl hợp lệ");
+      }
+
+      Alert.alert("Thành công", "Ảnh đại diện nhóm đã được cập nhật!");
+      conversation.groupAvatarUrl = response?.conversation.groupAvatarUrl; // Cập nhật URL avatar trong conversation
+      setSelectedImage(response?.conversation.groupAvatarUrl); // Cập nhật trạng thái selectedImage
+      handlerRefresh(); // Làm mới danh sách cuộc trò chuyện
+    } catch (error) {
+      console.error(
+        "Lỗi khi đổi ảnh đại diện nhóm:",
+        error.response?.data || error.message
+      );
+      Alert.alert(
+        "Lỗi",
+        "Không thể cập nhật ảnh đại diện nhóm. Vui lòng thử lại."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const pickImage = async () => {
+    setIsLoading(true);
+    try {
+      const permissionResult =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const cameraPermissionResult =
+        await ImagePicker.requestCameraPermissionsAsync();
+
+      if (!permissionResult.granted || !cameraPermissionResult.granted) {
+        Alert.alert("Lỗi", "Cần cấp quyền truy cập thư viện ảnh và máy ảnh!");
+        return;
+      }
+
+      Alert.alert(
+        "Chọn nguồn ảnh",
+        "Bạn muốn chọn ảnh từ thư viện hay chụp ảnh mới?",
+        [
+          {
+            text: "Thư viện",
+            onPress: async () => {
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                allowsEditing: true,
+                aspect: [4, 6],
+                quality: 1,
+              });
+
+              if (!result.canceled && result.assets[0].uri) {
+                setSelectedImage(result.assets[0].uri);
+                setIsPreviewModalVisible(true);
+              }
+            },
+          },
+          {
+            text: "Chụp ảnh",
+            onPress: async () => {
+              const result = await ImagePicker.launchCameraAsync({
+                allowsEditing: true,
+                aspect: [4, 6],
+                quality: 1,
+              });
+
+              if (!result.canceled && result.assets[0].uri) {
+                setSelectedImage(result.assets[0].uri);
+                setIsPreviewModalVisible(true);
+              }
+            },
+          },
+          { text: "Hủy", style: "cancel" },
+        ]
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleConfirmChangeBackground = async () => {
     if (!selectedImage) return;
 
-    setIsLoading(true); // Bắt đầu loading
+    setIsLoading(true);
     try {
-      // Chuyển ảnh sang base64
       const base64Image = await FileSystem.readAsStringAsync(selectedImage, {
         encoding: FileSystem.EncodingType.Base64,
       });
@@ -115,12 +252,11 @@ const ConversationName = ({ receiver, conversation }) => {
         );
       }
 
-      // Gọi API updateBackground
       const response = await api.updateBackground(
-        `data:image/jpeg;base64,${base64Image}`, // Ensure proper formatting
+        `data:image/jpeg;base64,${base64Image}`,
         conversationId
       );
-      await handlerRefresh(); // Refresh the conversation list after updating background
+      await handlerRefresh();
       Alert.alert("Thành công", "Đã cập nhật ảnh nền cuộc trò chuyện!");
       setIsPreviewModalVisible(false);
       setSelectedImage(null);
@@ -133,18 +269,17 @@ const ConversationName = ({ receiver, conversation }) => {
       );
       Alert.alert("Lỗi", "Không thể cập nhật ảnh nền. Vui lòng thử lại.");
     } finally {
-      setIsLoading(false); // Kết thúc loading
+      setIsLoading(false);
     }
   };
 
-  // Hàm xử lý hủy đổi ảnh
   const handleCancelChangeBackground = () => {
     setIsPreviewModalVisible(false);
     setSelectedImage(null);
   };
 
   const handleDeleteBackground = async () => {
-    setIsLoading(true); // Bắt đầu loading
+    setIsLoading(true);
     try {
       const conversationId = conversation?.conversationId;
       if (!conversationId) {
@@ -153,12 +288,11 @@ const ConversationName = ({ receiver, conversation }) => {
         );
       }
 
-      // Gọi API để xóa hình nền
-      updateBackground(null); // Cập nhật lại hình nền
+      updateBackground(null);
 
       await api.removeBackGround(conversationId);
-      await handlerRefresh(); // Refresh the conversation list after deleting background
-      updateBackground(null); // Cập nhật lại hình nền
+      await handlerRefresh();
+      updateBackground(null);
 
       Alert.alert("Thành công", "Đã xóa ảnh nền cuộc trò chuyện!");
       navigation.goBack();
@@ -169,16 +303,51 @@ const ConversationName = ({ receiver, conversation }) => {
       );
       Alert.alert("Lỗi", "Không thể xóa ảnh nền. Vui lòng thử lại.");
     } finally {
-      setIsLoading(false); // Kết thúc loading
+      setIsLoading(false);
     }
   };
 
   const handleBackgroundOption = () => {
-    setIsBackgroundOptionModalVisible(true); // Hiển thị modal chọn hình/xóa hình
+    setIsBackgroundOptionModalVisible(true);
   };
 
   const closeBackgroundOptionModal = () => {
-    setIsBackgroundOptionModalVisible(false); // Đóng modal
+    setIsBackgroundOptionModalVisible(false);
+  };
+
+  const handleRenameGroup = async () => {
+    if (!newGroupName.trim()) {
+      Alert.alert("Lỗi", "Tên nhóm không được để trống.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const conversationId = conversation?.conversationId;
+      if (!conversationId) {
+        throw new Error("Không thể lấy conversationId từ conversation.");
+      }
+
+      await api.changeGroupName(conversationId, newGroupName);
+
+      // Update the group name in the conversation object
+      conversation.groupName = newGroupName;
+
+      Alert.alert(
+        "Thành công",
+        `Tên nhóm đã được đổi thành "${newGroupName}"!`
+      );
+      setIsRenameModalVisible(false);
+      handlerRefresh();
+    } catch (error) {
+      console.error(
+        "Lỗi khi đổi tên nhóm:",
+        error.response?.data || error.message
+      );
+      Alert.alert("Lỗi", "Không thể đổi tên nhóm. Vui lòng thử lại.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePress = (option) => {
@@ -189,14 +358,13 @@ const ConversationName = ({ receiver, conversation }) => {
         receiver,
       });
     } else if (option.action === "changeBackground") {
-      handleBackgroundOption(); // Hiển thị modal chọn hình/xóa hình
+      handleBackgroundOption();
     } else if (option.name === "Trang\n cá nhân") {
       navigation.navigate("UserProfile", {
         friend: receiver,
         requestSent: "friend",
       });
     } else if (option.action === "addMember") {
-      // Thêm chức năng để điều hướng đến màn hình AddGroupMember
       navigation.navigate("AddFriendToGroup", { conversation });
     }
   };
@@ -204,26 +372,67 @@ const ConversationName = ({ receiver, conversation }) => {
   return (
     <SafeAreaView style={styles.container}>
       {conversation?.isGroup ? (
-        <Image source={avatarSource} style={styles.avatar} resizeMode="cover" />
-      ) : receiver?.urlavatar ? (
-        <Image
-          source={{ uri: receiver.urlavatar }}
-          style={styles.avatar}
-          resizeMode="cover"
-        />
+        <>
+          <View style={styles.avatarContainer}>
+            {isLoading ? (
+              <ActivityIndicator size="large" color="#1f7bff" />
+            ) : (
+              <Image
+                source={
+                  selectedImage
+                    ? { uri: selectedImage }
+                    : conversation?.isGroup && conversation.groupAvatarUrl
+                    ? { uri: conversation.groupAvatarUrl }
+                    : defaultGroupAvatar
+                }
+                style={styles.avatar}
+                resizeMode="cover"
+              />
+            )}
+            <TouchableOpacity
+              style={styles.cameraButton}
+              onPress={pickImageForAvatar}
+            >
+              <AntDesign name="camerao" size={20} color="black" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.nameContainer}>
+            <Text style={styles.name}>{conversation.groupName}</Text>
+            <TouchableOpacity
+              style={styles.pencilButton}
+              onPress={() => setIsRenameModalVisible(true)}
+            >
+              <EvilIcons name="pencil" size={20} color="black" />
+            </TouchableOpacity>
+          </View>
+        </>
       ) : (
-        <AvatarUser
-          fullName={receiver?.fullname || "Người dùng không xác định"}
-          width={90}
-          height={90}
-          avtText={30}
-          shadow={false}
-          bordered={false}
-        />
+        <>
+          <View style={styles.avatarContainer}>
+            {receiver?.urlavatar ? (
+              <Image
+                source={{ uri: receiver.urlavatar }}
+                style={styles.avatar}
+                resizeMode="cover"
+              />
+            ) : (
+              <AvatarUser
+                fullName={receiver?.fullname || "Người dùng không xác định"}
+                width={90}
+                height={90}
+                avtText={30}
+                shadow={false}
+                bordered={false}
+              />
+            )}
+          </View>
+          <View style={styles.nameContainer}>
+            <Text style={styles.name}>
+              {receiver?.fullname || "Người dùng không xác định"}
+            </Text>
+          </View>
+        </>
       )}
-      <Text style={styles.name}>
-        {conversation?.isGroup ? conversation.groupName : receiver?.fullname}
-      </Text>
       <View style={styles.optionsContainer}>
         {options.map((option, index) => {
           if (
@@ -245,98 +454,109 @@ const ConversationName = ({ receiver, conversation }) => {
         })}
       </View>
 
-      {/* Modal xem trước ảnh */}
-      <Modal
-        visible={isPreviewModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={handleCancelChangeBackground}
+      <Overlay
+        isVisible={isPreviewModalVisible}
+        onBackdropPress={handleCancelChangeBackground}
+        overlayStyle={styles.overlayContent}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {selectedImage && (
-              <Image
-                source={{ uri: selectedImage }}
-                style={styles.previewImage}
-                resizeMode="contain"
-              />
-            )}
-            <Text style={styles.modalText}>
-              Bạn có muốn sử dụng ảnh này làm hình nền?
-            </Text>
-            {isLoading ? ( // Hiển thị spinner khi đang loading
-              <ActivityIndicator size="large" color="#1f7bff" />
-            ) : (
-              <View style={styles.modalButtonContainer}>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.confirmButton]}
-                  onPress={handleConfirmChangeBackground}
-                >
-                  <Text style={styles.modalButtonText}>Đồng ý</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.cancelButton]}
-                  onPress={handleCancelChangeBackground}
-                >
-                  <Text style={styles.modalButtonText}>Hủy</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+        {selectedImage && (
+          <Image
+            source={{ uri: selectedImage }}
+            style={styles.previewImage}
+            resizeMode="contain"
+          />
+        )}
+        <Text style={styles.modalText}>
+          Bạn có muốn sử dụng ảnh này làm hình nền?
+        </Text>
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#1f7bff" />
+        ) : (
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.confirmButton]}
+              onPress={handleConfirmChangeBackground}
+            >
+              <Text style={styles.modalButtonText}>Đồng ý</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.cancelButton]}
+              onPress={handleCancelChangeBackground}
+            >
+              <Text style={styles.modalButtonText}>Hủy</Text>
+            </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+        )}
+      </Overlay>
 
-      {/* Modal chọn hành động */}
-      <Modal
-        visible={isBackgroundOptionModalVisible}
-        transparent={true}
-        animationType="slide"
-        onRequestClose={closeBackgroundOptionModal}
+      <Overlay
+        isVisible={isBackgroundOptionModalVisible}
+        onBackdropPress={closeBackgroundOptionModal}
+        overlayStyle={styles.overlayContent}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalText}>Thay đổi hình nền</Text>
-            {isLoading ? ( // Hiển thị spinner khi đang loading
-              <ActivityIndicator size="large" color="#1f7bff" />
-            ) : (
-              <View style={styles.modalButtonContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.modalButton,
-                    styles.confirmButton,
-                    isLoading && styles.disabledButton, // Disable button during loading
-                  ]}
-                  onPress={() => {
-                    if (!isLoading) {
-                      closeBackgroundOptionModal();
-                      pickImage(); // Mở thư viện chọn ảnh
-                    }
-                  }}
-                  disabled={isLoading} // Disable button during loading
-                >
-                  <Text style={styles.modalButtonText}>Chọn hình</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.modalButton,
-                    styles.cancelButton,
-                    (!background || isLoading) && styles.disabledButton, // Disable if no background or during loading
-                  ]}
-                  onPress={() => {
-                    if (!isLoading && background) {
-                      // closeBackgroundOptionModal();
-                      handleDeleteBackground(); // Xóa hình nền
-                    }
-                  }}
-                  disabled={!background || isLoading} // Disable if no background or during loading
-                >
-                  <Text style={styles.modalButtonText}>Xóa hình</Text>
-                </TouchableOpacity>
-              </View>
-            )}
+        <Text style={styles.modalText}>Thay đổi hình nền</Text>
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#1f7bff" />
+        ) : (
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.confirmButton]}
+              onPress={() => {
+                if (!isLoading) {
+                  closeBackgroundOptionModal();
+                  pickImage();
+                }
+              }}
+              disabled={isLoading}
+            >
+              <Text style={styles.modalButtonText}>Chọn hình</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.cancelButton]}
+              onPress={() => {
+                if (!isLoading && background) {
+                  handleDeleteBackground();
+                }
+              }}
+              disabled={!background || isLoading}
+            >
+              <Text style={styles.modalButtonText}>Xóa hình</Text>
+            </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
+        )}
+      </Overlay>
+
+      <Overlay
+        isVisible={isRenameModalVisible}
+        onBackdropPress={() => setIsRenameModalVisible(false)}
+        overlayStyle={styles.overlayContent}
+      >
+        <Text style={styles.modalText}>Đổi tên nhóm</Text>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Nhập tên nhóm mới"
+          value={newGroupName}
+          onChangeText={setNewGroupName}
+        />
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#1f7bff" />
+        ) : (
+          <View style={styles.modalButtonContainer}>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.confirmButton]}
+              onPress={handleRenameGroup}
+            >
+              <Text style={styles.modalButtonText}>Đồng ý</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.cancelButton]}
+              onPress={() => setIsRenameModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </Overlay>
     </SafeAreaView>
   );
 };
@@ -349,11 +569,36 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingBottom: 0,
   },
+  avatarContainer: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center", // Center the loading indicator
+  },
+  cameraButton: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 20,
+    padding: 5,
+  },
   avatar: {
     width: 90,
     height: 90,
-    borderRadius: 50,
+    borderRadius: 45, // Make the avatar circular
     marginBottom: 10,
+  },
+  nameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
+  },
+  pencilButton: {
+    marginLeft: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 20,
+    padding: 5,
   },
   name: {
     fontSize: 20,
@@ -380,13 +625,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     marginBottom: 10,
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
+  overlayContent: {
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 20,
@@ -427,7 +666,15 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   disabledButton: {
-    backgroundColor: "#d3d3d3", // Màu xám khi bị vô hiệu hóa
+    backgroundColor: "#d3d3d3",
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 5,
+    padding: 10,
+    width: "100%",
+    marginBottom: 20,
   },
 });
 

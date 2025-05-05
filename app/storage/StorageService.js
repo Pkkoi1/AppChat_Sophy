@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const DIRECTORY_KEY = "SHOPY_DIRECTORY_URI";
 let isWriting = false;
-// ========== Chọn thư mục ========== //
+
 export const pickExternalDirectory = async () => {
   try {
     const dirUri =
@@ -54,7 +54,6 @@ const getBaseDir = async () => {
   return uri;
 };
 
-// ========== Định danh file theo user ========== //
 const getUserFileName = async () => {
   const userId = await AsyncStorage.getItem("userId");
   if (!userId) return null;
@@ -63,7 +62,7 @@ const getUserFileName = async () => {
 
 const readUserData = async () => {
   const fileName = await getUserFileName();
-  if (!fileName) return {}; // Trả về object rỗng nếu chưa đăng nhập
+  if (!fileName) return {};
   return (await readFile(fileName)) || {};
 };
 
@@ -76,24 +75,31 @@ const writeUserData = async (data) => {
   await writeFile(fileName, data);
 };
 
-// ========== Core File IO ========== //
-// Hàng đợi để quản lý các thao tác ghi
 const writeQueue = [];
 
 const writeFile = async (fileName, data) => {
-  // Tạo một promise để xếp hàng thao tác ghi
   const writePromise = new Promise(async (resolve, reject) => {
     const executeWrite = async () => {
       try {
         const dirUri = await getBaseDir();
 
-        // Làm sạch dữ liệu trước khi serialize
+        // Kiểm tra cấu trúc dữ liệu
+        if (!data || typeof data !== "object") {
+          throw new Error("Dữ liệu không hợp lệ: phải là một object");
+        }
+        if (!data.messages) {
+          data.messages = {};
+        }
+        if (!data.conversations) {
+          data.conversations = [];
+        }
+
+        // Làm sạch dữ liệu
         const cleanData = JSON.parse(
           JSON.stringify(data, (key, value) => {
             if (typeof value === "undefined" || typeof value === "function") {
               return null;
             }
-            // Kiểm tra boolean
             if (
               typeof value === "boolean" &&
               value !== true &&
@@ -106,11 +112,10 @@ const writeFile = async (fileName, data) => {
           })
         );
 
-        // Serialize dữ liệu
         let content;
         try {
           content = JSON.stringify(cleanData, null, 2);
-          JSON.parse(content); // Kiểm tra JSON hợp lệ
+          JSON.parse(content); // Xác thực JSON hợp lệ
         } catch (err) {
           console.error("❌ Lỗi serialize dữ liệu:", err);
           await debugFileContent(fileName);
@@ -131,10 +136,21 @@ const writeFile = async (fileName, data) => {
           );
         });
 
+        // Sao lưu file hiện tại nếu tồn tại
         let fileUri;
         if (existingFileUri) {
           fileUri = existingFileUri;
-          console.log("🔄 Sử dụng tệp hiện có:", fileUri);
+          try {
+            const backupDir = `${dirUri}/backup`;
+            await FileSystem.makeDirectoryAsync(backupDir, {
+              intermediates: true,
+            });
+            const backupFile = `${backupDir}/${cleanFileName}.${Date.now()}.bak`;
+            await FileSystem.copyAsync({ from: fileUri, to: backupFile });
+            console.log("✅ Đã sao lưu file:", backupFile);
+          } catch (backupErr) {
+            console.warn("⚠️ Không thể sao lưu file:", backupErr);
+          }
         } else {
           fileUri = await StorageAccessFramework.createFileAsync(
             dirUri,
@@ -144,12 +160,12 @@ const writeFile = async (fileName, data) => {
           console.log("✅ Tạo tệp mới:", fileUri);
         }
 
-        // Ghi tệp
+        // Ghi file
         await FileSystem.writeAsStringAsync(fileUri, content, {
           encoding: FileSystem.EncodingType.UTF8,
         });
 
-        // Xóa tệp trùng lặp
+        // Xóa các file trùng lặp
         const duplicateFiles = files.filter((uri) => {
           const decodedUri = decodeURIComponent(uri);
           return (
@@ -178,7 +194,6 @@ const writeFile = async (fileName, data) => {
     writeQueue.push(executeWrite);
     if (!isWriting) {
       isWriting = true;
-      // Thực thi từng thao tác trong hàng đợi
       while (writeQueue.length > 0) {
         const nextWrite = writeQueue.shift();
         await nextWrite();
@@ -189,50 +204,92 @@ const writeFile = async (fileName, data) => {
 
   return writePromise;
 };
+
 const readFile = async (fileName) => {
   try {
     const dirUri = await getBaseDir();
     const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
-    const cleanFileName = fileName.replace(/ \(\d+\)\.json$/, ".json");
+    const cleanFileName = fileName;
+
     const target = files.find((f) => {
-      const decodedUri = decodeURIComponent(f);
+      const decoded = decodeURIComponent(f);
       return (
-        decodedUri.endsWith(`/${cleanFileName}`) ||
-        decodedUri.match(
-          new RegExp(
-            `/${cleanFileName.replace(".json", "")}\\s*\\(\\d+\\)\\.json$`
-          )
-        )
+        decoded.includes(`/${cleanFileName}`) ||
+        decoded.includes(`%2F${cleanFileName}`)
       );
     });
-    if (!target) return null;
+
+    if (!target) {
+      console.warn(
+        "❌ Không tìm thấy file trùng tên trong thư mục:",
+        cleanFileName
+      );
+      console.log(
+        "📂 Tệp hiện có:",
+        files.map((f) => decodeURIComponent(f))
+      );
+      return { messages: {}, conversations: [] }; // Trả về dữ liệu mặc định
+    }
 
     const content = await FileSystem.readAsStringAsync(target, {
       encoding: FileSystem.EncodingType.UTF8,
     });
-    if (!content) return null;
+    console.log("📄 Nội dung tệp:", content);
+    if (!content) return { messages: {}, conversations: [] };
 
     try {
-      return JSON.parse(content);
-    } catch (err) {
-      // console.warn("❌ Lỗi parse JSON:", err.message);
-      // console.log("📄 Nội dung tệp lỗi:", content.slice(0, 500), "...");
-
-      // Skip deletion if the file is in the Sophy directory
-      if (!target.includes("Sophy")) {
-        await FileSystem.deleteAsync(target, { idempotent: true });
-        console.log("🗑️ Đã xóa tệp lỗi:", target);
-      } else {
-        console.warn("⚠️ Bỏ qua xóa tệp trong thư mục Sophy:", target);
+      const parsedContent = JSON.parse(content);
+      // Kiểm tra cấu trúc dữ liệu
+      if (!parsedContent.messages) {
+        parsedContent.messages = {};
       }
-      return null;
+      if (!parsedContent.conversations) {
+        parsedContent.conversations = [];
+      }
+      return parsedContent;
+    } catch (err) {
+      console.error("❌ Lỗi khi parse JSON:", err);
+      console.log("🔍 Nội dung file gây lỗi:", content);
+
+      // Sao lưu file lỗi
+      try {
+        const backupDir = `${dirUri}/backup`;
+        await FileSystem.makeDirectoryAsync(backupDir, { intermediates: true });
+        const backupFile = `${backupDir}/${cleanFileName}.${Date.now()}.error.bak`;
+        await FileSystem.copyAsync({ from: target, to: backupFile });
+        console.log("✅ Đã sao lưu file lỗi:", backupFile);
+      } catch (backupErr) {
+        console.warn("⚠️ Không thể sao lưu file lỗi:", backupErr);
+      }
+
+      // Thử sửa JSON
+      try {
+        // Loại bỏ các ký tự không hợp lệ và thử parse lại
+        const cleanedContent = content
+          .replace(/[\u0000-\u001F]+/g, "") // Loại bỏ ký tự điều khiển
+          .replace(/,\s*}/g, "}") // Sửa dấu phẩy thừa
+          .replace(/,\s*]/g, "]"); // Sửa dấu phẩy thừa
+        const parsedPartial = JSON.parse(cleanedContent);
+        if (!parsedPartial.messages) {
+          parsedPartial.messages = {};
+        }
+        if (!parsedPartial.conversations) {
+          parsedPartial.conversations = [];
+        }
+        console.log("✅ Đã sửa và parse JSON:", parsedPartial);
+        return parsedPartial;
+      } catch (partialErr) {
+        console.error("❌ Không thể sửa JSON:", partialErr);
+        return { messages: {}, conversations: [] }; // Trả về dữ liệu mặc định
+      }
     }
   } catch (err) {
     console.error("❌ Lỗi đọc tệp:", err);
     await handleStorageError(err);
-    return null;
+    return { messages: {}, conversations: [] };
   }
 };
+
 export const debugFileContent = async (fileName) => {
   try {
     const dirUri = await getBaseDir();
@@ -268,7 +325,7 @@ export const debugFileContent = async (fileName) => {
     console.error("Lỗi khi đọc nội dung file:", err);
   }
 };
-// ========== Conversations ========== //
+
 export const getConversations = async () => {
   const data = await readUserData();
   return data.conversations || [];
@@ -282,10 +339,39 @@ export const saveConversations = async (conversations) => {
   return data.conversations;
 };
 
-// ========== Messages ========== //
 export const getMessages = async (conversationId) => {
   const data = await readUserData();
-  return data.messages?.[conversationId] || [];
+  console.log("📂 Dữ liệu từ readUserData:", JSON.stringify(data));
+  if (!data || !data.messages) {
+    console.warn("⚠️ Không có dữ liệu messages trong readUserData:", data);
+    return [];
+  }
+
+  const messages = data.messages?.[conversationId] || [];
+  console.log("📩 Tin nhắn từ readUserData:", messages);
+  if (Array.isArray(messages) && messages.length > 0) {
+    return messages.map((msg) => ({
+      ...msg,
+      replyData: msg.replyData || null,
+    }));
+  }
+
+  // Nếu không có tin nhắn, thử lấy từ conversation
+  const conversation = data.conversations?.find(
+    (conv) => conv.conversationId === conversationId
+  );
+  if (conversation?.lastMessage) {
+    return [
+      {
+        messageDetailId: conversation.newestMessageId,
+        content: conversation.lastMessage.content,
+        type: conversation.lastMessage.type,
+        senderId: conversation.lastMessage.senderId,
+        createdAt: conversation.lastMessage.createdAt,
+      },
+    ];
+  }
+  return [];
 };
 
 export const saveMessages = async (
@@ -293,10 +379,33 @@ export const saveMessages = async (
   newMessages,
   direction = "after"
 ) => {
+  if (!conversationId || !Array.isArray(newMessages)) {
+    console.error("❌ conversationId hoặc newMessages không hợp lệ");
+    return [];
+  }
+
+  // Kiểm tra tính hợp lệ của newMessages
+  const validMessages = newMessages.filter((msg) => {
+    if (!msg || !msg.messageDetailId || !msg.content || !msg.createdAt) {
+      console.warn("⚠️ Tin nhắn không hợp lệ:", msg);
+      return false;
+    }
+    return true;
+  });
+
+  if (validMessages.length === 0) {
+    console.warn("⚠️ Không có tin nhắn hợp lệ để lưu");
+    return [];
+  }
+
   const data = await readUserData();
   const oldMessages = data.messages?.[conversationId] || [];
 
-  const merged = [...newMessages, ...oldMessages];
+  // Gộp tin nhắn
+  const merged =
+    direction === "before"
+      ? [...validMessages, ...oldMessages]
+      : [...oldMessages, ...validMessages];
   const deduped = Array.from(
     new Map(
       merged
@@ -305,21 +414,31 @@ export const saveMessages = async (
     ).values()
   );
 
+  // Giới hạn số lượng tin nhắn
   const MAX_MESSAGES = 1000;
-  const limited = deduped.slice(0, MAX_MESSAGES);
+  const limited = deduped
+    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    .slice(-MAX_MESSAGES);
 
+  // Cập nhật dữ liệu
   if (!data.messages) data.messages = {};
   data.messages[conversationId] = limited;
 
-  await writeUserData(data);
-  return limited;
+  // Ghi dữ liệu
+  try {
+    await writeUserData(data);
+    console.log("✅ Đã lưu tin nhắn cho conversation:", conversationId);
+    return limited;
+  } catch (err) {
+    console.error("❌ Lỗi khi lưu tin nhắn:", err);
+    return [];
+  }
 };
 
 export const appendMessage = async (conversationId, message) => {
   return saveMessages(conversationId, [message], "before");
 };
 
-// ========== Friends ========== //
 export const getFriends = async () => {
   const data = await readUserData();
   return data.friends || [];
@@ -331,7 +450,6 @@ export const saveFriends = async (friends) => {
   await writeUserData(data);
 };
 
-// ========== Background ========== //
 export const getBackground = async () => {
   const data = await readUserData();
   return data.background || null;
@@ -343,7 +461,6 @@ export const saveBackground = async (bg) => {
   await writeUserData(data);
 };
 
-// ========== Attachments (để sau nếu cần) ========== //
 export const saveAttachment = async (uri, fileName) => {
   console.warn(
     "Chức năng lưu file đính kèm vào external chưa được hoàn thiện."
@@ -359,7 +476,6 @@ export const deleteAttachment = async (filePath) => {
   }
 };
 
-// ========== Clear ========== //
 export const clearAllStorage = async () => {
   try {
     await AsyncStorage.removeItem(DIRECTORY_KEY);

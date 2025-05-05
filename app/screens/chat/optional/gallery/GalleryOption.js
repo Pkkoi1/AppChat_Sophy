@@ -4,13 +4,7 @@ import EvilIcons from "@expo/vector-icons/EvilIcons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import SimpleLineIcons from "@expo/vector-icons/SimpleLineIcons";
-
-const images = [
-  require("../../../../../assets/images/hinh1.jpg"),
-  require("../../../../../assets/images/hinh2.jpg"),
-  require("../../../../../assets/images/hinh3.jpg"),
-  require("../../../../../assets/images/hinh4.jpg"),
-];
+import { useNavigation } from "@react-navigation/native";
 
 const groupOptions = [
   {
@@ -27,10 +21,41 @@ const groupOptions = [
   },
 ];
 
-const GalleryOption = ({ isGroup }) => {
+const GalleryOption = ({ isGroup, conversation }) => {
+  const navigation = useNavigation(); // Initialize navigation
+
+  // Combine images, GIFs, and videos
+  const allMedia = [
+    ...(conversation?.listImage || []),
+    ...(
+      conversation?.listFile?.filter((file) => {
+        const isImageOrGif = file.name?.match(/\.(gif|png|jpe?g)$/i);
+        const isVideo = file.name?.match(/\.(mp4|mov|avi|mkv)$/i);
+        return isImageOrGif || isVideo;
+      }) || []
+    ).map((file) => ({
+      url: file.downloadUrl,
+      createdAt: file.createdAt,
+    })),
+  ];
+
+  // Sort media by date (newest to oldest)
+  const sortedMedia = allMedia.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  // Get the last 4 items
+  const images = sortedMedia.slice(0, 4);
+
+  const hasImages = images && images.length > 0;
+
+  const handleNavigateToFile = () => {
+    navigation.navigate("File", { conversation }); // Navigate to File screen with conversation data
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity style={styles.button} onPress={handleNavigateToFile}>
         <View style={styles.header}>
           <EvilIcons
             name="image"
@@ -43,14 +68,20 @@ const GalleryOption = ({ isGroup }) => {
           </View>
         </View>
         <View style={styles.imageContainer}>
-          {images.map((image, index) => (
-            <View key={index}>
-              <Image source={image} style={styles.image} />
+          {hasImages ? (
+            images.map((image, index) => (
+              <View key={index}>
+                <Image source={{ uri: image.url }} style={styles.image} />
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noFilesText}>Không có tệp nào</Text>
+          )}
+          {hasImages && (
+            <View style={styles.moreArrow}>
+              <AntDesign name="arrowright" size={20} color="#1b96fd" />
             </View>
-          ))}
-          <View style={styles.moreArrow}>
-            <AntDesign name="arrowright" size={20} color="#1b96fd" />
-          </View>
+          )}
         </View>
       </TouchableOpacity>
       <View>
@@ -143,6 +174,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginLeft: 24,
     paddingBottom: 18,
+  },
+  noFilesText: {
+    fontSize: 15,
+    color: "#888c90",
+    marginLeft: 45,
+    marginTop: 10,
   },
 });
 
