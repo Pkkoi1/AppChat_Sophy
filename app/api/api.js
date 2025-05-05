@@ -1,12 +1,9 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
-const API = `https://sophy-chatapp-be.onrender.com/api`;
-
-// const API = `http://192.168.1.17:3000/api`;
+// const API = `https://sophy-chatapp-be.onrender.com/api`;
+const API = `http://${MY_IP}:3000/api` || DATABASE_API;
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -49,7 +46,6 @@ http.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Kiểm tra nếu lỗi là 401 và chưa thử refresh token
     if (
       error.response &&
       error.response.status === 401 &&
@@ -58,7 +54,6 @@ http.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // Lấy refreshToken từ AsyncStorage
         const refreshToken = await AsyncStorage.getItem("refreshToken");
         if (!refreshToken) {
           throw new Error(
@@ -66,28 +61,24 @@ http.interceptors.response.use(
           );
         }
 
-        // Gọi API làm mới token
         const response = await axios.patch(`${API}/auth/refresh`, undefined, {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
         });
 
-        // Lưu accessToken mới vào AsyncStorage
         const newAccessToken = response.data.token.accessToken;
-        const newRefreshToken = response.data.token.refreshToken; // Nếu có refreshToken mới
+        const newRefreshToken = response.data.token.refreshToken;
         if (newRefreshToken) {
           await AsyncStorage.setItem("refreshToken", newRefreshToken);
         }
         console.log("Phản hồi từ API refreshToken:", response.data);
         await AsyncStorage.setItem("accessToken", newAccessToken);
 
-        // Cập nhật header Authorization và gửi lại request ban đầu
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return http(originalRequest);
       } catch (refreshError) {
         console.error("Lỗi khi làm mới token:", refreshError);
-        // Nếu refreshToken hết hạn, yêu cầu đăng nhập lại
         await AsyncStorage.removeItem("accessToken");
         await AsyncStorage.removeItem("refreshToken");
         throw refreshError;
@@ -97,25 +88,26 @@ http.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 export const api = {
+  // Auth APIs
   login: async (params) => {
+    // Đăng nhập và lưu token vào AsyncStorage
     try {
       const response = await http.post("/auth/login", params);
       console.log("Phản hồi từ API login:", response.data);
 
       if (response && response.data) {
-        const { accessToken, refreshToken } = response.data.token; // Truy cập từ response.data.token
+        const { accessToken, refreshToken } = response.data.token;
 
         if (!accessToken || !refreshToken) {
           throw new Error("API không trả về accessToken hoặc refreshToken");
         }
 
-        // Lưu accessToken và refreshToken vào AsyncStorage
         await AsyncStorage.setItem("accessToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
         await AsyncStorage.setItem(
           "userInfo",
-
           JSON.stringify(response.data.user)
         );
       }
@@ -147,6 +139,7 @@ export const api = {
     }
   },
   refreshToken: async () => {
+    // Làm mới token khi token cũ hết hạn
     try {
       const callRefreshToken = await AsyncStorage.getItem("refreshToken");
       if (!callRefreshToken) {
@@ -155,15 +148,11 @@ export const api = {
         );
       }
 
-      const response = await http.patch(
-        "/auth/refresh",
-        undefined, // Không gửi body
-        {
-          headers: {
-            Authorization: `Bearer ${callRefreshToken}`,
-          },
-        }
-      );
+      const response = await http.patch("/auth/refresh", undefined, {
+        headers: {
+          Authorization: `Bearer ${callRefreshToken}`,
+        },
+      });
 
       const { accessToken, refreshToken } = response.data.token;
       console.log("Phản hồi từ API refreshToken:", response.data);
@@ -177,7 +166,6 @@ export const api = {
         await AsyncStorage.setItem("refreshToken", refreshToken);
       }
 
-      // Cập nhật userInfo nếu có
       if (response.data.user) {
         await AsyncStorage.setItem(
           "userInfo",
@@ -191,132 +179,21 @@ export const api = {
       throw error;
     }
   },
-  conversations: async () => {
-    return await http.get(`/conversations`);
-  },
-  //Lấy thông tin cuộc trò chuyện theo ID
-  getConversationById: async (conversationId) => {
-    return await http.get(`/conversations/${conversationId}`);
-  },
-
-  getConversationDetails: async (conversationId) => {
-    return await http.get(`/conversations/${conversationId}`);
-  },
-  getMessages: async (
-    conversationId,
-    lastMessageTime = null,
-    direction = "before",
-    limit = 20
-  ) => {
-    try {
-      const query = { conversationId };
-
-      // Handle both directions of message loading
-      if (lastMessageTime) {
-        query.createdAt =
-          direction === "before"
-            ? { $lt: new Date(lastMessageTime).toISOString() }
-            : { $gt: new Date(lastMessageTime).toISOString() };
-      }
-
-      const response = await http.get(`/messages/${conversationId}`, {
-        params: {
-          lastMessageTime,
-          direction,
-          limit,
-        },
-      });
-
-      const { messages, nextCursor, hasMore } = response.data;
-
-      return {
-        messages: direction === "before" ? messages : messages.reverse(),
-        nextCursor,
-        hasMore,
-        direction,
-      };
-    } catch (error) {
-      console.error("Error fetching messages:", error.message);
-      throw error;
-    }
-  },
-  getUserById: async (userId) => {
-    return await http.get(`/users/get-user-by-id/${userId}`);
-  },
-  registerAccount: async (params) => {
-    try {
-      const response = await http.post("/auth/register", params);
-      console.log("Phản hồi từ API Đăng ký:", response.data);
-
-      if (response && response.data) {
-        const { accessToken, refreshToken } = response.data.token; // Lấy token từ phản hồi
-
-        if (!accessToken || !refreshToken) {
-          throw new Error("API không trả về accessToken hoặc refreshToken");
-        }
-
-        // Lưu accessToken và refreshToken vào AsyncStorage
-        await AsyncStorage.setItem("acc", accessToken);
-        await AsyncStorage.setItem("refreshToken", refreshToken);
-        await AsyncStorage.setItem(
-          "userInfo",
-          JSON.stringify(response.data.user)
-        );
-      }
-
-      return response.data; // Trả về dữ liệu từ API
-    } catch (error) {
-      console.error("Lỗi khi đăng ký tài khoản:", error.message);
-      throw error;
-    }
-  },
-  //Check số dien thoại đã tồn tại hay chưa
-  checkPhone: async (phone) => {
-    try {
-      const resp = await http.post(`/auth/check-used-phone/${phone}`);
-
-      if (
-        resp.status === 200 &&
-        resp.data.message === "Verification code generated."
-      ) {
-        return {
-          otpId: resp.data.otpId,
-          otp: resp.data.otp,
-          message: resp.data.message,
-        };
-      }
-
-      // Trả về lỗi custom nếu không đúng format
-      throw new Error("Phản hồi từ API không hợp lệ.");
-    } catch (error) {
-      // Ghi log chi tiết
-      console.error("Lỗi khi kiểm tra số điện thoại:", error?.message);
-      console.error("Chi tiết lỗi:", error?.response?.data || error);
-
-      // Nếu là lỗi từ Axios, giữ nguyên để xử lý ở ngoài
-      if (error.response) {
-        throw error;
-      }
-
-      // Ngược lại, ném lỗi bình thường
-      throw new Error("Lỗi không xác định khi kiểm tra số điện thoại.");
-    }
-  },
   logout: async () => {
+    // Đăng xuất và xóa token khỏi AsyncStorage
     try {
-      // Gọi API logout nếu cần
       const response = await http.post("/auth/logout");
       console.log("Đăng xuất thành công:", response.data);
     } catch (error) {
       console.error("Lỗi khi gọi API logout:", error.message);
     } finally {
-      // Xóa token khỏi AsyncStorage
       await AsyncStorage.removeItem("acc");
       await AsyncStorage.removeItem("refreshToken");
       await AsyncStorage.removeItem("userInfo");
     }
   },
   verifyPhoneOTP: async (phone, otp, otpId) => {
+    // Xác minh OTP khi đăng ký hoặc đăng nhập
     try {
       const response = await http.post("/auth/verify-otp", {
         phone,
@@ -330,6 +207,7 @@ export const api = {
     }
   },
   sendOtpForgotPassword: async (phone) => {
+    // Gửi OTP để đặt lại mật khẩu
     try {
       const response = await http.post("/auth/send-otp-forgot-password", {
         phone,
@@ -341,6 +219,7 @@ export const api = {
     }
   },
   verifyOTPForgotPassword: async (phone, otp, otpId) => {
+    // Xác minh OTP khi đặt lại mật khẩu
     try {
       const response = await http.post("/auth/verify-otp-forgot-password", {
         phone,
@@ -354,6 +233,7 @@ export const api = {
     }
   },
   resetPassword: async (phone, newPassword) => {
+    // Đặt lại mật khẩu mới
     try {
       const response = await http.put("/auth/forgot-password", {
         phone,
@@ -365,37 +245,8 @@ export const api = {
       throw error;
     }
   },
-  // /update-user/info
-  updateUser: async (userId, params) => {
-    try {
-      const response = await http.put(`/users/mobile/update-info`, {
-        userId,
-        ...params, // Truyền các trường cần cập nhật từ params
-      });
-      return response.data;
-    } catch (error) {
-      console.error(
-        "Lỗi khi cập nhật thông tin người dùng:",
-        error.response?.data || error.message
-      );
-      throw error;
-    }
-  },
-  uploadImage: async (imageBase64) => {
-    try {
-      const response = await http.put("/users/mobile/update-avatar", {
-        imageBase64, // Gửi ảnh dưới dạng base64
-      });
-      return response.data; // Trả về dữ liệu từ API
-    } catch (error) {
-      console.error(
-        "Lỗi khi tải ảnh lên:",
-        error.response?.data || error.message
-      );
-      throw error;
-    }
-  },
   changePassword: async (userId, oldPassword, newPassword) => {
+    // Đổi mật khẩu người dùng
     try {
       const token = await AsyncStorage.getItem("acc");
       if (!token) {
@@ -405,7 +256,7 @@ export const api = {
       const response = await http.put(
         "/auth/change-password",
         {
-          userId, // Truyền userId vào body
+          userId,
           oldPassword,
           newPassword,
         },
@@ -417,7 +268,7 @@ export const api = {
       );
 
       if (response.status !== 200) {
-        let errorMessage = "Yêu cầu không thành công"; // Default error message
+        let errorMessage = "Yêu cầu không thành công";
         if (response.status === 400) {
           errorMessage =
             response.data?.message || "Mật khẩu hiện tại không đúng.";
@@ -434,7 +285,6 @@ export const api = {
         throw new Error(errorMessage);
       }
 
-      // Nếu backend trả về token mới, lưu lại
       const { accessToken, refreshToken } = response.data.token || {};
       if (accessToken && refreshToken) {
         await AsyncStorage.setItem("acc", accessToken);
@@ -447,8 +297,8 @@ export const api = {
       throw error;
     }
   },
-
   verifyQrToken: async (qrToken) => {
+    // Xác minh mã QR để đăng nhập
     try {
       const response = await http.post("/auth/verify-qr-token", {
         qrToken: qrToken,
@@ -470,8 +320,8 @@ export const api = {
       throw error;
     }
   },
-
   confirmQrLogin: async (qrToken) => {
+    // Xác nhận đăng nhập bằng mã QR
     try {
       const response = await http.post("/auth/confirm-qr-login", {
         qrToken: qrToken,
@@ -493,8 +343,31 @@ export const api = {
       throw error;
     }
   },
-  //Conversation
+
+  // Conversation APIs
+  conversations: async () => {
+    // Lấy danh sách tất cả các cuộc trò chuyện
+    return await http.get(`/conversations`);
+  },
+  getConversationById: async (conversationId) => {
+    // Lấy thông tin chi tiết của một cuộc trò chuyện theo ID
+    return await http.get(`/conversations/${conversationId}`);
+  },
+  createConversation: async (receiverId) => {
+    // Tạo một cuộc trò chuyện mới với người nhận
+    try {
+      const response = await http.post("/conversations/create", { receiverId });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi tạo cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
   updateBackground: async (imageBase64, conversationId) => {
+    // Cập nhật ảnh nền cho cuộc trò chuyện
     try {
       const response = await http.put(
         `/conversations/mobile/update/background/${conversationId}`,
@@ -502,37 +375,63 @@ export const api = {
           imageBase64,
         }
       );
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi cập nhật ảnh nền cuộc trò chuyện:",
         error.response?.data || error.message
       );
-      console.error(
-        "Lỗi khi cập nhật ảnh nền cuộc trò chuyện 2:",
-        conversationId
-      );
       throw error;
     }
   },
   removeBackGround: async (conversationId) => {
-    // /mobile/update/background/remove
+    // Xóa ảnh nền của cuộc trò chuyện
     try {
       const response = await http.put(
         `/conversations/mobile/update/background/remove/${conversationId}`
       );
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi xóa ảnh nền cuộc trò chuyện:",
         error.response?.data || error.message
       );
-      console.error("Lỗi khi xóa ảnh nền cuộc trò chuyện 2:", conversationId);
       throw error;
     }
   },
-  // Gửi tin nhắn
+  //Ghim cuộc trò chuyện
+  pinConversation: async (conversationId) => {
+    // Ghim cuộc trò chuyện
+    try {
+      const response = await http.put(`/conversations/pin/${conversationId}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi ghim cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  //Bỏ ghim cuộc trò chuyện
+
+  unPinConversation: async (conversationId) => {
+    // Bỏ ghim cuộc trò chuyện
+    try {
+      const response = await http.put(`/conversations/unpin/${conversationId}`);
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi bỏ ghim cuộc trò chuyện:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  // Message APIs
   sendMessage: async ({ conversationId, content }) => {
+    // Gửi tin nhắn văn bản trong cuộc trò chuyện
     try {
       const response = await http.post("/messages/send", {
         conversationId,
@@ -541,7 +440,7 @@ export const api = {
 
       console.log("Phản hồi từ API gửi tin nhắn:", response.data);
       if (response.status === 201) {
-        return response.data; // Return the created message data
+        return response.data;
       } else {
         throw new Error(
           `Lỗi ${response.status}: ${
@@ -571,9 +470,10 @@ export const api = {
     }
   },
   readMessage: async (conversationId) => {
+    // Đánh dấu tất cả tin nhắn trong cuộc trò chuyện là đã đọc
     try {
       const response = await http.put(`/messages/read/${conversationId}`);
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi đánh dấu tin nhắn là đã đọc:",
@@ -583,9 +483,10 @@ export const api = {
     }
   },
   getAllMessages: async (conversationId) => {
+    // Lấy tất cả tin nhắn trong một cuộc trò chuyện
     try {
       const response = await http.get(`/messages/all/${conversationId}`);
-      return { messages: response.data }; // trả về giống như BE: array
+      return { messages: response.data };
     } catch (error) {
       console.error(
         "Lỗi khi gọi API getMessages:",
@@ -595,13 +496,13 @@ export const api = {
     }
   },
   sendImageMessage: async ({ conversationId, imageBase64 }) => {
+    // Gửi tin nhắn hình ảnh trong cuộc trò chuyện
     try {
       const response = await http.post("/messages/mobile/send-image", {
-        conversationId, // Include conversation ID
-        imageBase64, // Base64-encoded image
-        // content, // Optional text message
+        conversationId,
+        imageBase64,
       });
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error("Lỗi khi gửi ảnh:", error.response?.data || error.message);
       throw error;
@@ -613,14 +514,15 @@ export const api = {
     fileName,
     fileType,
   }) => {
+    // Gửi tin nhắn tệp tin trong cuộc trò chuyện
     try {
       const response = await http.post("/messages/mobile/send-file", {
-        conversationId, // Include conversation ID
-        fileBase64, // Base64-encoded file
+        conversationId,
+        fileBase64,
         fileName,
         fileType,
       });
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi gửi tệp tin:",
@@ -630,12 +532,13 @@ export const api = {
     }
   },
   sendFileVideoMessage: async ({ conversationId, attachment }) => {
+    // Gửi tin nhắn video trong cuộc trò chuyện
     try {
       const response = await http.post("/messages/send-file", {
-        conversationId, // Include conversation ID
+        conversationId,
         attachment,
       });
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi gửi video:",
@@ -645,9 +548,10 @@ export const api = {
     }
   },
   pinMessage: async (messageId) => {
+    // Ghim một tin nhắn trong cuộc trò chuyện
     try {
       const response = await http.put(`/messages/pin/${messageId}`);
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi ghim tin nhắn:",
@@ -657,9 +561,10 @@ export const api = {
     }
   },
   unPinMessage: async (messageId) => {
+    // Bỏ ghim một tin nhắn trong cuộc trò chuyện
     try {
       const response = await http.put(`/messages/unpin/${messageId}`);
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi bỏ ghim tin nhắn:",
@@ -669,13 +574,14 @@ export const api = {
     }
   },
   replyMessage: async (messageId, content) => {
+    // Trả lời một tin nhắn trong cuộc trò chuyện
     try {
       console.log("messageId:", messageId);
       console.log("content:", content);
       const response = await http.post(`/messages/reply/${messageId}`, {
         content,
       });
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi trả lời tin nhắn:",
@@ -685,9 +591,10 @@ export const api = {
     }
   },
   recallMessage: async (messageId) => {
+    // Thu hồi một tin nhắn đã gửi
     try {
       const response = await http.put(`/messages/recall/${messageId}`);
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi thu hồi tin nhắn:",
@@ -697,11 +604,12 @@ export const api = {
     }
   },
   forwardImageMessage: async (messageId, conversationId) => {
+    // Chuyển tiếp một tin nhắn hình ảnh đến cuộc trò chuyện khác
     try {
       const response = await http.post(`/messages/forward/${messageId}`, {
         conversationId,
       });
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi chuyển tiếp ảnh:",
@@ -711,9 +619,10 @@ export const api = {
     }
   },
   deleteMessage: async (messageId) => {
+    // Xóa một tin nhắn trong cuộc trò chuyện
     try {
       const response = await http.put(`/messages/delete/${messageId}`);
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi xóa tin nhắn:",
@@ -722,119 +631,48 @@ export const api = {
       throw error;
     }
   },
-  addOwner: async (conversationId, userId) => {
-    try {
-      const response = await http.put(
-        `/conversations/group/set-owner/${userId}`,
-        {
-          conversationId,
-        }
-      );
-      return response.data; // Return the response data
-    } catch (error) {
-      console.error(
-        "Lỗi khi bổ nhiệm thành viên làm nhóm trưởng:",
-        error.response?.data || error.message
-      );
-      throw error;
-    }
+
+  // User APIs
+  getUserById: async (userId) => {
+    // Lấy thông tin người dùng theo ID
+    return await http.get(`/users/get-user-by-id/${userId}`);
   },
-  promoteToCoOwner: async (conversationId, userId) => {
+  updateUser: async (userId, params) => {
+    // Cập nhật thông tin người dùng
     try {
-      const response = await http.put(`/conversations/group/set-co-owner`, {
-        conversationId,
-        coOwnerIds: [userId], // Pass the userId as part of the coOwnerIds array
+      const response = await http.put(`/users/mobile/update-info`, {
+        userId,
+        ...params,
       });
-      return response.data; // Return the response data
+      return response.data;
     } catch (error) {
       console.error(
-        "Lỗi khi bổ nhiệm thành viên làm nhóm phó:",
+        "Lỗi khi cập nhật thông tin người dùng:",
         error.response?.data || error.message
       );
       throw error;
     }
   },
-  removeCoOwner: async (conversationId, userId) => {
+  uploadImage: async (imageBase64) => {
+    // Tải ảnh đại diện người dùng lên
     try {
-      const response = await http.put(
-        `/conversations/group/${conversationId}/remove-co-owner/${userId}`
-      );
-      return response.data; // Return the response data
+      const response = await http.put("/users/mobile/update-avatar", {
+        imageBase64,
+      });
+      return response.data;
     } catch (error) {
       console.error(
-        "Lỗi khi xóa quyền nhóm phó:",
+        "Lỗi khi tải ảnh lên:",
         error.response?.data || error.message
       );
       throw error;
     }
   },
-  leaveGroup: async (conversationId) => {
-    try {
-      // /group/:conversationId/leave
-      const response = await http.put(
-        `/conversations/group/${conversationId}/leave` // Assuming this is the correct endpoint
-      );
-      return response.data; // Return the response data
-    } catch (error) {
-      console.error("Lỗi khi rời nhóm:", error.response?.data || error.message);
-      throw error;
-    }
-  },
-  deleteGroup: async (conversationId) => {
-    // /group/delete/:conversationId
-    try {
-      const response = await http.put(
-        `/conversations/group/delete/${conversationId}` // Assuming this is the correct endpoint
-      );
-      return response.data; // Return the response data
-    } catch (error) {
-      console.error("Lỗi khi xóa nhóm:", error.response?.data || error.message);
-      throw error;
-    }
-  },
-  changeGroupAvatar: async (conversationId, imageBase64) => {
-    try {
-      // /mobile/group/update/avatar/:conversationId
-      const response = await http.put(
-        `/conversations/mobile/group/update/avatar/${conversationId}`,
-        {
-          imageBase64, // Gửi ảnh dưới dạng base64
-        }
-      );
-      return response.data; // Return the response data
-    } catch (error) {
-      console.error(
-        "Lỗi khi cập nhật ảnh đại diện nhóm:",
-        error.response?.data || error.message
-      );
-      // console.error("Hình ảnh đại diện nhóm không hợp lệ:", imageBase64);
-      throw error;
-    }
-  },
-  //Đổi tên nhóm
-  changeGroupName: async (conversationId, newName) => {
-    try {
-      // '/group/update/name/:conversationId
-      const response = await http.put(
-        `/conversations/group/update/name/${conversationId}`,
-        {
-          newName, // Gửi tên nhóm mới
-        }
-      );
-      return response.data; // Return the response data
-    } catch (error) {
-      console.error(
-        "Lỗi khi cập nhật tên nhóm:",
-        error.response?.data || error.message
-      );
-      throw error;
-    }
-  },
-  //Thêm mới vào đây
   getFriends: async () => {
+    // Lấy danh sách bạn bè của người dùng
     try {
-      const response = await http.get("/users/friends"); // Assuming the endpoint is /users/friends based on backend router
-      return response.data; // Return the list of friends
+      const response = await http.get("/users/friends");
+      return response.data;
     } catch (error) {
       console.error(
         "Lỗi khi lấy danh sách bạn bè:",
@@ -843,34 +681,8 @@ export const api = {
       throw error;
     }
   },
-  createConversation: async (receiverId) => {
-    try {
-      const response = await http.post("/conversations/create", { receiverId });
-      return response.data;
-    } catch (error) {
-      console.error(
-        "Lỗi khi tạo cuộc trò chuyện:",
-        error.response?.data || error.message
-      );
-      throw error;
-    }
-  },
-  getConversationById: async (conversationId) => {
-    try {
-      const response = await http.get(`/conversations/${conversationId}`);
-      return response.data;
-    } catch (error) {
-      // console.error(
-      //   "Lỗi khi lấy thông tin cuộc trò chuyện:",
-      //   error.response?.data || error.message
-      // );
-      throw error;
-    }
-  },
-  // Lấy danh sách lời mời kết bạn đã gửi
-
-  //Friend
   getFriendRequestsSent: async () => {
+    // Lấy danh sách lời mời kết bạn đã gửi
     try {
       const response = await http.get("/users/friend-requests-sent");
       return response.data;
@@ -882,9 +694,8 @@ export const api = {
       throw error;
     }
   },
-
-  // Lấy danh sách lời mời kết bạn đã nhận
   getFriendRequestsReceived: async () => {
+    // Lấy danh sách lời mời kết bạn đã nhận
     try {
       const response = await http.get("/users/friend-requests-received");
       return response.data;
@@ -896,8 +707,8 @@ export const api = {
       throw error;
     }
   },
-  // Gửi lời mời kết bạn
   sendFriendRequest: async (userId, message = "") => {
+    // Gửi lời mời kết bạn đến một người dùng
     try {
       const response = await http.post(
         `/users/friend-requests/send-request/${userId}`,
@@ -914,8 +725,8 @@ export const api = {
       throw error;
     }
   },
-  // Thu hồi lời mời kết bạn
   retrieveFriendRequest: async (requestId) => {
+    // Thu hồi lời mời kết bạn đã gửi
     try {
       const response = await http.delete(
         `/users/friend-requests/retrieve-request/${requestId}`
@@ -929,9 +740,8 @@ export const api = {
       throw error;
     }
   },
-
-  // Chấp nhận lời mời kết bạn
   acceptFriendRequest: async (requestId) => {
+    // Chấp nhận lời mời kết bạn
     try {
       const response = await http.put(
         `/users/friend-requests/accept-request/${requestId}`
@@ -945,9 +755,8 @@ export const api = {
       throw error;
     }
   },
-
-  // Từ chối lời mời kết bạn
   rejectFriendRequest: async (requestId) => {
+    // Từ chối lời mời kết bạn
     try {
       const response = await http.put(
         `/users/friend-requests/reject-request/${requestId}`
@@ -962,15 +771,11 @@ export const api = {
     }
   },
   getUserByPhone: async (phone) => {
+    // Lấy thông tin người dùng theo số điện thoại
     try {
       const response = await http.get(`/users/get-user/${phone}`);
       return response.data;
     } catch (error) {
-      // console.error(
-      //   "Lỗi khi lấy thông tin người dùng theo số điện thoại:",
-      //   error.response?.data || error.message
-      // );
-
       if (error.response && error.response.status === 404) {
         throw new Error("Không tìm thấy người dùng với số điện thoại này");
       }
@@ -978,22 +783,19 @@ export const api = {
       throw error;
     }
   },
-  // Tìm kiếm người dùng theo danh sách số điện thoại
   searchUsersByPhones: async (phones) => {
+    // Tìm kiếm người dùng theo danh sách số điện thoại
     try {
       const response = await http.post("/users/search-users", {
-        phones, // axios sẽ tự chuyển mảng thành nhiều phones=... trên query string
+        phones,
       });
       return response.data;
     } catch (error) {
-      // console.error(
-      //   "Lỗi khi tìm kiếm người dùng theo số điện thoại:",
-      //   error.response?.data || error.message
-      // );
       throw error;
     }
   },
   unfriend: async (userId) => {
+    // Hủy kết bạn với một người dùng
     try {
       const response = await http.delete(`/users/friends/unfriend/${userId}`);
       return response.data;
@@ -1005,16 +807,19 @@ export const api = {
       throw error;
     }
   },
+
+  // Group APIs
   createGroupConversation: async (groupName, groupMembers) => {
+    // Tạo một nhóm trò chuyện mới
     try {
-      console.log("Creating group with:", { groupName, groupMembers }); // Log input
+      console.log("Creating group with:", { groupName, groupMembers });
 
       const response = await http.post("/conversations/group/create", {
         groupName,
         groupMembers,
       });
 
-      console.log("Group creation response:", response.data); // Log the response
+      console.log("Group creation response:", response.data);
 
       return response.data;
     } catch (error) {
@@ -1026,6 +831,7 @@ export const api = {
     }
   },
   addUserToGroup: async (conversationId, userId) => {
+    // Thêm một thành viên vào nhóm
     try {
       const response = await http.put(
         `/conversations/group/${conversationId}/add/${userId}`
@@ -1040,6 +846,7 @@ export const api = {
     }
   },
   getGroups: async () => {
+    // Lấy danh sách tất cả các nhóm
     try {
       const response = await http.get("/conversations/groups");
       return response.data;
@@ -1052,6 +859,7 @@ export const api = {
     }
   },
   getSameGroups: async (userId) => {
+    // Lấy danh sách các nhóm chung với một người dùng
     try {
       const response = await http.get(
         `/conversations/get-same-groups/${userId}`
@@ -1065,8 +873,8 @@ export const api = {
       throw error;
     }
   },
-  // Chặn thành viên khỏi nhóm
   blockUserFromGroup: async (conversationId, userId) => {
+    // Chặn một thành viên trong nhóm
     try {
       const response = await http.put(
         `/conversations/group/${conversationId}/block/${userId}`
@@ -1080,9 +888,8 @@ export const api = {
       throw error;
     }
   },
-
-  // Bỏ chặn thành viên khỏi nhóm
   unblockUserFromGroup: async (conversationId, userId) => {
+    // Bỏ chặn một thành viên trong nhóm
     try {
       const response = await http.put(
         `/conversations/group/${conversationId}/unblock/${userId}`
@@ -1096,8 +903,8 @@ export const api = {
       throw error;
     }
   },
-
   removeUserFromGroup: async (conversationId, userId) => {
+    // Xóa một thành viên khỏi nhóm
     try {
       const response = await http.put(
         `/conversations/group/${conversationId}/remove/${userId}`
@@ -1106,6 +913,115 @@ export const api = {
     } catch (error) {
       console.error(
         "Lỗi khi xóa thành viên khỏi nhóm:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  addOwner: async (conversationId, userId) => {
+    // Bổ nhiệm một thành viên làm nhóm trưởng
+    try {
+      const response = await http.put(
+        `/conversations/group/set-owner/${userId}`,
+        {
+          conversationId,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi bổ nhiệm thành viên làm nhóm trưởng:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  promoteToCoOwner: async (conversationId, userId) => {
+    // Bổ nhiệm một thành viên làm nhóm phó
+    try {
+      const response = await http.put(`/conversations/group/set-co-owner`, {
+        conversationId,
+        coOwnerIds: [userId],
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi bổ nhiệm thành viên làm nhóm phó:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  removeCoOwner: async (conversationId, userId) => {
+    // Xóa quyền nhóm phó của một thành viên
+    try {
+      const response = await http.put(
+        `/conversations/group/${conversationId}/remove-co-owner/${userId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi xóa quyền nhóm phó:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  leaveGroup: async (conversationId) => {
+    // Rời khỏi nhóm
+    try {
+      const response = await http.put(
+        `/conversations/group/${conversationId}/leave`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi rời nhóm:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  deleteGroup: async (conversationId) => {
+    // Xóa nhóm
+    try {
+      const response = await http.put(
+        `/conversations/group/delete/${conversationId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi xóa nhóm:", error.response?.data || error.message);
+      throw error;
+    }
+  },
+  changeGroupAvatar: async (conversationId, imageBase64) => {
+    // Cập nhật ảnh đại diện của nhóm
+    try {
+      const response = await http.put(
+        `/conversations/mobile/group/update/avatar/${conversationId}`,
+        {
+          imageBase64,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi cập nhật ảnh đại diện nhóm:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  changeGroupName: async (conversationId, newName) => {
+    // Đổi tên nhóm
+    try {
+      const response = await http.put(
+        `/conversations/group/update/name/${conversationId}`,
+        {
+          newName,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi cập nhật tên nhóm:",
         error.response?.data || error.message
       );
       throw error;

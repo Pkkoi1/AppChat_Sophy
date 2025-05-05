@@ -8,7 +8,8 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { api } from "@/app/api/api";
 import InboxOptions from "../../features/messagePopup/InboxOptions";
-import { Dialog } from "@rneui/themed"; // Import Dialog from @rneui/themed
+import { Dialog } from "@rneui/themed";
+import { FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5 for the pin icon
 
 const DEFAULT_AVATAR = "https://example.com/default-avatar.png"; // Replace with actual default avatar URL
 
@@ -24,8 +25,8 @@ const Inbox = ({ conversation }) => {
     receiverId,
     isGroup,
     groupMembers,
-    creatorId, // Access creatorId from conversation
-    unreadCount, // Access unreadCount from conversation
+    creatorId,
+    unreadCount,
   } = conversation;
 
   const navigation = useNavigation();
@@ -36,7 +37,13 @@ const Inbox = ({ conversation }) => {
   const [unreadCountValue, setUnreadCountValue] = useState(0);
   const [showOptions, setShowOptions] = useState(false);
 
-  const isCreator = userInfo?.userId === creatorId; // Check if the user is the creator
+  const isCreator = userInfo?.userId === creatorId;
+
+  // Check if the conversation is pinned using userInfo.pinnedConversations
+  const pinnedConversation = userInfo?.pinnedConversations?.find(
+    (pinned) => pinned.conversationId === conversationId
+  );
+  const isPinned = !!pinnedConversation;
 
   const getTimeDifference = (date) => {
     if (!date) return ""; // Handle null date
@@ -83,8 +90,6 @@ const Inbox = ({ conversation }) => {
   };
 
   const getMessageContent = () => {
-    // if (!lastMessage) return "No messages yet";
-
     if (lastMessage.isRecall) {
       return "Đã thu hồi một tin nhắn";
     }
@@ -244,7 +249,11 @@ const Inbox = ({ conversation }) => {
         }}
         onLongPress={() => setShowOptions(true)} // Show options on long press
         activeOpacity={0.6}
-        style={[styles.container, showOptions && styles.highlighted]} // Highlight when options are shown
+        style={[
+          styles.container,
+          showOptions && styles.highlighted,
+          isPinned && styles.pinnedContainer, // Apply pinned styling
+        ]}
       >
         <View style={styles.avatarContainer}>
           {isGroup ? (
@@ -275,9 +284,20 @@ const Inbox = ({ conversation }) => {
               {isGroup ? groupName : receiver?.fullname || "Unknown"}
             </Text>
             <Text style={styles.time}>
+              {isPinned && (
+                <View>
+                  <FontAwesome5
+                    name="thumbtack"
+                    size={12}
+                    color="#5a6981"
+                    style={styles.pinIcon}
+                  />
+                </View>
+              )}
               {getTimeDifference(lastMessage?.createdAt)}
             </Text>
           </View>
+
           <View style={styles.messageRow}>
             <Text
               style={[
@@ -293,6 +313,7 @@ const Inbox = ({ conversation }) => {
                 ? "Đã thu hồi một tin nhắn"
                 : lastMessage?.content || "Chưa có tin nhắn"}
             </Text>
+
             {hasUnreadMessages && (
               <View style={styles.unreadBadge}>
                 <Text style={styles.unreadBadgeText}>{unreadCountValue}</Text>
@@ -333,6 +354,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ddd",
     backgroundColor: "white",
   },
+  pinnedContainer: {
+    backgroundColor: "#f1f1f2", // Light gray background for pinned conversations
+  },
   highlighted: {
     backgroundColor: "#f0f8ff", // Light blue background for highlighting
   },
@@ -349,6 +373,16 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  pinIcon: {
+    marginRight: 5,
+    marginBottom: -2,
+  },
+
   name: {
     fontSize: 16,
     fontWeight: "bold",
