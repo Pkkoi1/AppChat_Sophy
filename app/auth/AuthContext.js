@@ -809,13 +809,15 @@ export const AuthProvider = ({ children }) => {
 
         setConversations(nonPinned);
         setPinnedConversations(pinned);
+        if (conversations && pinnedConversations) {
+          handlerRefresh();
+        }
         await AsyncStorage.setItem("conversations", JSON.stringify(nonPinned));
         await AsyncStorage.setItem(
           "pinnedConversations",
           JSON.stringify(pinned)
         );
         console.log("Đã tải và lưu tin nhắn cho tất cả cuộc trò chuyện.");
-        handlerRefresh();
       }
     } catch (error) {
       console.error("Lỗi khi đăng nhập:", error);

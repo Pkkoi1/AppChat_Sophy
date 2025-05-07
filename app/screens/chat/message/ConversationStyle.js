@@ -72,6 +72,20 @@ const ConversationStyle = StyleSheet.create({
     overflow: "hidden",
     marginLeft: 10,
   },
+  scrollToBottomButton: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5, // Add shadow for better visibility
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    zIndex: 10, // Ensure it appears above other elements
+  },
 });
 
 export default ConversationStyle;

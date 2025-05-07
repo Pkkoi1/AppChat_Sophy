@@ -17,6 +17,10 @@ const ListInbox = () => {
 
   const navigation = useNavigation();
 
+  // await handlerRefresh();
+
+
+
   const onRefresh = async () => {
     setRefreshing(true);
     try {

@@ -3,10 +3,12 @@ import {
   SimpleLineIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useContext, useState } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import ToggleSwitch from "../../../../components/toggle/ToggleSwitch";
 import Colors from "../../../../components/colors/Color";
+import { api } from "@/app/api/api";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const options = [
   {
@@ -54,13 +56,50 @@ const options = [
 ];
 
 const ConversationOption = ({ conversation, receiver }) => {
-  const [toggleStates, setToggleStates] = useState({});
+  const [toggleStates, setToggleStates] = useState({
+    0: conversation?.isPinned || false, // Initialize "Ghim trò chuyện" toggle based on pinned state
+  });
 
-  const toggleSwitch = (index) => {
-    setToggleStates((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
+  const { handlerRefresh, updatePinnedStatus } = useContext(AuthContext); // Assuming you have a context to handle refresh
+
+  const toggleSwitch = async (index) => {
+    if (index === 0) {
+      // Handle "Ghim trò chuyện"
+      try {
+        const isPinned = toggleStates[index];
+
+        if (
+          !isPinned &&
+          conversation?.userInfo?.pinnedConversations?.length >= 5
+        ) {
+          Alert.alert(
+            "Không thể ghim thêm",
+            "Đã đạt giới hạn 5 cuộc trò chuyện được ghim."
+          );
+          return;
+        }
+
+        await updatePinnedStatus(conversation.conversationId, !isPinned); // Use updatePinnedStatus
+        Alert.alert(
+          "Thành công",
+          `Cuộc trò chuyện đã được ${!isPinned ? "ghim" : "bỏ ghim"}.`
+        );
+
+        setToggleStates((prev) => ({
+          ...prev,
+          [index]: !prev[index],
+        }));
+      } catch (error) {
+        Alert.alert(
+          "Lỗi",
+          "Không thể thay đổi trạng thái ghim cuộc trò chuyện. Vui lòng thử lại sau."
+        );
+        console.error(
+          "Lỗi khi thay đổi trạng thái ghim cuộc trò chuyện:",
+          error
+        );
+      }
+    }
   };
 
   return (
