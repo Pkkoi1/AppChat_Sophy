@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { View } from "react-native";
+import { View, BackHandler } from "react-native";
 import { TabView } from "@rneui/themed";
 import ListInbox from "../inbox/ListInbox";
 import Profile from "../profile/Profile";
@@ -104,19 +104,16 @@ const Home = ({ route, navigation }) => {
         console.log(
           "New message received. Refreshing conversations at Home..."
         );
-        // Gọi API hoặc hàm để làm mới danh sách cuộc trò chuyện
       };
 
       const handleGroupDeleted = async () => {
         console.log("Group deleted. Refreshing conversations...");
-        // Gọi API hoặc hàm để làm mới danh sách cuộc trò chuyện
       };
 
       const handleAvatarChange = async ({ conversationId, newAvatar }) => {
         console.log(
           `Avatar changed for conversation ${conversationId}. Refreshing...`
         );
-        // Gọi API hoặc hàm để cập nhật avatar nhóm
       };
 
       socket.on("newMessage", handleNewMessage);
@@ -130,6 +127,28 @@ const Home = ({ route, navigation }) => {
       };
     }
   }, [socket]);
+
+  // Xử lý nút quay lại trên Android
+  useEffect(() => {
+    const backAction = () => {
+      const navState = navigation.getState();
+      const currentRoute = navState.routes[navState.index];
+
+      // Chỉ thoát ứng dụng nếu đang ở màn hình Home
+      if (currentRoute.name === "Home") {
+        BackHandler.exitApp();
+        return true; // Ngăn hành vi mặc định
+      }
+      return false; // Cho phép hành vi mặc định (quay lại màn hình trước)
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, [navigation]);
 
   // Xử lý tham số screen từ route
   useEffect(() => {

@@ -16,7 +16,7 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import { SocketContext } from "../../socket/SocketContext"; // Import SocketContext
 
 function LoginScreen({ navigation }) {
-  const { login } = useContext(AuthContext); // Lấy hàm login từ AuthContext
+  const { login, handlerRefresh } = useContext(AuthContext); // Lấy hàm login từ AuthContext
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [secureTextEntry, setSecureTextEntry] = useState(true);
@@ -41,6 +41,8 @@ function LoginScreen({ navigation }) {
       await login({ phone, password });
       setIsLoading(false); // Kết thúc loading
       Alert.alert("Đăng nhập thành công!", `Chào ${phone}!`);
+      await handlerRefresh(); // Gọi hàm refresh để cập nhật dữ liệu
+
       navigation.navigate("Home"); // Điều hướng đến màn hình chính
     } catch (error) {
       setIsLoading(false); // Kết thúc loading khi có lỗi

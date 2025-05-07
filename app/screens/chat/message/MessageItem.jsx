@@ -292,7 +292,8 @@ const MessageItem = ({
   };
 
   const renderContent = () => {
-    const { type, content, attachment, isRecall, isReply } = message;
+    const { type, attachment, isRecall, isReply } = message;
+    const content = message.content || ""; // Đảm bảo content không phải undefined
 
     if (type === "notification") {
       return renderNotification();
