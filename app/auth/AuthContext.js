@@ -32,6 +32,9 @@ export const AuthProvider = ({ children }) => {
   const [groups, setGroups] = useState([]);
   const [groupsLoading, setGroupsLoading] = useState(false);
   const [groupMember, setGroupMember] = useState([]);
+  const [friends, setFriends] = useState([]);
+  const [friendsLoading, setFriendsLoading] = useState(false);
+  const [friendsError, setFriendsError] = useState(null);
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -1122,6 +1125,53 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const fetchFriends = useCallback(async () => {
+    try {
+      setFriendsLoading(true);
+      setFriendsError(null);
+      const response = await api.getFriends();
+      setFriends(response || []);
+      await AsyncStorage.setItem('friends', JSON.stringify(response));
+      return response;
+    } catch (error) {
+      console.error('Lỗi khi lấy danh sách bạn bè:', error);
+      setFriendsError('Không thể tải danh sách bạn bè.');
+      try {
+        // Lấy dữ liệu từ cache nếu có lỗi
+        const cachedFriends = await AsyncStorage.getItem('friends');
+        if (cachedFriends) {
+          setFriends(JSON.parse(cachedFriends));
+        }
+      } catch (storageError) {
+        console.error('Lỗi khi tải danh sách bạn bè từ cache:', storageError);
+      }
+      return [];
+    } finally {
+      setFriendsLoading(false);
+    }
+  }, []);
+
+  const updateFriendsList = useCallback(async (newFriend = null, removedFriendId = null) => {
+    try {
+      if (newFriend) {
+        // Thêm bạn mới
+        const updatedFriends = [...friends, newFriend];
+        setFriends(updatedFriends);
+        await AsyncStorage.setItem('friends', JSON.stringify(updatedFriends));
+      } else if (removedFriendId) {
+        // Xóa bạn
+        const updatedFriends = friends.filter(friend => friend._id !== removedFriendId);
+        setFriends(updatedFriends);
+        await AsyncStorage.setItem('friends', JSON.stringify(updatedFriends));
+      } else {
+        // Cập nhật toàn bộ danh sách
+        await fetchFriends();
+      }
+    } catch (error) {
+      console.error('Lỗi khi cập nhật danh sách bạn bè:', error);
+    }
+  }, [friends, fetchFriends]);
+
   useEffect(() => {
     const loadCachedGroups = async () => {
       try {
@@ -1153,6 +1203,12 @@ export const AuthProvider = ({ children }) => {
       console.log("📡 Đã join tất cả conversations:", allIds);
     }
   }, [socket, conversations, pinnedConversations, userInfo?.userId]);
+
+  useEffect(() => {
+    if (userInfo?.userId) {
+      fetchFriends();
+    }
+  }, [userInfo, fetchFriends]);
 
   return (
     <AuthContext.Provider
@@ -1191,6 +1247,11 @@ export const AuthProvider = ({ children }) => {
         getMessages,
         saveMessages,
         updatePinnedStatus, // Add new function to context
+        friends,
+        friendsLoading,
+        friendsError,
+        fetchFriends,
+        updateFriendsList,
       }}
     >
       {children}
