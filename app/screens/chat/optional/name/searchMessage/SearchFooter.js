@@ -19,25 +19,25 @@ const SearchFooter = ({
       </Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={[styles.button, disablePrevious && styles.disabledButton]}
-          onPress={onPrevious}
-          disabled={disablePrevious}
-        >
-          <AntDesign
-            name="up"
-            size={20}
-            color={disablePrevious ? "#aaa" : "#007BFF"}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
           style={[styles.button, disableNext && styles.disabledButton]}
           onPress={onNext}
           disabled={disableNext}
         >
           <AntDesign
-            name="down"
+            name="up"
             size={20}
             color={disableNext ? "#aaa" : "#007BFF"}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, disablePrevious && styles.disabledButton]}
+          onPress={onPrevious}
+          disabled={disablePrevious}
+        >
+          <AntDesign
+            name="down"
+            size={20}
+            color={disablePrevious ? "#aaa" : "#007BFF"}
           />
         </TouchableOpacity>
       </View>
@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    zIndex: 1,
   },
   text: {
     fontSize: 16,

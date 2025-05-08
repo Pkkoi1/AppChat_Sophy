@@ -477,7 +477,7 @@ export const AuthProvider = ({ children }) => {
         const existingMessages = conversation.messages || [];
 
         const sortedNewMessages = [...newMessages].sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          (a, b) => new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0)
         );
 
         let updatedMessages;
@@ -489,9 +489,9 @@ export const AuthProvider = ({ children }) => {
 
         updatedMessages = Array.from(
           new Map(
-            updatedMessages.map((msg) => [msg.messageDetailId, msg])
+            updatedMessages.map((msg) => [msg?.messageDetailId, msg])
           ).values()
-        ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        ).sort((a, b) => new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0));
 
         const updatedConversation = {
           ...conversation,
