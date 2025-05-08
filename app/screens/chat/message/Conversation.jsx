@@ -89,7 +89,7 @@ const Conversation = ({
       )}
       <FlatList
         ref={flatListRef} // Use FlatList ref passed from MessageScreen
-        data={messages.filter((msg) => msg && msg.content)} // Lọc tin nhắn không hợp lệ
+        data={messages.filter((msg) => msg && (msg.content || msg.attachment))} // Include messages with content or attachment
         keyExtractor={(item) => item.messageDetailId}
         renderItem={({ item, index }) => {
           const prevMessage =
