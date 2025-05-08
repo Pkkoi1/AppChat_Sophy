@@ -16,6 +16,7 @@ import Color from "../../../../components/colors/Color";
 import { api } from "../../../../api/api";
 import { SocketContext } from "../../../../socket/SocketContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import { navigateToProfile } from "@/app/utils/profileNavigation";
 
 const groupByTime = (data) => {
   if (!data || data.length === 0) return [];
@@ -310,17 +311,11 @@ const ReceivedFriendRequests = ({ navigation }) => {
         sections={groupByTime(receivedRequests)}
         keyExtractor={(item) => item.friendRequestId || item._id || Math.random().toString()}
         renderItem={({ item }) => {
-          // Ưu tiên lấy sender, fallback sang senderId nếu có
           const user = item.sender || item.senderId || {};
           return (
             <TouchableOpacity
               style={styles.requestItem}
-              onPress={() => {
-                navigation.navigate("UserProfile", {
-                  friend: user,
-                  requestSent: "accepted",
-                });
-              }}
+              onPress={() => navigateToProfile(navigation, user)}
             >
               {user.urlavatar || user.avatar ? (
                 <Image
@@ -417,12 +412,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
           return (
             <TouchableOpacity
               style={styles.requestItem}
-              onPress={() => {
-                navigation.navigate("UserProfile", {
-                  friend: user,
-                  requestSent: "pending",
-                });
-              }}
+              onPress={() => navigateToProfile(navigation, user)}
             >
               {user.urlavatar || user.avatar ? (
                 <Image
