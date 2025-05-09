@@ -6,6 +6,7 @@ import GroupMemberOption from "../../option/GroupMemberOption";
 import { api } from "@/app/api/api";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import { navigateToProfile } from "@/app/utils/profileNavigation";
 
 const RenderMember = ({
   item,
@@ -131,12 +132,8 @@ const RenderMember = ({
           break;
         case "viewProfile":
           try {
-            const friendInfo = await fetchUserInfoById(memberInfo.id); // Resolve the promise
-            console.log("Friend truyền đi", friendInfo);
-            navigation.navigate("UserProfile", {
-              friend: friendInfo,
-              requestSent: "friend",
-            });
+            const friendInfo = await fetchUserInfoById(memberInfo.id);
+            await navigateToProfile(navigation, friendInfo);
           } catch (error) {
             console.error("Lỗi khi lấy thông tin bạn bè:", error);
             Alert.alert("Lỗi", "Không thể lấy thông tin bạn bè.");

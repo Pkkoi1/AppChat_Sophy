@@ -13,67 +13,62 @@ import { useNavigation } from "@react-navigation/native";
 import FriendSubMenu from "./SubMenu";
 import Friends from "./Friend";
 import { AuthContext } from "@/app/auth/AuthContext";
-import { api } from "../../../api/api";
 import ListFriendStyle from "./ListFriendStyle";
-import { SocketContext } from "../../../socket/SocketContext"; // Thêm dòng này
+import { SocketContext } from "../../../socket/SocketContext";
 
 const ListFriends = () => {
   const [refreshing, setRefreshing] = useState(false);
-  const [friends, setFriends] = useState([]);
   const [showPhoneContacts, setShowPhoneContacts] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const navigation = useNavigation();
   const {
     userInfo,
     handlerRefresh,
-    phoneContacts, // Get phone contacts from context
-    usersInDB, // Get users in DB from context
-    getPhoneContacts, // Get the function from context
-    contactsLoading, // Get contacts loading state
-    contactsError, // Get contacts error state
+    phoneContacts,
+    usersInDB,
+    getPhoneContacts,
+    contactsLoading,
+    contactsError,
     addConversation,
+    friends,
+    friendsLoading,
+    friendsError,
+    fetchFriends,
+    updateFriendsList
   } = useContext(AuthContext);
-  const socket = useContext(SocketContext); // Thêm dòng này
-
-  // Lấy danh sách bạn bè từ API
-  const fetchFriends = useCallback(async () => {
-    if (!refreshing) setLoading(true);
-    setError(null);
-    try {
-      const data = await api.getFriends();
-      setFriends(data || []);
-    } catch (err) {
-      setError("Không thể tải danh sách bạn bè.");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [refreshing]);
-
-
+  const socket = useContext(SocketContext);
 
   useEffect(() => {
     fetchFriends();
-    getPhoneContacts(); // Call getPhoneContacts from AuthContext
+    getPhoneContacts();
   }, [fetchFriends, getPhoneContacts]);
 
   // Lắng nghe sự kiện acceptedFriendRequest từ socket
   useEffect(() => {
     if (!socket) return;
+    
     const handleAcceptedFriendRequest = () => {
-      fetchFriends(); // Cập nhật lại danh sách bạn bè
+      updateFriendsList(); // Cập nhật danh sách bạn bè khi có người chấp nhận lời mời
     };
+    
+    const handleRemovedFriend = (data) => {
+      if (data && data.userId) {
+        updateFriendsList(null, data.userId); // Cập nhật khi có người bạn bị xóa
+      }
+    };
+    
     socket.on("acceptedFriendRequest", handleAcceptedFriendRequest);
+    socket.on("removedFriend", handleRemovedFriend);
+    
     return () => {
       socket.off("acceptedFriendRequest", handleAcceptedFriendRequest);
+      socket.off("removedFriend", handleRemovedFriend);
     };
-  }, [socket, fetchFriends]);
+  }, [socket, updateFriendsList]);
 
   const handlerRefreshList = () => {
     setRefreshing(true);
-    fetchFriends();
-    getPhoneContacts(); // Call getPhoneContacts from AuthContext
+    Promise.all([fetchFriends(), getPhoneContacts()])
+      .finally(() => setRefreshing(false));
   };
 
   // Hiển thị header
@@ -154,9 +149,12 @@ const ListFriends = () => {
     return acc;
   }, {});
 
+  const loading = showPhoneContacts ? contactsLoading : friendsLoading;
+  const error = showPhoneContacts ? contactsError : friendsError;
+
   return (
     <View>
-      {(loading || contactsLoading) && !refreshing ? (
+      {loading && !refreshing ? (
         <ActivityIndicator
           size="large"
           color="#0000ff"
@@ -206,9 +204,9 @@ const ListFriends = () => {
           contentContainerStyle={ListFriendStyle.container}
         />
       )}
-      {(error || contactsError) && (
+      {error && (
         <Text style={{ color: "red", textAlign: "center", margin: 10 }}>
-          {error || contactsError}
+          {error}
         </Text>
       )}
     </View>
