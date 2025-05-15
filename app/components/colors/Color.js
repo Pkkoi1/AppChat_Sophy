@@ -12,6 +12,7 @@ const Color = {
   blueText: "#2C99E5",
   //Xanh dậm
   blueText2: "#0344a8",
+  blueText3: "#007AFF",
 };
 
 export default Color;

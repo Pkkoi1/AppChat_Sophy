@@ -41,7 +41,7 @@ const UserProfile = ({ route }) => {
   const { friend, requestSent: initialRequestSent } = route.params || {};
   const [requestSent, setRequestSent] = useState(initialRequestSent || null);
 
-  console.log("Nhận: ", friend);
+  // console.log("Nhận: ", friend);
   useEffect(() => {
     setRequestSent(initialRequestSent || null);
   }, [initialRequestSent]);
@@ -397,20 +397,22 @@ const UserProfile = ({ route }) => {
     // Trang thai da gui loi moi ket ban
     if (requestSent === "pending") {
       return (
-        <View style={styles.buttonAndStatusContainer}>
-          <View style={styles.horizontalButtons}>
-            <TouchableOpacity
-              style={styles.messageButton}
-              onPress={handleCreateConversation}
-            >
-              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
-              <Text style={styles.messageButtonText}>Nhắn tin</Text>
-            </TouchableOpacity>
-            <View style={styles.buttonWrapper}>
+        <View style={styles.buttonContainer}>
+          <View style={styles.buttonAndStatusContainer}>
+            <View style={styles.horizontalButtons}>
+              <TouchableOpacity
+                style={styles.messageButton}
+                onPress={handleCreateConversation}
+              >
+                <Ionicons
+                  name="chatbubble-outline"
+                  size={20}
+                  color={Color.blueText3}
+                />
+                <Text style={styles.messageButtonText}>Nhắn tin</Text>
+              </TouchableOpacity>
               {loading ? (
-                <View style={styles.loaderContainer}>
-                  <ActivityIndicator size="small" color="#666" />
-                </View>
+                <ActivityIndicator size="small" color="#666" />
               ) : (
                 <TouchableOpacity
                   style={styles.addFriendButton}
@@ -421,12 +423,12 @@ const UserProfile = ({ route }) => {
                     size={20}
                     color="#666"
                   />
-                  <Text style={styles.addFriendButtonText}>Hủy kết bạn</Text>
+                  <Text style={styles.addFriendButtonText}>Thu hồi</Text>
                 </TouchableOpacity>
               )}
             </View>
+            <View style={styles.divider} />
           </View>
-          <View style={styles.divider} />
         </View>
       );
     }
@@ -467,7 +469,7 @@ const UserProfile = ({ route }) => {
           />
           <View style={styles.actionButtons}>
             {loading ? (
-              <ActivityIndicator size="small" color="#007AFF" />
+              <ActivityIndicator size="small" color={Color.blueText3} />
             ) : (
               // Giao dien cho người nhận lời mời kết bạn
               <>
@@ -504,7 +506,11 @@ const UserProfile = ({ route }) => {
               style={styles.messageButton}
               onPress={handleCreateConversation}
             >
-              <Ionicons name="chatbubble-outline" size={20} color="#0066cc" />
+              <Ionicons
+                name="chatbubble-outline"
+                size={20}
+                color={Color.blueText3}
+              />
               <Text style={styles.messageButtonText}>Nhắn tin</Text>
             </TouchableOpacity>
             {loading ? (
@@ -610,9 +616,9 @@ const UserProfile = ({ route }) => {
 
             {renderFriendStatus()}
 
-            <View style={styles.optionsContainer}>
+            {/* <View style={styles.optionsContainer}>
               <TouchableOpacity style={styles.optionButton}>
-                <Icon name="photo" size={22} color="#0066cc" />
+                <Icon name="photo" size={22} color= Color.blueText3 />
                 <Text style={styles.optionText}>Ảnh 123</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.optionButton}>
@@ -686,7 +692,7 @@ const UserProfile = ({ route }) => {
                   </View>
                 </View>
               ))}
-            </View>
+            </View> */}
           </View>
         </View>
       </ScrollView>
@@ -777,6 +783,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontSize: 14,
     textAlign: "center",
+    paddingHorizontal: 20,
   },
   buttonContainer: {
     justifyContent: "center",
@@ -785,6 +792,7 @@ const styles = StyleSheet.create({
   buttonAndStatusContainer: {
     width: "90%",
     alignItems: "center",
+    flex: 1,
   },
   horizontalButtons: {
     flexDirection: "row",
@@ -796,15 +804,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: Color.blueBackgroundButton2,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 20,
     marginRight: 10,
     flex: 1,
   },
   messageButtonText: {
-    fontSize: 16,
-    color: "#0066cc",
+    fontSize: 14,
+    color: Color.blueText3,
     marginLeft: 5,
     fontWeight: "500",
     textAlign: "center",
@@ -814,8 +822,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 20,
     flex: 1,
   },
@@ -824,20 +832,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 20,
     flex: 1,
   },
   addFriendButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#666",
     marginLeft: 5,
     fontWeight: "500",
     textAlign: "center",
   },
   removeFriendButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#666",
     marginLeft: 5,
     fontWeight: "500",
@@ -884,7 +892,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   requestLabel: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#000",
   },
   groupInfo: {
@@ -892,7 +900,7 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   link: {
-    color: "#007AFF",
+    color: Color.blueText3,
     fontSize: 14,
   },
   requestInput: {
@@ -909,7 +917,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   acceptedButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: Color.blueText3,
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
@@ -1063,8 +1071,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center", // Changed to center
     paddingHorizontal: 55,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
+    paddingVertical: 5,
+    backgroundColor: "#1ff",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
@@ -1081,8 +1089,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 20,
     flex: 1,
     marginLeft: 10, // Thêm dòng này cho cân đối
@@ -1092,8 +1100,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     borderRadius: 20,
     flex: 1,
     marginLeft: 10, // Thêm dòng này cho cân đối

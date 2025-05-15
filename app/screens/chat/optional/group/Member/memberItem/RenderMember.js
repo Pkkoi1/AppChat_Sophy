@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from "react";
+import React, { useState, useCallback, useContext, useEffect } from "react";
 import { View, Text, StyleSheet, Image, Alert } from "react-native";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -27,11 +27,15 @@ const RenderMember = ({
   const fetchUserInfoById = async (id) => {
     try {
       const res = await fetchUserInfo(id);
-      console.log("User Info:", res);
-      return res;
+      if (res && res.userId) {
+        return res; // Return the valid user object
+      } else {
+        console.warn("Invalid user object fetched:", res);
+        return null;
+      }
     } catch (error) {
       console.error("Error fetching user info:", error);
-      return null; // Trả về null nếu có lỗi
+      return null; // Return null if there's an error
     }
   };
 
@@ -132,11 +136,19 @@ const RenderMember = ({
           break;
         case "viewProfile":
           try {
-            const friendInfo = await fetchUserInfoById(memberInfo.id);
-            await navigateToProfile(navigation, friendInfo);
+            setOptionVisible(false);
+            const user = await fetchUserInfoById(memberInfo.id);
+            if (!user) {
+              Alert.alert("Lỗi", "Không thể lấy thông tin người dùng.");
+              return;
+            }
+            await navigateToProfile(navigation, user, {
+              showLoading: true,
+              onLoadingChange: setOptionVisible,
+            });
           } catch (error) {
-            console.error("Lỗi khi lấy thông tin bạn bè:", error);
-            Alert.alert("Lỗi", "Không thể lấy thông tin bạn bè.");
+            console.error("Lỗi khi điều hướng đến trang cá nhân:", error);
+            Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
           }
           break;
         case "promote":

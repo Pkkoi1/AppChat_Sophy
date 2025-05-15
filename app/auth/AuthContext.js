@@ -824,7 +824,13 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Lỗi khi đăng nhập:", error);
-      throw error;
+      if (error.response?.status === 401) {
+        throw new Error("Sai số điện thoại hoặc mật khẩu.");
+      } else if (error.response?.status === 500) {
+        throw new Error("Lỗi máy chủ. Vui lòng thử lại sau.");
+      } else {
+        throw new Error("Đã xảy ra lỗi. Vui lòng kiểm tra kết nối mạng.");
+      }
     }
   };
 
@@ -1200,7 +1206,7 @@ export const AuthProvider = ({ children }) => {
         (conv) => conv.conversationId
       );
       socket.emit("joinUserConversations", allIds);
-      console.log("📡 Đã join tất cả conversations:", allIds);
+      // console.log("📡 Đã join tất cả conversations:", allIds);
     }
   }, [socket, conversations, pinnedConversations, userInfo?.userId]);
 

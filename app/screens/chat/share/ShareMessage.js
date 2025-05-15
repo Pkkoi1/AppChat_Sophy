@@ -21,7 +21,7 @@ import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import { Video } from "expo-av";
 
 const ShareMessage = ({ route }) => {
-  const { conversations, userInfo, handlerRefresh } = useContext(AuthContext);
+  const { conversations, pinnedConversations, userInfo, handlerRefresh } = useContext(AuthContext);
   const socket = useContext(SocketContext); // Get socket from context
   const [selectedConversations, setSelectedConversations] = useState([]); // Allow multiple selections
   const { message } = route.params;
@@ -43,7 +43,9 @@ const ShareMessage = ({ route }) => {
       }
     };
 
-    conversations.forEach((conversation) => {
+    const allConversations = [...conversations, ...pinnedConversations]; // Combine conversations and pinnedConversations
+
+    allConversations.forEach((conversation) => {
       if (!conversation.isGroup) {
         const userId =
           conversation.receiverId === userInfo.userId
@@ -52,7 +54,7 @@ const ShareMessage = ({ route }) => {
         fetchUserDetails(userId);
       }
     });
-  }, [conversations, userInfo.userId]);
+  }, [conversations, pinnedConversations, userInfo.userId]);
 
   const getConversationDetails = (conversation) => {
     if (conversation.isGroup) {
@@ -205,6 +207,8 @@ const ShareMessage = ({ route }) => {
     }
   };
 
+  const allConversations = [...pinnedConversations, ...conversations]; // Combine pinned and non-pinned conversations
+
   return (
     <View style={styles.container}>
       <OptionHeader title={"Chia sẻ"} />
@@ -213,7 +217,7 @@ const ShareMessage = ({ route }) => {
         {renderMessageContent(message)}
       </View>
       <FlatList
-        data={conversations}
+        data={allConversations} // Use combined conversations
         keyExtractor={(item) => item.conversationId.toString()}
         renderItem={({ item }) => {
           const { name, avatar, isGroup, groupMembers, receiver } =

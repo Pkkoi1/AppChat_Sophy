@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect } from "react";
-import { FlatList, RefreshControl, View, Text } from "react-native";
+import { FlatList, RefreshControl, View, Text, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Inbox from "./Inbox";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { SocketContext } from "@/app/socket/SocketContext";
+import { navigateToProfile } from "@/app/utils/profileNavigation";
 
 const ListInbox = () => {
   const {
@@ -11,15 +12,12 @@ const ListInbox = () => {
     pinnedConversations,
     handlerRefresh,
     addConversation,
+    userInfo,
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
   const [refreshing, setRefreshing] = useState(false);
 
   const navigation = useNavigation();
-
-  // await handlerRefresh();
-
-
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -65,6 +63,19 @@ const ListInbox = () => {
     }
   }, [socket, handlerRefresh, addConversation]);
 
+  useEffect(() => {
+    // Refresh conversations on component mount
+    const initializeConversations = async () => {
+      try {
+        await handlerRefresh();
+      } catch (error) {
+        console.error("Error initializing conversations:", error);
+      }
+    };
+
+    initializeConversations();
+  }, [handlerRefresh]);
+
   // Combine pinned and non-pinned conversations
   const pinnedWithFlag = pinnedConversations.map((conv) => ({
     ...conv,
@@ -94,6 +105,26 @@ const ListInbox = () => {
   const allConversations = [...sortedPinned, ...sortedNonPinned];
 
   const renderItem = ({ item }) => {
+    const handleProfileNavigation = async () => {
+      try {
+        const user = item.isGroup
+          ? null
+          : item.receiverId === userInfo.userId
+          ? { userId: item.creatorId }
+          : { userId: item.receiverId };
+
+        if (user) {
+          await navigateToProfile(navigation, user, {
+            showLoading: true,
+            onLoadingChange: setRefreshing,
+          });
+        }
+      } catch (error) {
+        console.error("Error navigating to profile:", error);
+        Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
+      }
+    };
+
     if (item.isPinned) {
       return (
         <View>
@@ -110,7 +141,7 @@ const ListInbox = () => {
                 Đã ghim
               </Text>
             )}
-          <Inbox conversation={item} />
+          <Inbox conversation={item} onPress={handleProfileNavigation} />
         </View>
       );
     } else {
@@ -127,7 +158,7 @@ const ListInbox = () => {
               Khác
             </Text>
           )}
-          <Inbox conversation={item} />
+          <Inbox conversation={item} onPress={handleProfileNavigation} />
         </View>
       );
     }
