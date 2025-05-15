@@ -70,10 +70,9 @@ const Edit = ({ route, navigation }) => {
 
   const handleFullnameChange = (value) => {
     setShowEditIcon(false); // Hide edit icon when typing
-    // Trim excess whitespace
-    const trimmedValue = value.trim();
-    setFullname(trimmedValue); // Keep the entered value
+    setFullname(value); // Preserve spaces while typing
 
+    const trimmedValue = value.trim(); // Trim only for validation
     if (trimmedValue.length === 0) {
       setError("Tên không được để trống."); // Show error if empty
       return;
@@ -98,7 +97,9 @@ const Edit = ({ route, navigation }) => {
       fullname.trim().length > 0 &&
       (fullname !== userInfo?.fullname ||
         birthday.toISOString().split("T")[0] !==
-          new Date(userInfo?.birthday || "2000-01-01").toISOString().split("T")[0] ||
+          new Date(userInfo?.birthday || "2000-01-01")
+            .toISOString()
+            .split("T")[0] ||
         selectedIndex !== (userInfo?.isMale ? 0 : 1) ||
         selectedAvatar !== userInfo?.urlavatar);
 
@@ -327,7 +328,9 @@ const Edit = ({ route, navigation }) => {
       <TouchableOpacity
         style={[
           styles.editButton,
-          { backgroundColor: !isSaveEnabled || isLoading ? "#ccc" : Color.sophy }, // Faded color when disabled
+          {
+            backgroundColor: !isSaveEnabled || isLoading ? "#ccc" : Color.sophy,
+          }, // Faded color when disabled
         ]}
         onPress={handleSave}
         disabled={!isSaveEnabled || isLoading} // Enable button only if changes exist, name is not empty, and not loading

@@ -5,8 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
-import { Video } from "expo-av"; // Add this import for the Video component
-
+import { Video } from "expo-av";
 import MessageItemStyle from "./MessageItemStyle";
 import HighlightText from "../../../components/highlightText/HighlightText";
 import AvatarUser from "@/app/components/profile/AvatarUser";
@@ -14,6 +13,8 @@ import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import * as Sharing from "expo-sharing";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { Linking } from "react-native";
+import { navigateToProfile } from "@/app/utils/profileNavigation";
+
 const errorImage =
   "https://res.cloudinary.com/dyd5381vx/image/upload/v1744732824/z6509003496600_0f4526fe7c8ca476fea6dddff2b3bc91_d4nysj.jpg";
 
@@ -30,7 +31,7 @@ const convertToEnglish = (char) => {
     Ê: "E",
     É: "E",
     È: "E",
-    Ẻ: "E",
+     Ẻ: "E",
     Ẽ: "E",
     Ẹ: "E",
     Í: "I",
@@ -81,7 +82,6 @@ const MessageItem = ({
   onScrollToMessage,
 }) => {
   const { userInfo } = useContext(AuthContext);
-
   const navigation = useNavigation();
   const isGroup = !receiver;
   const [senders, setSenders] = useState([]);
@@ -130,7 +130,6 @@ const MessageItem = ({
 
       const extension = fileName.split(".").pop()?.toLowerCase();
 
-      // Nếu là media thì dùng MediaLibrary
       if (["jpg", "jpeg", "png", "mp4", "mp3"].includes(extension)) {
         const { status } = await MediaLibrary.requestPermissionsAsync();
         if (status !== "granted") {
@@ -142,7 +141,6 @@ const MessageItem = ({
 
         Alert.alert("Thành công", "File media đã lưu vào thư viện.");
       } else {
-        // Nếu không phải media: PDF, Word, Excel, ZIP,...
         if (await Sharing.isAvailableAsync()) {
           await Sharing.shareAsync(uri);
         } else {
@@ -172,18 +170,38 @@ const MessageItem = ({
     const fullName = user?.fullname || receiver?.fullname || "User";
     const url = user?.urlavatar || receiver?.urlavatar;
 
-    return url ? (
-      <Image source={{ uri: url }} style={MessageItemStyle.avatar} />
-    ) : (
-      <AvatarUser
-        fullName={fullName}
-        width={32}
-        height={32}
-        avtText={12}
-        shadow={false}
-        bordered={false}
-        style={{ marginLeft: 5 }}
-      />
+    const handleAvatarClick = async () => {
+      try {
+        if (!user || !user.userId) {
+          Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
+          return;
+        }
+        await navigateToProfile(navigation, user, {
+          showLoading: true,
+          onLoadingChange: () => {}, // Optional: Add loading state handling if needed
+        });
+      } catch (error) {
+        console.error("Error navigating to profile:", error);
+        Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
+      }
+    };
+
+    return (
+      <TouchableOpacity onPress={handleAvatarClick}>
+        {url ? (
+          <Image source={{ uri: url }} style={MessageItemStyle.avatar} />
+        ) : (
+          <AvatarUser
+            fullName={fullName}
+            width={32}
+            height={32}
+            avtText={12}
+            shadow={false}
+            bordered={false}
+            style={{ marginLeft: 5 }}
+          />
+        )}
+      </TouchableOpacity>
     );
   };
 
@@ -211,13 +229,9 @@ const MessageItem = ({
         ? userInfo?.fullname
         : receiver?.fullname;
 
-    // console.log("replyData", replyData);
-    // Check if the replied message is recalled
     if (replyData.isRecall || messageReplyId?.isRecall) {
       return (
-        <TouchableOpacity
-          onPress={() => onScrollToMessage(messageReplyId)} // Scroll to the original message
-        >
+        <TouchableOpacity onPress={() => onScrollToMessage(messageReplyId)}>
           <View style={MessageItemStyle.replyContainer}>
             <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
             <Text style={MessageItemStyle.replyContent}>
@@ -229,9 +243,7 @@ const MessageItem = ({
     }
 
     return (
-      <TouchableOpacity
-        onPress={() => onScrollToMessage(messageReplyId)} // Scroll to the original message
-      >
+      <TouchableOpacity onPress={() => onScrollToMessage(messageReplyId)}>
         <View style={MessageItemStyle.replyContainer}>
           <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
           {replyType === "text" ? (
@@ -257,7 +269,6 @@ const MessageItem = ({
   };
 
   const handleLinkPress = async (url) => {
-    // Ensure the URL starts with "http://" or "https://"
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       url = `https://${url}`;
     }
@@ -292,7 +303,8 @@ const MessageItem = ({
   };
 
   const renderContent = () => {
-    const { type, content, attachment, isRecall, isReply } = message;
+    const { type, attachment, isRecall, isReply } = message;
+    const content = message.content || "";
 
     if (type === "notification") {
       return renderNotification();
@@ -311,24 +323,33 @@ const MessageItem = ({
         {isReply && renderReplyContent()}
         {type === "text" ? (
           <View style={MessageItemStyle.textContainer}>
-            {renderTextWithLinks(content)}
+            {searchQuery ? (
+              <HighlightText
+                text={content}
+                searchQuery={searchQuery}
+                style={MessageItemStyle.content}
+                highlightStyle={{ backgroundColor: "#FFFF00" }}
+              />
+            ) : (
+              renderTextWithLinks(content)
+            )}
           </View>
-        ) : type === "file" ? (
+        ) : type === "file" && attachment ? (
           <View style={MessageItemStyle.fileContainer}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
             >
-              {renderFileIcon(attachment?.type || "unknown")}
+              {renderFileIcon(attachment.type || "unknown")}
               <Text style={MessageItemStyle.fileName}>
-                {attachment?.name || "Tệp tin"}
+                {attachment.name || "Tệp tin"}
               </Text>
             </View>
             <TouchableOpacity
               onPress={() =>
                 handleDownload(
-                  attachment?.url,
-                  attachment?.name || "Tệp tin",
-                  attachment?.downloadUrl
+                  attachment.url,
+                  attachment.name || "Tệp tin",
+                  attachment.downloadUrl
                 )
               }
               style={MessageItemStyle.downloadButton}
@@ -336,23 +357,23 @@ const MessageItem = ({
               <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
             </TouchableOpacity>
           </View>
-        ) : type === "image" || type === "text-with-image" ? (
+        ) : (type === "image" || type === "text-with-image") && attachment ? (
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("FullScreenImageViewer", {
-                imageUrl: attachment?.url || errorImage,
+                imageUrl: attachment.url || errorImage,
               })
             }
           >
             <Image
-              source={{ uri: attachment?.url || errorImage }}
+              source={{ uri: attachment.url || errorImage }}
               style={MessageItemStyle.image}
             />
           </TouchableOpacity>
-        ) : type === "video" ? (
+        ) : type === "video" && attachment ? (
           <View>
             <Video
-              source={{ uri: attachment?.url }}
+              source={{ uri: attachment.url }}
               style={MessageItemStyle.video}
               resizeMode="contain"
               useNativeControls

@@ -21,6 +21,7 @@ import AvatarUser from "@/app/components/profile/AvatarUser";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { api } from "@/app/api/api";
+import { navigateToProfile } from "@/app/utils/profileNavigation";
 
 const options = [
   {
@@ -350,7 +351,7 @@ const ConversationName = ({ receiver, conversation }) => {
     }
   };
 
-  const handlePress = (option) => {
+  const handlePress = async (option) => {
     if (option.action === "searchMessages") {
       navigation.navigate("Chat", {
         startSearch: true,
@@ -360,10 +361,15 @@ const ConversationName = ({ receiver, conversation }) => {
     } else if (option.action === "changeBackground") {
       handleBackgroundOption();
     } else if (option.name === "Trang\n cá nhân") {
-      navigation.navigate("UserProfile", {
-        friend: receiver,
-        requestSent: "friend",
-      });
+      try {
+        await navigateToProfile(navigation, receiver, {
+          showLoading: true,
+          onLoadingChange: setIsLoading,
+        });
+      } catch (error) {
+        console.error("Error navigating to profile:", error);
+        Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
+      }
     } else if (option.action === "addMember") {
       navigation.navigate("AddFriendToGroup", { conversation });
     }

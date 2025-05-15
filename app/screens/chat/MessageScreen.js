@@ -47,6 +47,8 @@ const MessageScreen = ({ route, navigation }) => {
   const [messages, setMessages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(startSearch || false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
   const [highlightedMessageIds, setHighlightedMessageIds] = useState([]);
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [replyingTo, setReplyingTo] = useState(null);
@@ -533,10 +535,7 @@ const MessageScreen = ({ route, navigation }) => {
       const cached = await getMessages(conversation.conversationId);
       if (cached && cached.length > 0) {
         setMessages(cached);
-        // console.log(
-        //   "Tin nhắn đã tải từ context:",
-        //   cached.map((msg) => msg.content)
-        // );
+        console.log("Tin nhắn đầu tiên từ context:", cached[0]); // Log first message
       }
 
       // Làm mới từ API để đồng bộ
@@ -545,10 +544,8 @@ const MessageScreen = ({ route, navigation }) => {
         const filtered = response.messages.filter(
           (m) => !m.hiddenFrom?.includes(userInfo.userId)
         );
-        // console.log(
-        //   "Tin nhắn đã tải từ API:",
-        //   filtered.map((msg) => msg.content)
-        // );
+
+        console.log("Tin nhắn đầu tiên từ API:", filtered[0]); // Log first message
 
         // Lưu tin nhắn vào AsyncStorage ngay khi tải từ API
         await saveMessages(
@@ -557,10 +554,10 @@ const MessageScreen = ({ route, navigation }) => {
           "before",
           (savedMessages) => {
             setMessages(savedMessages);
-            // console.log(
-            //   "Danh sách tin nhắn cuối cùng sau khi lưu:",
-            //   savedMessages.map((msg) => msg.content)
-            // );
+            console.log(
+              "Tin nhắn đầu tiên sau khi lưu:",
+              savedMessages[0] // Log first message
+            );
           }
         );
       }
@@ -575,7 +572,6 @@ const MessageScreen = ({ route, navigation }) => {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     if (!conversation?.conversationId) {
       console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
@@ -869,6 +865,90 @@ const MessageScreen = ({ route, navigation }) => {
     setReplyingTo(message);
   };
 
+  // Hàm tìm kiếm tin nhắn
+  const performSearch = useCallback(
+    (query) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        setCurrentIndex(-1);
+        setHighlightedMessageId(null);
+        return;
+      }
+
+      const fuse = new Fuse(
+        messages.filter(
+          (msg) =>
+            msg.type === "text" &&
+            !msg.isRecall &&
+            !msg.hiddenFrom?.includes(userInfo.userId) &&
+            msg.type !== "notification"
+        ),
+        {
+          keys: ["content"],
+          threshold: 0.3,
+          includeMatches: true,
+        }
+      );
+
+      let results = fuse.search(query).map((result) => result.item);
+
+      // Sort results to maintain the original order of messages
+      results = results.sort((a, b) => {
+        const indexA = messages.findIndex(
+          (msg) => msg.messageDetailId === a.messageDetailId
+        );
+        const indexB = messages.findIndex(
+          (msg) => msg.messageDetailId === b.messageDetailId
+        );
+        return indexA - indexB;
+      });
+
+      setSearchResults(results);
+
+      if (results.length > 0) {
+        const nearestIndex = results.findIndex(
+          (msg) => msg.messageDetailId === highlightedMessageId
+        );
+        const targetIndex = nearestIndex !== -1 ? nearestIndex : 0;
+
+        setCurrentIndex(targetIndex);
+        setHighlightedMessageId(results[targetIndex].messageDetailId);
+        scrollToMessage(results[targetIndex].messageDetailId);
+      } else {
+        setCurrentIndex(-1);
+        setHighlightedMessageId(null);
+      }
+    },
+    [messages, highlightedMessageId, userInfo.userId]
+  );
+
+  useEffect(() => {
+    if (isSearching) {
+      performSearch(searchQuery);
+    }
+  }, [searchQuery, isSearching, performSearch]);
+
+  // Điều hướng đến tin nhắn trước
+  const handlePrevious = () => {
+    if (currentIndex > 0) {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      setHighlightedMessageId(searchResults[newIndex].messageDetailId);
+      scrollToMessage(searchResults[newIndex].messageDetailId);
+    }
+  };
+
+  // Điều hướng đến tin nhắn tiếp theo
+  const handleNext = () => {
+    if (currentIndex < searchResults.length - 1) {
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      setHighlightedMessageId(searchResults[newIndex].messageDetailId);
+      scrollToMessage(searchResults[newIndex].messageDetailId);
+    }
+  };
+
+  // Hàm cuộn đến tin nhắn
   const scrollToMessage = (messageId) => {
     const index = messages.findIndex(
       (msg) => msg.messageDetailId === messageId
@@ -885,21 +965,23 @@ const MessageScreen = ({ route, navigation }) => {
           animated: true,
           viewPosition: 0.5,
         });
-        setHighlightedMessageId(messageId);
-
-        setTimeout(() => setHighlightedMessageId(null), 2000);
       } catch (error) {
         console.warn("Lỗi cuộn đến message:", error.message);
-
         flatListRef.current.scrollToOffset({
           offset: Math.max(0, index * 80),
           animated: true,
         });
-
-        setHighlightedMessageId(messageId);
-        setTimeout(() => setHighlightedMessageId(null), 2000);
       }
     }
+  };
+
+  // Thoát chế độ tìm kiếm
+  const handleCancelSearch = () => {
+    setIsSearching(false);
+    setSearchQuery("");
+    setSearchResults([]);
+    setCurrentIndex(-1);
+    setHighlightedMessageId(null);
   };
 
   const effectiveBackground = background || conversation?.background || null;
@@ -948,12 +1030,16 @@ const MessageScreen = ({ route, navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       <StatusBar />
-      <ChatHeader
-        navigation={navigation}
-        receiver={receiver}
-        conversation={conversation}
-        lastActiveStatus={calculateLastActive(receiver?.lastActive)}
-      />
+      {isSearching ? (
+        <SearchHeader onSearch={setSearchQuery} onCancel={handleCancelSearch} />
+      ) : (
+        <ChatHeader
+          navigation={navigation}
+          receiver={receiver}
+          conversation={conversation}
+          lastActiveStatus={calculateLastActive(receiver?.lastActive)}
+        />
+      )}
       <ImageBackground
         source={effectiveBackground ? { uri: effectiveBackground } : null}
         style={{ flex: 1 }}
@@ -964,12 +1050,11 @@ const MessageScreen = ({ route, navigation }) => {
             messages={messages}
             setMessages={setMessages}
             senderId={userInfo.userId}
-            highlightedMessageIds={highlightedMessageIds}
             highlightedMessageId={highlightedMessageId}
             searchQuery={searchQuery}
             receiver={receiver}
             onTyping={isTyping}
-            onReply={handleReply}
+            onReply={setReplyingTo}
             flatListRef={flatListRef}
             onScrollToMessage={scrollToMessage}
             conversationId={conversation.conversationId}
@@ -985,6 +1070,16 @@ const MessageScreen = ({ route, navigation }) => {
               </Text>
             )}
           </View>
+        )}
+        {isSearching && (
+          <SearchFooter
+            resultCount={searchResults.length}
+            currentIndex={currentIndex}
+            onNext={handleNext}
+            onPrevious={handlePrevious}
+            disableNext={currentIndex >= searchResults.length - 1}
+            disablePrevious={currentIndex <= 0}
+          />
         )}
         <ChatFooter
           onSendMessage={handleSendMessage}

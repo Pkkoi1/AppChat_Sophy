@@ -6,6 +6,7 @@ import {
   Pressable,
   TouchableOpacity,
   Modal,
+  Animated,
 } from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
@@ -13,6 +14,7 @@ import ConversationStyle from "./ConversationStyle";
 import MessagePopup from "../../../features/messagePopup/MessagePopup";
 import PinnedMessage from "./PinnedMessage";
 import { AuthContext } from "@/app/auth/AuthContext";
+import { Feather } from "@expo/vector-icons";
 
 const Conversation = ({
   messages,
@@ -34,6 +36,9 @@ const Conversation = ({
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [messageReactions, setMessageReactions] = useState({});
   const [pinnedModalVisible, setPinnedModalVisible] = useState(false);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const scrollY = useRef(new Animated.Value(0)).current;
+
   const pinnedMessages = messages.filter(
     (msg) => msg && typeof msg === "object" && msg.isPinned
   );
@@ -43,6 +48,18 @@ const Conversation = ({
     if (message.type !== "notification") {
       setSelectedMessage(message);
       setPopupVisible(true);
+    }
+  };
+
+  const handleScroll = (event) => {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setShowScrollToBottom(offsetY > 100); // Show button if scrolled up by 100px
+  };
+
+  const scrollToBottom = () => {
+    if (flatListRef?.current) {
+      flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+      setShowScrollToBottom(false); // Hide button after scrolling
     }
   };
 
@@ -72,7 +89,7 @@ const Conversation = ({
       )}
       <FlatList
         ref={flatListRef} // Use FlatList ref passed from MessageScreen
-        data={messages}
+        data={messages.filter((msg) => msg && (msg.content || msg.attachment))} // Include messages with content or attachment
         keyExtractor={(item) => item.messageDetailId}
         renderItem={({ item, index }) => {
           const prevMessage =
@@ -121,7 +138,19 @@ const Conversation = ({
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         keyboardShouldPersistTaps="always"
+        onScroll={handleScroll} // Track scroll position
+        scrollEventThrottle={16}
       />
+      {showScrollToBottom && (
+        <TouchableOpacity
+          style={ConversationStyle.scrollToBottomButton}
+          onPress={scrollToBottom}
+        >
+          <Text style={ConversationStyle.scrollToBottomText}>
+            <Feather name="chevrons-down" size={24} color="black" />
+          </Text>
+        </TouchableOpacity>
+      )}
       {onTyping && (
         <View style={ConversationStyle.typingIndicatorContainer}>
           <Text style={ConversationStyle.typingIndicatorText}>

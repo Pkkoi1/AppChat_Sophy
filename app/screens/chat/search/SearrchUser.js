@@ -13,6 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
+import { navigateToProfile } from "@/app/utils/profileNavigation";
 
 const SearchUser = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,43 +88,15 @@ const SearchUser = ({ navigation }) => {
   const handleContactClick = async (contact) => {
     try {
       setIsSearching(true);
-  
-      // Gọi API để lấy thông tin bạn bè, lời mời đã gửi và đã nhận
-      const friends = await api.getFriends();
-      const isFriend = friends.some((f) => f.userId === contact.userId);
-  
-      let requestSent = "";
-      if (isFriend) {
-        requestSent = "friend";
-      } else {
-        const sentRequests = await api.getFriendRequestsSent();
-        const isRequestSent = sentRequests.some(
-          (sentRequest) => sentRequest.receiverId?.userId === contact.userId
-        );
-  
-        if (isRequestSent) {
-          requestSent = "pending";
-        } else {
-          const receivedRequests = await api.getFriendRequestsReceived();
-          const isRequestReceived = receivedRequests.some(
-            (req) => req.senderId?.userId === contact.userId
-          );
-  
-          if (isRequestReceived) {
-            requestSent = "accepted";
-          }
-        }
-      }
-  
-      // Điều hướng đến màn hình UserProfile
-      navigation.navigate("UserProfile", {
-        friend: contact,
-        requestSent,
+      // Just call the utility function with the user object
+      // No need to manually determine friend status
+      await navigateToProfile(navigation, contact, {
+        showLoading: true,
+        onLoadingChange: (loading) => setIsSearching(loading)
       });
     } catch (error) {
-      console.error("Lỗi khi xử lý contact:", error);
+      console.error("Error in handleContactClick:", error);
       Alert.alert("Lỗi", "Không thể xử lý thông tin người dùng.");
-    } finally {
       setIsSearching(false);
     }
   };
