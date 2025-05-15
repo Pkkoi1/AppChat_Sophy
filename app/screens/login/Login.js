@@ -39,9 +39,9 @@ function LoginScreen({ navigation }) {
     try {
       // Gọi hàm login từ AuthContext
       await login({ phone, password });
+      await handlerRefresh(); // Gọi hàm refresh để cập nhật dữ liệu
       setIsLoading(false); // Kết thúc loading
       Alert.alert("Đăng nhập thành công!", `Chào ${phone}!`);
-      await handlerRefresh(); // Gọi hàm refresh để cập nhật dữ liệu
 
       navigation.navigate("Home"); // Điều hướng đến màn hình chính
     } catch (error) {
