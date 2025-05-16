@@ -234,7 +234,7 @@ const readFile = async (fileName) => {
     const content = await FileSystem.readAsStringAsync(target, {
       encoding: FileSystem.EncodingType.UTF8,
     });
-    console.log("📄 Nội dung tệp:", content);
+    // console.log("📄 Nội dung tệp:", content);
     if (!content) return { messages: {}, conversations: [] };
 
     try {
@@ -328,27 +328,35 @@ export const debugFileContent = async (fileName) => {
 
 export const getConversations = async () => {
   const data = await readUserData();
-  return data.conversations || [];
+  // Đảm bảo trả về đúng cấu trúc object
+  return {
+    nonPinned: data.conversations || [],
+    pinned: data.pinnedConversations || [],
+  };
 };
 
-export const saveConversations = async (conversations) => {
+export const saveConversations = async ({ nonPinned = [], pinned = [] }) => {
   const data = await readUserData();
   const MAX_CONVERSATIONS = 100;
-  data.conversations = conversations.slice(0, MAX_CONVERSATIONS);
+  data.conversations = nonPinned.slice(0, MAX_CONVERSATIONS);
+  data.pinnedConversations = pinned.slice(0, MAX_CONVERSATIONS);
   await writeUserData(data);
-  return data.conversations;
+  return {
+    nonPinned: data.conversations,
+    pinned: data.pinnedConversations,
+  };
 };
 
 export const getMessages = async (conversationId) => {
   const data = await readUserData();
-  console.log("📂 Dữ liệu từ readUserData:", JSON.stringify(data));
+  // console.log("📂 Dữ liệu từ readUserData:", JSON.stringify(data));
   if (!data || !data.messages) {
     console.warn("⚠️ Không có dữ liệu messages trong readUserData:", data);
     return [];
   }
 
   const messages = data.messages?.[conversationId] || [];
-  console.log("📩 Tin nhắn từ readUserData:", messages);
+  // console.log("📩 Tin nhắn từ readUserData:", messages);
   if (Array.isArray(messages) && messages.length > 0) {
     return messages.map((msg) => ({
       ...msg,

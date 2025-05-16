@@ -5,7 +5,7 @@ import React, {
   useContext,
   useRef,
   useCallback,
-  memo,
+  useMemo,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/app/api/api";
@@ -14,11 +14,12 @@ import * as Contacts from "expo-contacts";
 import { Alert, Linking } from "react-native";
 import { fetchName } from "../components/getUserInfo/UserName";
 import { setupAuthSocketEvents } from "../socket/socketEvents/AuthSocketEvents";
+import { pickExternalDirectory } from "@/app/storage/StorageService";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [accessToken, setaccessToken] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
   const [refreshToken, setRefreshToken] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,6 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
+  const joinedConversationIds = useRef(new Set());
 
   useEffect(() => {
     clearStorage();
@@ -57,7 +59,7 @@ export const AuthProvider = ({ children }) => {
           ]);
 
         if (token[1] && refresh[1] && user[1]) {
-          setaccessToken(token[1]);
+          setAccessToken(token[1]);
           setRefreshToken(refresh[1]);
           setUserInfo(JSON.parse(user[1]));
         }
@@ -83,239 +85,634 @@ export const AuthProvider = ({ children }) => {
     loadStorage();
   }, []);
 
+  // Handle socket reconnection
   useEffect(() => {
-    const cleanup = setupAuthSocketEvents(
-      socket,
-      userInfo,
-      setConversations,
-      saveMessages,
-      addConversation
-    );
-    return cleanup;
-  }, [socket, userInfo, setConversations, saveMessages, addConversation]);
+    if (socket && userInfo?.userId) {
+      const allIds = [...conversations, ...pinnedConversations].map(
+        (conv) => conv.conversationId
+      );
+      const currentIdsSet = new Set(allIds);
+      const joinedIdsSet = joinedConversationIds.current;
 
-  const clearStorage = async () => {
+      const hasChanged =
+        allIds.length !== joinedIdsSet.size ||
+        allIds.some((id) => !joinedIdsSet.has(id));
+
+      if (hasChanged) {
+        socket.emit("joinUserConversations", allIds);
+        joinedConversationIds.current = currentIdsSet;
+        console.log("📡 Đã join tất cả conversations:", allIds);
+      }
+    }
+  }, [
+    socket,
+    userInfo?.userId,
+    conversations.length,
+    pinnedConversations.length,
+  ]);
+
+  useEffect(() => {
+    if (userInfo?.userId) {
+      fetchFriends();
+    }
+  }, [userInfo, fetchFriends]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewMessage = ({
+      conversationId: incomingConversationId,
+      message,
+    }) => {
+      const formattedMessage = message._doc || message;
+
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === incomingConversationId
+            ? { ...conv, lastMessage: formattedMessage, unreadCount: [] }
+            : conv
+        )
+      );
+
+      flatListRef?.current?.scrollToOffset({ animated: true, offset: 0 });
+      console.log("🟢 Nhận tin nhắn mới:", formattedMessage);
+    };
+
+    const handleNewConversation = ({ conversation }) => {
+      console.log("🟢 Nhận cuộc trò chuyện mới:", conversation);
+      addConversation(conversation); // Thêm mới vào danh sách
+    };
+
+    const handleAvatarChange = ({ conversationId, newAvatar }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                groupAvatarUrl: newAvatar,
+                unreadCount: [],
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: "Ảnh nhóm đã thay đổi",
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`Đã cập nhật avatar cho cuộc trò chuyện ${conversationId}.`);
+    };
+
+    const handleNewGroupName = ({ conversationId, newName }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                groupName: newName,
+                unreadCount: [],
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: "Tên nhóm đã thay đổi",
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log("Đã đổi tên nhóm");
+    };
+
+    const handleNewMemberJoined = async ({ conversationId, userId }) => {
+      const userName = await fetchName(userId);
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [],
+                groupMembers: [...conv.groupMembers, userId],
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} vừa vào nhóm`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`User ${userName} đã vào nhóm ${conversationId}`);
+    };
+
+    const handleUserAdded = async ({
+      conversationId,
+      addedUser,
+      addedByUser,
+    }) => {
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [],
+                groupMembers: [...conv.groupMembers, addedUser.userId],
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${addedByUser.fullname} đã thêm ${addedUser.fullname} vào nhóm`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `User ${addedUser.fullname} đã được thêm vào nhóm ${conversationId}`
+      );
+    };
+
+    const handleMemberLeft = async ({ conversationId, userId }) => {
+      const userName = await fetchName(userId);
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [],
+                groupMembers: conv.groupMembers.filter((id) => id !== userId),
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã rời nhóm`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(`User ${userName} đã rời nhóm ${conversationId}`);
+    };
+
+    const handleMemberRemoved = async ({
+      conversationId,
+      kickedUser,
+      kickedByUser,
+    }) => {
+      if (kickedUser.userId === userInfo?.userId) {
+        console.log("Bạn đã bị xóa khỏi nhóm. Xóa cuộc trò chuyện...");
+        setConversations((prevConversations) =>
+          prevConversations.filter(
+            (conv) => conv.conversationId !== conversationId
+          )
+        );
+      } else {
+        setConversations((prevConversations) =>
+          prevConversations.map((conv) =>
+            conv.conversationId === conversationId
+              ? {
+                  ...conv,
+                  unreadCount: [],
+                  groupMembers: conv.groupMembers.filter(
+                    (id) => id !== kickedUser.userId
+                  ),
+                  lastMessage: {
+                    ...conv.lastMessage,
+                    content: `${kickedUser.fullname} đã bị ${kickedByUser.fullname} xóa khỏi nhóm`,
+                    senderId: null,
+                    createdAt: new Date().toISOString(),
+                  },
+                }
+              : conv
+          )
+        );
+      }
+    };
+
+    const handleUserBlocked = async ({ conversationId, blockedUserId }) => {
+      if (blockedUserId === userInfo?.userId) {
+        console.log("Bạn đã bị chặn khỏi nhóm. Xóa cuộc trò chuyện...");
+        setConversations((prevConversations) =>
+          prevConversations.filter(
+            (conv) => conv.conversationId !== conversationId
+          )
+        );
+      } else {
+        const userName = await fetchName(blockedUserId);
+        setConversations((prevConversations) =>
+          prevConversations.map((conv) =>
+            conv.conversationId === conversationId
+              ? {
+                  ...conv,
+                  blocked: [...conv.blocked, blockedUserId],
+                  lastMessage: {
+                    ...conv.lastMessage,
+                    content: `${userName} đã bị chặn khỏi nhóm`,
+                    senderId: null,
+                    createdAt: new Date().toISOString(),
+                  },
+                }
+              : conv
+          )
+        );
+      }
+    };
+
+    const handleOwnerChange = async ({ conversationId, newOwner }) => {
+      const userName = await fetchName(newOwner);
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [],
+                rules: {
+                  ...conv.rules,
+                  ownerId: newOwner,
+                },
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đang là nhóm trưởng`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `Nhóm trưởng đã được truyền lại cho user ${newOwner} trong nhóm ${conversationId}`
+      );
+    };
+
+    const handleAddCoOwner = async ({ conversationId, newCoOwnerIds }) => {
+      const userName = await fetchName(newCoOwnerIds);
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [],
+                rules: {
+                  ...conv.rules,
+                  coOwnerIds: [...conv.rules.coOwnerIds, ...newCoOwnerIds],
+                },
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã làm nhóm phó`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `Nhóm phó đã được thêm: ${newCoOwnerIds.join(
+          ", "
+        )} trong nhóm ${conversationId}`
+      );
+    };
+
+    const handleRemoveCoOwner = async ({ conversationId, removedCoOwner }) => {
+      const userName = await fetchName(removedCoOwner);
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                unreadCount: [],
+                rules: {
+                  ...conv.rules,
+                  coOwnerIds: conv.rules.coOwnerIds.filter(
+                    (id) => !removedCoOwner.includes(id)
+                  ),
+                },
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã không còn là nhóm phó`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `Nhóm phó đã bị loại bỏ: ${removedCoOwner.join(
+          ", "
+        )} trong nhóm ${conversationId}`
+      );
+    };
+
+    const handleGroupDeleted = ({ conversationId }) => {
+      setConversations((prevConversations) =>
+        prevConversations.filter(
+          (conv) => conv.conversationId !== conversationId
+        )
+      );
+      console.log(`Nhóm ${conversationId} đã bị xóa`);
+    };
+
+    const handleUserUnblocked = async ({ conversationId, unblockedUserId }) => {
+      const userName = await fetchName(unblockedUserId);
+      setConversations((prevConversations) =>
+        prevConversations.map((conv) =>
+          conv.conversationId === conversationId
+            ? {
+                ...conv,
+                blocked: conv.blocked.filter((id) => id !== unblockedUserId),
+                lastMessage: {
+                  ...conv.lastMessage,
+                  content: `${userName} đã được gỡ chặn khỏi nhóm`,
+                  senderId: null,
+                  createdAt: new Date().toISOString(),
+                },
+              }
+            : conv
+        )
+      );
+      console.log(
+        `User ${userName} đã được bỏ chặn trong nhóm ${conversationId}`
+      );
+    };
+
+    socket.on("newMessage", handleNewMessage);
+    socket.on("newConversation", handleNewConversation);
+    socket.on("groupAvatarChanged", handleAvatarChange);
+    socket.on("groupNameChanged", handleNewGroupName);
+    socket.on("userJoinedGroup", handleNewMemberJoined);
+    socket.on("userAddedToGroup", handleUserAdded);
+    socket.on("userLeftGroup", handleMemberLeft);
+    socket.on("userRemovedFromGroup", handleMemberRemoved);
+    socket.on("groupOwnerChanged", handleOwnerChange);
+    socket.on("groupCoOwnerAdded", handleAddCoOwner);
+    socket.on("groupCoOwnerRemoved", handleRemoveCoOwner);
+    socket.on("groupDeleted", handleGroupDeleted);
+    socket.on("userBlocked", handleUserBlocked);
+    socket.on("userUnblocked", handleUserUnblocked);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.off("newConversation", handleNewConversation);
+      socket.off("groupAvatarChanged", handleAvatarChange);
+      socket.off("groupNameChanged", handleNewGroupName);
+      socket.off("userJoinedGroup", handleNewMemberJoined);
+      socket.off("userAddedToGroup", handleUserAdded);
+      socket.off("userRemovedFromGroup", handleMemberRemoved);
+      socket.off("userLeftGroup", handleMemberLeft);
+      socket.off("groupOwnerChanged", handleOwnerChange);
+      socket.off("groupCoOwnerAdded", handleAddCoOwner);
+      socket.off("groupCoOwnerRemoved", handleRemoveCoOwner);
+      socket.off("groupDeleted", handleGroupDeleted);
+      socket.off("userBlocked", handleUserBlocked);
+      socket.off("userUnblocked", handleUserUnblocked);
+    };
+  }, [socket, addConversation]);
+
+  const clearStorage = useCallback(async () => {
     try {
       await AsyncStorage.clear();
       console.log("Đã xóa sạch dữ liệu AsyncStorage");
     } catch (e) {
       console.error("Lỗi khi xóa AsyncStorage:", e);
     }
-  };
+  }, []);
 
-  const checkLastMessageDifference = async (conversationId) => {
-    try {
-      const localConversation = [...conversations, ...pinnedConversations].find(
-        (conv) => conv.conversationId === conversationId
-      );
-      const localLastMessage = localConversation?.lastMessage || null;
+  const checkLastMessageDifference = useCallback(
+    async (conversationId) => {
+      try {
+        const localConversation = [
+          ...conversations,
+          ...pinnedConversations,
+        ].find((conv) => conv.conversationId === conversationId);
+        const localLastMessage = localConversation?.lastMessage || null;
 
-      const response = await api.getAllMessages(conversationId);
-      if (!response || !response.messages) {
-        throw new Error("API không trả về dữ liệu tin nhắn hợp lệ.");
-      }
+        const response = await api.getAllMessages(conversationId);
+        if (!response || !response.messages) {
+          throw new Error("API không trả về dữ liệu tin nhắn hợp lệ.");
+        }
 
-      const serverMessages = response.messages.filter(
-        (m) => !m.hiddenFrom?.includes(userInfo?.userId)
-      );
-      const serverLastMessage = serverMessages[0] || null;
+        const serverMessages = response.messages.filter(
+          (m) => !m.hiddenFrom?.includes(userInfo?.userId)
+        );
+        const serverLastMessage = serverMessages[0] || null;
 
-      if (!localLastMessage && !serverLastMessage) {
-        console.log("Không có tin nhắn nào ở cả hai bên.");
+        if (!localLastMessage && !serverLastMessage) {
+          console.log("Không có tin nhắn nào ở cả hai bên.");
+          return {
+            isDifferent: false,
+            details: "Không có tin nhắn ở cả hai bên",
+          };
+        }
+
+        if (!localLastMessage || !serverLastMessage) {
+          console.log("Một bên không có tin nhắn.");
+          return {
+            isDifferent: true,
+            details: `Cục bộ: ${
+              localLastMessage ? "Có tin nhắn" : "Không có"
+            }, Server: ${serverLastMessage ? "Có tin nhắn" : "Không có"}`,
+          };
+        }
+
+        const isDifferent =
+          localLastMessage.messageDetailId !==
+            serverLastMessage.messageDetailId ||
+          localLastMessage.content !== serverLastMessage.content ||
+          localLastMessage.createdAt !== serverLastMessage.createdAt;
+
+        if (isDifferent) {
+          console.log("Tin nhắn cuối cùng khác nhau:", {
+            local: {
+              id: localLastMessage.messageDetailId,
+              content: localLastMessage.content,
+              createdAt: localLastMessage.createdAt,
+            },
+            server: {
+              id: serverLastMessage.messageDetailId,
+              content: serverLastMessage.content,
+              createdAt: serverLastMessage.createdAt,
+            },
+          });
+        } else {
+          console.log("Tin nhắn cuối cùng khớp giữa client và server.");
+        }
+
         return {
-          isDifferent: false,
-          details: "Không có tin nhắn ở cả hai bên",
+          isDifferent,
+          details: isDifferent
+            ? `Cục bộ: ${localLastMessage.messageDetailId}, Server: ${serverLastMessage.messageDetailId}`
+            : "Tin nhắn khớp",
         };
-      }
-
-      if (!localLastMessage || !serverLastMessage) {
-        console.log("Một bên không có tin nhắn.");
+      } catch (error) {
+        console.error("Lỗi kiểm tra tin nhắn cuối cùng:", error);
         return {
           isDifferent: true,
-          details: `Cục bộ: ${
-            localLastMessage ? "Có tin nhắn" : "Không có"
-          }, Server: ${serverLastMessage ? "Có tin nhắn" : "Không có"}`,
+          details: `Lỗi: ${error.message}`,
         };
       }
+    },
+    [conversations, pinnedConversations, userInfo?.userId]
+  );
 
-      const isDifferent =
-        localLastMessage.messageDetailId !==
-          serverLastMessage.messageDetailId ||
-        localLastMessage.content !== serverLastMessage.content ||
-        localLastMessage.createdAt !== serverLastMessage.createdAt;
+  const addConversation = useCallback(
+    async (conversationData) => {
+      try {
+        if (!conversationData.conversationId) {
+          throw new Error("Thiếu conversationId.");
+        }
 
-      if (isDifferent) {
-        console.log("Tin nhắn cuối cùng khác nhau:", {
-          local: {
-            id: localLastMessage.messageDetailId,
-            content: localLastMessage.content,
-            createdAt: localLastMessage.createdAt,
-          },
-          server: {
-            id: serverLastMessage.messageDetailId,
-            content: serverLastMessage.content,
-            createdAt: serverLastMessage.createdAt,
-          },
-        });
-      } else {
-        console.log("Tin nhắn cuối cùng khớp giữa client và server.");
-      }
-
-      return {
-        isDifferent,
-        details: isDifferent
-          ? `Cục bộ: ${localLastMessage.messageDetailId}, Server: ${serverLastMessage.messageDetailId}`
-          : "Tin nhắn khớp",
-      };
-    } catch (error) {
-      console.error("Lỗi kiểm tra tin nhắn cuối cùng:", error);
-      return {
-        isDifferent: true,
-        details: `Lỗi: ${error.message}`,
-      };
-    }
-  };
-
-  const addConversation = async (conversationData) => {
-    try {
-      if (!conversationData.conversationId) {
-        throw new Error("Thiếu conversationId.");
-      }
-
-      const isPinned = userInfo?.pinnedConversations?.some(
-        (pinned) => pinned.conversationId === conversationData.conversationId
-      );
-
-      if (isPinned) {
-        const pinnedInfo = userInfo?.pinnedConversations.find(
+        const isPinned = userInfo?.pinnedConversations?.some(
           (pinned) => pinned.conversationId === conversationData.conversationId
         );
-        const updatedPinned = Array.from(
-          new Map(
-            [
-              {
-                ...conversationData,
-                messages: [],
-                pinnedAt: pinnedInfo?.pinnedAt || new Date().toISOString(),
-                isPinned: true,
-              },
-              ...pinnedConversations,
-            ].map((conv) => [conv.conversationId, conv])
-          ).values()
-        ).sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
-        setPinnedConversations(updatedPinned);
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(updatedPinned)
-        );
-        console.log(
-          `Đã thêm cuộc trò chuyện ghim ${conversationData.conversationId} cục bộ.`
-        );
-      } else {
-        const updatedConversations = Array.from(
-          new Map(
-            [{ ...conversationData, messages: [] }, ...conversations].map(
-              (conv) => [conv.conversationId, conv]
-            )
-          ).values()
-        ).sort((a, b) => {
-          const timeA = a.lastMessage?.createdAt
-            ? new Date(a.lastMessage.createdAt)
-            : new Date(0);
-          const timeB = b.lastMessage?.createdAt
-            ? new Date(b.lastMessage.createdAt)
-            : new Date(0);
-          return timeB - timeA;
-        });
-        setConversations(updatedConversations);
-        await AsyncStorage.setItem(
-          "conversations",
-          JSON.stringify(updatedConversations)
-        );
-        console.log(
-          `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
-        );
+
+        if (isPinned) {
+          const pinnedInfo = userInfo?.pinnedConversations.find(
+            (pinned) =>
+              pinned.conversationId === conversationData.conversationId
+          );
+          setPinnedConversations((prev) => {
+            const updatedPinned = Array.from(
+              new Map(
+                [
+                  {
+                    ...conversationData,
+                    messages: [],
+                    pinnedAt: pinnedInfo?.pinnedAt || new Date().toISOString(),
+                    isPinned: true,
+                  },
+                  ...prev,
+                ].map((conv) => [conv.conversationId, conv])
+              ).values()
+            ).sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
+            AsyncStorage.setItem(
+              "pinnedConversations",
+              JSON.stringify(updatedPinned)
+            );
+            console.log(
+              `Đã thêm cuộc trò chuyện ghim ${conversationData.conversationId} cục bộ.`
+            );
+            return updatedPinned;
+          });
+        } else {
+          setConversations((prev) => {
+            const updatedConversations = Array.from(
+              new Map(
+                [{ ...conversationData, messages: [] }, ...prev].map((conv) => [
+                  conv.conversationId,
+                  conv,
+                ])
+              ).values()
+            ).sort((a, b) => {
+              const timeA = a.lastMessage?.createdAt
+                ? new Date(a.lastMessage.createdAt)
+                : new Date(0);
+              const timeB = b.lastMessage?.createdAt
+                ? new Date(b.lastMessage.createdAt)
+                : new Date(0);
+              return timeB - timeA;
+            });
+            AsyncStorage.setItem(
+              "conversations",
+              JSON.stringify(updatedConversations)
+            );
+            console.log(
+              `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
+            );
+            return updatedConversations;
+          });
+        }
+
+        return conversationData;
+      } catch (error) {
+        console.error("Lỗi khi thêm cuộc trò chuyện:", error);
+        throw error;
       }
+    },
+    [userInfo?.pinnedConversations]
+  );
 
-      return conversationData;
-    } catch (error) {
-      console.error("Lỗi khi thêm cuộc trò chuyện:", error);
-      setConversations(conversations);
-      await AsyncStorage.setItem(
-        "conversations",
-        JSON.stringify(conversations)
-      );
-      throw error;
-    }
-  };
-
-  const removeConversation = async (conversationId) => {
-    try {
-      const { isDifferent } = await checkLastMessageDifference(conversationId);
-      if (isDifferent) {
-        console.warn(
-          "Tin nhắn cuối không đồng bộ trước khi xóa cuộc trò chuyện."
+  const removeConversation = useCallback(
+    async (conversationId) => {
+      try {
+        const { isDifferent } = await checkLastMessageDifference(
+          conversationId
         );
-        await handlerRefresh();
+        if (isDifferent) {
+          console.warn(
+            "Tin nhắn cuối không đồng bộ trước khi xóa cuộc trò chuyện."
+          );
+          await handlerRefresh();
+        }
+
+        const isPinned = pinnedConversations.some(
+          (conv) => conv.conversationId === conversationId
+        );
+
+        if (isPinned) {
+          setPinnedConversations((prev) => {
+            const updatedPinned = prev.filter(
+              (conv) => conv.conversationId !== conversationId
+            );
+            AsyncStorage.setItem(
+              "pinnedConversations",
+              JSON.stringify(updatedPinned)
+            );
+            console.log(
+              `Đã xóa cuộc trò chuyện ghim ${conversationId} cục bộ.`
+            );
+            return updatedPinned;
+          });
+        } else {
+          setConversations((prev) => {
+            const updatedConversations = prev.filter(
+              (conv) => conv.conversationId !== conversationId
+            );
+            AsyncStorage.setItem(
+              "conversations",
+              JSON.stringify(updatedConversations)
+            );
+            console.log(`Đã xóa cuộc trò chuyện ${conversationId} cục bộ.`);
+            return updatedConversations;
+          });
+        }
+
+        const response = await api.deleteConversation(conversationId);
+        console.log(`Đã xóa cuộc trò chuyện trên server:`, response);
+
+        if (socket && socket.connected) {
+          socket.emit("conversationRemoved", {
+            conversationId,
+            userId: userInfo?.userId,
+          });
+        }
+
+        return response;
+      } catch (error) {
+        console.error("Lỗi khi xóa cuộc trò chuyện:", error);
+        Alert.alert(
+          "Lỗi",
+          `Không thể xóa cuộc trò chuyện: ${
+            error.response?.data?.message || error.message
+          }`
+        );
+        throw error;
       }
+    },
+    [
+      checkLastMessageDifference,
+      handlerRefresh,
+      pinnedConversations,
+      conversations,
+      socket,
+      userInfo?.userId,
+    ]
+  );
 
-      const isPinned = pinnedConversations.some(
-        (conv) => conv.conversationId === conversationId
-      );
-
-      if (isPinned) {
-        const updatedPinned = pinnedConversations.filter(
-          (conv) => conv.conversationId !== conversationId
-        );
-        setPinnedConversations(updatedPinned);
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(updatedPinned)
-        );
-        console.log(`Đã xóa cuộc trò chuyện ghim ${conversationId} cục bộ.`);
-      } else {
-        const updatedConversations = conversations.filter(
-          (conv) => conv.conversationId !== conversationId
-        );
-        setConversations(updatedConversations);
-        await AsyncStorage.setItem(
-          "conversations",
-          JSON.stringify(updatedConversations)
-        );
-        console.log(`Đã xóa cuộc trò chuyện ${conversationId} cục bộ.`);
-      }
-
-      const response = await api.deleteConversation(conversationId);
-      console.log(`Đã xóa cuộc trò chuyện trên server:`, response);
-
-      if (socket && socket.connected) {
-        socket.emit("conversationRemoved", {
-          conversationId,
-          userId: userInfo?.userId,
-        });
-      }
-
-      return response;
-    } catch (error) {
-      console.error("Lỗi khi xóa cuộc trò chuyện:", error);
-      Alert.alert(
-        "Lỗi",
-        `Không thể xóa cuộc trò chuyện: ${
-          error.response?.data?.message || error.message
-        }`
-      );
-
-      const revertedConversations = conversations;
-      setConversations(revertedConversations);
-      await AsyncStorage.setItem(
-        "conversations",
-        JSON.stringify(revertedConversations)
-      );
-      throw error;
-    }
-  };
-
-  const updateGroupMembers = async (conversationId, newMembers) => {
+  const updateGroupMembers = useCallback(async (conversationId, newMembers) => {
     try {
       if (!conversationId || !Array.isArray(newMembers)) {
         throw new Error(
@@ -330,8 +727,16 @@ export const AuthProvider = ({ children }) => {
             : conv
         );
 
-      setConversations(updateList);
-      setPinnedConversations(updateList);
+      setConversations((prev) => {
+        const updated = updateList(prev);
+        AsyncStorage.setItem("conversations", JSON.stringify(updated));
+        return updated;
+      });
+      setPinnedConversations((prev) => {
+        const updated = updateList(prev);
+        AsyncStorage.setItem("pinnedConversations", JSON.stringify(updated));
+        return updated;
+      });
 
       setGroupMember((prevMembers) => [
         ...prevMembers,
@@ -341,15 +746,6 @@ export const AuthProvider = ({ children }) => {
         ),
       ]);
 
-      await AsyncStorage.setItem(
-        "conversations",
-        JSON.stringify(conversations)
-      );
-      await AsyncStorage.setItem(
-        "pinnedConversations",
-        JSON.stringify(pinnedConversations)
-      );
-
       console.log(
         `Đã thêm danh sách thành viên mới vào nhóm ${conversationId}:`,
         newMembers
@@ -358,9 +754,9 @@ export const AuthProvider = ({ children }) => {
       console.error("Lỗi khi thêm danh sách thành viên mới:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const changeRole = async (conversationId, memberId, newRole) => {
+  const changeRole = useCallback(async (conversationId, memberId, newRole) => {
     try {
       if (!conversationId || !memberId || !newRole) {
         throw new Error("Thiếu conversationId, memberId hoặc role.");
@@ -373,15 +769,15 @@ export const AuthProvider = ({ children }) => {
       );
 
       console.log(
-        `Đã thay đổi vai trò của thành viên ${memberId} thành ${newRole} trong nhóm ${conversationId}. \n Danh sách ${groupMember}`
+        `Đã thay đổi vai trò của thành viên ${memberId} thành ${newRole} trong nhóm ${conversationId}.`
       );
     } catch (error) {
       console.error("Lỗi khi thay đổi vai trò thành viên:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const removeGroupMember = async (conversationId, memberId) => {
+  const removeGroupMember = useCallback(async (conversationId, memberId) => {
     try {
       if (!conversationId || !memberId) {
         throw new Error("Thiếu conversationId hoặc memberId.");
@@ -397,20 +793,19 @@ export const AuthProvider = ({ children }) => {
             : conv
         );
 
-      setConversations(updateList);
-      setPinnedConversations(updateList);
+      setConversations((prev) => {
+        const updated = updateList(prev);
+        AsyncStorage.setItem("conversations", JSON.stringify(updated));
+        return updated;
+      });
+      setPinnedConversations((prev) => {
+        const updated = updateList(prev);
+        AsyncStorage.setItem("pinnedConversations", JSON.stringify(updated));
+        return updated;
+      });
 
       setGroupMember((prevMembers) =>
         prevMembers.filter((member) => member.id !== memberId)
-      );
-
-      await AsyncStorage.setItem(
-        "conversations",
-        JSON.stringify(conversations)
-      );
-      await AsyncStorage.setItem(
-        "pinnedConversations",
-        JSON.stringify(pinnedConversations)
       );
 
       console.log(`Đã xóa thành viên ${memberId} khỏi nhóm ${conversationId}.`);
@@ -418,9 +813,9 @@ export const AuthProvider = ({ children }) => {
       console.error("Lỗi khi xóa thành viên nhóm:", error);
       throw error;
     }
-  };
+  }, []);
 
-  const saveGroupMembers = async (conversationId, members) => {
+  const saveGroupMembers = useCallback(async (conversationId, members) => {
     try {
       if (!conversationId || !Array.isArray(members)) {
         throw new Error(
@@ -437,7 +832,7 @@ export const AuthProvider = ({ children }) => {
       console.error("Lỗi khi lưu danh sách thành viên nhóm:", error);
       throw error;
     }
-  };
+  }, []);
 
   const saveMessages = useCallback(
     async (
@@ -494,7 +889,9 @@ export const AuthProvider = ({ children }) => {
           new Map(
             updatedMessages.map((msg) => [msg?.messageDetailId, msg])
           ).values()
-        ).sort((a, b) => new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0));
+        ).sort(
+          (a, b) => new Date(b?.createdAt || 0) - new Date(a?.createdAt || 0)
+        );
 
         const updatedConversation = {
           ...conversation,
@@ -528,8 +925,6 @@ export const AuthProvider = ({ children }) => {
           return timeB - timeA;
         });
 
-        const tempKey = `conversations_temp_${Date.now()}`;
-        await AsyncStorage.setItem(tempKey, JSON.stringify(allConversations));
         await AsyncStorage.setItem(
           "conversations",
           JSON.stringify(allConversations)
@@ -538,10 +933,24 @@ export const AuthProvider = ({ children }) => {
           "pinnedConversations",
           JSON.stringify(allPinnedConversations)
         );
-        await AsyncStorage.removeItem(tempKey);
 
-        setConversations([...allConversations]);
-        setPinnedConversations([...allPinnedConversations]);
+        // Update state with the latest conversation data
+        setConversations((prev) => {
+          const prevIds = prev.map((c) => c.conversationId);
+          const newIds = allConversations.map((c) => c.conversationId);
+          if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
+            return allConversations;
+          }
+          return [...allConversations];
+        });
+        setPinnedConversations((prev) => {
+          const prevIds = prev.map((c) => c.conversationId);
+          const newIds = allPinnedConversations.map((c) => c.conversationId);
+          if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
+            return allPinnedConversations;
+          }
+          return [...allPinnedConversations];
+        });
 
         if (onSaveComplete) {
           onSaveComplete(updatedMessages);
@@ -553,10 +962,10 @@ export const AuthProvider = ({ children }) => {
         return [];
       }
     },
-    [setConversations, setPinnedConversations]
+    []
   );
 
-  const getMessages = async (conversationId) => {
+  const getMessages = useCallback(async (conversationId) => {
     try {
       const conversationsJSON = await AsyncStorage.getItem("conversations");
       const pinnedConversationsJSON = await AsyncStorage.getItem(
@@ -576,9 +985,9 @@ export const AuthProvider = ({ children }) => {
       console.error("Lỗi khi lấy tin nhắn từ AsyncStorage:", error);
       return [];
     }
-  };
+  }, []);
 
-  const clearMessages = async (conversationId) => {
+  const clearMessages = useCallback(async (conversationId) => {
     try {
       const conversationsJSON = await AsyncStorage.getItem("conversations");
       const pinnedConversationsJSON = await AsyncStorage.getItem(
@@ -610,328 +1019,232 @@ export const AuthProvider = ({ children }) => {
         "pinnedConversations",
         JSON.stringify(pinnedConversations)
       );
+
+      setConversations((prev) => {
+        const updated = conversations.filter((c) =>
+          prev.some((p) => p.conversationId === c.conversationId)
+        );
+        return updated.length === prev.length ? prev : updated;
+      });
+      setPinnedConversations((prev) => {
+        const updated = pinnedConversations.filter((c) =>
+          prev.some((p) => p.conversationId === c.conversationId)
+        );
+        return updated.length === prev.length ? prev : updated;
+      });
+
       console.log(`🧹 Đã xóa tin nhắn cuộc trò chuyện ${conversationId}`);
     } catch (error) {
       console.error("Lỗi khi xóa tin nhắn:", error);
     }
-  };
+  }, []);
 
-  const updatePinnedStatus = async (conversationId, shouldPin) => {
-    try {
-      // Update pinned status on the server
-      if (shouldPin) {
-        await api.pinConversation(conversationId);
-      } else {
-        await api.unPinConversation(conversationId);
-      }
-
-      // Update userInfo.pinnedConversations locally
-      const updatedPinnedConversations = shouldPin
-        ? [
-            ...userInfo.pinnedConversations,
-            { conversationId, pinnedAt: new Date().toISOString() },
-          ]
-        : userInfo.pinnedConversations.filter(
-            (pinned) => pinned.conversationId !== conversationId
-          );
-
-      const updatedUserInfo = {
-        ...userInfo,
-        pinnedConversations: updatedPinnedConversations,
-      };
-      setUserInfo(updatedUserInfo);
-      await AsyncStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
-
-      // Find the conversation in either pinnedConversations or conversations
-      let conversation;
-      const isCurrentlyPinned = pinnedConversations.some(
-        (conv) => conv.conversationId === conversationId
-      );
-
-      if (isCurrentlyPinned) {
-        conversation = pinnedConversations.find(
-          (conv) => conv.conversationId === conversationId
-        );
-      } else {
-        conversation = conversations.find(
-          (conv) => conv.conversationId === conversationId
-        );
-      }
-
-      if (!conversation) {
-        throw new Error(
-          "Không tìm thấy cuộc trò chuyện để cập nhật trạng thái ghim."
-        );
-      }
-
-      // Update the lists based on the new pinned status
-      if (shouldPin) {
-        // Remove from conversations and add to pinnedConversations
-        const updatedConversations = conversations.filter(
-          (conv) => conv.conversationId !== conversationId
-        );
-        const updatedPinned = [
-          {
-            ...conversation,
-            pinnedAt: new Date().toISOString(),
-            isPinned: true,
-          },
-          ...pinnedConversations,
-        ].sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
-
-        setConversations(updatedConversations);
-        setPinnedConversations(updatedPinned);
-
-        await AsyncStorage.setItem(
-          "conversations",
-          JSON.stringify(updatedConversations)
-        );
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(updatedPinned)
-        );
-      } else {
-        // Remove from pinnedConversations and add to conversations
-        const updatedPinned = pinnedConversations.filter(
-          (conv) => conv.conversationId !== conversationId
-        );
-        const updatedConversations = [
-          { ...conversation, isPinned: false },
-          ...conversations,
-        ].sort((a, b) => {
-          const timeA = a.lastMessage?.createdAt
-            ? new Date(a.lastMessage.createdAt)
-            : new Date(0);
-          const timeB = b.lastMessage?.createdAt
-            ? new Date(b.lastMessage.createdAt)
-            : new Date(0);
-          return timeB - timeA;
-        });
-
-        setPinnedConversations(updatedPinned);
-        setConversations(updatedConversations);
-
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(updatedPinned)
-        );
-        await AsyncStorage.setItem(
-          "conversations",
-          JSON.stringify(updatedConversations)
-        );
-      }
-
-      console.log(
-        `Đã ${
-          shouldPin ? "ghim" : "bỏ ghim"
-        } cuộc trò chuyện ${conversationId} cục bộ.`
-      );
-    } catch (error) {
-      console.error("Lỗi khi cập nhật trạng thái ghim:", error);
-      throw error;
-    }
-  };
-
-  const login = async (params) => {
-    try {
-      const response = await api.login(params);
-      const { accessToken, refreshToken } = response.data.token;
-      const userId = response.data.user.userId;
-
-      setaccessToken(accessToken);
-      setRefreshToken(refreshToken);
-
-      await AsyncStorage.setItem("userId", userId);
-      await getUserInfoById(userId);
-
-      if (socket && userId) {
-        socket.emit("authenticate", userId);
-      }
-
-      const conversationsResponse = await api.conversations();
-      if (conversationsResponse && conversationsResponse.data) {
-        const pinnedIds =
-          userInfo?.pinnedConversations?.map((p) => p.conversationId) || [];
-        const filteredConversations = conversationsResponse.data
-          .filter(
-            (conversation) =>
-              !conversation.formerMembers.includes(userId) &&
-              !conversation.isDeleted &&
-              (!conversation.isGroup ||
-                conversation.groupMembers.includes(userId))
-          )
-          .map((conv) => ({ ...conv, messages: [] }));
-
-        const conversationsWithMessages = await Promise.all(
-          filteredConversations.map(async (conv) => {
-            try {
-              const messagesResponse = await api.getAllMessages(
-                conv.conversationId
-              );
-              if (messagesResponse && messagesResponse.messages) {
-                const filteredMessages = messagesResponse.messages
-                  .filter((m) => !m.hiddenFrom?.includes(userId))
-                  .slice(0, 50);
-                return { ...conv, messages: filteredMessages };
-              }
-              return conv;
-            } catch (error) {
-              console.error(
-                `Lỗi khi lấy tin nhắn cho cuộc trò chuyện ${conv.conversationId}:`,
-                error
-              );
-              return conv;
-            }
-          })
-        );
-
-        const nonPinned = conversationsWithMessages
-          .filter((conv) => !pinnedIds.includes(conv.conversationId))
-          .sort((a, b) => {
-            const timeA = a.lastMessage?.createdAt
-              ? new Date(a.lastMessage.createdAt)
-              : new Date(0);
-            const timeB = b.lastMessage?.createdAt
-              ? new Date(b.lastMessage.createdAt)
-              : new Date(0);
-            return timeB - timeA;
-          });
-
-        const pinned = conversationsWithMessages
-          .filter((conv) => pinnedIds.includes(conv.conversationId))
-          .map((conv) => {
-            const pinnedInfo = userInfo?.pinnedConversations.find(
-              (p) => p.conversationId === conv.conversationId
-            );
-            return {
-              ...conv,
-              pinnedAt: pinnedInfo?.pinnedAt || new Date().toISOString(),
-            };
-          })
-          .sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
-
-        setConversations(nonPinned);
-        setPinnedConversations(pinned);
-        if (conversations && pinnedConversations) {
-          handlerRefresh();
+  const updatePinnedStatus = useCallback(
+    async (conversationId, shouldPin) => {
+      try {
+        // Update pinned status on the server
+        if (shouldPin) {
+          await api.pinConversation(conversationId);
+        } else {
+          await api.unPinConversation(conversationId);
         }
-        await AsyncStorage.setItem("conversations", JSON.stringify(nonPinned));
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(pinned)
-        );
-        console.log("Đã tải và lưu tin nhắn cho tất cả cuộc trò chuyện.");
-      }
-    } catch (error) {
-      console.error("Lỗi khi đăng nhập:", error);
-      if (error.response?.status === 401) {
-        throw new Error("Sai số điện thoại hoặc mật khẩu.");
-      } else if (error.response?.status === 500) {
-        throw new Error("Lỗi máy chủ. Vui lòng thử lại sau.");
-      } else {
-        throw new Error("Đã xảy ra lỗi. Vui lòng kiểm tra kết nối mạng.");
-      }
-    }
-  };
 
-  const register = async (params) => {
-    try {
-      const response = await api.registerAccount(params);
-      const { accessToken, refreshToken } = response.token;
-
-      setaccessToken(accessToken);
-      setRefreshToken(refreshToken);
-
-      await getUserInfoById(response.user.userId);
-
-      if (socket && response.user.userId) {
-        socket.emit("authenticate", response.user.userId);
-      }
-
-      const conversationsResponse = await api.conversations();
-      if (conversationsResponse && conversationsResponse.data) {
-        const pinnedIds =
-          userInfo?.pinnedConversations?.map((p) => p.conversationId) || [];
-        const filteredConversations = conversationsResponse.data
-          .filter(
-            (conversation) =>
-              !conversation.formerMembers.includes(response.user.userId) &&
-              !conversation.isDeleted &&
-              (!conversation.isGroup ||
-                conversation.groupMembers.includes(response.user.userId))
-          )
-          .map((conv) => ({ ...conv, messages: [] }));
-
-        const conversationsWithMessages = await Promise.all(
-          filteredConversations.map(async (conv) => {
-            try {
-              const messagesResponse = await api.getAllMessages(
-                conv.conversationId
-              );
-              if (messagesResponse && messagesResponse.messages) {
-                const filteredMessages = messagesResponse.messages
-                  .filter((m) => !m.hiddenFrom?.includes(response.user.userId))
-                  .slice(0, 50);
-                return { ...conv, messages: filteredMessages };
-              }
-              return conv;
-            } catch (error) {
-              console.error(
-                `Lỗi khi lấy tin nhắn cho cuộc trò chuyện ${conv.conversationId}:`,
-                error
-              );
-              return conv;
-            }
-          })
-        );
-
-        const nonPinned = conversationsWithMessages
-          .filter((conv) => !pinnedIds.includes(conv.conversationId))
-          .sort((a, b) => {
-            const timeA = a.lastMessage?.createdAt
-              ? new Date(a.lastMessage.createdAt)
-              : new Date(0);
-            const timeB = b.lastMessage?.createdAt
-              ? new Date(b.lastMessage.createdAt)
-              : new Date(0);
-            return timeB - timeA;
-          });
-
-        const pinned = conversationsWithMessages
-          .filter((conv) => pinnedIds.includes(conv.conversationId))
-          .map((conv) => {
-            const pinnedInfo = userInfo?.pinnedConversations.find(
-              (p) => p.conversationId === conv.conversationId
+        // Update userInfo.pinnedConversations locally
+        const updatedPinnedConversations = shouldPin
+          ? [
+              ...userInfo.pinnedConversations,
+              { conversationId, pinnedAt: new Date().toISOString() },
+            ]
+          : userInfo.pinnedConversations.filter(
+              (pinned) => pinned.conversationId !== conversationId
             );
-            return {
-              ...conv,
-              pinnedAt: pinnedInfo?.pinnedAt || new Date().toISOString(),
-            };
-          })
-          .sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
 
-        setConversations(nonPinned);
-        setPinnedConversations(pinned);
-        await AsyncStorage.setItem("conversations", JSON.stringify(nonPinned));
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(pinned)
+        const updatedUserInfo = {
+          ...userInfo,
+          pinnedConversations: updatedPinnedConversations,
+        };
+        setUserInfo(updatedUserInfo);
+        await AsyncStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+
+        // Find the conversation
+        let conversation;
+        const isCurrentlyPinned = pinnedConversations.some(
+          (conv) => conv.conversationId === conversationId
         );
-      }
-    } catch (error) {
-      console.error("Lỗi khi đăng ký:", error);
-      throw error;
-    }
-  };
 
-  const logout = async () => {
+        if (isCurrentlyPinned) {
+          conversation = pinnedConversations.find(
+            (conv) => conv.conversationId === conversationId
+          );
+        } else {
+          conversation = conversations.find(
+            (conv) => conv.conversationId === croissantId
+          );
+        }
+
+        if (!conversation) {
+          throw new Error(
+            "Không tìm thấy cuộc trò chuyện để cập nhật trạng thái ghim."
+          );
+        }
+
+        // Update the lists based on the new pinned status
+        if (shouldPin) {
+          setConversations((prev) => {
+            const updatedConversations = prev.filter(
+              (conv) => conv.conversationId !== conversationId
+            );
+            AsyncStorage.setItem(
+              "conversations",
+              JSON.stringify(updatedConversations)
+            );
+            return updatedConversations;
+          });
+          setPinnedConversations((prev) => {
+            const updatedPinned = [
+              {
+                ...conversation,
+                pinnedAt: new Date().toISOString(),
+                isPinned: true,
+              },
+              ...prev,
+            ].sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
+            AsyncStorage.setItem(
+              "pinnedConversations",
+              JSON.stringify(updatedPinned)
+            );
+            return updatedPinned;
+          });
+        } else {
+          setPinnedConversations((prev) => {
+            const updatedPinned = prev.filter(
+              (conv) => conv.conversationId !== conversationId
+            );
+            AsyncStorage.setItem(
+              "pinnedConversations",
+              JSON.stringify(updatedPinned)
+            );
+            return updatedPinned;
+          });
+          setConversations((prev) => {
+            const updatedConversations = [
+              { ...conversation, isPinned: false },
+              ...prev,
+            ].sort((a, b) => {
+              const timeA = a.lastMessage?.createdAt
+                ? new Date(a.lastMessage.createdAt)
+                : new Date(0);
+              const timeB = b.lastMessage?.createdAt
+                ? new Date(b.lastMessage.createdAt)
+                : new Date(0);
+              return timeB - timeA;
+            });
+            AsyncStorage.setItem(
+              "conversations",
+              JSON.stringify(updatedConversations)
+            );
+            return updatedConversations;
+          });
+        }
+
+        console.log(
+          `Đã ${
+            shouldPin ? "ghim" : "bỏ ghim"
+          } cuộc trò chuyện ${conversationId} cục bộ.`
+        );
+      } catch (error) {
+        console.error("Lỗi khi cập nhật trạng thái ghim:", error);
+        throw error;
+      }
+    },
+    [userInfo, conversations, pinnedConversations]
+  );
+
+  const login = useCallback(
+    async (params) => {
+      try {
+        const response = await api.login(params);
+        const { accessToken, refreshToken } = response.data.token;
+        const userId = response.data.user.userId;
+
+        setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
+        await AsyncStorage.setItem("userId", userId);
+        await getUserInfoById(userId);
+
+        // Yêu cầu chọn thư mục lưu trữ
+        try {
+          await pickExternalDirectory();
+        } catch (err) {
+          Alert.alert(
+            "Chọn thư mục lưu trữ",
+            "Bạn cần chọn thư mục lưu trữ để tiếp tục sử dụng ứng dụng."
+          );
+          throw err;
+        }
+
+        if (socket && socket.connected) {
+          socket.emit("authenticate", userId);
+        }
+
+        await handlerRefresh();
+      } catch (error) {
+        console.error("Lỗi khi đăng nhập:", error);
+        if (error.response?.status === 401) {
+          throw new Error("Sai số điện thoại hoặc mật khẩu.");
+        } else if (error.response?.status === 500) {
+          throw new Error("Lỗi máy chủ. Vui lòng thử lại sau.");
+        } else {
+          throw new Error("Đã xảy ra lỗi. Vui lòng kiểm tra kết nối mạng.");
+        }
+      }
+    },
+    [getUserInfoById, handlerRefresh, socket]
+  );
+
+  const register = useCallback(
+    async (params) => {
+      try {
+        const response = await api.registerAccount(params);
+        const { accessToken, refreshToken } = response.token;
+
+        setAccessToken(accessToken);
+        setRefreshToken(refreshToken);
+
+        await getUserInfoById(response.user.userId);
+
+        // Yêu cầu chọn thư mục lưu trữ
+        try {
+          await pickExternalDirectory();
+        } catch (err) {
+          Alert.alert(
+            "Chọn thư mục lưu trữ",
+            "Bạn cần chọn thư mục lưu trữ để tiếp tục sử dụng ứng dụng."
+          );
+          throw err;
+        }
+
+        if (socket && socket.connected) {
+          socket.emit("authenticate", response.user.userId);
+        }
+
+        await handlerRefresh();
+      } catch (error) {
+        console.error("Lỗi khi đăng ký:", error);
+        throw error;
+      }
+    },
+    [getUserInfoById, handlerRefresh, socket]
+  );
+
+  const logout = useCallback(async () => {
     try {
       await clearStorage();
       await api.logout();
     } catch (error) {
       console.error("Lỗi khi logout:", error.message);
     } finally {
-      setaccessToken(null);
+      setAccessToken(null);
       setRefreshToken(null);
       setUserInfo(null);
       setConversations([]);
@@ -947,9 +1260,9 @@ export const AuthProvider = ({ children }) => {
         "messages",
       ]);
     }
-  };
+  }, [clearStorage]);
 
-  const getUserInfoById = async (id) => {
+  const getUserInfoById = useCallback(async (id) => {
     try {
       const res = await api.getUserById(id);
       setUserInfo(res.data);
@@ -957,15 +1270,18 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error("Error fetching user info:", err);
     }
-  };
+  }, []);
 
-  const updateUserInfo = async (newInfo) => {
-    const updated = { ...userInfo, ...newInfo };
-    setUserInfo(updated);
-    await AsyncStorage.setItem("userInfo", JSON.stringify(updated));
-  };
+  const updateUserInfo = useCallback(
+    async (newInfo) => {
+      const updated = { ...userInfo, ...newInfo };
+      setUserInfo(updated);
+      await AsyncStorage.setItem("userInfo", JSON.stringify(updated));
+    },
+    [userInfo]
+  );
 
-  const handlerRefresh = async () => {
+  const handlerRefresh = useCallback(async () => {
     try {
       const conversationsResponse = await api.conversations();
       if (conversationsResponse && conversationsResponse.data) {
@@ -1012,24 +1328,42 @@ export const AuthProvider = ({ children }) => {
           })
           .sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
 
-        setConversations(nonPinned);
-        setPinnedConversations(pinned);
-        await AsyncStorage.setItem("conversations", JSON.stringify(nonPinned));
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(pinned)
-        );
+        setConversations((prev) => {
+          const prevIds = prev.map((c) => c.conversationId);
+          const newIds = nonPinned.map((c) => c.conversationId);
+          if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
+            return prev;
+          }
+          AsyncStorage.setItem("conversations", JSON.stringify(nonPinned));
+          return nonPinned;
+        });
+
+        setPinnedConversations((prev) => {
+          const prevIds = prev.map((c) => c.conversationId);
+          const newIds = pinned.map((c) => c.conversationId);
+          if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
+            return prev;
+          }
+          AsyncStorage.setItem("pinnedConversations", JSON.stringify(pinned));
+          return pinned;
+        });
       }
       await fetchGroups();
     } catch (error) {
       console.error("Error refreshing data:", error);
     }
-  };
+  }, [
+    userInfo?.pinnedConversations,
+    userInfo?.userId,
+    fetchGroups,
+    conversations,
+    pinnedConversations,
+  ]);
 
-  const updateBackground = async (newBackground) => {
+  const updateBackground = useCallback(async (newBackground) => {
     setBackground(newBackground);
     await AsyncStorage.setItem("background", newBackground);
-  };
+  }, []);
 
   const getPhoneContacts = useCallback(async () => {
     setContactsLoading(true);
@@ -1137,19 +1471,18 @@ export const AuthProvider = ({ children }) => {
       setFriendsError(null);
       const response = await api.getFriends();
       setFriends(response || []);
-      await AsyncStorage.setItem('friends', JSON.stringify(response));
+      await AsyncStorage.setItem("friends", JSON.stringify(response));
       return response;
     } catch (error) {
-      console.error('Lỗi khi lấy danh sách bạn bè:', error);
-      setFriendsError('Không thể tải danh sách bạn bè.');
+      console.error("Lỗi khi lấy danh sách bạn bè:", error);
+      setFriendsError("Không thể tải danh sách bạn bè.");
       try {
-        // Lấy dữ liệu từ cache nếu có lỗi
-        const cachedFriends = await AsyncStorage.getItem('friends');
+        const cachedFriends = await AsyncStorage.getItem("friends");
         if (cachedFriends) {
           setFriends(JSON.parse(cachedFriends));
         }
       } catch (storageError) {
-        console.error('Lỗi khi tải danh sách bạn bè từ cache:', storageError);
+        console.error("Lỗi khi tải danh sách bạn bè từ cache:", storageError);
       }
       return [];
     } finally {
@@ -1157,26 +1490,32 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const updateFriendsList = useCallback(async (newFriend = null, removedFriendId = null) => {
-    try {
-      if (newFriend) {
-        // Thêm bạn mới
-        const updatedFriends = [...friends, newFriend];
-        setFriends(updatedFriends);
-        await AsyncStorage.setItem('friends', JSON.stringify(updatedFriends));
-      } else if (removedFriendId) {
-        // Xóa bạn
-        const updatedFriends = friends.filter(friend => friend._id !== removedFriendId);
-        setFriends(updatedFriends);
-        await AsyncStorage.setItem('friends', JSON.stringify(updatedFriends));
-      } else {
-        // Cập nhật toàn bộ danh sách
-        await fetchFriends();
+  const updateFriendsList = useCallback(
+    async (newFriend = null, removedFriendId = null) => {
+      try {
+        if (newFriend) {
+          setFriends((prev) => {
+            const updatedFriends = [...prev, newFriend];
+            AsyncStorage.setItem("friends", JSON.stringify(updatedFriends));
+            return updatedFriends;
+          });
+        } else if (removedFriendId) {
+          setFriends((prev) => {
+            const updatedFriends = prev.filter(
+              (friend) => friend._id !== removedFriendId
+            );
+            AsyncStorage.setItem("friends", JSON.stringify(updatedFriends));
+            return updatedFriends;
+          });
+        } else {
+          await fetchFriends();
+        }
+      } catch (error) {
+        console.error("Lỗi khi cập nhật danh sách bạn bè:", error);
       }
-    } catch (error) {
-      console.error('Lỗi khi cập nhật danh sách bạn bè:', error);
-    }
-  }, [friends, fetchFriends]);
+    },
+    [fetchFriends]
+  );
 
   useEffect(() => {
     const loadCachedGroups = async () => {
@@ -1194,73 +1533,94 @@ export const AuthProvider = ({ children }) => {
       loadCachedGroups();
       fetchGroups();
     }
-  }, [userInfo?.userId]);
+  }, [userInfo?.userId, fetchGroups]);
 
-  useEffect(() => {
-    if (
-      socket &&
-      (conversations.length > 0 || pinnedConversations.length > 0) &&
-      userInfo?.userId
-    ) {
-      const allIds = [...conversations, ...pinnedConversations].map(
-        (conv) => conv.conversationId
-      );
-      socket.emit("joinUserConversations", allIds);
-      // console.log("📡 Đã join tất cả conversations:", allIds);
-    }
-  }, [socket, conversations, pinnedConversations, userInfo?.userId]);
-
-  useEffect(() => {
-    if (userInfo?.userId) {
-      fetchFriends();
-    }
-  }, [userInfo, fetchFriends]);
-
-  return (
-    <AuthContext.Provider
-      value={{
-        accessToken,
-        refreshToken,
-        userInfo,
-        isLoading,
-        conversations,
-        pinnedConversations,
-        background,
-        groupMember,
-        register,
-        login,
-        logout,
-        updateUserInfo,
-        getUserInfoById,
-        handlerRefresh,
-        updateBackground,
-        flatListRef,
-        phoneContacts,
-        usersInDB,
-        getPhoneContacts,
-        contactsLoading,
-        contactsError,
-        groups,
-        groupsLoading,
-        fetchGroups,
-        addConversation,
-        removeConversation,
-        checkLastMessageDifference,
-        updateGroupMembers,
-        removeGroupMember,
-        saveGroupMembers,
-        changeRole,
-        getMessages,
-        saveMessages,
-        updatePinnedStatus, // Add new function to context
-        friends,
-        friendsLoading,
-        friendsError,
-        fetchFriends,
-        updateFriendsList,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  // Memoize context value
+  const value = useMemo(
+    () => ({
+      accessToken,
+      refreshToken,
+      userInfo,
+      isLoading,
+      conversations,
+      pinnedConversations,
+      background,
+      groupMember,
+      register,
+      login,
+      logout,
+      updateUserInfo,
+      getUserInfoById,
+      handlerRefresh,
+      updateBackground,
+      flatListRef,
+      phoneContacts,
+      usersInDB,
+      getPhoneContacts,
+      contactsLoading,
+      contactsError,
+      groups,
+      groupsLoading,
+      fetchGroups,
+      addConversation,
+      removeConversation,
+      checkLastMessageDifference,
+      updateGroupMembers,
+      removeGroupMember,
+      saveGroupMembers,
+      changeRole,
+      getMessages,
+      saveMessages,
+      updatePinnedStatus,
+      friends,
+      friendsLoading,
+      friendsError,
+      fetchFriends,
+      updateFriendsList,
+      socket,
+    }),
+    [
+      accessToken,
+      refreshToken,
+      userInfo,
+      isLoading,
+      conversations,
+      pinnedConversations,
+      background,
+      groupMember,
+      register,
+      login,
+      logout,
+      updateUserInfo,
+      getUserInfoById,
+      handlerRefresh,
+      updateBackground,
+      phoneContacts,
+      usersInDB,
+      getPhoneContacts,
+      contactsLoading,
+      contactsError,
+      groups,
+      groupsLoading,
+      fetchGroups,
+      addConversation,
+      removeConversation,
+      checkLastMessageDifference,
+      updateGroupMembers,
+      removeGroupMember,
+      saveGroupMembers,
+      changeRole,
+      getMessages,
+      saveMessages,
+      updatePinnedStatus,
+      friends,
+      friendsLoading,
+      friendsError,
+      fetchFriends,
+      updateFriendsList,
+      socket,
+    ]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
