@@ -20,22 +20,7 @@ const ChatHeader = ({
 
   const handlerBack = () => {
     navigation.goBack();
-
     api.readMessage(conversation.conversationId);
-    socket.on("newMessage");
-    socket.on("groupAvatarChanged");
-    socket.on("newConversation");
-    socket.on("groupNameChanged");
-    socket.on("userJoinedGroup");
-    socket.on("userAddedToGroup");
-    socket.on("userLeftGroup");
-    socket.on("userRemovedFromGroup");
-    socket.on("groupOwnerChanged");
-    socket.on("groupCoOwnerAdded");
-    socket.on("groupCoOwnerRemoved");
-    socket.on("groupDeleted");
-    socket.on("userBlocked");
-    socket.on("userUnblocked");
   };
 
   const handlerOptionScreen = () => {
