@@ -8,13 +8,14 @@ import ZegoUIKitPrebuiltCallService, {
 import { ZegoMenuBarButtonName } from "@zegocloud/zego-uikit-prebuilt-call-rn/lib/commonjs/services/defines";
 import * as ZIM from "zego-zim-react-native";
 import * as ZPNs from "zego-zpns-react-native";
+import { ZEGO_APP_ID, ZEGO_APP_SIGN } from "@env";
 
 ZegoUIKitPrebuiltCallService.useSystemCallingUI([ZIM, ZPNs]);
 
 const onUserLogin = async (userID, userName, props) => {
   return ZegoUIKitPrebuiltCallService.init(
-    1206754025, // Thay bằng AppID của bạn
-    "b7995a5d92452313ba1b312cf8662ba968d663c538c35ae0976e78abad942921", // Thay bằng AppSign của bạn
+    ZEGO_APP_ID,
+    ZEGO_APP_SIGN,
     String(userID),
     userName,
     [ZIM, ZPNs],
