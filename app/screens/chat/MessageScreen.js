@@ -43,6 +43,7 @@ const MessageScreen = ({ route, navigation }) => {
     saveGroupMembers,
     changeRole,
     getMessages,
+    setScreen, // lấy setScreen từ context
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
@@ -1063,6 +1064,16 @@ const MessageScreen = ({ route, navigation }) => {
       addGroupMember(conversation);
     }
   }, [conversation]);
+
+  useEffect(() => {
+    // Khi vào màn hình MessageScreen, cập nhật screen context
+    setScreen("MessageScreen");
+    return () => {
+      // Khi thoát màn hình MessageScreen, cập nhật lại về Home (hoặc tên màn hình danh sách của bạn)
+      setScreen("Home");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>

@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
   const [friends, setFriends] = useState([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
   const [friendsError, setFriendsError] = useState(null);
+  const [screen, setScreen] = useState("Home"); // Thêm state để theo dõi màn hình hiện tại
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -438,7 +439,7 @@ export const AuthProvider = ({ children }) => {
       socket.off("userBlocked", handleUserBlocked);
       socket.off("userUnblocked", handleUserUnblocked);
     };
-  }, [socket, addConversation]);
+  }, [socket]);
 
   const clearStorage = useCallback(async () => {
     try {
@@ -1004,18 +1005,12 @@ export const AuthProvider = ({ children }) => {
             return timeB - timeA;
           });
 
-        setConversations((prev) => {
-          const prevIds = prev.map((c) => c.conversationId);
-          const newIds = filteredConversations.map((c) => c.conversationId);
-          if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
-            return prev;
-          }
-          AsyncStorage.setItem(
-            "conversations",
-            JSON.stringify(filteredConversations)
-          );
-          return filteredConversations;
-        });
+        // Sửa: Luôn cập nhật conversations mới vào state và AsyncStorage, không so sánh prevIds/newIds nữa
+        setConversations(filteredConversations);
+        await AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(filteredConversations)
+        );
       }
       await fetchGroups();
     } catch (error) {
@@ -1199,18 +1194,49 @@ export const AuthProvider = ({ children }) => {
     [fetchFriends]
   );
 
-  // Đảm bảo log này chạy mỗi khi conversations hoặc userInfo.userId thay đổi
   useEffect(() => {
+    const loadCachedGroups = async () => {
+      try {
+        const cachedGroups = await AsyncStorage.getItem("groups");
+        if (cachedGroups) {
+          setGroups(JSON.parse(cachedGroups));
+        }
+      } catch (error) {
+        console.error("Error loading cached groups:", error);
+      }
+    };
+
     if (userInfo?.userId) {
-      console.log("🧩 Đã khởi tạo AuthContext");
-      console.log("Số lượng cuộc trò chuyện:", conversations.length);
-      if (socket && conversations.length > 0) {
-        const allIds = conversations.map((conv) => conv.conversationId);
+      loadCachedGroups();
+      fetchGroups();
+    }
+  }, [userInfo?.userId, fetchGroups]);
+
+  // Đảm bảo chỉ emit khi conversations thực sự thay đổi (không lặp lại cùng 1 mảng)
+  const prevConversationIdsRef = useRef([]);
+
+  useEffect(() => {
+    if (
+      screen === "Home" &&
+      socket &&
+      conversations.length > 0 &&
+      userInfo?.userId
+    ) {
+      const allIds = conversations.map((conv) => conv.conversationId);
+      const prevIds = prevConversationIdsRef.current;
+
+      // So sánh mảng id trước và sau, chỉ emit nếu khác biệt
+      const isSame =
+        prevIds.length === allIds.length &&
+        prevIds.every((id, idx) => id === allIds[idx]);
+
+      if (!isSame) {
         socket.emit("joinUserConversations", allIds);
-        console.log("📡 Đã join tất cả conversations:", JSON.stringify(allIds));
+        console.log("📡 Đã join tất cả conversations:", allIds);
+        prevConversationIdsRef.current = allIds;
       }
     }
-  }, [socket, conversations, userInfo?.userId]);
+  }, [socket, conversations, userInfo?.userId, screen]); // Thêm screen vào dependency
 
   return (
     <AuthContext.Provider
@@ -1251,6 +1277,8 @@ export const AuthProvider = ({ children }) => {
         friendsError,
         fetchFriends,
         updateFriendsList,
+        screen,
+        setScreen,
       }}
     >
       {children}

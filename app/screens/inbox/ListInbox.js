@@ -1,6 +1,6 @@
-import React, { useContext, useState, useEffect, useCallback } from "react";
-import { FlatList, RefreshControl, View, Text, Alert } from "react-native";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useContext, useState, useEffect } from "react";
+import { FlatList, RefreshControl, View, Text } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import Inbox from "./Inbox";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { SocketContext } from "@/app/socket/SocketContext";
@@ -25,20 +25,6 @@ const ListInbox = () => {
     }
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      if (
-        socket &&
-        socket.connected &&
-        conversations.length > 0 &&
-        userInfo?.userId
-      ) {
-        const allIds = conversations.map((c) => c.conversationId);
-        socket.emit("joinUserConversations", allIds);
-        console.log("📡 (focus) Re-joined conversations:", allIds);
-      }
-    }, [socket, conversations, userInfo?.userId])
-  );
   useEffect(() => {
     // Refresh conversations on component mount
     const initializeConversations = async () => {
@@ -108,23 +94,14 @@ const ListInbox = () => {
         }
       } catch (error) {
         console.error("Error navigating to profile:", error);
-        Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
       }
     };
 
-    if (item.isPinned) {
-      return (
-        <View>
-          <Inbox conversation={item} onPress={handleProfileNavigation} />
-        </View>
-      );
-    } else {
-      return (
-        <View>
-          <Inbox conversation={item} onPress={handleProfileNavigation} />
-        </View>
-      );
-    }
+    return (
+      <View>
+        <Inbox conversation={item} onPress={handleProfileNavigation} />
+      </View>
+    );
   };
 
   return (

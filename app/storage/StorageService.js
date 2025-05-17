@@ -391,8 +391,23 @@ export const saveMessages = async (
 
   // Kiểm tra tính hợp lệ của newMessages
   const validMessages = newMessages.filter((msg) => {
-    if (!msg || !msg.messageDetailId || !msg.content || !msg.createdAt) {
+    if (!msg || !msg.messageDetailId || !msg.createdAt) {
       console.warn("⚠️ Tin nhắn không hợp lệ:", msg);
+      return false;
+    }
+    // Nếu là text thì cần content, còn lại chỉ cần attachment
+    if (
+      msg.type === "text" &&
+      (typeof msg.content !== "string" || msg.content === "")
+    ) {
+      console.warn("⚠️ Tin nhắn text không hợp lệ:", msg);
+      return false;
+    }
+    if (
+      (msg.type === "image" || msg.type === "file" || msg.type === "video") &&
+      !msg.attachment
+    ) {
+      console.warn("⚠️ Tin nhắn media không hợp lệ:", msg);
       return false;
     }
     return true;
