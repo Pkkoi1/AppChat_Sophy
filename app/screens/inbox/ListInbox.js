@@ -1,19 +1,14 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback } from "react";
 import { FlatList, RefreshControl, View, Text, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import Inbox from "./Inbox";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { SocketContext } from "@/app/socket/SocketContext";
 import { navigateToProfile } from "@/app/utils/profileNavigation";
 
 const ListInbox = () => {
-  const {
-    conversations,
-    pinnedConversations,
-    handlerRefresh,
-    addConversation,
-    userInfo,
-  } = useContext(AuthContext);
+  const { conversations, handlerRefresh, addConversation, userInfo } =
+    useContext(AuthContext);
   const socket = useContext(SocketContext);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -30,39 +25,20 @@ const ListInbox = () => {
     }
   };
 
-  useEffect(() => {
-    if (socket && socket.connected) {
-      const handleNewMessage = async () => {
-        console.log(
-          "New message received. Refreshing conversations at ListInbox..."
-        );
-        await handlerRefresh();
-      };
-
-      const handleNewConversation = ({ conversation }) => {
-        console.log(
-          "New conversation received. Refreshing conversations at ListInbox..."
-        );
-        addConversation(conversation);
-      };
-
-      const handleGroupDeleted = async () => {
-        console.log("Group deleted. Refreshing conversations 1...");
-        await handlerRefresh();
-      };
-
-      socket.on("newMessage", handleNewMessage);
-      socket.on("newConversation", handleNewConversation);
-      socket.on("groupDeleted", handleGroupDeleted);
-
-      return () => {
-        socket.off("newMessage", handleNewMessage);
-        socket.off("newConversation", handleNewConversation);
-        socket.off("groupDeleted", handleGroupDeleted);
-      };
-    }
-  }, [socket, handlerRefresh, addConversation]);
-
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        socket &&
+        socket.connected &&
+        conversations.length > 0 &&
+        userInfo?.userId
+      ) {
+        const allIds = conversations.map((c) => c.conversationId);
+        socket.emit("joinUserConversations", allIds);
+        console.log("📡 (focus) Re-joined conversations:", allIds);
+      }
+    }, [socket, conversations, userInfo?.userId])
+  );
   useEffect(() => {
     // Refresh conversations on component mount
     const initializeConversations = async () => {
@@ -76,23 +52,34 @@ const ListInbox = () => {
     initializeConversations();
   }, [handlerRefresh]);
 
-  // Combine pinned and non-pinned conversations
-  const pinnedWithFlag = pinnedConversations.map((conv) => ({
-    ...conv,
-    isPinned: true,
-    pinnedAt: conv.pinnedAt || new Date().toISOString(), // Use pinnedAt if available, otherwise current time
-  }));
-  const nonPinnedWithFlag = conversations.map((conv) => ({
-    ...conv,
-    isPinned: false,
-  }));
+  // Tách pinned và non-pinned từ conversations dựa vào userInfo.pinnedConversations
+  const pinnedIds =
+    userInfo?.pinnedConversations?.map((p) => p.conversationId) || [];
+  const pinnedMap = {};
+  (userInfo?.pinnedConversations || []).forEach((p) => {
+    pinnedMap[p.conversationId] = p.pinnedAt;
+  });
 
-  // Sort pinned conversations by pinnedAt (newest first)
-  const sortedPinned = [...pinnedWithFlag].sort(
+  const pinnedConversations = conversations
+    .filter((conv) => pinnedIds.includes(conv.conversationId))
+    .map((conv) => ({
+      ...conv,
+      isPinned: true,
+      pinnedAt: pinnedMap[conv.conversationId] || new Date().toISOString(),
+    }));
+
+  const nonPinnedConversations = conversations
+    .filter((conv) => !pinnedIds.includes(conv.conversationId))
+    .map((conv) => ({
+      ...conv,
+      isPinned: false,
+    }));
+
+  // Sort pinned by pinnedAt, non-pinned by lastMessage.createdAt
+  const sortedPinned = [...pinnedConversations].sort(
     (a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt)
   );
-  // Sort non-pinned conversations by lastMessage.createdAt (newest first)
-  const sortedNonPinned = [...nonPinnedWithFlag].sort((a, b) => {
+  const sortedNonPinned = [...nonPinnedConversations].sort((a, b) => {
     const timeA = a.lastMessage?.createdAt
       ? new Date(a.lastMessage.createdAt)
       : new Date(0);
@@ -128,36 +115,12 @@ const ListInbox = () => {
     if (item.isPinned) {
       return (
         <View>
-          {pinnedConversations.length > 0 &&
-            pinnedConversations.indexOf(item) === 0 && (
-              <Text
-                style={{
-                  paddingLeft: 20,
-                  paddingVertical: 5,
-                  fontWeight: "bold",
-                  backgroundColor: "#f1f1f2",
-                }}
-              >
-                Đã ghim
-              </Text>
-            )}
           <Inbox conversation={item} onPress={handleProfileNavigation} />
         </View>
       );
     } else {
       return (
         <View>
-          {conversations.length > 0 && conversations.indexOf(item) === 0 && (
-            <Text
-              style={{
-                paddingLeft: 20,
-                paddingVertical: 5,
-                fontWeight: "bold",
-              }}
-            >
-              Khác
-            </Text>
-          )}
           <Inbox conversation={item} onPress={handleProfileNavigation} />
         </View>
       );

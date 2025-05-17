@@ -12,7 +12,7 @@ const InboxOptions = ({
   onDelete,
   onClose,
 }) => {
-  const { userInfo, updatePinnedStatus } = useContext(AuthContext);
+  const { userInfo, updateUserInfo } = useContext(AuthContext);
 
   const { rules, conversationId } = conversation;
   const isCreator = rules?.ownerId === userInfo?.userId;
@@ -67,11 +67,12 @@ const InboxOptions = ({
 
   const handlePinConversation = async () => {
     try {
-      const isPinned = userInfo?.pinnedConversations?.some(
+      const pinnedList = userInfo?.pinnedConversations || [];
+      const isPinned = pinnedList.some(
         (pinned) => pinned.conversationId === conversationId
       );
 
-      if (!isPinned && userInfo?.pinnedConversations?.length >= 5) {
+      if (!isPinned && pinnedList.length >= 5) {
         Alert.alert(
           "Không thể ghim thêm",
           "Đã đạt giới hạn 5 cuộc trò chuyện được ghim."
@@ -79,11 +80,24 @@ const InboxOptions = ({
         return;
       }
 
-      await updatePinnedStatus(conversationId, !isPinned);
-      Alert.alert(
-        "Thành công",
-        `Cuộc trò chuyện đã được ${!isPinned ? "ghim" : "bỏ ghim"}.`
-      );
+      if (!isPinned) {
+        // Ghim
+        await api.pinConversation(conversationId);
+        const newPinned = [
+          ...pinnedList,
+          { conversationId, pinnedAt: new Date().toISOString() },
+        ];
+        await updateUserInfo({ pinnedConversations: newPinned });
+        Alert.alert("Thành công", "Cuộc trò chuyện đã được ghim.");
+      } else {
+        // Bỏ ghim
+        await api.unPinConversation(conversationId);
+        const newPinned = pinnedList.filter(
+          (p) => p.conversationId !== conversationId
+        );
+        await updateUserInfo({ pinnedConversations: newPinned });
+        Alert.alert("Thành công", "Đã bỏ ghim cuộc trò chuyện.");
+      }
       onClose();
     } catch (error) {
       Alert.alert(

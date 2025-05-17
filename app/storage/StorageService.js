@@ -330,20 +330,17 @@ export const getConversations = async () => {
   const data = await readUserData();
   // Đảm bảo trả về đúng cấu trúc object
   return {
-    nonPinned: data.conversations || [],
-    pinned: data.pinnedConversations || [],
+    conversations: data.conversations || [],
   };
 };
 
-export const saveConversations = async ({ nonPinned = [], pinned = [] }) => {
+export const saveConversations = async ({ conversations = [] }) => {
   const data = await readUserData();
   const MAX_CONVERSATIONS = 100;
-  data.conversations = nonPinned.slice(0, MAX_CONVERSATIONS);
-  data.pinnedConversations = pinned.slice(0, MAX_CONVERSATIONS);
+  data.conversations = conversations.slice(0, MAX_CONVERSATIONS);
   await writeUserData(data);
   return {
-    nonPinned: data.conversations,
-    pinned: data.pinnedConversations,
+    conversations: data.conversations,
   };
 };
 

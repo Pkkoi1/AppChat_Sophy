@@ -24,7 +24,6 @@ export const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [conversations, setConversations] = useState([]);
-  const [pinnedConversations, setPinnedConversations] = useState([]);
   const [background, setBackground] = useState(null);
   const [phoneContacts, setPhoneContacts] = useState([]);
   const [usersInDB, setUsersInDB] = useState([]);
@@ -48,14 +47,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadStorage = async () => {
       try {
-        const [token, refresh, user, storedBackground, convs, pinnedConvs] =
+        const [token, refresh, user, storedBackground, convs] =
           await AsyncStorage.multiGet([
             "accessToken",
             "refreshToken",
             "userInfo",
             "background",
             "conversations",
-            "pinnedConversations",
           ]);
 
         if (token[1] && refresh[1] && user[1]) {
@@ -71,10 +69,6 @@ export const AuthProvider = ({ children }) => {
         if (convs[1]) {
           setConversations(JSON.parse(convs[1]));
         }
-
-        if (pinnedConvs[1]) {
-          setPinnedConversations(JSON.parse(pinnedConvs[1]));
-        }
       } catch (err) {
         console.error("Error loading storage:", err);
       } finally {
@@ -84,32 +78,6 @@ export const AuthProvider = ({ children }) => {
 
     loadStorage();
   }, []);
-
-  // Handle socket reconnection
-  useEffect(() => {
-    if (socket && userInfo?.userId) {
-      const allIds = [...conversations, ...pinnedConversations].map(
-        (conv) => conv.conversationId
-      );
-      const currentIdsSet = new Set(allIds);
-      const joinedIdsSet = joinedConversationIds.current;
-
-      const hasChanged =
-        allIds.length !== joinedIdsSet.size ||
-        allIds.some((id) => !joinedIdsSet.has(id));
-
-      if (hasChanged) {
-        socket.emit("joinUserConversations", allIds);
-        joinedConversationIds.current = currentIdsSet;
-        console.log("📡 Đã join tất cả conversations:", allIds);
-      }
-    }
-  }, [
-    socket,
-    userInfo?.userId,
-    conversations.length,
-    pinnedConversations.length,
-  ]);
 
   useEffect(() => {
     if (userInfo?.userId) {
@@ -484,10 +452,9 @@ export const AuthProvider = ({ children }) => {
   const checkLastMessageDifference = useCallback(
     async (conversationId) => {
       try {
-        const localConversation = [
-          ...conversations,
-          ...pinnedConversations,
-        ].find((conv) => conv.conversationId === conversationId);
+        const localConversation = conversations.find(
+          (conv) => conv.conversationId === conversationId
+        );
         const localLastMessage = localConversation?.lastMessage || null;
 
         const response = await api.getAllMessages(conversationId);
@@ -555,85 +522,48 @@ export const AuthProvider = ({ children }) => {
         };
       }
     },
-    [conversations, pinnedConversations, userInfo?.userId]
+    [conversations, userInfo?.userId]
   );
 
-  const addConversation = useCallback(
-    async (conversationData) => {
-      try {
-        if (!conversationData.conversationId) {
-          throw new Error("Thiếu conversationId.");
-        }
-
-        const isPinned = userInfo?.pinnedConversations?.some(
-          (pinned) => pinned.conversationId === conversationData.conversationId
-        );
-
-        if (isPinned) {
-          const pinnedInfo = userInfo?.pinnedConversations.find(
-            (pinned) =>
-              pinned.conversationId === conversationData.conversationId
-          );
-          setPinnedConversations((prev) => {
-            const updatedPinned = Array.from(
-              new Map(
-                [
-                  {
-                    ...conversationData,
-                    messages: [],
-                    pinnedAt: pinnedInfo?.pinnedAt || new Date().toISOString(),
-                    isPinned: true,
-                  },
-                  ...prev,
-                ].map((conv) => [conv.conversationId, conv])
-              ).values()
-            ).sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
-            AsyncStorage.setItem(
-              "pinnedConversations",
-              JSON.stringify(updatedPinned)
-            );
-            console.log(
-              `Đã thêm cuộc trò chuyện ghim ${conversationData.conversationId} cục bộ.`
-            );
-            return updatedPinned;
-          });
-        } else {
-          setConversations((prev) => {
-            const updatedConversations = Array.from(
-              new Map(
-                [{ ...conversationData, messages: [] }, ...prev].map((conv) => [
-                  conv.conversationId,
-                  conv,
-                ])
-              ).values()
-            ).sort((a, b) => {
-              const timeA = a.lastMessage?.createdAt
-                ? new Date(a.lastMessage.createdAt)
-                : new Date(0);
-              const timeB = b.lastMessage?.createdAt
-                ? new Date(b.lastMessage.createdAt)
-                : new Date(0);
-              return timeB - timeA;
-            });
-            AsyncStorage.setItem(
-              "conversations",
-              JSON.stringify(updatedConversations)
-            );
-            console.log(
-              `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
-            );
-            return updatedConversations;
-          });
-        }
-
-        return conversationData;
-      } catch (error) {
-        console.error("Lỗi khi thêm cuộc trò chuyện:", error);
-        throw error;
+  const addConversation = useCallback(async (conversationData) => {
+    try {
+      if (!conversationData.conversationId) {
+        throw new Error("Thiếu conversationId.");
       }
-    },
-    [userInfo?.pinnedConversations]
-  );
+
+      setConversations((prev) => {
+        const updatedConversations = Array.from(
+          new Map(
+            [{ ...conversationData, messages: [] }, ...prev].map((conv) => [
+              conv.conversationId,
+              conv,
+            ])
+          ).values()
+        ).sort((a, b) => {
+          const timeA = a.lastMessage?.createdAt
+            ? new Date(a.lastMessage.createdAt)
+            : new Date(0);
+          const timeB = b.lastMessage?.createdAt
+            ? new Date(b.lastMessage.createdAt)
+            : new Date(0);
+          return timeB - timeA;
+        });
+        AsyncStorage.setItem(
+          "conversations",
+          JSON.stringify(updatedConversations)
+        );
+        console.log(
+          `Đã thêm cuộc trò chuyện ${conversationData.conversationId} cục bộ.`
+        );
+        return updatedConversations;
+      });
+
+      return conversationData;
+    } catch (error) {
+      console.error("Lỗi khi thêm cuộc trò chuyện:", error);
+      throw error;
+    }
+  }, []);
 
   const removeConversation = useCallback(
     async (conversationId) => {
@@ -648,37 +578,17 @@ export const AuthProvider = ({ children }) => {
           await handlerRefresh();
         }
 
-        const isPinned = pinnedConversations.some(
-          (conv) => conv.conversationId === conversationId
-        );
-
-        if (isPinned) {
-          setPinnedConversations((prev) => {
-            const updatedPinned = prev.filter(
-              (conv) => conv.conversationId !== conversationId
-            );
-            AsyncStorage.setItem(
-              "pinnedConversations",
-              JSON.stringify(updatedPinned)
-            );
-            console.log(
-              `Đã xóa cuộc trò chuyện ghim ${conversationId} cục bộ.`
-            );
-            return updatedPinned;
-          });
-        } else {
-          setConversations((prev) => {
-            const updatedConversations = prev.filter(
-              (conv) => conv.conversationId !== conversationId
-            );
-            AsyncStorage.setItem(
-              "conversations",
-              JSON.stringify(updatedConversations)
-            );
-            console.log(`Đã xóa cuộc trò chuyện ${conversationId} cục bộ.`);
-            return updatedConversations;
-          });
-        }
+        setConversations((prev) => {
+          const updatedConversations = prev.filter(
+            (conv) => conv.conversationId !== conversationId
+          );
+          AsyncStorage.setItem(
+            "conversations",
+            JSON.stringify(updatedConversations)
+          );
+          console.log(`Đã xóa cuộc trò chuyện ${conversationId} cục bộ.`);
+          return updatedConversations;
+        });
 
         const response = await api.deleteConversation(conversationId);
         console.log(`Đã xóa cuộc trò chuyện trên server:`, response);
@@ -705,7 +615,6 @@ export const AuthProvider = ({ children }) => {
     [
       checkLastMessageDifference,
       handlerRefresh,
-      pinnedConversations,
       conversations,
       socket,
       userInfo?.userId,
@@ -730,11 +639,6 @@ export const AuthProvider = ({ children }) => {
       setConversations((prev) => {
         const updated = updateList(prev);
         AsyncStorage.setItem("conversations", JSON.stringify(updated));
-        return updated;
-      });
-      setPinnedConversations((prev) => {
-        const updated = updateList(prev);
-        AsyncStorage.setItem("pinnedConversations", JSON.stringify(updated));
         return updated;
       });
 
@@ -798,11 +702,6 @@ export const AuthProvider = ({ children }) => {
         AsyncStorage.setItem("conversations", JSON.stringify(updated));
         return updated;
       });
-      setPinnedConversations((prev) => {
-        const updated = updateList(prev);
-        AsyncStorage.setItem("pinnedConversations", JSON.stringify(updated));
-        return updated;
-      });
 
       setGroupMember((prevMembers) =>
         prevMembers.filter((member) => member.id !== memberId)
@@ -811,25 +710,6 @@ export const AuthProvider = ({ children }) => {
       console.log(`Đã xóa thành viên ${memberId} khỏi nhóm ${conversationId}.`);
     } catch (error) {
       console.error("Lỗi khi xóa thành viên nhóm:", error);
-      throw error;
-    }
-  }, []);
-
-  const saveGroupMembers = useCallback(async (conversationId, members) => {
-    try {
-      if (!conversationId || !Array.isArray(members)) {
-        throw new Error(
-          "Thiếu conversationId hoặc danh sách thành viên không hợp lệ."
-        );
-      }
-
-      setGroupMember(members);
-      console.log(
-        `Đã lưu danh sách thành viên nhóm với vai trò cho ${conversationId}:`,
-        members
-      );
-    } catch (error) {
-      console.error("Lỗi khi lưu danh sách thành viên nhóm:", error);
       throw error;
     }
   }, []);
@@ -843,29 +723,16 @@ export const AuthProvider = ({ children }) => {
     ) => {
       try {
         const conversationsJSON = await AsyncStorage.getItem("conversations");
-        const pinnedConversationsJSON = await AsyncStorage.getItem(
-          "pinnedConversations"
-        );
         let allConversations = conversationsJSON
           ? JSON.parse(conversationsJSON)
-          : [];
-        let allPinnedConversations = pinnedConversationsJSON
-          ? JSON.parse(pinnedConversationsJSON)
           : [];
 
         const conversationIndex = allConversations.findIndex(
           (conv) => conv.conversationId === conversationId
         );
-        const pinnedConversationIndex = allPinnedConversations.findIndex(
-          (conv) => conv.conversationId === conversationId
-        );
 
         let conversation;
-        let isPinned = pinnedConversationIndex !== -1;
-
-        if (isPinned) {
-          conversation = allPinnedConversations[pinnedConversationIndex];
-        } else if (conversationIndex !== -1) {
+        if (conversationIndex !== -1) {
           conversation = allConversations[conversationIndex];
         } else {
           console.warn("Không tìm thấy cuộc trò chuyện:", conversationId);
@@ -900,14 +767,9 @@ export const AuthProvider = ({ children }) => {
             sortedNewMessages[0] ||
             updatedMessages[0] ||
             conversation.lastMessage,
-          isPinned,
         };
 
-        if (isPinned) {
-          allPinnedConversations[pinnedConversationIndex] = updatedConversation;
-        } else {
-          allConversations[conversationIndex] = updatedConversation;
-        }
+        allConversations[conversationIndex] = updatedConversation;
 
         allConversations = allConversations.sort((a, b) => {
           const timeA = a.lastMessage?.createdAt
@@ -919,19 +781,9 @@ export const AuthProvider = ({ children }) => {
           return timeB - timeA;
         });
 
-        allPinnedConversations = allPinnedConversations.sort((a, b) => {
-          const timeA = a.pinnedAt ? new Date(a.pinnedAt) : new Date(0);
-          const timeB = b.pinnedAt ? new Date(b.pinnedAt) : new Date(0);
-          return timeB - timeA;
-        });
-
         await AsyncStorage.setItem(
           "conversations",
           JSON.stringify(allConversations)
-        );
-        await AsyncStorage.setItem(
-          "pinnedConversations",
-          JSON.stringify(allPinnedConversations)
         );
 
         // Update state with the latest conversation data
@@ -942,14 +794,6 @@ export const AuthProvider = ({ children }) => {
             return allConversations;
           }
           return [...allConversations];
-        });
-        setPinnedConversations((prev) => {
-          const prevIds = prev.map((c) => c.conversationId);
-          const newIds = allPinnedConversations.map((c) => c.conversationId);
-          if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
-            return allPinnedConversations;
-          }
-          return [...allPinnedConversations];
         });
 
         if (onSaveComplete) {
@@ -968,16 +812,10 @@ export const AuthProvider = ({ children }) => {
   const getMessages = useCallback(async (conversationId) => {
     try {
       const conversationsJSON = await AsyncStorage.getItem("conversations");
-      const pinnedConversationsJSON = await AsyncStorage.getItem(
-        "pinnedConversations"
-      );
       const conversations = conversationsJSON
         ? JSON.parse(conversationsJSON)
         : [];
-      const pinnedConversations = pinnedConversationsJSON
-        ? JSON.parse(pinnedConversationsJSON)
-        : [];
-      const conversation = [...conversations, ...pinnedConversations].find(
+      const conversation = conversations.find(
         (conv) => conv.conversationId === conversationId
       );
       return conversation?.messages || [];
@@ -990,22 +828,11 @@ export const AuthProvider = ({ children }) => {
   const clearMessages = useCallback(async (conversationId) => {
     try {
       const conversationsJSON = await AsyncStorage.getItem("conversations");
-      const pinnedConversationsJSON = await AsyncStorage.getItem(
-        "pinnedConversations"
-      );
       let conversations = conversationsJSON
         ? JSON.parse(conversationsJSON)
         : [];
-      let pinnedConversations = pinnedConversationsJSON
-        ? JSON.parse(pinnedConversationsJSON)
-        : [];
 
       conversations = conversations.map((conv) =>
-        conv.conversationId === conversationId
-          ? { ...conv, messages: [] }
-          : conv
-      );
-      pinnedConversations = pinnedConversations.map((conv) =>
         conv.conversationId === conversationId
           ? { ...conv, messages: [] }
           : conv
@@ -1015,19 +842,9 @@ export const AuthProvider = ({ children }) => {
         "conversations",
         JSON.stringify(conversations)
       );
-      await AsyncStorage.setItem(
-        "pinnedConversations",
-        JSON.stringify(pinnedConversations)
-      );
 
       setConversations((prev) => {
         const updated = conversations.filter((c) =>
-          prev.some((p) => p.conversationId === c.conversationId)
-        );
-        return updated.length === prev.length ? prev : updated;
-      });
-      setPinnedConversations((prev) => {
-        const updated = pinnedConversations.filter((c) =>
           prev.some((p) => p.conversationId === c.conversationId)
         );
         return updated.length === prev.length ? prev : updated;
@@ -1038,127 +855,6 @@ export const AuthProvider = ({ children }) => {
       console.error("Lỗi khi xóa tin nhắn:", error);
     }
   }, []);
-
-  const updatePinnedStatus = useCallback(
-    async (conversationId, shouldPin) => {
-      try {
-        // Update pinned status on the server
-        if (shouldPin) {
-          await api.pinConversation(conversationId);
-        } else {
-          await api.unPinConversation(conversationId);
-        }
-
-        // Update userInfo.pinnedConversations locally
-        const updatedPinnedConversations = shouldPin
-          ? [
-              ...userInfo.pinnedConversations,
-              { conversationId, pinnedAt: new Date().toISOString() },
-            ]
-          : userInfo.pinnedConversations.filter(
-              (pinned) => pinned.conversationId !== conversationId
-            );
-
-        const updatedUserInfo = {
-          ...userInfo,
-          pinnedConversations: updatedPinnedConversations,
-        };
-        setUserInfo(updatedUserInfo);
-        await AsyncStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
-
-        // Find the conversation
-        let conversation;
-        const isCurrentlyPinned = pinnedConversations.some(
-          (conv) => conv.conversationId === conversationId
-        );
-
-        if (isCurrentlyPinned) {
-          conversation = pinnedConversations.find(
-            (conv) => conv.conversationId === conversationId
-          );
-        } else {
-          conversation = conversations.find(
-            (conv) => conv.conversationId === croissantId
-          );
-        }
-
-        if (!conversation) {
-          throw new Error(
-            "Không tìm thấy cuộc trò chuyện để cập nhật trạng thái ghim."
-          );
-        }
-
-        // Update the lists based on the new pinned status
-        if (shouldPin) {
-          setConversations((prev) => {
-            const updatedConversations = prev.filter(
-              (conv) => conv.conversationId !== conversationId
-            );
-            AsyncStorage.setItem(
-              "conversations",
-              JSON.stringify(updatedConversations)
-            );
-            return updatedConversations;
-          });
-          setPinnedConversations((prev) => {
-            const updatedPinned = [
-              {
-                ...conversation,
-                pinnedAt: new Date().toISOString(),
-                isPinned: true,
-              },
-              ...prev,
-            ].sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
-            AsyncStorage.setItem(
-              "pinnedConversations",
-              JSON.stringify(updatedPinned)
-            );
-            return updatedPinned;
-          });
-        } else {
-          setPinnedConversations((prev) => {
-            const updatedPinned = prev.filter(
-              (conv) => conv.conversationId !== conversationId
-            );
-            AsyncStorage.setItem(
-              "pinnedConversations",
-              JSON.stringify(updatedPinned)
-            );
-            return updatedPinned;
-          });
-          setConversations((prev) => {
-            const updatedConversations = [
-              { ...conversation, isPinned: false },
-              ...prev,
-            ].sort((a, b) => {
-              const timeA = a.lastMessage?.createdAt
-                ? new Date(a.lastMessage.createdAt)
-                : new Date(0);
-              const timeB = b.lastMessage?.createdAt
-                ? new Date(b.lastMessage.createdAt)
-                : new Date(0);
-              return timeB - timeA;
-            });
-            AsyncStorage.setItem(
-              "conversations",
-              JSON.stringify(updatedConversations)
-            );
-            return updatedConversations;
-          });
-        }
-
-        console.log(
-          `Đã ${
-            shouldPin ? "ghim" : "bỏ ghim"
-          } cuộc trò chuyện ${conversationId} cục bộ.`
-        );
-      } catch (error) {
-        console.error("Lỗi khi cập nhật trạng thái ghim:", error);
-        throw error;
-      }
-    },
-    [userInfo, conversations, pinnedConversations]
-  );
 
   const login = useCallback(
     async (params) => {
@@ -1248,14 +944,12 @@ export const AuthProvider = ({ children }) => {
       setRefreshToken(null);
       setUserInfo(null);
       setConversations([]);
-      setPinnedConversations([]);
       setBackground(null);
       await AsyncStorage.multiRemove([
         "accessToken",
         "refreshToken",
         "userInfo",
         "conversations",
-        "pinnedConversations",
         "background",
         "messages",
       ]);
@@ -1285,8 +979,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const conversationsResponse = await api.conversations();
       if (conversationsResponse && conversationsResponse.data) {
-        const pinnedIds =
-          userInfo?.pinnedConversations?.map((p) => p.conversationId) || [];
         const filteredConversations = conversationsResponse.data
           .filter(
             (conversation) =>
@@ -1298,13 +990,10 @@ export const AuthProvider = ({ children }) => {
           .map((conv) => ({
             ...conv,
             messages:
-              [...conversations, ...pinnedConversations].find(
+              conversations.find(
                 (c) => c.conversationId === conv.conversationId
               )?.messages || [],
-          }));
-
-        const nonPinned = filteredConversations
-          .filter((conv) => !pinnedIds.includes(conv.conversationId))
+          }))
           .sort((a, b) => {
             const timeA = a.lastMessage?.createdAt
               ? new Date(a.lastMessage.createdAt)
@@ -1315,50 +1004,24 @@ export const AuthProvider = ({ children }) => {
             return timeB - timeA;
           });
 
-        const pinned = filteredConversations
-          .filter((conv) => pinnedIds.includes(conv.conversationId))
-          .map((conv) => {
-            const pinnedInfo = userInfo?.pinnedConversations.find(
-              (p) => p.conversationId === conv.conversationId
-            );
-            return {
-              ...conv,
-              pinnedAt: pinnedInfo?.pinnedAt || new Date().toISOString(),
-            };
-          })
-          .sort((a, b) => new Date(b.pinnedAt) - new Date(a.pinnedAt));
-
         setConversations((prev) => {
           const prevIds = prev.map((c) => c.conversationId);
-          const newIds = nonPinned.map((c) => c.conversationId);
+          const newIds = filteredConversations.map((c) => c.conversationId);
           if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
             return prev;
           }
-          AsyncStorage.setItem("conversations", JSON.stringify(nonPinned));
-          return nonPinned;
-        });
-
-        setPinnedConversations((prev) => {
-          const prevIds = prev.map((c) => c.conversationId);
-          const newIds = pinned.map((c) => c.conversationId);
-          if (JSON.stringify(prevIds) === JSON.stringify(newIds)) {
-            return prev;
-          }
-          AsyncStorage.setItem("pinnedConversations", JSON.stringify(pinned));
-          return pinned;
+          AsyncStorage.setItem(
+            "conversations",
+            JSON.stringify(filteredConversations)
+          );
+          return filteredConversations;
         });
       }
       await fetchGroups();
     } catch (error) {
       console.error("Error refreshing data:", error);
     }
-  }, [
-    userInfo?.pinnedConversations,
-    userInfo?.userId,
-    fetchGroups,
-    conversations,
-    pinnedConversations,
-  ]);
+  }, [userInfo?.userId, fetchGroups, conversations]);
 
   const updateBackground = useCallback(async (newBackground) => {
     setBackground(newBackground);
@@ -1426,6 +1089,25 @@ export const AuthProvider = ({ children }) => {
       setContactsLoading(false);
     }
   }, []);
+
+  const saveGroupMembers = async (conversationId, members) => {
+    try {
+      if (!conversationId || !Array.isArray(members)) {
+        throw new Error(
+          "Thiếu conversationId hoặc danh sách thành viên không hợp lệ."
+        );
+      }
+
+      setGroupMember(members);
+      console.log(
+        `Đã lưu danh sách thành viên nhóm với vai trò cho ${conversationId}:`,
+        members
+      );
+    } catch (error) {
+      console.error("Lỗi khi lưu danh sách thành viên nhóm:", error);
+      throw error;
+    }
+  };
 
   const fetchGroups = useCallback(async () => {
     try {
@@ -1517,110 +1199,61 @@ export const AuthProvider = ({ children }) => {
     [fetchFriends]
   );
 
+  // Đảm bảo log này chạy mỗi khi conversations hoặc userInfo.userId thay đổi
   useEffect(() => {
-    const loadCachedGroups = async () => {
-      try {
-        const cachedGroups = await AsyncStorage.getItem("groups");
-        if (cachedGroups) {
-          setGroups(JSON.parse(cachedGroups));
-        }
-      } catch (error) {
-        console.error("Error loading cached groups:", error);
-      }
-    };
-
     if (userInfo?.userId) {
-      loadCachedGroups();
-      fetchGroups();
+      console.log("🧩 Đã khởi tạo AuthContext");
+      console.log("Số lượng cuộc trò chuyện:", conversations.length);
+      if (socket && conversations.length > 0) {
+        const allIds = conversations.map((conv) => conv.conversationId);
+        socket.emit("joinUserConversations", allIds);
+        console.log("📡 Đã join tất cả conversations:", JSON.stringify(allIds));
+      }
     }
-  }, [userInfo?.userId, fetchGroups]);
+  }, [socket, conversations, userInfo?.userId]);
 
-  // Memoize context value
-  const value = useMemo(
-    () => ({
-      accessToken,
-      refreshToken,
-      userInfo,
-      isLoading,
-      conversations,
-      pinnedConversations,
-      background,
-      groupMember,
-      register,
-      login,
-      logout,
-      updateUserInfo,
-      getUserInfoById,
-      handlerRefresh,
-      updateBackground,
-      flatListRef,
-      phoneContacts,
-      usersInDB,
-      getPhoneContacts,
-      contactsLoading,
-      contactsError,
-      groups,
-      groupsLoading,
-      fetchGroups,
-      addConversation,
-      removeConversation,
-      checkLastMessageDifference,
-      updateGroupMembers,
-      removeGroupMember,
-      saveGroupMembers,
-      changeRole,
-      getMessages,
-      saveMessages,
-      updatePinnedStatus,
-      friends,
-      friendsLoading,
-      friendsError,
-      fetchFriends,
-      updateFriendsList,
-      socket,
-    }),
-    [
-      accessToken,
-      refreshToken,
-      userInfo,
-      isLoading,
-      conversations,
-      pinnedConversations,
-      background,
-      groupMember,
-      register,
-      login,
-      logout,
-      updateUserInfo,
-      getUserInfoById,
-      handlerRefresh,
-      updateBackground,
-      phoneContacts,
-      usersInDB,
-      getPhoneContacts,
-      contactsLoading,
-      contactsError,
-      groups,
-      groupsLoading,
-      fetchGroups,
-      addConversation,
-      removeConversation,
-      checkLastMessageDifference,
-      updateGroupMembers,
-      removeGroupMember,
-      saveGroupMembers,
-      changeRole,
-      getMessages,
-      saveMessages,
-      updatePinnedStatus,
-      friends,
-      friendsLoading,
-      friendsError,
-      fetchFriends,
-      updateFriendsList,
-      socket,
-    ]
+  return (
+    <AuthContext.Provider
+      value={{
+        accessToken,
+        refreshToken,
+        userInfo,
+        isLoading,
+        conversations,
+        background,
+        groupMember,
+        register,
+        login,
+        logout,
+        updateUserInfo,
+        getUserInfoById,
+        handlerRefresh,
+        updateBackground,
+        phoneContacts,
+        usersInDB,
+        getPhoneContacts,
+        contactsLoading,
+        contactsError,
+        groups,
+        groupsLoading,
+        fetchGroups,
+        addConversation,
+        removeConversation,
+        checkLastMessageDifference,
+        updateGroupMembers,
+        removeGroupMember,
+        saveGroupMembers,
+        changeRole,
+        getMessages,
+        saveMessages,
+        friends,
+        friendsLoading,
+        friendsError,
+        fetchFriends,
+        updateFriendsList,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
