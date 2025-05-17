@@ -21,12 +21,12 @@ import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import { Video } from "expo-av";
 
 const ShareMessage = ({ route }) => {
-  const { conversations, pinnedConversations, userInfo, handlerRefresh } = useContext(AuthContext);
-  const socket = useContext(SocketContext); // Get socket from context
-  const [selectedConversations, setSelectedConversations] = useState([]); // Allow multiple selections
+  const { conversations, userInfo, handlerRefresh } = useContext(AuthContext);
+  const socket = useContext(SocketContext);
+  const [selectedConversations, setSelectedConversations] = useState([]);
   const { message } = route.params;
   const [userDetails, setUserDetails] = useState({});
-  const navigation = useNavigation(); // Initialize navigation
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchUserDetails = async (userId) => {
@@ -43,9 +43,8 @@ const ShareMessage = ({ route }) => {
       }
     };
 
-    const allConversations = [...conversations, ...pinnedConversations]; // Combine conversations and pinnedConversations
-
-    allConversations.forEach((conversation) => {
+    // Chỉ còn conversations, không còn pinnedConversations
+    conversations.forEach((conversation) => {
       if (!conversation.isGroup) {
         const userId =
           conversation.receiverId === userInfo.userId
@@ -54,7 +53,7 @@ const ShareMessage = ({ route }) => {
         fetchUserDetails(userId);
       }
     });
-  }, [conversations, pinnedConversations, userInfo.userId]);
+  }, [conversations, userInfo.userId, userDetails]);
 
   const getConversationDetails = (conversation) => {
     if (conversation.isGroup) {
@@ -207,7 +206,8 @@ const ShareMessage = ({ route }) => {
     }
   };
 
-  const allConversations = [...pinnedConversations, ...conversations]; // Combine pinned and non-pinned conversations
+  // Chỉ còn conversations, không còn pinnedConversations
+  const allConversations = conversations;
 
   return (
     <View style={styles.container}>
@@ -217,7 +217,7 @@ const ShareMessage = ({ route }) => {
         {renderMessageContent(message)}
       </View>
       <FlatList
-        data={allConversations} // Use combined conversations
+        data={allConversations}
         keyExtractor={(item) => item.conversationId.toString()}
         renderItem={({ item }) => {
           const { name, avatar, isGroup, groupMembers, receiver } =

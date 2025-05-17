@@ -43,6 +43,7 @@ const MessageScreen = ({ route, navigation }) => {
     saveGroupMembers,
     changeRole,
     getMessages,
+    setScreen, // lấy setScreen từ context
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
@@ -73,10 +74,19 @@ const MessageScreen = ({ route, navigation }) => {
       return `Truy cập ${Math.floor(diffInMinutes / 60)} giờ trước`;
     return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
-
   // Lưu tin nhắn vào StorageService khi thoát màn hình
   useEffect(() => {
+    console.log(
+      "🏗️ MessageScreen mounted for conversation:",
+      conversation?.conversationId
+    );
     return () => {
+      console.log(
+        `📡 Đã thoát giao diện chat: ${
+          conversation?.conversationId || "undefined"
+        }`
+      );
+      console.log("🏚️ MessageScreen unmounted");
       if (conversation?.conversationId) {
         api
           .getAllMessages(conversation.conversationId)
@@ -89,7 +99,6 @@ const MessageScreen = ({ route, navigation }) => {
                 "Đã tải tin nhắn từ API khi thoát màn hình:",
                 filteredMessages.map((msg) => msg.content)
               );
-
               saveMessages(
                 conversation.conversationId,
                 filteredMessages,
@@ -99,7 +108,6 @@ const MessageScreen = ({ route, navigation }) => {
                   "Đã lưu tin nhắn từ API vào StorageService:",
                   savedMessages.map((msg) => msg.content)
                 );
-                // Refresh conversation list to update lastMessage and order
                 handlerRefresh();
               });
             }
@@ -113,12 +121,30 @@ const MessageScreen = ({ route, navigation }) => {
       }
     };
   }, [
-    messages,
     conversation?.conversationId,
     saveMessages,
     handlerRefresh,
     userInfo.userId,
   ]);
+
+  useEffect(() => {
+    console.log(
+      "🧭 Navigation listener registered for conversation:",
+      conversation?.conversationId
+    );
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      console.log(
+        `📡 Navigation: Thoát giao diện chat ${
+          conversation?.conversationId || "undefined"
+        }`
+      );
+      console.log("Navigation event details:", e);
+    });
+    return () => {
+      console.log("🧭 Navigation listener removed");
+      unsubscribe();
+    };
+  }, [navigation, conversation?.conversationId]);
 
   useEffect(() => {
     if (socket && conversation?.conversationId) {
@@ -1038,6 +1064,16 @@ const MessageScreen = ({ route, navigation }) => {
       addGroupMember(conversation);
     }
   }, [conversation]);
+
+  useEffect(() => {
+    // Khi vào màn hình MessageScreen, cập nhật screen context
+    setScreen("MessageScreen");
+    return () => {
+      // Khi thoát màn hình MessageScreen, cập nhật lại về Home (hoặc tên màn hình danh sách của bạn)
+      setScreen("Home");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>

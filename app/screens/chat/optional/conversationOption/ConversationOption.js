@@ -57,21 +57,19 @@ const options = [
 
 const ConversationOption = ({ conversation, receiver }) => {
   const [toggleStates, setToggleStates] = useState({
-    0: conversation?.isPinned || false, // Initialize "Ghim trò chuyện" toggle based on pinned state
+    0: conversation?.isPinned || false,
   });
 
-  const { handlerRefresh, updatePinnedStatus } = useContext(AuthContext); // Assuming you have a context to handle refresh
+  const { userInfo, updateUserInfo } = useContext(AuthContext);
 
   const toggleSwitch = async (index) => {
     if (index === 0) {
-      // Handle "Ghim trò chuyện"
+      // Ghim/bỏ ghim trò chuyện
       try {
         const isPinned = toggleStates[index];
+        const pinnedList = userInfo?.pinnedConversations || [];
 
-        if (
-          !isPinned &&
-          conversation?.userInfo?.pinnedConversations?.length >= 5
-        ) {
+        if (!isPinned && pinnedList.length >= 5) {
           Alert.alert(
             "Không thể ghim thêm",
             "Đã đạt giới hạn 5 cuộc trò chuyện được ghim."
@@ -79,11 +77,27 @@ const ConversationOption = ({ conversation, receiver }) => {
           return;
         }
 
-        await updatePinnedStatus(conversation.conversationId, !isPinned); // Use updatePinnedStatus
-        Alert.alert(
-          "Thành công",
-          `Cuộc trò chuyện đã được ${!isPinned ? "ghim" : "bỏ ghim"}.`
-        );
+        if (!isPinned) {
+          // Ghim
+          await api.pinConversation(conversation.conversationId);
+          const newPinned = [
+            ...pinnedList,
+            {
+              conversationId: conversation.conversationId,
+              pinnedAt: new Date().toISOString(),
+            },
+          ];
+          await updateUserInfo({ pinnedConversations: newPinned });
+          Alert.alert("Thành công", "Cuộc trò chuyện đã được ghim.");
+        } else {
+          // Bỏ ghim
+          await api.unPinConversation(conversation.conversationId);
+          const newPinned = pinnedList.filter(
+            (p) => p.conversationId !== conversation.conversationId
+          );
+          await updateUserInfo({ pinnedConversations: newPinned });
+          Alert.alert("Thành công", "Đã bỏ ghim cuộc trò chuyện.");
+        }
 
         setToggleStates((prev) => ({
           ...prev,

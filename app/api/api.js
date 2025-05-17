@@ -2,8 +2,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 
-const API = `https://sophy-chatapp-be.onrender.com/api`;
-// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+// const API = `https://sophy-chatapp-be.onrender.com/api`;
+const API = `http://${MY_IP}:3000/api` || DATABASE_API;
 
 let isRefreshing = false;
 let failedQueue = [];
