@@ -904,14 +904,14 @@ export const AuthProvider = ({ children }) => {
           socket.emit("authenticate", userId);
         }
 
-        if (response) {
-          try {
-            await onUserLogin(userId, response.data.user.fullname);
-          } catch (err) {
-            console.error("Lỗi khi khởi tạo cuộc gọi video:", err);
-            // Tuỳ ý hiển thị thông báo cho người dùng
-          }
-        }
+        // if (response) {
+        //   try {
+        //     await onUserLogin(userId, response.data.user.fullname);
+        //   } catch (err) {
+        //     console.error("Lỗi khi khởi tạo cuộc gọi video:", err);
+        //     // Tuỳ ý hiển thị thông báo cho người dùng
+        //   }
+        // }
 
         await handlerRefresh();
       } catch (error) {
