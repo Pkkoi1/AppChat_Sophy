@@ -15,6 +15,7 @@ import { Alert, Linking } from "react-native";
 import { fetchName } from "../components/getUserInfo/UserName";
 import { setupAuthSocketEvents } from "../socket/socketEvents/AuthSocketEvents";
 import { pickExternalDirectory } from "@/app/storage/StorageService";
+import { onUserLogin, onUserLogout } from "../services/ZegoService";
 
 export const AuthContext = createContext();
 
@@ -884,7 +885,19 @@ export const AuthProvider = ({ children }) => {
         setRefreshToken(refreshToken);
         await AsyncStorage.setItem("userId", userId);
         await getUserInfoById(userId);
+        if (!userInfo) {
+          return () => {
+            onUserLogout()
+              .then(() => console.log("ZEGOCLOUD SDK uninitialized"))
+              .catch((error) =>
+                console.error("ZEGOCLOUD uninit failed:", error)
+              );
+          };
+        }
 
+        onUserLogin(userInfo.userId, userInfo.fullname)
+          .then(() => console.log("ZEGOCLOUD SDK initialized"))
+          .catch((error) => console.error("ZEGOCLOUD init failed:", error));
         // Yêu cầu chọn thư mục lưu trữ nếu chưa có
         const dirUri = await AsyncStorage.getItem("SHOPY_DIRECTORY_URI");
         if (!dirUri) {
