@@ -408,6 +408,20 @@ export const AuthProvider = ({ children }) => {
       );
     };
 
+    // Xử lý sự kiện nhận cuộc gọi đến
+    const handleIncomingCall = (data) => {
+      // Ví dụ: sử dụng React Navigation để điều hướng sang màn hình nhận cuộc gọi
+      // Bạn cần truyền navigation vào context hoặc dùng giải pháp phù hợp với dự án của bạn
+      // Giả sử bạn có navigationRef (React Navigation) ở cấp cao nhất:
+      if (global.navigationRef && global.navigationRef.current) {
+        global.navigationRef.current.navigate("IncomingCallScreen", {
+          data,
+          callOut: false,
+          fullname: data.fullname,
+        });
+      }
+    };
+
     socket.on("newMessage", handleNewMessage);
     socket.on("newConversation", handleNewConversation);
     socket.on("groupAvatarChanged", handleAvatarChange);
@@ -422,6 +436,7 @@ export const AuthProvider = ({ children }) => {
     socket.on("groupDeleted", handleGroupDeleted);
     socket.on("userBlocked", handleUserBlocked);
     socket.on("userUnblocked", handleUserUnblocked);
+    socket.on("startCall", handleIncomingCall);
 
     return () => {
       socket.off("newMessage", handleNewMessage);
@@ -438,6 +453,7 @@ export const AuthProvider = ({ children }) => {
       socket.off("groupDeleted", handleGroupDeleted);
       socket.off("userBlocked", handleUserBlocked);
       socket.off("userUnblocked", handleUserUnblocked);
+      socket.off("startCall", handleIncomingCall);
     };
   }, [socket]);
 
@@ -869,15 +885,18 @@ export const AuthProvider = ({ children }) => {
         await AsyncStorage.setItem("userId", userId);
         await getUserInfoById(userId);
 
-        // Yêu cầu chọn thư mục lưu trữ
-        try {
-          await pickExternalDirectory();
-        } catch (err) {
-          Alert.alert(
-            "Chọn thư mục lưu trữ",
-            "Bạn cần chọn thư mục lưu trữ để tiếp tục sử dụng ứng dụng."
-          );
-          throw err;
+        // Yêu cầu chọn thư mục lưu trữ nếu chưa có
+        const dirUri = await AsyncStorage.getItem("SHOPY_DIRECTORY_URI");
+        if (!dirUri) {
+          try {
+            await pickExternalDirectory();
+          } catch (err) {
+            Alert.alert(
+              "Chọn thư mục lưu trữ",
+              "Bạn cần chọn thư mục lưu trữ để tiếp tục sử dụng ứng dụng."
+            );
+            throw err;
+          }
         }
 
         if (socket && socket.connected) {
@@ -910,15 +929,18 @@ export const AuthProvider = ({ children }) => {
 
         await getUserInfoById(response.user.userId);
 
-        // Yêu cầu chọn thư mục lưu trữ
-        try {
-          await pickExternalDirectory();
-        } catch (err) {
-          Alert.alert(
-            "Chọn thư mục lưu trữ",
-            "Bạn cần chọn thư mục lưu trữ để tiếp tục sử dụng ứng dụng."
-          );
-          throw err;
+        // Yêu cầu chọn thư mục lưu trữ nếu chưa có
+        const dirUri = await AsyncStorage.getItem("SHOPY_DIRECTORY_URI");
+        if (!dirUri) {
+          try {
+            await pickExternalDirectory();
+          } catch (err) {
+            Alert.alert(
+              "Chọn thư mục lưu trữ",
+              "Bạn cần chọn thư mục lưu trữ để tiếp tục sử dụng ứng dụng."
+            );
+            throw err;
+          }
         }
 
         if (socket && socket.connected) {

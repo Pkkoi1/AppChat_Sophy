@@ -75,19 +75,30 @@ const MessageScreen = ({ route, navigation }) => {
     return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
   // Lưu tin nhắn vào StorageService khi thoát màn hình
+  const lastSavedConversationId = useRef();
+  useEffect(() => {
+    lastSavedConversationId.current = conversation?.conversationId;
+    // Chỉ theo dõi conversationId và userId để tránh lặp vô hạn
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation?.conversationId, userInfo?.userId]);
+
   useEffect(() => {
     console.log(
       "🏗️ MessageScreen mounted for conversation:",
       conversation?.conversationId
     );
     return () => {
-      console.log(
-        `📡 Đã thoát giao diện chat: ${
-          conversation?.conversationId || "undefined"
-        }`
-      );
-      console.log("🏚️ MessageScreen unmounted");
-      if (conversation?.conversationId) {
+      // Chỉ lưu khi thực sự unmount conversationId hiện tại
+      if (
+        lastSavedConversationId.current &&
+        conversation?.conversationId === lastSavedConversationId.current
+      ) {
+        console.log(
+          `📡 Đã thoát giao diện chat: ${
+            conversation?.conversationId || "undefined"
+          }`
+        );
+        console.log("🏚️ MessageScreen unmounted");
         api
           .getAllMessages(conversation.conversationId)
           .then((response) => {
@@ -120,12 +131,8 @@ const MessageScreen = ({ route, navigation }) => {
           });
       }
     };
-  }, [
-    conversation?.conversationId,
-    saveMessages,
-    handlerRefresh,
-    userInfo.userId,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation?.conversationId, userInfo?.userId]);
 
   useEffect(() => {
     console.log(

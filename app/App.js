@@ -56,13 +56,11 @@ import AddFriendToGroups from "./screens/directory/group/createGroup/AddFriendTo
 
 import SameGroups from "./screens/chat/optional/group/samegroup/SameGroups";
 
-
 import File from "./screens/chat/optional/gallery/files/File";
 import ListImageFullView from "./features/fullImages/ListImageFullView";
+import IncomingCallScreen from "./screens/call/IncomingCallScreen";
 
 const Stack = createNativeStackNavigator();
-
-
 
 // Navigation Stack component
 function AppNavigator() {
@@ -142,6 +140,12 @@ function AppNavigator() {
         component={CallScreen}
         options={{ headerShown: false }}
       />
+
+      <Stack.Screen
+        name="IncomingCallScreen"
+        component={IncomingCallScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="AddFriendToGroup"
         component={AddFriendToGroup}
@@ -163,7 +167,6 @@ function AppNavigator() {
           headerShown: false,
         }}
       />
-
     </Stack.Navigator>
   );
 }

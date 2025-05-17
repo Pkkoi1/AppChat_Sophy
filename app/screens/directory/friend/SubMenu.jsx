@@ -19,6 +19,7 @@ const FriendSubMenu = () => {
   const navigation = useNavigation(); // Khởi tạo navigation
 
   const handlePress = (itemName) => {
+    console.log(`Pressed: ${itemName}`);
     if (itemName === "Lời mời kết bạn") {
       navigation.navigate("ReceivedFriendRequests"); // Điều hướng đến màn hình phù hợp
     }
@@ -30,8 +31,13 @@ const FriendSubMenu = () => {
         {subMenuItem.map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={SubMenuStyle.menubarItem}
-            onPress={() => handlePress(item.name)} // Thêm sự kiện onPress
+            style={[
+              SubMenuStyle.menubarItem,
+              { minHeight: 48, justifyContent: "center" },
+            ]} // Tăng minHeight và căn giữa
+            onPress={() => handlePress(item.name)}
+            activeOpacity={0.7} // Phản hồi nhấn tốt hơn
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} // Tăng vùng nhấn
           >
             <View style={SubMenuStyle.iconTitleContainer}>
               <View style={SubMenuStyle.iconBackground}>
@@ -41,7 +47,9 @@ const FriendSubMenu = () => {
                 <Text style={SubMenuStyle.menuTitle}>
                   {item.name} {item.quantity && `(${item.quantity})`}
                 </Text>
-                {item.note && <Text style={SubMenuStyle.menuNote}>{item.note}</Text>}
+                {item.note && (
+                  <Text style={SubMenuStyle.menuNote}>{item.note}</Text>
+                )}
               </View>
             </View>
           </TouchableOpacity>
