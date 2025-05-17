@@ -12,6 +12,7 @@
 #include <RNDateTimePickerCGen.h>
 #include <rnpicker.h>
 #include <react/renderer/components/rnpicker/ComponentDescriptors.h>
+#include <ZegoUIKitPrebuiltCall.h>
 #include <rngesturehandler_codegen.h>
 #include <react/renderer/components/rngesturehandler_codegen/ComponentDescriptors.h>
 #include <pagerview.h>
@@ -44,6 +45,10 @@ return module_RNDateTimePickerCGen;
 auto module_rnpicker = rnpicker_ModuleProvider(moduleName, params);
 if (module_rnpicker != nullptr) {
 return module_rnpicker;
+}
+auto module_ZegoUIKitPrebuiltCall = ZegoUIKitPrebuiltCall_ModuleProvider(moduleName, params);
+if (module_ZegoUIKitPrebuiltCall != nullptr) {
+return module_ZegoUIKitPrebuiltCall;
 }
 auto module_rngesturehandler_codegen = rngesturehandler_codegen_ModuleProvider(moduleName, params);
 if (module_rngesturehandler_codegen != nullptr) {

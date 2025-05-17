@@ -26,6 +26,10 @@ import io.invertase.firebase.auth.ReactNativeFirebaseAuthPackage;
 import io.invertase.firebase.crashlytics.ReactNativeFirebaseCrashlyticsPackage;
 // @react-native-picker/picker
 import com.reactnativecommunity.picker.RNCPickerPackage;
+// @zegocloud/zego-uikit-prebuilt-call-rn
+import com.zegouikitprebuiltcallrn.ZegoUIKitPrebuiltCallRNPackage;
+// @zegocloud/zego-uikit-rn
+import com.zegouikitrn.ZegoUIKitRNPackage;
 // expo
 import expo.modules.ExpoModulesPackage;
 // react-native-action-sheet
@@ -62,6 +66,12 @@ import com.mrousavy.camera.react.CameraPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 // react-native-webview
 import com.reactnativecommunity.webview.RNCWebViewPackage;
+// zego-express-engine-reactnative
+import im.zego.reactnative.RCTZegoExpressEnginePackage;
+// zego-zim-react-native
+import im.zego.RNZimReactnativeSdkPackage;
+// zego-zpns-react-native
+import im.zego.zpns_reactnative_sdk.RCTZegoZPNsPackage;
 
 public class PackageList {
   private Application application;
@@ -115,6 +125,8 @@ public class PackageList {
       new ReactNativeFirebaseAuthPackage(),
       new ReactNativeFirebaseCrashlyticsPackage(),
       new RNCPickerPackage(),
+      new ZegoUIKitPrebuiltCallRNPackage(),
+      new ZegoUIKitRNPackage(),
       new ExpoModulesPackage(),
       new ActionSheetPackage(),
       new RNDeviceInfo(),
@@ -132,7 +144,10 @@ public class PackageList {
       new VectorIconsPackage(),
       new CameraPackage(),
       new WebRTCModulePackage(),
-      new RNCWebViewPackage()
+      new RNCWebViewPackage(),
+      new RCTZegoExpressEnginePackage(),
+      new RNZimReactnativeSdkPackage(),
+      new RCTZegoZPNsPackage()
     ));
   }
 }

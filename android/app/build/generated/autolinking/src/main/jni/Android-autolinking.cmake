@@ -14,6 +14,8 @@ add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/@react-n
 
 
 add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/@react-native-picker/picker/android/src/main/jni/" rnpicker_autolinked_build)
+add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/@zegocloud/zego-uikit-prebuilt-call-rn/android/build/generated/source/codegen/jni/" ZegoUIKitPrebuiltCall_autolinked_build)
+
 
 
 
@@ -33,6 +35,9 @@ add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/react-na
 
 add_subdirectory("D:/Study/CongNgheMoi/Sophy/ChatApp_Sophy/node_modules/react-native-webview/android/build/generated/source/codegen/jni/" RNCWebViewSpec_autolinked_build)
 
+
+
+
 set(AUTOLINKED_LIBRARIES
   react_codegen_rnasyncstorage
   react_codegen_rnclipboard
@@ -42,6 +47,8 @@ set(AUTOLINKED_LIBRARIES
   
   
   react_codegen_rnpicker
+  react_codegen_ZegoUIKitPrebuiltCall
+  
   
   
   
@@ -60,4 +67,7 @@ set(AUTOLINKED_LIBRARIES
   
   
   react_codegen_RNCWebViewSpec
+  
+  
+  
 )
