@@ -140,17 +140,15 @@ const writeFile = async (fileName, data) => {
         let fileUri;
         if (existingFileUri) {
           fileUri = existingFileUri;
-          try {
-            const backupDir = `${dirUri}/backup`;
-            await FileSystem.makeDirectoryAsync(backupDir, {
-              intermediates: true,
-            });
-            const backupFile = `${backupDir}/${cleanFileName}.${Date.now()}.bak`;
-            await FileSystem.copyAsync({ from: fileUri, to: backupFile });
-            console.log("✅ Đã sao lưu file:", backupFile);
-          } catch (backupErr) {
-            console.warn("⚠️ Không thể sao lưu file:", backupErr);
-          }
+          console.log("✅ Tìm thấy file hiện tại:", fileUri);
+          // Bỏ backup khi dùng SAF (content://), tránh lỗi lặp
+          // try {
+          //   const backupFile = `${dirUri}/${cleanFileName}.${Date.now()}.bak`;
+          //   await FileSystem.copyAsync({ from: fileUri, to: backupFile });
+          //   console.log("✅ Đã sao lưu file:", backupFile);
+          // } catch (backupErr) {
+          //   console.warn("⚠️ Không thể sao lưu file:", backupErr);
+          // }
         } else {
           fileUri = await StorageAccessFramework.createFileAsync(
             dirUri,
@@ -252,15 +250,14 @@ const readFile = async (fileName) => {
       console.log("🔍 Nội dung file gây lỗi:", content);
 
       // Sao lưu file lỗi
-      try {
-        const backupDir = `${dirUri}/backup`;
-        await FileSystem.makeDirectoryAsync(backupDir, { intermediates: true });
-        const backupFile = `${backupDir}/${cleanFileName}.${Date.now()}.error.bak`;
-        await FileSystem.copyAsync({ from: target, to: backupFile });
-        console.log("✅ Đã sao lưu file lỗi:", backupFile);
-      } catch (backupErr) {
-        console.warn("⚠️ Không thể sao lưu file lỗi:", backupErr);
-      }
+      // Bỏ backup khi dùng SAF (content://), tránh lỗi lặp
+      // try {
+      //   const backupFile = `${dirUri}/${cleanFileName}.${Date.now()}.error.bak`;
+      //   await FileSystem.copyAsync({ from: target, to: backupFile });
+      //   console.log("✅ Đã sao lưu file lỗi:", backupFile);
+      // } catch (backupErr) {
+      //   console.warn("⚠️ Không thể sao lưu file lỗi:", backupErr);
+      // }
 
       // Thử sửa JSON
       try {
