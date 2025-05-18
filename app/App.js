@@ -49,7 +49,6 @@ import SearchUser from "./screens/chat/search/SearrchUser";
 import UserInfo from "./screens/profile/userProfile/userInfo/UserInfo";
 import GroupMember from "./screens/chat/optional/group/Member/Index";
 import CreateNewGroup from "./screens/directory/group/createGroup/CreateNewGroup";
-import CallScreen from "./screens/call/CallScreen";
 import IncomingCallHandler from "./components/call/IncomingCallHandler";
 import AddFriendToGroup from "./screens/directory/group/createGroup/AddFriendToGroup";
 import AddFriendToGroups from "./screens/directory/group/createGroup/AddFriendToGroups";
@@ -59,6 +58,7 @@ import SameGroups from "./screens/chat/optional/group/samegroup/SameGroups";
 import File from "./screens/chat/optional/gallery/files/File";
 import ListImageFullView from "./features/fullImages/ListImageFullView";
 import IncomingCallScreen from "./screens/call/IncomingCallScreen";
+import CallScreen from "./screens/chat/call/CallScreen";
 
 const Stack = createNativeStackNavigator();
 

@@ -45,15 +45,8 @@ const ChatHeader = ({
     });
   };
 
+  // Hàm gọi thoại
   const handleVoiceCall = () => {
-    // Don't allow calls in group conversations
-    if (conversation?.isGroup) {
-      // You can show an alert or implement group calling later
-      console.log("Group calling not implemented yet");
-      return;
-    }
-
-    // Navigate to call screen with required parameters
     navigation.navigate("CallScreen", {
       callType: "voice",
       user: receiver,
@@ -61,15 +54,8 @@ const ChatHeader = ({
     });
   };
 
+  // Hàm gọi video
   const handleVideoCall = () => {
-    // Don't allow calls in group conversations
-    if (conversation?.isGroup) {
-      // You can show an alert or implement group calling later
-      console.log("Group video calling not implemented yet");
-      return;
-    }
-
-    // Navigate to call screen with required parameters
     navigation.navigate("CallScreen", {
       callType: "video",
       user: receiver,
