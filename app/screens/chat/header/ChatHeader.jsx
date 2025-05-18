@@ -47,20 +47,20 @@ const ChatHeader = ({
 
   // Hàm gọi thoại
   const handleVoiceCall = () => {
-    navigation.navigate("CallScreen", {
-      callType: "voice",
-      user: receiver,
-      incoming: false,
-    });
+    // navigation.navigate("CallScreen", {
+    //   callType: "voice",
+    //   user: receiver,
+    //   incoming: false,
+    // });
   };
 
   // Hàm gọi video
   const handleVideoCall = () => {
-    navigation.navigate("CallScreen", {
-      callType: "video",
-      user: receiver,
-      incoming: false,
-    });
+    // navigation.navigate("CallScreen", {
+    //   callType: "video",
+    //   user: receiver,
+    //   incoming: false,
+    // });
   };
 
   return (
