@@ -42,7 +42,6 @@ const MessageScreen = ({ route, navigation }) => {
     groupMember,
     saveGroupMembers,
     changeRole,
-    getMessages,
     setScreen, // lấy setScreen từ context
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);

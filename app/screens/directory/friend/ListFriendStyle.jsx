@@ -23,10 +23,10 @@ const ListFriendStyle = StyleSheet.create({
   buttonTab: {
     textAlign: "center",
     width: 100,
-    height: 28,
+    height: 40,
     backgroundColor: "#ddd",
     borderRadius: 18,
-    padding: 5,
+    padding: 10,
     paddingHorizontal: 10,
   },
   buttonAll: {
@@ -34,7 +34,6 @@ const ListFriendStyle = StyleSheet.create({
   },
   buttonNew: {
     marginLeft: 10,
-
   },
   friendList: {
     display: "flex",
