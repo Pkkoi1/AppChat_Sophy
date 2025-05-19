@@ -71,7 +71,15 @@ export const AuthProvider = ({ children }) => {
   const [friends, setFriends] = useState([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
   const [friendsError, setFriendsError] = useState(null);
-  const [screen, setScreen] = useState("Home"); // Thêm state để theo dõi màn hình hiện tại
+
+  // Thêm state cho danh sách lời mời kết bạn đã gửi/đã nhận
+  const [sentFriendRequests, setSentFriendRequests] = useState([]);
+  const [receivedFriendRequests, setReceivedFriendRequests] = useState([]);
+  const [friendRequestsLoading, setFriendRequestsLoading] = useState(false);
+  const [friendRequestsError, setFriendRequestsError] = useState(null);
+
+  // Thêm state cho screen
+  const [screen, setScreen] = useState("Home");
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -104,6 +112,45 @@ export const AuthProvider = ({ children }) => {
       ),
     [fetchFriends]
   );
+
+  // Hàm lấy danh sách lời mời kết bạn đã gửi
+  const fetchSentFriendRequests = useCallback(async () => {
+    setFriendRequestsLoading(true);
+    setFriendRequestsError(null);
+    try {
+      const data = await api.getFriendRequestsSent();
+      setSentFriendRequests(data || []);
+    } catch (err) {
+      setFriendRequestsError("Không thể tải danh sách lời mời đã gửi.");
+      setSentFriendRequests([]);
+    } finally {
+      setFriendRequestsLoading(false);
+    }
+  }, []);
+
+  // Hàm lấy danh sách lời mời kết bạn đã nhận
+  const fetchReceivedFriendRequests = useCallback(async () => {
+    setFriendRequestsLoading(true);
+    setFriendRequestsError(null);
+    try {
+      const data = await api.getFriendRequestsReceived();
+      setReceivedFriendRequests(data || []);
+    } catch (err) {
+      setFriendRequestsError("Không thể tải danh sách lời mời đã nhận.");
+      setReceivedFriendRequests([]);
+    } finally {
+      setFriendRequestsLoading(false);
+    }
+  }, []);
+
+  // Hàm tổng hợp để fetch cả 3 loại danh sách
+  const fetchAllFriendData = useCallback(async () => {
+    await Promise.all([
+      fetchFriends(),
+      fetchSentFriendRequests(),
+      fetchReceivedFriendRequests(),
+    ]);
+  }, [fetchFriends, fetchSentFriendRequests, fetchReceivedFriendRequests]);
 
   useEffect(() => {
     const loadStorage = async () => {
@@ -142,9 +189,9 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (userInfo?.userId) {
-      fetchFriends();
+      fetchAllFriendData();
     }
-  }, [userInfo, fetchFriends]);
+  }, [userInfo, fetchAllFriendData]);
 
   // Đăng ký socket events từ file ngoài
   useEffect(() => {
@@ -416,6 +463,13 @@ export const AuthProvider = ({ children }) => {
         friendsError,
         fetchFriends,
         updateFriendsList,
+        sentFriendRequests,
+        receivedFriendRequests,
+        friendRequestsLoading,
+        friendRequestsError,
+        fetchSentFriendRequests,
+        fetchReceivedFriendRequests,
+        fetchAllFriendData,
         screen,
         setScreen,
       }}

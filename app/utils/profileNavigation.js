@@ -1,66 +1,71 @@
-import { api } from "../api/api";
+import { useContext, useCallback } from "react";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 /**
- * Navigates to a user profile with automatic friendship status detection
- * @param {Object} navigation - The navigation object
- * @param {Object} user - The user object to navigate to
- * @param {Object} options - Additional options (optional)
- * @param {boolean} options.showLoading - Whether to show loading indicator
- * @param {Function} options.onLoadingChange - Callback for loading state changes
+ * Custom hook: trả về hàm navigateToProfile sử dụng context đúng chuẩn hook
  */
-export const navigateToProfile = async (navigation, user, options = {}) => {
-  if (!user || !user.userId) {
-    console.warn("Invalid user object provided to navigateToProfile");
-    return;
-  }
+export function useNavigateToProfile() {
+  const {
+    friends,
+    sentFriendRequests,
+    receivedFriendRequests,
+  } = useContext(AuthContext);
 
-  const { showLoading = false, onLoadingChange = null } = options;
+  /**
+   * Navigates to a user profile with automatic friendship status detection
+   * @param {Object} navigation - The navigation object
+   * @param {Object} user - The user object to navigate to
+   * @param {Object} options - Additional options (optional)
+   * @param {boolean} options.showLoading - Whether to show loading indicator
+   * @param {Function} options.onLoadingChange - Callback for loading state changes
+   */
+  return useCallback(
+    (navigation, user, options = {}) => {
+      if (!user || !user.userId) {
+        console.warn("Invalid user object provided to navigateToProfile");
+        return;
+      }
 
-  try {
-    // Set loading state if needed
-    if (showLoading && onLoadingChange) {
-      onLoadingChange(true);
-    }
+      const { showLoading = false, onLoadingChange = null } = options;
 
-    // Determine user relationship status
-    let requestSent = "";
+      try {
+        if (showLoading && onLoadingChange) onLoadingChange(true);
 
-    // Check if user is a friend
-    const friends = await api.getFriends();
-    if (friends.some(friend => friend.userId === user.userId)) {
-      requestSent = "friend";
-    } else {
-      // Check sent requests
-      const sentRequests = await api.getFriendRequestsSent();
-      if (sentRequests.some(request => request.receiverId?.userId === user.userId)) {
-        requestSent = "pending";
-      } else {
-        // Check received requests
-        const receivedRequests = await api.getFriendRequestsReceived();
-        if (receivedRequests.some(request => request.senderId?.userId === user.userId)) {
+        let requestSent = "";
+
+        // Kiểm tra trạng thái bạn bè/lời mời
+        if (friends.some(friend => friend.userId === user.userId)) {
+          requestSent = "friend";
+        } else if (
+          sentFriendRequests.some(
+            request =>
+              (request.receiver?.userId || request.receiverId?.userId) === user.userId
+          )
+        ) {
+          requestSent = "pending";
+        } else if (
+          receivedFriendRequests.some(
+            request =>
+              (request.sender?.userId || request.senderId?.userId) === user.userId
+          )
+        ) {
           requestSent = "accepted";
         }
+
+        navigation.navigate("UserProfile", {
+          friend: user,
+          requestSent,
+        });
+      } catch (error) {
+        console.error("Error navigating to profile:", error);
+        navigation.navigate("UserProfile", {
+          friend: user,
+          requestSent: "",
+        });
+      } finally {
+        if (showLoading && onLoadingChange) onLoadingChange(false);
       }
-    }
-
-    // Navigate to profile with determined status
-    navigation.navigate("UserProfile", {
-      friend: user,
-      requestSent
-    });
-
-  } catch (error) {
-    console.error("Error navigating to profile:", error);
-    
-    // If error occurs, still navigate but with empty status
-    navigation.navigate("UserProfile", {
-      friend: user,
-      requestSent: ""
-    });
-  } finally {
-    // Reset loading state if needed
-    if (showLoading && onLoadingChange) {
-      onLoadingChange(false);
-    }
-  }
-};
+    },
+    [friends, sentFriendRequests, receivedFriendRequests]
+  );
+}

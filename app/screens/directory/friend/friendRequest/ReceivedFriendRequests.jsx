@@ -16,7 +16,7 @@ import Color from "../../../../components/colors/Color";
 import { api } from "../../../../api/api";
 import { SocketContext } from "../../../../socket/SocketContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
-import { navigateToProfile } from "@/app/utils/profileNavigation";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const groupByTime = (data) => {
   if (!data || data.length === 0) return [];
@@ -81,6 +81,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
   ]);
 
   const socket = useContext(SocketContext);
+  const navigateToProfile = useNavigateToProfile();
 
   // Hàm cập nhật routes với số lượng chính xác
   const updateRoutes = useCallback((received, sent) => {
