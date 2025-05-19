@@ -35,6 +35,9 @@ import {
 import {
   fetchFriends as fetchFriendsHelper,
   updateFriendsList as updateFriendsListHelper,
+  fetchSentFriendRequests as fetchSentFriendRequestsHelper,
+  fetchReceivedFriendRequests as fetchReceivedFriendRequestsHelper,
+  fetchAllFriendData as fetchAllFriendDataHelper,
 } from "./friendHelpers";
 // Thêm import các hàm message từ file mới
 import {
@@ -113,44 +116,38 @@ export const AuthProvider = ({ children }) => {
     [fetchFriends]
   );
 
-  // Hàm lấy danh sách lời mời kết bạn đã gửi
-  const fetchSentFriendRequests = useCallback(async () => {
-    setFriendRequestsLoading(true);
-    setFriendRequestsError(null);
-    try {
-      const data = await api.getFriendRequestsSent();
-      setSentFriendRequests(data || []);
-    } catch (err) {
-      setFriendRequestsError("Không thể tải danh sách lời mời đã gửi.");
-      setSentFriendRequests([]);
-    } finally {
-      setFriendRequestsLoading(false);
-    }
-  }, []);
+  // Hàm lấy danh sách lời mời kết bạn đã gửi (dùng từ file friendHelpers)
+  const fetchSentFriendRequests = useCallback(
+    () =>
+      fetchSentFriendRequestsHelper(
+        setSentFriendRequests,
+        setFriendRequestsLoading,
+        setFriendRequestsError
+      ),
+    []
+  );
 
-  // Hàm lấy danh sách lời mời kết bạn đã nhận
-  const fetchReceivedFriendRequests = useCallback(async () => {
-    setFriendRequestsLoading(true);
-    setFriendRequestsError(null);
-    try {
-      const data = await api.getFriendRequestsReceived();
-      setReceivedFriendRequests(data || []);
-    } catch (err) {
-      setFriendRequestsError("Không thể tải danh sách lời mời đã nhận.");
-      setReceivedFriendRequests([]);
-    } finally {
-      setFriendRequestsLoading(false);
-    }
-  }, []);
+  // Hàm lấy danh sách lời mời kết bạn đã nhận (dùng từ file friendHelpers)
+  const fetchReceivedFriendRequests = useCallback(
+    () =>
+      fetchReceivedFriendRequestsHelper(
+        setReceivedFriendRequests,
+        setFriendRequestsLoading,
+        setFriendRequestsError
+      ),
+    []
+  );
 
-  // Hàm tổng hợp để fetch cả 3 loại danh sách
-  const fetchAllFriendData = useCallback(async () => {
-    await Promise.all([
-      fetchFriends(),
-      fetchSentFriendRequests(),
-      fetchReceivedFriendRequests(),
-    ]);
-  }, [fetchFriends, fetchSentFriendRequests, fetchReceivedFriendRequests]);
+  // Hàm tổng hợp để fetch cả 3 loại danh sách (dùng từ file friendHelpers)
+  const fetchAllFriendData = useCallback(
+    () =>
+      fetchAllFriendDataHelper(
+        fetchFriends,
+        fetchSentFriendRequests,
+        fetchReceivedFriendRequests
+      ),
+    [fetchFriends, fetchSentFriendRequests, fetchReceivedFriendRequests]
+  );
 
   useEffect(() => {
     const loadStorage = async () => {
