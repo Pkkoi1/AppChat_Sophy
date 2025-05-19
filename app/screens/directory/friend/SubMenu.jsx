@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native"; // Thêm useNavigation
 
@@ -10,7 +10,7 @@ const subMenuItem = [
   {
     name: "Danh bạ máy",
     icon: "address-book",
-    note: "Các liên hệ có dùng Zalo",
+    note: "Các liên hệ có dùng Sophy",
   },
   { name: "Sinh nhật", icon: "birthday-cake" },
 ];
@@ -20,6 +20,7 @@ const FriendSubMenu = () => {
 
   const handlePress = (itemName) => {
     console.log(`Pressed: ${itemName}`);
+    Alert.alert("Đã nhấn", itemName); // Thêm dòng này để test sự kiện click
     if (itemName === "Lời mời kết bạn") {
       navigation.navigate("ReceivedFriendRequests"); // Điều hướng đến màn hình phù hợp
     }
@@ -31,13 +32,9 @@ const FriendSubMenu = () => {
         {subMenuItem.map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={[
-              SubMenuStyle.menubarItem,
-              { minHeight: 48, justifyContent: "center" },
-            ]} // Tăng minHeight và căn giữa
+            style={[SubMenuStyle.menubarItem]} // Tăng minHeight và căn giữa
             onPress={() => handlePress(item.name)}
-            activeOpacity={0.7} // Phản hồi nhấn tốt hơn
-            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }} // Tăng vùng nhấn
+            activeOpacity={0.6} // Phản hồi nhấn tốt hơn
           >
             <View style={SubMenuStyle.iconTitleContainer}>
               <View style={SubMenuStyle.iconBackground}>
