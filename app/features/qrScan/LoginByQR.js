@@ -104,7 +104,7 @@ const LoginByQR = ({ route, navigation }) => {
         />
       </View>
       <Text style={styles.title}>
-        Đăng nhập Zalo Web bằng mã QR trên thiết bị lạ?
+        Đăng nhập Sophy Web bằng mã QR trên thiết bị lạ?
       </Text>
 
       {/* Warning */}

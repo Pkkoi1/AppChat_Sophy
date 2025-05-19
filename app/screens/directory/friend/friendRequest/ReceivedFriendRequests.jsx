@@ -501,7 +501,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   tabView: {
-    marginTop: 10,
   },
   tabBar: {
     backgroundColor: "#fff",
