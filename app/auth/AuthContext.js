@@ -391,7 +391,6 @@ export const AuthProvider = ({ children }) => {
             return timeB - timeA;
           });
 
-        // Sửa: Luôn cập nhật conversations mới vào state và AsyncStorage, không so sánh prevIds/newIds nữa
         setConversations(filteredConversations);
         await AsyncStorage.setItem(
           "conversations",
@@ -402,7 +401,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Error refreshing data:", error);
     }
-  }, [userInfo?.userId, fetchGroups, conversations]);
+  }, [userInfo?.userId, fetchGroups]); // Loại conversations ra
 
   const updateBackground = useCallback(async (newBackground) => {
     setBackground(newBackground);
