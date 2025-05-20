@@ -71,3 +71,69 @@ export const updateFriendsList = async (
     // ignore
   }
 };
+
+/**
+ * Lấy danh sách lời mời kết bạn đã gửi.
+ * @param {Function} setSentFriendRequests
+ * @param {Function} setFriendRequestsLoading
+ * @param {Function} setFriendRequestsError
+ */
+export const fetchSentFriendRequests = async (
+  setSentFriendRequests,
+  setFriendRequestsLoading,
+  setFriendRequestsError
+) => {
+  setFriendRequestsLoading(true);
+  setFriendRequestsError(null);
+  try {
+    const data = await api.getFriendRequestsSent();
+    setSentFriendRequests(data || []);
+  } catch (err) {
+    setFriendRequestsError("Không thể tải danh sách lời mời đã gửi.");
+    setSentFriendRequests([]);
+  } finally {
+    setFriendRequestsLoading(false);
+  }
+};
+
+/**
+ * Lấy danh sách lời mời kết bạn đã nhận.
+ * @param {Function} setReceivedFriendRequests
+ * @param {Function} setFriendRequestsLoading
+ * @param {Function} setFriendRequestsError
+ */
+export const fetchReceivedFriendRequests = async (
+  setReceivedFriendRequests,
+  setFriendRequestsLoading,
+  setFriendRequestsError
+) => {
+  setFriendRequestsLoading(true);
+  setFriendRequestsError(null);
+  try {
+    const data = await api.getFriendRequestsReceived();
+    setReceivedFriendRequests(data || []);
+  } catch (err) {
+    setFriendRequestsError("Không thể tải danh sách lời mời đã nhận.");
+    setReceivedFriendRequests([]);
+  } finally {
+    setFriendRequestsLoading(false);
+  }
+};
+
+/**
+ * Hàm tổng hợp để fetch cả 3 loại danh sách bạn bè và lời mời.
+ * @param {Function} fetchFriends
+ * @param {Function} fetchSentFriendRequests
+ * @param {Function} fetchReceivedFriendRequests
+ */
+export const fetchAllFriendData = async (
+  fetchFriends,
+  fetchSentFriendRequests,
+  fetchReceivedFriendRequests
+) => {
+  await Promise.all([
+    fetchFriends(),
+    fetchSentFriendRequests(),
+    fetchReceivedFriendRequests(),
+  ]);
+};

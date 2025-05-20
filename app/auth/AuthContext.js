@@ -35,6 +35,9 @@ import {
 import {
   fetchFriends as fetchFriendsHelper,
   updateFriendsList as updateFriendsListHelper,
+  fetchSentFriendRequests as fetchSentFriendRequestsHelper,
+  fetchReceivedFriendRequests as fetchReceivedFriendRequestsHelper,
+  fetchAllFriendData as fetchAllFriendDataHelper,
 } from "./friendHelpers";
 // Thêm import các hàm message từ file mới
 import {
@@ -71,7 +74,15 @@ export const AuthProvider = ({ children }) => {
   const [friends, setFriends] = useState([]);
   const [friendsLoading, setFriendsLoading] = useState(false);
   const [friendsError, setFriendsError] = useState(null);
-  const [screen, setScreen] = useState("Home"); // Thêm state để theo dõi màn hình hiện tại
+
+  // Thêm state cho danh sách lời mời kết bạn đã gửi/đã nhận
+  const [sentFriendRequests, setSentFriendRequests] = useState([]);
+  const [receivedFriendRequests, setReceivedFriendRequests] = useState([]);
+  const [friendRequestsLoading, setFriendRequestsLoading] = useState(false);
+  const [friendRequestsError, setFriendRequestsError] = useState(null);
+
+  // Thêm state cho screen
+  const [screen, setScreen] = useState("Home");
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -103,6 +114,39 @@ export const AuthProvider = ({ children }) => {
         removedFriendId
       ),
     [fetchFriends]
+  );
+
+  // Hàm lấy danh sách lời mời kết bạn đã gửi (dùng từ file friendHelpers)
+  const fetchSentFriendRequests = useCallback(
+    () =>
+      fetchSentFriendRequestsHelper(
+        setSentFriendRequests,
+        setFriendRequestsLoading,
+        setFriendRequestsError
+      ),
+    []
+  );
+
+  // Hàm lấy danh sách lời mời kết bạn đã nhận (dùng từ file friendHelpers)
+  const fetchReceivedFriendRequests = useCallback(
+    () =>
+      fetchReceivedFriendRequestsHelper(
+        setReceivedFriendRequests,
+        setFriendRequestsLoading,
+        setFriendRequestsError
+      ),
+    []
+  );
+
+  // Hàm tổng hợp để fetch cả 3 loại danh sách (dùng từ file friendHelpers)
+  const fetchAllFriendData = useCallback(
+    () =>
+      fetchAllFriendDataHelper(
+        fetchFriends,
+        fetchSentFriendRequests,
+        fetchReceivedFriendRequests
+      ),
+    [fetchFriends, fetchSentFriendRequests, fetchReceivedFriendRequests]
   );
 
   useEffect(() => {
@@ -142,9 +186,9 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (userInfo?.userId) {
-      fetchFriends();
+      fetchAllFriendData();
     }
-  }, [userInfo, fetchFriends]);
+  }, [userInfo, fetchAllFriendData]);
 
   // Đăng ký socket events từ file ngoài
   useEffect(() => {
@@ -416,6 +460,13 @@ export const AuthProvider = ({ children }) => {
         friendsError,
         fetchFriends,
         updateFriendsList,
+        sentFriendRequests,
+        receivedFriendRequests,
+        friendRequestsLoading,
+        friendRequestsError,
+        fetchSentFriendRequests,
+        fetchReceivedFriendRequests,
+        fetchAllFriendData,
         screen,
         setScreen,
       }}

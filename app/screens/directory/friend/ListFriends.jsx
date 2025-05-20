@@ -15,6 +15,7 @@ import Friends from "./Friend";
 import { AuthContext } from "@/app/auth/AuthContext";
 import ListFriendStyle from "./ListFriendStyle";
 import { SocketContext } from "../../../socket/SocketContext";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const ListFriends = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -36,6 +37,7 @@ const ListFriends = () => {
     updateFriendsList,
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
+  const navigateToProfile = useNavigateToProfile();
 
   useEffect(() => {
     fetchFriends();
@@ -188,20 +190,22 @@ const ListFriends = () => {
                   key={contact._id || contact.phone}
                   onPress={() => {
                     if (showPhoneContacts && contact.isAppUser) {
-                      navigation.navigate("UserProfile", {
-                        friend: contact,
-                        requestSent: "friend",
-                      });
+                      // navigation.navigate("UserProfile", {
+                      //   friend: contact,
+                      //   requestSent: "friend",
+                      // });
+                      navigateToProfile(navigation, contact);
                     } else if (showPhoneContacts && contact.isPhoneContact) {
                       Alert.alert(
                         "Liên hệ",
                         `Gọi cho ${contact.fullname} (${contact.phone})`
                       );
                     } else {
-                      navigation.navigate("UserProfile", {
-                        friend: contact,
-                        requestSent: "friend",
-                      });
+                      // navigation.navigate("UserProfile", {
+                      //   friend: contact,
+                      //   requestSent: "friend",
+                      // });
+                      navigateToProfile(navigation, contact);
                     }
                   }}
                 >

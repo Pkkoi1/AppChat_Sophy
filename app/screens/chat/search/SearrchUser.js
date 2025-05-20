@@ -13,7 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
-import { navigateToProfile } from "@/app/utils/profileNavigation";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 import Color from "@/app/components/colors/Color";
 
 const SearchUser = ({ navigation }) => {
@@ -22,6 +22,7 @@ const SearchUser = ({ navigation }) => {
   const [databaseResults, setDatabaseResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [allFriends, setAllFriends] = useState([]);
+  const navigateToProfile = useNavigateToProfile();
 
   // Lấy danh sách bạn bè khi chưa tìm kiếm
   useEffect(() => {
@@ -85,10 +86,8 @@ const SearchUser = ({ navigation }) => {
   const handleContactClick = async (contact) => {
     try {
       setIsSearching(true);
-      await navigateToProfile(navigation, contact, {
-        showLoading: true,
-        onLoadingChange: (loading) => setIsSearching(loading),
-      });
+      // ĐÚNG: gọi hàm navigateToProfile đã lấy từ hook, KHÔNG gọi hook trực tiếp!
+      await navigateToProfile(navigation, contact);
     } catch (error) {
       Alert.alert("Lỗi", "Không thể xử lý thông tin người dùng.");
       setIsSearching(false);
