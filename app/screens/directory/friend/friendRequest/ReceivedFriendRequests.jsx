@@ -20,7 +20,7 @@ import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const groupByTime = (data) => {
   if (!data || data.length === 0) return [];
-  
+
   const today = new Date();
   const oneMonthAgo = new Date(today);
   oneMonthAgo.setDate(today.getDate() - 30);
@@ -87,12 +87,20 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const updateRoutes = useCallback((received, sent) => {
     const receivedCount = received?.length || 0;
     const sentCount = sent?.length || 0;
-    
-    setRoutes([
+
+    const newRoutes = [
       { key: "received", title: `Đã nhận ${receivedCount}` },
       { key: "sent", title: `Đã gửi ${sentCount}` },
-    ]);
-    
+    ];
+
+    // So sánh trước khi set để tránh update không cần thiết
+    setRoutes((prevRoutes) => {
+      const isSame =
+        prevRoutes[0]?.title === newRoutes[0].title &&
+        prevRoutes[1]?.title === newRoutes[1].title;
+      return isSame ? prevRoutes : newRoutes;
+    });
+
     console.log(`Cập nhật UI: Đã nhận ${receivedCount}, Đã gửi ${sentCount}`);
   }, []);
 
@@ -207,19 +215,21 @@ const ReceivedFriendRequests = ({ navigation }) => {
     try {
       setLoading(true);
       console.log("ACCEPT.friendRequestId:", item);
-      
+
       await api.acceptFriendRequest(item.friendRequestId);
-      
+
       setReceivedRequests((prevRequests) => {
         const updated = prevRequests.filter(
           (request) => request.friendRequestId !== item.friendRequestId
         );
         return updated;
       });
-      
+
       Alert.alert(
         "Thành công",
-        `Đã chấp nhận lời mời kết bạn từ ${item.sender?.fullname || 'người dùng'}`
+        `Đã chấp nhận lời mời kết bạn từ ${
+          item.sender?.fullname || "người dùng"
+        }`
       );
     } catch (err) {
       console.error("Lỗi khi chấp nhận lời mời kết bạn:", err);
@@ -237,19 +247,19 @@ const ReceivedFriendRequests = ({ navigation }) => {
     try {
       setLoading(true);
       console.log("REJECT.friendRequestId:", item);
-      
+
       await api.rejectFriendRequest(item.friendRequestId);
-      
+
       setReceivedRequests((prevRequests) => {
         const updated = prevRequests.filter(
           (request) => request.friendRequestId !== item.friendRequestId
         );
         return updated;
       });
-      
+
       Alert.alert(
         "Thành công",
-        `Đã từ chối lời mời kết bạn từ ${item.sender?.fullname || 'người dùng'}`
+        `Đã từ chối lời mời kết bạn từ ${item.sender?.fullname || "người dùng"}`
       );
     } catch (err) {
       console.error("Lỗi khi từ chối lời mời kết bạn:", err);
@@ -266,19 +276,21 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const handleWithdraw = async (item) => {
     try {
       console.log("WITHDRAW.friendRequestId:", item);
-      
+
       await api.retrieveFriendRequest(item.friendRequestId);
-      
+
       setSentRequests((prevRequests) => {
         const updated = prevRequests.filter(
           (request) => request.friendRequestId !== item.friendRequestId
         );
         return updated;
       });
-      
+
       Alert.alert(
         "Thành công",
-        `Đã thu hồi lời mời kết bạn với ${item.receiverId?.fullname || 'người dùng'}`
+        `Đã thu hồi lời mời kết bạn với ${
+          item.receiverId?.fullname || "người dùng"
+        }`
       );
     } catch (err) {
       console.error("Lỗi khi thu hồi lời mời kết bạn:", err);
@@ -310,7 +322,9 @@ const ReceivedFriendRequests = ({ navigation }) => {
     return (
       <SectionList
         sections={groupByTime(receivedRequests)}
-        keyExtractor={(item) => item.friendRequestId || item._id || Math.random().toString()}
+        keyExtractor={(item) =>
+          item.friendRequestId || item._id || Math.random().toString()
+        }
         renderItem={({ item }) => {
           const user = item.sender || item.senderId || {};
           return (
@@ -321,7 +335,10 @@ const ReceivedFriendRequests = ({ navigation }) => {
               {user.urlavatar || user.avatar ? (
                 <Image
                   source={{
-                    uri: user.urlavatar || user.avatar || "https://via.placeholder.com/50",
+                    uri:
+                      user.urlavatar ||
+                      user.avatar ||
+                      "https://via.placeholder.com/50",
                   }}
                   style={styles.avatar}
                 />
@@ -336,7 +353,9 @@ const ReceivedFriendRequests = ({ navigation }) => {
               )}
 
               <View style={styles.infoWrapper}>
-                <Text style={styles.name}>{user?.fullname || "Người dùng"}</Text>
+                <Text style={styles.name}>
+                  {user?.fullname || "Người dùng"}
+                </Text>
                 <Text style={styles.status}>{"Muốn kết bạn"}</Text>
                 <View style={styles.buttonContainer}>
                   {loading ? (
@@ -407,7 +426,9 @@ const ReceivedFriendRequests = ({ navigation }) => {
     return (
       <SectionList
         sections={groupByTime(sentRequests)}
-        keyExtractor={(item) => item.friendRequestId || item._id || Math.random().toString()}
+        keyExtractor={(item) =>
+          item.friendRequestId || item._id || Math.random().toString()
+        }
         renderItem={({ item }) => {
           const user = item.receiver || item.receiverId || {};
           return (
@@ -418,7 +439,10 @@ const ReceivedFriendRequests = ({ navigation }) => {
               {user.urlavatar || user.avatar ? (
                 <Image
                   source={{
-                    uri: user.urlavatar || user.avatar || "https://via.placeholder.com/50",
+                    uri:
+                      user.urlavatar ||
+                      user.avatar ||
+                      "https://via.placeholder.com/50",
                   }}
                   style={styles.avatar}
                 />
@@ -431,9 +455,11 @@ const ReceivedFriendRequests = ({ navigation }) => {
                   style={styles.avatar}
                 />
               )}
-              
+
               <View style={styles.infoWrapper}>
-                <Text style={styles.name}>{user?.fullname || "Người dùng"}</Text>
+                <Text style={styles.name}>
+                  {user?.fullname || "Người dùng"}
+                </Text>
                 <Text style={styles.status}>{"Đã gửi lời mời kết bạn"}</Text>
                 <TouchableOpacity
                   style={styles.withdrawButton}
@@ -501,8 +527,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
-  tabView: {
-  },
+  tabView: {},
   tabBar: {
     backgroundColor: "#fff",
     borderBottomWidth: 1,

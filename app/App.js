@@ -61,6 +61,11 @@ import IncomingCallScreen from "./screens/call/IncomingCallScreen";
 import CallScreen from "./screens/call/CallScreen";
 
 const Stack = createNativeStackNavigator();
+const update = (newData) => {
+  console.log("Sắp setState:", newData);
+  setMyState(newData);
+};
+
 
 // Navigation Stack component
 function AppNavigator() {
