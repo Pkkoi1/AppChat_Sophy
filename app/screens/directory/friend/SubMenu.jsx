@@ -18,9 +18,10 @@ const subMenuItem = [
 const FriendSubMenu = () => {
   const navigation = useNavigation(); // Khởi tạo navigation
 
+  console.log("[FriendSubMenu] render");
+
   const handlePress = (itemName) => {
-    console.log(`Pressed: ${itemName}`);
-    Alert.alert("Đã nhấn", itemName); // Thêm dòng này để test sự kiện click
+    console.log(`[FriendSubMenu] Pressed: ${itemName}`);
     if (itemName === "Lời mời kết bạn") {
       navigation.navigate("ReceivedFriendRequests"); // Điều hướng đến màn hình phù hợp
     }
@@ -56,4 +57,4 @@ const FriendSubMenu = () => {
   );
 };
 
-export default FriendSubMenu;
+export default React.memo(FriendSubMenu);
