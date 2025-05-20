@@ -13,13 +13,21 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
-import { navigateToProfile } from "@/app/utils/profileNavigation";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
+import Color from "@/app/components/colors/Color";
 
 const SearchUser = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [friendResults, setFriendResults] = useState([]);
   const [databaseResults, setDatabaseResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [allFriends, setAllFriends] = useState([]);
+  const navigateToProfile = useNavigateToProfile();
+
+  // Lấy danh sách bạn bè khi chưa tìm kiếm
+  useEffect(() => {
+    api.getFriends().then((friends) => setAllFriends(friends || []));
+  }, []);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(async () => {
@@ -28,35 +36,27 @@ const SearchUser = ({ navigation }) => {
         try {
           // 1. Tìm kiếm trong danh sách bạn bè
           const friends = await api.getFriends();
-          
+
           // Lọc danh sách bạn bè dựa trên số điện thoại hoặc tên (tìm kiếm tương đối)
-          const filteredFriends = friends.filter((friend) =>
-            (friend.phone?.toString().includes(searchQuery.trim())) || 
-            (friend.fullname?.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+          const filteredFriends = friends.filter(
+            (friend) =>
+              friend.phone?.toString().includes(searchQuery.trim()) ||
+              friend.fullname
+                ?.toLowerCase()
+                .includes(searchQuery.trim().toLowerCase())
           );
-  
+
           // Cập nhật kết quả tìm kiếm bạn bè
           setFriendResults(filteredFriends);
-  
+
           // 2. Tìm kiếm chính xác trong database
           try {
-            console.log("Tìm kiếm trong database với số điện thoại:", searchQuery.trim());
             const dbUser = await api.getUserByPhone(searchQuery.trim());
-            
-            console.log("Kết quả tìm kiếm từ database:", dbUser);
-            
             if (dbUser) {
-              // Xác định dữ liệu người dùng (có thể là trực tiếp hoặc trong .data)
               const userData = dbUser.data || dbUser;
-              
-              // Kiểm tra xem user đã có trong danh sách bạn bè chưa
               const isDuplicate = filteredFriends.some(
-                friend => friend.userId === userData.userId
+                (friend) => friend.userId === userData.userId
               );
-              
-              console.log("Trùng lặp với bạn bè?", isDuplicate);
-              console.log("User data:", userData);
-              
               if (!isDuplicate) {
                 setDatabaseResults([userData]);
               } else {
@@ -66,11 +66,9 @@ const SearchUser = ({ navigation }) => {
               setDatabaseResults([]);
             }
           } catch (error) {
-            console.log("Không tìm thấy user trong database:", error);
             setDatabaseResults([]);
           }
         } catch (error) {
-          console.error("Lỗi khi tìm kiếm:", error);
           setFriendResults([]);
           setDatabaseResults([]);
         } finally {
@@ -81,31 +79,20 @@ const SearchUser = ({ navigation }) => {
         setDatabaseResults([]);
       }
     }, 500);
-  
+
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
   const handleContactClick = async (contact) => {
     try {
       setIsSearching(true);
-      // Just call the utility function with the user object
-      // No need to manually determine friend status
-      await navigateToProfile(navigation, contact, {
-        showLoading: true,
-        onLoadingChange: (loading) => setIsSearching(loading)
-      });
+      // ĐÚNG: gọi hàm navigateToProfile đã lấy từ hook, KHÔNG gọi hook trực tiếp!
+      await navigateToProfile(navigation, contact);
     } catch (error) {
-      console.error("Error in handleContactClick:", error);
       Alert.alert("Lỗi", "Không thể xử lý thông tin người dùng.");
       setIsSearching(false);
     }
   };
-
-  // Kết hợp kết quả tìm kiếm từ bạn bè và database
-  const allResults = [
-    ...friendResults.map(item => ({ ...item, isFriend: true })),
-    ...databaseResults.map(item => ({ ...item, isFriend: false }))
-  ];
 
   // Render một item trong danh sách kết quả
   const renderResultItem = ({ item }) => (
@@ -124,9 +111,7 @@ const SearchUser = ({ navigation }) => {
         />
       )}
       <View style={styles.contactInfo}>
-        <Text style={styles.contactName}>
-          {item.fullname || "Người dùng"}
-        </Text>
+        <Text style={styles.contactName}>{item.fullname || "Người dùng"}</Text>
         <Text style={styles.contactPhone}>{item.phone}</Text>
       </View>
       {item.isFriend && (
@@ -147,7 +132,6 @@ const SearchUser = ({ navigation }) => {
   // Render section items
   const renderSection = (title, data) => {
     if (data.length === 0) return null;
-    
     return (
       <View key={title}>
         {renderSectionHeader(title)}
@@ -160,24 +144,44 @@ const SearchUser = ({ navigation }) => {
     );
   };
 
+  // Nếu chưa nhập gì, hiển thị danh sách bạn bè
+  const showFriendList = searchQuery.trim() === "";
+
   return (
     <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <Ionicons
-          name="search"
-          size={20}
-          color="#888"
-          style={styles.searchIcon}
-        />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Nhập số điện thoại hoặc tên"
-          value={searchQuery}
-          onChangeText={(text) => setSearchQuery(text)}
-          autoFocus={true}
-        />
+      <View style={styles.searchBarBackground}>
+        <View style={styles.searchBarRow}>
+          {/* Nút back bên trái */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name="arrow-back"
+              size={22}
+              color={Color.grayBackgroundButton}
+            />
+          </TouchableOpacity>
+          <View style={styles.searchInputWrapper}>
+            <Ionicons
+              name="search"
+              size={20}
+              color={Color.sophy}
+              style={styles.searchIconInner}
+            />
+            <TextInput
+              style={styles.searchInputInner}
+              placeholder="Nhập số điện thoại hoặc tên"
+              placeholderTextColor="#a0a0a0"
+              value={searchQuery}
+              onChangeText={(text) => setSearchQuery(text)}
+              autoFocus={true}
+            />
+          </View>
+        </View>
       </View>
-      
+
       {isSearching ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0066cc" />
@@ -185,15 +189,19 @@ const SearchUser = ({ navigation }) => {
         </View>
       ) : (
         <View style={styles.resultsContainer}>
-          {friendResults.length > 0 || databaseResults.length > 0 ? (
+          {showFriendList ? (
+            allFriends.length > 0 ? (
+              <>{renderSection("Bạn bè", allFriends)}</>
+            ) : (
+              <Text style={styles.emptyText}>Bạn chưa có bạn bè nào</Text>
+            )
+          ) : friendResults.length > 0 || databaseResults.length > 0 ? (
             <>
               {renderSection("Bạn bè", friendResults)}
               {renderSection("Người dùng khác", databaseResults)}
             </>
           ) : (
-            searchQuery.trim() !== "" && (
-              <Text style={styles.emptyText}>Không tìm thấy người dùng</Text>
-            )
+            <Text style={styles.emptyText}>Không tìm thấy người dùng</Text>
           )}
         </View>
       )}
@@ -205,23 +213,50 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    padding: 10,
+    padding: 0,
   },
-  searchContainer: {
+  searchBarBackground: {
+    backgroundColor: Color.sophy,
+    paddingHorizontal: 0,
+    paddingVertical: 10,
+  },
+  searchBarRow: {
     flexDirection: "row",
     alignItems: "center",
-    borderColor: "#ccc",
+    marginHorizontal: 0,
+  },
+  backButton: {
+    marginLeft: 10,
+    marginRight: 4,
+    padding: 4,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  searchInputWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    marginRight: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
     borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 20,
+    borderColor: Color.sophy,
   },
-  searchIcon: {
-    marginRight: 5,
+  searchIconInner: {
+    marginRight: 6,
+    marginLeft: 2,
   },
-  searchInput: {
+  searchInputInner: {
     flex: 1,
     height: 40,
+    color: "#222",
+    fontSize: 16,
+    backgroundColor: "transparent",
+    borderRadius: 10,
+    paddingLeft: 0,
+    paddingRight: 0,
   },
   loadingContainer: {
     flex: 1,
@@ -240,6 +275,7 @@ const styles = StyleSheet.create({
   },
   resultsContainer: {
     flex: 1,
+    paddingHorizontal: 0,
   },
   contactItem: {
     flexDirection: "row",
@@ -247,6 +283,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 0.5,
     borderBottomColor: "#e0e0e0",
+    backgroundColor: "#fff",
   },
   avatar: {
     width: 50,
@@ -272,7 +309,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   statusText: {
-    color: "#0078d7",
+    color: Color.sophy,
     fontSize: 12,
     fontWeight: "500",
   },

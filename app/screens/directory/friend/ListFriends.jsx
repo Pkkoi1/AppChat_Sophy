@@ -15,6 +15,7 @@ import Friends from "./Friend";
 import { AuthContext } from "@/app/auth/AuthContext";
 import ListFriendStyle from "./ListFriendStyle";
 import { SocketContext } from "../../../socket/SocketContext";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const ListFriends = () => {
   const [refreshing, setRefreshing] = useState(false);
@@ -33,9 +34,10 @@ const ListFriends = () => {
     friendsLoading,
     friendsError,
     fetchFriends,
-    updateFriendsList
+    updateFriendsList,
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
+  const navigateToProfile = useNavigateToProfile();
 
   useEffect(() => {
     fetchFriends();
@@ -45,20 +47,20 @@ const ListFriends = () => {
   // Lắng nghe sự kiện acceptedFriendRequest từ socket
   useEffect(() => {
     if (!socket) return;
-    
+
     const handleAcceptedFriendRequest = () => {
       updateFriendsList(); // Cập nhật danh sách bạn bè khi có người chấp nhận lời mời
     };
-    
+
     const handleRemovedFriend = (data) => {
       if (data && data.userId) {
         updateFriendsList(null, data.userId); // Cập nhật khi có người bạn bị xóa
       }
     };
-    
+
     socket.on("acceptedFriendRequest", handleAcceptedFriendRequest);
     socket.on("removedFriend", handleRemovedFriend);
-    
+
     return () => {
       socket.off("acceptedFriendRequest", handleAcceptedFriendRequest);
       socket.off("removedFriend", handleRemovedFriend);
@@ -67,8 +69,9 @@ const ListFriends = () => {
 
   const handlerRefreshList = () => {
     setRefreshing(true);
-    Promise.all([fetchFriends(), getPhoneContacts()])
-      .finally(() => setRefreshing(false));
+    Promise.all([fetchFriends(), getPhoneContacts()]).finally(() =>
+      setRefreshing(false)
+    );
   };
 
   // Hiển thị header
@@ -104,13 +107,16 @@ const ListFriends = () => {
   // Nếu đang ở chế độ danh bạ, hiển thị người dùng đã đăng ký app lên đầu
   let displayData = [];
   if (showPhoneContacts) {
-    // Tìm các user trong DB có số điện thoại trùng với danh bạ
+    // Loại bỏ trùng lặp số điện thoại giữa usersInDB và phoneContacts
+    const uniquePhones = new Set();
     const usersInContacts = usersInDB
       .map((user) => {
-        // Tìm contact trong danh bạ để lấy fullname nếu có
         const matchedContact = phoneContacts.find(
           (c) => c.phone === user.phone
         );
+        // Đảm bảo mỗi số điện thoại chỉ xuất hiện 1 lần
+        if (uniquePhones.has(user.phone)) return null;
+        uniquePhones.add(user.phone);
         return {
           ...user,
           fullname: matchedContact ? matchedContact.fullname : user.fullname,
@@ -118,11 +124,16 @@ const ListFriends = () => {
           isAppUser: true,
         };
       })
+      .filter(Boolean)
       .sort((a, b) => a.fullname.localeCompare(b.fullname));
 
-    // Các contact còn lại chưa dùng app
+    // Các contact còn lại chưa dùng app, loại bỏ trùng lặp
     const contactsNotInApp = phoneContacts
-      .filter((c) => !usersInDB.some((u) => u.phone === c.phone))
+      .filter(
+        (c) =>
+          !usersInDB.some((u) => u.phone === c.phone) &&
+          !uniquePhones.has(c.phone)
+      )
       .map((c) => ({
         ...c,
         isAppUser: false,
@@ -179,20 +190,22 @@ const ListFriends = () => {
                   key={contact._id || contact.phone}
                   onPress={() => {
                     if (showPhoneContacts && contact.isAppUser) {
-                      navigation.navigate("UserProfile", {
-                        friend: contact,
-                        requestSent: "friend",
-                      });
+                      // navigation.navigate("UserProfile", {
+                      //   friend: contact,
+                      //   requestSent: "friend",
+                      // });
+                      navigateToProfile(navigation, contact);
                     } else if (showPhoneContacts && contact.isPhoneContact) {
                       Alert.alert(
                         "Liên hệ",
                         `Gọi cho ${contact.fullname} (${contact.phone})`
                       );
                     } else {
-                      navigation.navigate("UserProfile", {
-                        friend: contact,
-                        requestSent: "friend",
-                      });
+                      // navigation.navigate("UserProfile", {
+                      //   friend: contact,
+                      //   requestSent: "friend",
+                      // });
+                      navigateToProfile(navigation, contact);
                     }
                   }}
                 >

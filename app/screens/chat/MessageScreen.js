@@ -28,6 +28,11 @@ import * as FileSystem from "expo-file-system";
 import { SocketContext } from "@/app/socket/SocketContext";
 import { cleanupNewMessage, handleNewMessage } from "@/app/socket/SocketEvent";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import {
+  getMessages as getMessagesFromStorage,
+  saveMessages,
+  appendMessage,
+} from "@/app/storage/StorageService";
 
 const MessageScreen = ({ route, navigation }) => {
   const {
@@ -37,8 +42,7 @@ const MessageScreen = ({ route, navigation }) => {
     groupMember,
     saveGroupMembers,
     changeRole,
-    getMessages,
-    saveMessages,
+    setScreen, // lấy setScreen từ context
   } = useContext(AuthContext);
   const socket = useContext(SocketContext);
 
@@ -69,11 +73,31 @@ const MessageScreen = ({ route, navigation }) => {
       return `Truy cập ${Math.floor(diffInMinutes / 60)} giờ trước`;
     return `Truy cập ${Math.floor(diffInMinutes / 1440)} ngày trước`;
   };
-
-  // Lưu tin nhắn vào AsyncStorage khi thoát màn hình
+  // Lưu tin nhắn vào StorageService khi thoát màn hình
+  const lastSavedConversationId = useRef();
   useEffect(() => {
+    lastSavedConversationId.current = conversation?.conversationId;
+    // Chỉ theo dõi conversationId và userId để tránh lặp vô hạn
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation?.conversationId, userInfo?.userId]);
+
+  useEffect(() => {
+    console.log(
+      "🏗️ MessageScreen mounted for conversation:",
+      conversation?.conversationId
+    );
     return () => {
-      if (conversation?.conversationId) {
+      // Chỉ lưu khi thực sự unmount conversationId hiện tại
+      if (
+        lastSavedConversationId.current &&
+        conversation?.conversationId === lastSavedConversationId.current
+      ) {
+        console.log(
+          `📡 Đã thoát giao diện chat: ${
+            conversation?.conversationId || "undefined"
+          }`
+        );
+        console.log("🏚️ MessageScreen unmounted");
         api
           .getAllMessages(conversation.conversationId)
           .then((response) => {
@@ -81,22 +105,21 @@ const MessageScreen = ({ route, navigation }) => {
               const filteredMessages = response.messages.filter(
                 (m) => !m.hiddenFrom?.includes(userInfo.userId)
               );
-              // console.log(
-              //   "Đã tải tin nhắn từ API khi thoát màn hình:",
-              //   filteredMessages.map((msg) => msg.content)
-              // );
-
+              console.log(
+                "Đã tải tin nhắn từ API khi thoát màn hình:",
+                filteredMessages.map((msg) => msg.content)
+              );
               saveMessages(
                 conversation.conversationId,
                 filteredMessages,
-                "before",
-                (savedMessages) => {
-                  // console.log(
-                  //   "Đã lưu tin nhắn từ API vào AsyncStorage:",
-                  //   savedMessages.map((msg) => msg.content)
-                  // );
-                }
-              );
+                "before"
+              ).then((savedMessages) => {
+                console.log(
+                  "Đã lưu tin nhắn từ API vào StorageService:",
+                  savedMessages.map((msg) => msg.content)
+                );
+                handlerRefresh();
+              });
             }
           })
           .catch((error) => {
@@ -107,7 +130,27 @@ const MessageScreen = ({ route, navigation }) => {
           });
       }
     };
-  }, [messages, conversation.conversationId, saveMessages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation?.conversationId, userInfo?.userId]);
+
+  useEffect(() => {
+    console.log(
+      "🧭 Navigation listener registered for conversation:",
+      conversation?.conversationId
+    );
+    const unsubscribe = navigation.addListener("beforeRemove", (e) => {
+      console.log(
+        `📡 Navigation: Thoát giao diện chat ${
+          conversation?.conversationId || "undefined"
+        }`
+      );
+      console.log("Navigation event details:", e);
+    });
+    return () => {
+      console.log("🧭 Navigation listener removed");
+      unsubscribe();
+    };
+  }, [navigation, conversation?.conversationId]);
 
   useEffect(() => {
     if (socket && conversation?.conversationId) {
@@ -518,7 +561,7 @@ const MessageScreen = ({ route, navigation }) => {
         socket.off("userLeftGroup");
         socket.off("userRemovedFromGroup");
         socket.off("groupOwnerChanged");
-        socket.off("groupCoOwnerAdded");
+        socket.on("groupCoOwnerAdded");
         socket.off("groupCoOwnerRemoved");
         socket.off("groupDeleted");
         socket.off("userBlocked");
@@ -527,43 +570,43 @@ const MessageScreen = ({ route, navigation }) => {
     }
   }, [socket, conversation, handlerRefresh, userInfo]);
 
-  const fetchMessages = async () => {
+  // Hàm so sánh tin nhắn storage và API
+  const isMessagesDifferent = (storageMsgs, apiMsgs) => {
+    if (storageMsgs.length !== apiMsgs.length) return true;
+    for (let i = 0; i < storageMsgs.length; i++) {
+      if (storageMsgs[i].messageDetailId !== apiMsgs[i].messageDetailId)
+        return true;
+      if (storageMsgs[i].content !== apiMsgs[i].content) return true;
+      if (storageMsgs[i].createdAt !== apiMsgs[i].createdAt) return true;
+    }
+    return false;
+  };
+
+  const fetchMessages = useCallback(async () => {
     try {
       setIsLoading(true);
 
-      // Load from context
-      const cached = await getMessages(conversation.conversationId);
-      if (cached && cached.length > 0) {
-        setMessages(cached);
-        console.log("Tin nhắn đầu tiên từ context:", cached[0]); // Log first message
-      }
+      // 1. Luôn hiển thị tin nhắn từ storage trước
+      const cached = await getMessagesFromStorage(conversation.conversationId);
+      setMessages(cached.reverse());
 
-      // Làm mới từ API để đồng bộ
+      // 2. Lấy tin nhắn mới nhất từ API
       const response = await api.getAllMessages(conversation.conversationId);
       if (response && response.messages) {
         const filtered = response.messages.filter(
           (m) => !m.hiddenFrom?.includes(userInfo.userId)
         );
 
-        console.log("Tin nhắn đầu tiên từ API:", filtered[0]); // Log first message
-
-        // Lưu tin nhắn vào AsyncStorage ngay khi tải từ API
-        await saveMessages(
-          conversation.conversationId,
-          filtered,
-          "before",
-          (savedMessages) => {
-            setMessages(savedMessages);
-            console.log(
-              "Tin nhắn đầu tiên sau khi lưu:",
-              savedMessages[0] // Log first message
-            );
-          }
-        );
+        // 3. Nếu khác biệt thì đồng bộ và cập nhật giao diện
+        if (isMessagesDifferent(cached, filtered)) {
+          await saveMessages(conversation.conversationId, filtered, "before");
+          setMessages(filtered);
+        }
       }
     } catch (error) {
       console.error("Lỗi khi tải tin nhắn:", error);
-      alert(
+      Alert.alert(
+        "Lỗi",
         `Đã xảy ra lỗi khi tải tin nhắn: ${
           error.response?.data?.message || error.message
         }. Vui lòng thử lại.`
@@ -571,7 +614,8 @@ const MessageScreen = ({ route, navigation }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [conversation?.conversationId, userInfo.userId]);
+
   useEffect(() => {
     if (!conversation?.conversationId) {
       console.error("Lỗi: Cuộc trò chuyện không tồn tại.");
@@ -579,7 +623,7 @@ const MessageScreen = ({ route, navigation }) => {
       return;
     }
     fetchMessages();
-  }, [conversation?.conversationId]);
+  }, [conversation?.conversationId, fetchMessages]);
 
   const handleSendMessage = useCallback(
     async (message) => {
@@ -1026,6 +1070,16 @@ const MessageScreen = ({ route, navigation }) => {
       addGroupMember(conversation);
     }
   }, [conversation]);
+
+  useEffect(() => {
+    // Khi vào màn hình MessageScreen, cập nhật screen context
+    setScreen("MessageScreen");
+    return () => {
+      // Khi thoát màn hình MessageScreen, cập nhật lại về Home (hoặc tên màn hình danh sách của bạn)
+      setScreen("Home");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <View style={{ flex: 1 }}>

@@ -11,8 +11,8 @@ const SubMenuStyle = StyleSheet.create({
     paddingLeft: 10,
   },
   menubarItem: {
-    padding: 12,
-    borderRadius: 5,
+    minHeight: 48,
+    justifyContent: "center",
   },
   iconTitleContainer: {
     flexDirection: "row",

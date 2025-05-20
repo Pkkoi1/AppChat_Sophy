@@ -36,6 +36,7 @@ const AuthLoading = ({ navigation }) => {
     };
 
     checkLogin();
+    
   }, [navigation, userInfo, isLoading]);
 
   return (

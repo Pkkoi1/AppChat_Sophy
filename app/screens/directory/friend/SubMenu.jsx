@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useNavigation } from "@react-navigation/native"; // Thêm useNavigation
 
@@ -10,7 +10,7 @@ const subMenuItem = [
   {
     name: "Danh bạ máy",
     icon: "address-book",
-    note: "Các liên hệ có dùng Zalo",
+    note: "Các liên hệ có dùng Sophy",
   },
   { name: "Sinh nhật", icon: "birthday-cake" },
 ];
@@ -19,6 +19,8 @@ const FriendSubMenu = () => {
   const navigation = useNavigation(); // Khởi tạo navigation
 
   const handlePress = (itemName) => {
+    console.log(`Pressed: ${itemName}`);
+    Alert.alert("Đã nhấn", itemName); // Thêm dòng này để test sự kiện click
     if (itemName === "Lời mời kết bạn") {
       navigation.navigate("ReceivedFriendRequests"); // Điều hướng đến màn hình phù hợp
     }
@@ -30,8 +32,9 @@ const FriendSubMenu = () => {
         {subMenuItem.map((item, index) => (
           <TouchableOpacity
             key={index}
-            style={SubMenuStyle.menubarItem}
-            onPress={() => handlePress(item.name)} // Thêm sự kiện onPress
+            style={[SubMenuStyle.menubarItem]} // Tăng minHeight và căn giữa
+            onPress={() => handlePress(item.name)}
+            activeOpacity={0.6} // Phản hồi nhấn tốt hơn
           >
             <View style={SubMenuStyle.iconTitleContainer}>
               <View style={SubMenuStyle.iconBackground}>
@@ -41,7 +44,9 @@ const FriendSubMenu = () => {
                 <Text style={SubMenuStyle.menuTitle}>
                   {item.name} {item.quantity && `(${item.quantity})`}
                 </Text>
-                {item.note && <Text style={SubMenuStyle.menuNote}>{item.note}</Text>}
+                {item.note && (
+                  <Text style={SubMenuStyle.menuNote}>{item.note}</Text>
+                )}
               </View>
             </View>
           </TouchableOpacity>

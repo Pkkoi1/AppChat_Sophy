@@ -22,7 +22,7 @@ const Home = ({ route, navigation }) => {
   const screens = [
     {
       name: "Inbox",
-      component: <ListInbox userId={userInfo?.userId} />,
+      component: <ListInbox />,
       icon: "message1",
       title: "Tin nhắn",
     },
