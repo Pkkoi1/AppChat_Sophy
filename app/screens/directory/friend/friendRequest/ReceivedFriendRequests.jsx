@@ -20,7 +20,7 @@ import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const groupByTime = (data) => {
   if (!data || data.length === 0) return [];
-  
+
   const today = new Date();
   const oneMonthAgo = new Date(today);
   oneMonthAgo.setDate(today.getDate() - 30);
@@ -79,11 +79,39 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const socket = useContext(SocketContext);
   const navigateToProfile = useNavigateToProfile();
 
+<<<<<<< HEAD
   // Memo hóa routes để tránh setState lặp lại
   const routes = useMemo(() => [
     { key: "received", title: `Đã nhận ${receivedRequests.length}` },
     { key: "sent", title: `Đã gửi ${sentRequests.length}` },
   ], [receivedRequests.length, sentRequests.length]);
+=======
+  // Hàm cập nhật routes với số lượng chính xác
+  const updateRoutes = useCallback((received, sent) => {
+    const receivedCount = received?.length || 0;
+    const sentCount = sent?.length || 0;
+
+    const newRoutes = [
+      { key: "received", title: `Đã nhận ${receivedCount}` },
+      { key: "sent", title: `Đã gửi ${sentCount}` },
+    ];
+
+    // So sánh trước khi set để tránh update không cần thiết
+    setRoutes((prevRoutes) => {
+      const isSame =
+        prevRoutes[0]?.title === newRoutes[0].title &&
+        prevRoutes[1]?.title === newRoutes[1].title;
+      return isSame ? prevRoutes : newRoutes;
+    });
+
+    console.log(`Cập nhật UI: Đã nhận ${receivedCount}, Đã gửi ${sentCount}`);
+  }, []);
+
+  // Cập nhật routes khi receivedRequests hoặc sentRequests thay đổi
+  useEffect(() => {
+    updateRoutes(receivedRequests, sentRequests);
+  }, [receivedRequests, sentRequests, updateRoutes]);
+>>>>>>> ff1ad4504e57b2a198e040e265da96d2696f963c
 
   // Hàm làm mới dữ liệu
   const onRefresh = useCallback(async () => {
@@ -191,19 +219,21 @@ const ReceivedFriendRequests = ({ navigation }) => {
     try {
       setLoading(true);
       console.log("ACCEPT.friendRequestId:", item);
-      
+
       await api.acceptFriendRequest(item.friendRequestId);
-      
+
       setReceivedRequests((prevRequests) => {
         const updated = prevRequests.filter(
           (request) => request.friendRequestId !== item.friendRequestId
         );
         return updated;
       });
-      
+
       Alert.alert(
         "Thành công",
-        `Đã chấp nhận lời mời kết bạn từ ${item.sender?.fullname || 'người dùng'}`
+        `Đã chấp nhận lời mời kết bạn từ ${
+          item.sender?.fullname || "người dùng"
+        }`
       );
     } catch (err) {
       console.error("Lỗi khi chấp nhận lời mời kết bạn:", err);
@@ -221,19 +251,19 @@ const ReceivedFriendRequests = ({ navigation }) => {
     try {
       setLoading(true);
       console.log("REJECT.friendRequestId:", item);
-      
+
       await api.rejectFriendRequest(item.friendRequestId);
-      
+
       setReceivedRequests((prevRequests) => {
         const updated = prevRequests.filter(
           (request) => request.friendRequestId !== item.friendRequestId
         );
         return updated;
       });
-      
+
       Alert.alert(
         "Thành công",
-        `Đã từ chối lời mời kết bạn từ ${item.sender?.fullname || 'người dùng'}`
+        `Đã từ chối lời mời kết bạn từ ${item.sender?.fullname || "người dùng"}`
       );
     } catch (err) {
       console.error("Lỗi khi từ chối lời mời kết bạn:", err);
@@ -250,19 +280,21 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const handleWithdraw = async (item) => {
     try {
       console.log("WITHDRAW.friendRequestId:", item);
-      
+
       await api.retrieveFriendRequest(item.friendRequestId);
-      
+
       setSentRequests((prevRequests) => {
         const updated = prevRequests.filter(
           (request) => request.friendRequestId !== item.friendRequestId
         );
         return updated;
       });
-      
+
       Alert.alert(
         "Thành công",
-        `Đã thu hồi lời mời kết bạn với ${item.receiverId?.fullname || 'người dùng'}`
+        `Đã thu hồi lời mời kết bạn với ${
+          item.receiverId?.fullname || "người dùng"
+        }`
       );
     } catch (err) {
       console.error("Lỗi khi thu hồi lời mời kết bạn:", err);
@@ -290,10 +322,95 @@ const ReceivedFriendRequests = ({ navigation }) => {
         logged = true;
       }
 
+<<<<<<< HEAD
       if (loading && !refreshing) {
         return (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
+=======
+    if (error) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      );
+    }
+
+    return (
+      <SectionList
+        sections={groupByTime(receivedRequests)}
+        keyExtractor={(item) =>
+          item.friendRequestId || item._id || Math.random().toString()
+        }
+        renderItem={({ item }) => {
+          const user = item.sender || item.senderId || {};
+          return (
+            <TouchableOpacity
+              style={styles.requestItem}
+              onPress={() => navigateToProfile(navigation, user)}
+            >
+              {user.urlavatar || user.avatar ? (
+                <Image
+                  source={{
+                    uri:
+                      user.urlavatar ||
+                      user.avatar ||
+                      "https://via.placeholder.com/50",
+                  }}
+                  style={styles.avatar}
+                />
+              ) : (
+                <AvatarUser
+                  fullName={user.fullname || "Người dùng"}
+                  width={50}
+                  height={50}
+                  avtText={20}
+                  style={styles.avatar}
+                />
+              )}
+
+              <View style={styles.infoWrapper}>
+                <Text style={styles.name}>
+                  {user?.fullname || "Người dùng"}
+                </Text>
+                <Text style={styles.status}>{"Muốn kết bạn"}</Text>
+                <View style={styles.buttonContainer}>
+                  {loading ? (
+                    <ActivityIndicator
+                      size="small"
+                      color={Color.blueBackgroundButton}
+                    />
+                  ) : (
+                    <>
+                      <TouchableOpacity
+                        style={styles.rejectButton}
+                        onPress={() => handleReject(item)}
+                        disabled={loading}
+                      >
+                        <Text style={styles.rejectText}>TỪ CHỐI</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.acceptButton}
+                        onPress={() => handleAccept(item)}
+                        disabled={loading}
+                      >
+                        <Text style={styles.acceptText}>ĐỒNG Ý</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>{title}</Text>
+            <View style={styles.line} />
+>>>>>>> ff1ad4504e57b2a198e040e265da96d2696f963c
           </View>
         );
       }
@@ -394,10 +511,76 @@ const ReceivedFriendRequests = ({ navigation }) => {
         logged = true;
       }
 
+<<<<<<< HEAD
       if (loading && !refreshing) {
         return (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
+=======
+    if (error) {
+      return (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      );
+    }
+
+    return (
+      <SectionList
+        sections={groupByTime(sentRequests)}
+        keyExtractor={(item) =>
+          item.friendRequestId || item._id || Math.random().toString()
+        }
+        renderItem={({ item }) => {
+          const user = item.receiver || item.receiverId || {};
+          return (
+            <TouchableOpacity
+              style={styles.requestItem}
+              onPress={() => navigateToProfile(navigation, user)}
+            >
+              {user.urlavatar || user.avatar ? (
+                <Image
+                  source={{
+                    uri:
+                      user.urlavatar ||
+                      user.avatar ||
+                      "https://via.placeholder.com/50",
+                  }}
+                  style={styles.avatar}
+                />
+              ) : (
+                <AvatarUser
+                  fullName={user.fullname || "Người dùng"}
+                  width={50}
+                  height={50}
+                  avtText={20}
+                  style={styles.avatar}
+                />
+              )}
+
+              <View style={styles.infoWrapper}>
+                <Text style={styles.name}>
+                  {user?.fullname || "Người dùng"}
+                </Text>
+                <Text style={styles.status}>{"Đã gửi lời mời kết bạn"}</Text>
+                <TouchableOpacity
+                  style={styles.withdrawButton}
+                  onPress={() => handleWithdraw(item)}
+                >
+                  <Text style={styles.withdrawText}>THU HỒI</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        renderSectionHeader={({ section: { title } }) => (
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionHeaderText}>{title}</Text>
+            <View style={styles.line} />
+>>>>>>> ff1ad4504e57b2a198e040e265da96d2696f963c
           </View>
         );
       }
@@ -514,8 +697,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f5f5f5",
   },
-  tabView: {
-  },
+  tabView: {},
   tabBar: {
     backgroundColor: "#fff",
     borderBottomWidth: 1,
