@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import {
   View,
   Text,
@@ -75,17 +75,14 @@ const ReceivedFriendRequests = ({ navigation }) => {
   const [error, setError] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [index, setIndex] = useState(0);
+  const [routes, setRoutes] = useState([
+    { key: "received", title: "Đã nhận 0" },
+    { key: "sent", title: "Đã gửi 0" },
+  ]);
 
   const socket = useContext(SocketContext);
   const navigateToProfile = useNavigateToProfile();
 
-<<<<<<< HEAD
-  // Memo hóa routes để tránh setState lặp lại
-  const routes = useMemo(() => [
-    { key: "received", title: `Đã nhận ${receivedRequests.length}` },
-    { key: "sent", title: `Đã gửi ${sentRequests.length}` },
-  ], [receivedRequests.length, sentRequests.length]);
-=======
   // Hàm cập nhật routes với số lượng chính xác
   const updateRoutes = useCallback((received, sent) => {
     const receivedCount = received?.length || 0;
@@ -111,7 +108,6 @@ const ReceivedFriendRequests = ({ navigation }) => {
   useEffect(() => {
     updateRoutes(receivedRequests, sentRequests);
   }, [receivedRequests, sentRequests, updateRoutes]);
->>>>>>> ff1ad4504e57b2a198e040e265da96d2696f963c
 
   // Hàm làm mới dữ liệu
   const onRefresh = useCallback(async () => {
@@ -305,29 +301,16 @@ const ReceivedFriendRequests = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-  }, []);
-
-  useEffect(() => {
-  }, [receivedRequests.length, sentRequests.length]);
-
-  useEffect(() => {
-  }, [loading, refreshing, error]);
-
   // Tab Lời mời đã nhận
-  const renderReceivedTab = useMemo(() => {
-    let logged = false;
-    return () => {
-      if (!logged) {
-        logged = true;
-      }
+  const ReceivedTab = () => {
+    if (loading && !refreshing) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
+        </View>
+      );
+    }
 
-<<<<<<< HEAD
-      if (loading && !refreshing) {
-        return (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
-=======
     if (error) {
       return (
         <View style={styles.emptyContainer}>
@@ -410,113 +393,28 @@ const ReceivedFriendRequests = ({ navigation }) => {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderText}>{title}</Text>
             <View style={styles.line} />
->>>>>>> ff1ad4504e57b2a198e040e265da96d2696f963c
           </View>
-        );
-      }
-
-      if (error) {
-        return (
+        )}
+        ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
           </View>
-        );
-      }
-
-      return (
-        <SectionList
-          sections={groupByTime(receivedRequests)}
-          keyExtractor={(item) => item.friendRequestId || item._id || Math.random().toString()}
-          renderItem={({ item }) => {
-            const user = item.sender || item.senderId || {};
-            return (
-              <TouchableOpacity
-                style={styles.requestItem}
-                onPress={() => navigateToProfile(navigation, user)}
-              >
-                {user.urlavatar || user.avatar ? (
-                  <Image
-                    source={{
-                      uri: user.urlavatar || user.avatar || "https://via.placeholder.com/50",
-                    }}
-                    style={styles.avatar}
-                  />
-                ) : (
-                  <AvatarUser
-                    fullName={user.fullname || "Người dùng"}
-                    width={50}
-                    height={50}
-                    avtText={20}
-                    style={styles.avatar}
-                  />
-                )}
-
-                <View style={styles.infoWrapper}>
-                  <Text style={styles.name}>{user?.fullname || "Người dùng"}</Text>
-                  <Text style={styles.status}>{"Muốn kết bạn"}</Text>
-                  <View style={styles.buttonContainer}>
-                    {loading ? (
-                      <ActivityIndicator
-                        size="small"
-                        color={Color.blueBackgroundButton}
-                      />
-                    ) : (
-                      <>
-                        <TouchableOpacity
-                          style={styles.rejectButton}
-                          onPress={() => handleReject(item)}
-                          disabled={loading}
-                        >
-                          <Text style={styles.rejectText}>TỪ CHỐI</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={styles.acceptButton}
-                          onPress={() => handleAccept(item)}
-                          disabled={loading}
-                        >
-                          <Text style={styles.acceptText}>ĐỒNG Ý</Text>
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          renderSectionHeader={({ section: { title } }) => (
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>{title}</Text>
-              <View style={styles.line} />
-            </View>
-          )}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>Không có lời mời kết bạn</Text>
-            </View>
-          }
-          style={styles.list}
-        />
-      );
-    };
-  }, [loading, refreshing, error, receivedRequests, navigation, onRefresh, handleReject, handleAccept, navigateToProfile]);
+        }
+        style={styles.list}
+      />
+    );
+  };
 
   // Tab Lời mời đã gửi
-  const renderSentTab = useMemo(() => {
-    let logged = false;
-    return () => {
-      if (!logged) {
-        logged = true;
-      }
+  const SentTab = () => {
+    if (loading && !refreshing) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
+        </View>
+      );
+    }
 
-<<<<<<< HEAD
-      if (loading && !refreshing) {
-        return (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Color.blueBackgroundButton} />
-=======
     if (error) {
       return (
         <View style={styles.emptyContainer}>
@@ -580,91 +478,24 @@ const ReceivedFriendRequests = ({ navigation }) => {
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionHeaderText}>{title}</Text>
             <View style={styles.line} />
->>>>>>> ff1ad4504e57b2a198e040e265da96d2696f963c
           </View>
-        );
-      }
-
-      if (error) {
-        return (
+        )}
+        ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text style={styles.errorText}>{error}</Text>
+            <Text style={styles.emptyText}>
+              Không có lời mời kết bạn đã gửi
+            </Text>
           </View>
-        );
-      }
+        }
+        style={styles.list}
+      />
+    );
+  };
 
-      return (
-        <SectionList
-          sections={groupByTime(sentRequests)}
-          keyExtractor={(item) => item.friendRequestId || item._id || Math.random().toString()}
-          renderItem={({ item }) => {
-            const user = item.receiver || item.receiverId || {};
-            return (
-              <TouchableOpacity
-                style={styles.requestItem}
-                onPress={() => navigateToProfile(navigation, user)}
-              >
-                {user.urlavatar || user.avatar ? (
-                  <Image
-                    source={{
-                      uri: user.urlavatar || user.avatar || "https://via.placeholder.com/50",
-                    }}
-                    style={styles.avatar}
-                  />
-                ) : (
-                  <AvatarUser
-                    fullName={user.fullname || "Người dùng"}
-                    width={50}
-                    height={50}
-                    avtText={20}
-                    style={styles.avatar}
-                  />
-                )}
-
-                <View style={styles.infoWrapper}>
-                  <Text style={styles.name}>{user?.fullname || "Người dùng"}</Text>
-                  <Text style={styles.status}>{"Đã gửi lời mời kết bạn"}</Text>
-                  <TouchableOpacity
-                    style={styles.withdrawButton}
-                    onPress={() => handleWithdraw(item)}
-                  >
-                    <Text style={styles.withdrawText}>THU HỒI</Text>
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
-            );
-          }}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-          renderSectionHeader={({ section: { title } }) => (
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionHeaderText}>{title}</Text>
-              <View style={styles.line} />
-            </View>
-          )}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                Không có lời mời kết bạn đã gửi
-              </Text>
-            </View>
-          }
-          style={styles.list}
-        />
-      );
-    };
-  }, [loading, refreshing, error, sentRequests, navigation, onRefresh, handleWithdraw, navigateToProfile]);
-
-  // renderScene dạng function, không dùng SceneMap
-  const renderScene = useCallback(
-    ({ route }) => {
-      if (route.key === "received") return renderReceivedTab();
-      if (route.key === "sent") return renderSentTab();
-      return null;
-    },
-    [renderReceivedTab, renderSentTab]
-  );
+  const renderScene = SceneMap({
+    received: ReceivedTab,
+    sent: SentTab,
+  });
 
   const renderTabBar = (props) => (
     <TabBar
@@ -676,7 +507,6 @@ const ReceivedFriendRequests = ({ navigation }) => {
       inactiveColor="gray"
     />
   );
-
 
   return (
     <View style={styles.container}>
