@@ -30,19 +30,7 @@ const UserProfileScreen = () => {
       group: 0,
       action: "viewProfile",
     },
-    {
-      title: "zCloud",
-      description: "Không gian lưu trữ dữ liệu trên đám mây",
-      icon: "cloud",
-      group: 1,
-      action: "viewProfile",
-    },
-    {
-      title: "zStyle - Nổi bật trên Zalo",
-      description: "Hình nền và nhạc cho cuộc gọi Zalo",
-      icon: "playcircleo",
-      group: 2,
-    },
+
     {
       title: "Cloud của tôi",
       description: "Lưu trữ các tin nhắn quan trọng",

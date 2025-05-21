@@ -38,6 +38,7 @@ export const login = async ({
 }) => {
   try {
     const response = await api.login(params);
+    console.log("Login API response:", response); // Thêm log để kiểm tra cấu trúc response
     const { accessToken, refreshToken } = response.data.token;
     const userId = response.data.user.userId;
 
@@ -89,12 +90,16 @@ export const register = async ({
 }) => {
   try {
     const response = await api.registerAccount(params);
-    const { accessToken, refreshToken } = response.token;
+    console.log("Register API response:", response); // Log để kiểm tra cấu trúc response
+
+    // Lấy accessToken, refreshToken, userId từ response.data
+    const { accessToken, refreshToken } = response.data.token;
+    const userId = response.data.user.userId;
 
     setAccessToken(accessToken);
     setRefreshToken(refreshToken);
 
-    await getUserInfoById(setUserInfo, response.user.userId);
+    await getUserInfoById(setUserInfo, userId);
 
     // Yêu cầu chọn thư mục lưu trữ nếu chưa có
     const dirUri = await AsyncStorage.getItem("SHOPY_DIRECTORY_URI");
@@ -111,7 +116,7 @@ export const register = async ({
     }
 
     if (socket && socket.connected) {
-      socket.emit("authenticate", response.user.userId);
+      socket.emit("authenticate", userId);
     }
 
     await handlerRefresh();

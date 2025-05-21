@@ -783,6 +783,44 @@ export const api = {
       throw error;
     }
   },
+  getUserById: async (userId) => {
+    return await http.get(`/users/get-user-by-id/${userId}`);
+  },
+  registerAccount: async (params) => {
+    return await http.post("/auth/register", params);
+  },
+  //Check số dien thoại đã tồn tại hay chưa
+  checkPhone: async (phone) => {
+    try {
+      const resp = await http.post(`/auth/check-used-phone/${phone}`);
+
+      if (
+        resp.status === 200 &&
+        resp.data.message === "Verification code generated."
+      ) {
+        return {
+          otpId: resp.data.otpId,
+          otp: resp.data.otp,
+          message: resp.data.message,
+        };
+      }
+
+      // Trả về lỗi custom nếu không đúng format
+      throw new Error("Phản hồi từ API không hợp lệ.");
+    } catch (error) {
+      // Ghi log chi tiết
+      console.error("Lỗi khi kiểm tra số điện thoại:", error?.message);
+      console.error("Chi tiết lỗi:", error?.response?.data || error);
+
+      // Nếu là lỗi từ Axios, giữ nguyên để xử lý ở ngoài
+      if (error.response) {
+        throw error;
+      }
+
+      // Ngược lại, ném lỗi bình thường
+      throw new Error("Lỗi không xác định khi kiểm tra số điện thoại.");
+    }
+  },
   searchUsersByPhones: async (phones) => {
     // Tìm kiếm người dùng theo danh sách số điện thoại
     try {
