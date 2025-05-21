@@ -7,6 +7,7 @@ const DIRECTORY_KEY = "SHOPY_DIRECTORY_URI";
 let isWriting = false;
 
 export const pickExternalDirectory = async () => {
+  console.log("[StorageService] pickExternalDirectory called");
   try {
     const dirUri =
       await StorageAccessFramework.requestDirectoryPermissionsAsync();
@@ -24,6 +25,7 @@ export const pickExternalDirectory = async () => {
 };
 
 const handleStorageError = async (error) => {
+  console.log("[StorageService] handleStorageError called", error);
   if (error.message.includes("isn't readable")) {
     console.warn(
       "⚠️ Thư mục không thể đọc được. Đang yêu cầu cấp lại quyền..."
@@ -49,24 +51,28 @@ const handleStorageError = async (error) => {
 };
 
 const getBaseDir = async () => {
+  console.log("[StorageService] getBaseDir called");
   const uri = await AsyncStorage.getItem(DIRECTORY_KEY);
   if (!uri) throw new Error("❌ Chưa có thư mục nào được chọn.");
   return uri;
 };
 
 const getUserFileName = async () => {
+  console.log("[StorageService] getUserFileName called");
   const userId = await AsyncStorage.getItem("userId");
   if (!userId) return null;
   return `user_${userId}.json`;
 };
 
 const readUserData = async () => {
+  console.log("[StorageService] readUserData called");
   const fileName = await getUserFileName();
   if (!fileName) return {};
   return (await readFile(fileName)) || {};
 };
 
 const writeUserData = async (data) => {
+  console.log("[StorageService] writeUserData called", data);
   const fileName = await getUserFileName();
   if (!fileName) {
     console.warn("⛔ Không thể ghi file vì chưa có userId.");
@@ -78,8 +84,10 @@ const writeUserData = async (data) => {
 const writeQueue = [];
 
 const writeFile = async (fileName, data) => {
+  console.log("[StorageService] writeFile called", fileName, data);
   const writePromise = new Promise(async (resolve, reject) => {
     const executeWrite = async () => {
+      console.log("[StorageService] executeWrite called", fileName);
       try {
         const dirUri = await getBaseDir();
 
@@ -141,14 +149,6 @@ const writeFile = async (fileName, data) => {
         if (existingFileUri) {
           fileUri = existingFileUri;
           console.log("✅ Tìm thấy file hiện tại:", fileUri);
-          // Bỏ backup khi dùng SAF (content://), tránh lỗi lặp
-          // try {
-          //   const backupFile = `${dirUri}/${cleanFileName}.${Date.now()}.bak`;
-          //   await FileSystem.copyAsync({ from: fileUri, to: backupFile });
-          //   console.log("✅ Đã sao lưu file:", backupFile);
-          // } catch (backupErr) {
-          //   console.warn("⚠️ Không thể sao lưu file:", backupErr);
-          // }
         } else {
           fileUri = await StorageAccessFramework.createFileAsync(
             dirUri,
@@ -204,6 +204,7 @@ const writeFile = async (fileName, data) => {
 };
 
 const readFile = async (fileName) => {
+  console.log("[StorageService] readFile called", fileName);
   try {
     const dirUri = await getBaseDir();
     const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
@@ -288,6 +289,7 @@ const readFile = async (fileName) => {
 };
 
 export const debugFileContent = async (fileName) => {
+  console.log("[StorageService] debugFileContent called", fileName);
   try {
     const dirUri = await getBaseDir();
     const files = await StorageAccessFramework.readDirectoryAsync(dirUri);
@@ -324,6 +326,7 @@ export const debugFileContent = async (fileName) => {
 };
 
 export const getConversations = async () => {
+  console.log("[StorageService] getConversations called");
   const data = await readUserData();
   // Đảm bảo trả về đúng cấu trúc object
   return {
@@ -332,6 +335,7 @@ export const getConversations = async () => {
 };
 
 export const saveConversations = async ({ conversations = [] }) => {
+  console.log("[StorageService] saveConversations called", conversations);
   const data = await readUserData();
   const MAX_CONVERSATIONS = 100;
   data.conversations = conversations.slice(0, MAX_CONVERSATIONS);
@@ -342,15 +346,14 @@ export const saveConversations = async ({ conversations = [] }) => {
 };
 
 export const getMessages = async (conversationId) => {
+  console.log("[StorageService] getMessages called", conversationId);
   const data = await readUserData();
-  // console.log("📂 Dữ liệu từ readUserData:", JSON.stringify(data));
   if (!data || !data.messages) {
     console.warn("⚠️ Không có dữ liệu messages trong readUserData:", data);
     return [];
   }
 
   const messages = data.messages?.[conversationId] || [];
-  // console.log("📩 Tin nhắn từ readUserData:", messages);
   if (Array.isArray(messages) && messages.length > 0) {
     return messages.map((msg) => ({
       ...msg,
@@ -381,6 +384,7 @@ export const saveMessages = async (
   newMessages,
   direction = "after"
 ) => {
+  console.log("[StorageService] saveMessages called", conversationId, newMessages, direction);
   if (!conversationId || !Array.isArray(newMessages)) {
     console.error("❌ conversationId hoặc newMessages không hợp lệ");
     return [];
@@ -453,32 +457,38 @@ export const saveMessages = async (
 };
 
 export const appendMessage = async (conversationId, message) => {
+  console.log("[StorageService] appendMessage called", conversationId, message);
   return saveMessages(conversationId, [message], "before");
 };
 
 export const getFriends = async () => {
+  console.log("[StorageService] getFriends called");
   const data = await readUserData();
   return data.friends || [];
 };
 
 export const saveFriends = async (friends) => {
+  console.log("[StorageService] saveFriends called", friends);
   const data = await readUserData();
   data.friends = friends;
   await writeUserData(data);
 };
 
 export const getBackground = async () => {
+  console.log("[StorageService] getBackground called");
   const data = await readUserData();
   return data.background || null;
 };
 
 export const saveBackground = async (bg) => {
+  console.log("[StorageService] saveBackground called", bg);
   const data = await readUserData();
   data.background = bg;
   await writeUserData(data);
 };
 
 export const saveAttachment = async (uri, fileName) => {
+  console.log("[StorageService] saveAttachment called", uri, fileName);
   console.warn(
     "Chức năng lưu file đính kèm vào external chưa được hoàn thiện."
   );
@@ -486,6 +496,7 @@ export const saveAttachment = async (uri, fileName) => {
 };
 
 export const deleteAttachment = async (filePath) => {
+  console.log("[StorageService] deleteAttachment called", filePath);
   try {
     await FileSystem.deleteAsync(filePath, { idempotent: true });
   } catch (err) {
@@ -494,6 +505,7 @@ export const deleteAttachment = async (filePath) => {
 };
 
 export const clearAllStorage = async () => {
+  console.log("[StorageService] clearAllStorage called");
   try {
     await AsyncStorage.removeItem(DIRECTORY_KEY);
     console.log("Đã xóa thông tin thư mục lưu.");
@@ -503,6 +515,7 @@ export const clearAllStorage = async () => {
 };
 
 export const checkStoragePaths = async () => {
+  console.log("[StorageService] checkStoragePaths called");
   try {
     const dirUri = await getBaseDir();
     const files = await StorageAccessFramework.readDirectoryAsync(dirUri);

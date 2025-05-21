@@ -19,7 +19,7 @@ const ChatHeader = ({
   const { groupMember } = useContext(AuthContext);
 
   const handlerBack = () => {
-    navigation.goBack();
+    navigation.navigate("Home");
     socket.on("newMessage");
     socket.on("groupAvatarChanged");
     socket.on("newConversation");

@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import FriendStyle from "./FriendStyle";
 
 const Friends = ({ friend, showInviteButton, onInvite }) => {
+  console.log("[Friends] render", friend && friend.fullname);
+
   // Tạo chữ cái đầu tên để hiển thị avatar khi không có ảnh
   const getInitials = (name) => {
     if (!name) return "?";
@@ -162,4 +164,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Friends;
+export default React.memo(Friends);
