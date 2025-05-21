@@ -17,8 +17,5 @@
   },
   "submit": {
     "production": {}
-  },
-  "hooks": {
-    "postInstall": "npm install --legacy-peer-deps"
   }
 }
