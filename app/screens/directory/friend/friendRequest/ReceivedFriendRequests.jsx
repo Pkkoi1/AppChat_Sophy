@@ -349,6 +349,8 @@ const ReceivedFriendRequests = ({ navigation }) => {
                   height={50}
                   avtText={20}
                   style={styles.avatar}
+                  shadow={false}
+                  bordered={false}
                 />
               )}
 
@@ -453,6 +455,8 @@ const ReceivedFriendRequests = ({ navigation }) => {
                   height={50}
                   avtText={20}
                   style={styles.avatar}
+                  shadow={false}
+                  bordered={false}
                 />
               )}
 

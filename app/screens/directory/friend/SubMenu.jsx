@@ -21,7 +21,7 @@ const FriendSubMenu = () => {
   console.log("[FriendSubMenu] render");
 
   const handlePress = (itemName) => {
-    console.log(`[FriendSubMenu] Pressed: ${itemName}`);
+    console.log(`Pressed: ${itemName}`);
     if (itemName === "Lời mời kết bạn") {
       navigation.navigate("ReceivedFriendRequests"); // Điều hướng đến màn hình phù hợp
     }

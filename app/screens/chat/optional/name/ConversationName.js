@@ -21,7 +21,7 @@ import AvatarUser from "@/app/components/profile/AvatarUser";
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import { api } from "@/app/api/api";
-import { navigateToProfile } from "@/app/utils/profileNavigation";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const options = [
   {
@@ -67,6 +67,7 @@ const ConversationName = ({ receiver, conversation }) => {
     userInfo,
     groupMember,
   } = useContext(AuthContext);
+  const navigateToProfile = useNavigateToProfile();
 
   const isGroupOwnerOrCoOwner = groupMember.some(
     (member) =>
@@ -362,7 +363,7 @@ const ConversationName = ({ receiver, conversation }) => {
       handleBackgroundOption();
     } else if (option.name === "Trang\n cá nhân") {
       try {
-        await navigateToProfile(navigation, receiver, {
+        navigateToProfile(navigation, receiver, {
           showLoading: true,
           onLoadingChange: setIsLoading,
         });

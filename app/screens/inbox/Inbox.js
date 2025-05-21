@@ -118,19 +118,21 @@ const Inbox = ({ conversation }) => {
       case "text":
         return truncateMessage(lastMessage.content || "No messages yet", 50);
       case "text-with-image":
-        return `[Hình ảnh]`;
+        return `đã gữi [Hình ảnh]`;
       case "file":
-        return `[Tệp tin]`;
+        return `đã gữi [Tệp tin]`;
       case "video":
-        return `[Video]`;
+        return `đã gữi [Video]`;
       case "image":
-        return `[Hình ảnh]`;
+        return `đã gữi [Hình ảnh]`;
       case "audio":
-        return `[Tin nhắn thoại]`;
+        return `đã gữi [Tin nhắn thoại]`;
       case "sticker":
-        return `đã gửi một nhãn dán`;
+        return `đã gữi đã gửi một nhãn dán`;
       case "location":
-        return `đã chia sẻ vị trí`;
+        return `đã gữi đã chia sẻ vị trí`;
+      case "application/json":
+        return `đã gữi [Tệp tin]`;
       default:
         return "Tin nhắn không được hỗ trợ";
     }
