@@ -18,6 +18,8 @@ const subMenuItem = [
 const FriendSubMenu = () => {
   const navigation = useNavigation(); // Khởi tạo navigation
 
+  console.log("[FriendSubMenu] render");
+
   const handlePress = (itemName) => {
     console.log(`Pressed: ${itemName}`);
     if (itemName === "Lời mời kết bạn") {
@@ -55,4 +57,4 @@ const FriendSubMenu = () => {
   );
 };
 
-export default FriendSubMenu;
+export default React.memo(FriendSubMenu);

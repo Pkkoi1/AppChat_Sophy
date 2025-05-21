@@ -13,12 +13,28 @@ const Directory = () => {
   const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
+    console.log("[Directory] useEffect [] called");
     // Simulate loading data
     setTimeout(() => {
       setLoading(false);
+      console.log("[Directory] setLoading(false)");
     }, 1000); // Adjust the timeout as needed
-    setTabKey((prevKey) => prevKey + 1); // Thay đổi key để Tab render lại từ đầu
+    setTabKey((prevKey) => {
+      console.log("[Directory] setTabKey", prevKey + 1);
+      return prevKey + 1;
+    }); // Thay đổi key để Tab render lại từ đầu
   }, []);
+
+  useEffect(() => {
+    console.log(
+      "[Directory] render, index:",
+      index,
+      "tabKey:",
+      tabKey,
+      "loading:",
+      loading
+    );
+  });
 
   const screenComponents = [<Friend />, <Group />, <OA />];
 
@@ -33,7 +49,10 @@ const Directory = () => {
           <Tab
             key={tabKey} // Thêm key để ép Tab render lại
             value={index}
-            onChange={setIndex}
+            onChange={(i) => {
+              console.log("[Directory] Tab onChange", i);
+              setIndex(i);
+            }}
             indicatorStyle={{
               backgroundColor: "#0767fd",
               height: 3,
