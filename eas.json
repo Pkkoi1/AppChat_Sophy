@@ -12,17 +12,13 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
-      "node": "18.x",
-      "android": {
-        "buildType": "apk"
-      },
-      "env": {
-        "NPM_CONFIG_LEGACY_PEER_DEPS": "true"
-      }
+      "autoIncrement": true
     }
   },
   "submit": {
     "production": {}
+  },
+  "hooks": {
+    "postInstall": "npm install --legacy-peer-deps"
   }
 }
