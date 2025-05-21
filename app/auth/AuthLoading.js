@@ -26,7 +26,10 @@ const AuthLoading = ({ navigation }) => {
             phone: userInfo.phone || "",
           });
         } else {
-          console.log("No valid userInfo in AuthContext, navigating to Main");
+          console.log(
+            "No valid userInfo in AuthContext, navigating to Main:",
+            userInfo
+          );
           navigation.replace("Main");
         }
       } catch (error) {
@@ -36,7 +39,6 @@ const AuthLoading = ({ navigation }) => {
     };
 
     checkLogin();
-    
   }, [navigation, userInfo, isLoading]);
 
   return (

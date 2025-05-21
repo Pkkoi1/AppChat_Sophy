@@ -87,11 +87,6 @@ export const AuthProvider = ({ children }) => {
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
   const joinedConversationIds = useRef(new Set());
-
-  useEffect(() => {
-    clearStorage();
-  }, []);
-
   // Hàm lấy danh sách nhóm (dùng từ file groupHelpers)
   const fetchGroups = useCallback(
     () => fetchGroupsHelper(setGroups, setGroupsLoading),

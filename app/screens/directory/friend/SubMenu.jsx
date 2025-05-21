@@ -20,7 +20,6 @@ const FriendSubMenu = () => {
 
   const handlePress = (itemName) => {
     console.log(`Pressed: ${itemName}`);
-    Alert.alert("Đã nhấn", itemName); // Thêm dòng này để test sự kiện click
     if (itemName === "Lời mời kết bạn") {
       navigation.navigate("ReceivedFriendRequests"); // Điều hướng đến màn hình phù hợp
     }

@@ -13,7 +13,7 @@ import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import * as Sharing from "expo-sharing";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { Linking } from "react-native";
-import { navigateToProfile } from "@/app/utils/profileNavigation";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const errorImage =
   "https://res.cloudinary.com/dyd5381vx/image/upload/v1744732824/z6509003496600_0f4526fe7c8ca476fea6dddff2b3bc91_d4nysj.jpg";
@@ -31,7 +31,7 @@ const convertToEnglish = (char) => {
     Ê: "E",
     É: "E",
     È: "E",
-     Ẻ: "E",
+    Ẻ: "E",
     Ẽ: "E",
     Ẹ: "E",
     Í: "I",
@@ -81,6 +81,8 @@ const MessageItem = ({
   isFirstMessageFromSender,
   onScrollToMessage,
 }) => {
+  const navigateToProfile = useNavigateToProfile();
+
   const { userInfo } = useContext(AuthContext);
   const navigation = useNavigation();
   const isGroup = !receiver;
@@ -176,7 +178,7 @@ const MessageItem = ({
           Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
           return;
         }
-        await navigateToProfile(navigation, user, {
+        navigateToProfile(navigation, user, {
           showLoading: true,
           onLoadingChange: () => {}, // Optional: Add loading state handling if needed
         });
