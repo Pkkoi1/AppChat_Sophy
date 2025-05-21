@@ -28,9 +28,9 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.2",
-    "@rneui/base": "^4.0.0-rc.7",
+    "@rneui/base": "4.0.0-rc.7",
     "@rneui/themed": "^4.0.0-rc.8",
-    "axios": "^1.8.4",
+    "axios": "^1.9.0",
     "expo": "~52.0.38",
     "expo-av": "~15.0.2",
     "expo-barcode-scanner": "^13.0.1",
@@ -66,14 +66,12 @@
     "os": "^0.1.2",
     "react": "18.3.1",
     "react-async-hook": "^4.0.0",
-    "react-delegate-component": "^1.0.0",
     "react-dom": "18.3.1",
     "react-native": "^0.76.7",
     "react-native-action-sheet": "^2.2.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-bouncy-checkbox": "^4.1.2",
     "react-native-checkbox": "^2.0.0",
-    "react-native-country-picker-modal": "^2.0.0",
     "react-native-device-info": "^14.0.4",
     "react-native-dotenv": "^3.4.11",
     "react-native-elements": "^3.4.3",
@@ -89,7 +87,7 @@
     "react-native-phone-number-input": "^2.1.0",
     "react-native-qrcode-scanner": "^1.5.5",
     "react-native-reanimated": "~3.16.1",
-    "react-native-safe-area-context": "^5.4.0",
+    "react-native-safe-area-context": "^4.4.1",
     "react-native-screens": "~4.4.0",
     "react-native-sms": "^1.12.0",
     "react-native-sound": "^0.11.2",
@@ -113,6 +111,9 @@
     "metro": "^0.82.1",
     "react-test-renderer": "18.3.1",
     "typescript": "^5.3.3"
+  },
+  "react-native-codegen": {
+    "projects": []
   },
   "private": true
 }
