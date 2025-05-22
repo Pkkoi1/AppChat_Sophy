@@ -39,6 +39,7 @@ const Conversation = ({
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
 
+  console.log("messages", messages);
   const pinnedMessages = messages.filter(
     (msg) => msg && typeof msg === "object" && msg.isPinned
   );
@@ -89,7 +90,7 @@ const Conversation = ({
       )}
       <FlatList
         ref={flatListRef} // Use FlatList ref passed from MessageScreen
-        data={messages.filter((msg) => msg && (msg.content || msg.attachment))} // Include messages with content or attachment
+        data={messages} // Show all messages, including recalled ones
         keyExtractor={(item) => item.messageDetailId}
         renderItem={({ item, index }) => {
           const prevMessage =

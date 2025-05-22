@@ -312,6 +312,7 @@ const MessageItem = ({
       return renderNotification();
     }
 
+    // Always show recall notice if isRecall is true
     if (isRecall) {
       return (
         <Text style={MessageItemStyle.recalledMessage}>
