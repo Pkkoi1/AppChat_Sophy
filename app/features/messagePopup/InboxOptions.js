@@ -11,6 +11,7 @@ const InboxOptions = ({
   onHide,
   onDelete,
   onClose,
+  onRefresh, // Thêm prop này
 }) => {
   const { userInfo, updateUserInfo } = useContext(AuthContext);
 
@@ -29,6 +30,7 @@ const InboxOptions = ({
           try {
             await api.leaveGroup(conversationId);
             Alert.alert("Thành công", "Bạn đã rời nhóm.");
+            if (onRefresh) onRefresh(); // Gọi refresh
             onClose();
           } catch (error) {
             Alert.alert("Lỗi", "Không thể rời nhóm. Vui lòng thử lại sau.");
@@ -54,6 +56,7 @@ const InboxOptions = ({
             try {
               await api.deleteGroup(conversationId);
               Alert.alert("Thành công", "Nhóm đã được giải tán.");
+              if (onRefresh) onRefresh(); // Gọi refresh
               onClose();
             } catch (error) {
               Alert.alert("Lỗi", "Không thể giải tán nhóm. Vui lòng thử lại.");

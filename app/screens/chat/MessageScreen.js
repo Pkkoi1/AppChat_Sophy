@@ -190,6 +190,10 @@ const MessageScreen = ({ route, navigation }) => {
                 : msg
             )
           );
+          // Bổ sung: cập nhật trạng thái recall vào local storage
+          import("@/app/storage/StorageService").then(({ editMessage }) => {
+            editMessage(conversationId, messageId, "recall");
+          });
         }
         console.log(
           "Nhận tin nhắn đã thu hồi qua socket:",

@@ -384,7 +384,12 @@ export const saveMessages = async (
   newMessages,
   direction = "after"
 ) => {
-  console.log("[StorageService] saveMessages called", conversationId, newMessages, direction);
+  console.log(
+    "[StorageService] saveMessages called",
+    conversationId,
+    newMessages,
+    direction
+  );
   if (!conversationId || !Array.isArray(newMessages)) {
     console.error("❌ conversationId hoặc newMessages không hợp lệ");
     return [];
@@ -459,6 +464,71 @@ export const saveMessages = async (
 export const appendMessage = async (conversationId, message) => {
   console.log("[StorageService] appendMessage called", conversationId, message);
   return saveMessages(conversationId, [message], "before");
+};
+
+export const editMessage = async (conversationId, messageDetailId, action, userId) => {
+  console.log(
+    "[StorageService] editMessage called",
+    conversationId,
+    messageDetailId,
+    action
+  );
+  if (
+    !conversationId ||
+    !messageDetailId ||
+    !["recall", "delete"].includes(action)
+  ) {
+    console.error(
+      "❌ conversationId, messageDetailId hoặc action không hợp lệ"
+    );
+    return false;
+  }
+
+  try {
+    const data = await readUserData();
+    if (!data.messages || !data.messages[conversationId]) {
+      console.warn("⚠️ Không tìm thấy conversation:", conversationId);
+      return false;
+    }
+
+    const messages = data.messages[conversationId];
+    const messageIndex = messages.findIndex(
+      (msg) => msg.messageDetailId === messageDetailId
+    );
+
+    if (messageIndex === -1) {
+      console.warn(
+        "⚠️ Không tìm thấy tin nhắn với messageDetailId:",
+        messageDetailId
+      );
+      return false;
+    }
+
+    if (action === "recall") {
+      messages[messageIndex].isRecall = true;
+    } else if (action === "delete") {
+      if (!Array.isArray(messages[messageIndex].hiddenFrom)) {
+        messages[messageIndex].hiddenFrom = [];
+      }
+      if (!messages[messageIndex].hiddenFrom.includes(userId)) {
+        messages[messageIndex].hiddenFrom.push(userId);
+      }
+    }
+
+    // Ghi dữ liệu cập nhật
+    await writeUserData(data);
+    console.log(
+      `✅ Đã ${action === "recall" ? "thu hồi" : "xóa"} tin nhắn:`,
+      messageDetailId
+    );
+    return true;
+  } catch (err) {
+    console.error(
+      `❌ Lỗi khi ${action === "recall" ? "thu hồi" : "xóa"} tin nhắn:`,
+      err
+    );
+    return false;
+  }
 };
 
 export const getFriends = async () => {

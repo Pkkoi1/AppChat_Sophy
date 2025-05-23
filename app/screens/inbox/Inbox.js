@@ -340,6 +340,7 @@ const Inbox = ({ conversation }) => {
           onLeaveGroup={handleLeaveGroup}
           onDisbandGroup={handleDisbandGroup}
           onClose={() => setShowOptions(false)}
+          onRefresh={handlerRefresh} // Thêm dòng này
         />
       </Dialog>
     </>

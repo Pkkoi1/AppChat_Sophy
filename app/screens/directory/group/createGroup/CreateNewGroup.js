@@ -8,11 +8,18 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { api } from "../../../../api/api";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { AuthContext } from "@/app/auth/AuthContext";
+import OptionHeader from "@/app/features/optionHeader/OptionHeader";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Color from "@/app/components/colors/Color";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system"; // Thêm dòng này để đọc file ảnh
+import { useFocusEffect } from "@react-navigation/native";
 
 const CreateNewGroup = ({ route, navigation }) => {
   const { userInfo, handlerRefresh } = useContext(AuthContext);
@@ -24,6 +31,8 @@ const CreateNewGroup = ({ route, navigation }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [selectedFriends, setSelectedFriends] = useState([]);
   const [groupName, setGroupName] = useState("");
+  const [groupAvatar, setGroupAvatar] = useState(null);
+  const [creatingGroup, setCreatingGroup] = useState(false); // Thêm state này
 
   useEffect(() => {
     const loadFriends = async () => {
@@ -62,7 +71,9 @@ const CreateNewGroup = ({ route, navigation }) => {
           const filteredFriends = friendList.filter(
             (friend) =>
               friend.phone?.toString().includes(searchQuery.trim()) ||
-              friend.fullname?.toLowerCase().includes(searchQuery.trim().toLowerCase())
+              friend.fullname
+                ?.toLowerCase()
+                .includes(searchQuery.trim().toLowerCase())
           );
 
           // Cập nhật kết quả tìm kiếm
@@ -96,9 +107,12 @@ const CreateNewGroup = ({ route, navigation }) => {
     let generatedGroupName = groupName;
 
     if (!groupName.trim()) {
-      generatedGroupName = selectedFriends
-        .map((friend) => friend.fullname.split(" ").pop())
-        .join(", ");
+      // Lấy tên của 3 người đầu tiên (không tính người tạo)
+      const others = selectedFriends.filter(f => f.userId !== userInfo.userId).slice(0, 3);
+      generatedGroupName = others.map(friend => {
+        const parts = (friend.fullname || "").trim().split(" ");
+        return parts[parts.length - 1] || friend.fullname || "";
+      }).join(", ");
 
       if (!generatedGroupName) {
         Alert.alert("Lỗi", "Vui lòng chọn thành viên.");
@@ -113,9 +127,26 @@ const CreateNewGroup = ({ route, navigation }) => {
 
     try {
       setIsSearching(true);
+      setCreatingGroup(true); // Bắt đầu loading
       // Extract userIds instead of the entire friend object
       const memberIds = selectedFriends.map((friend) => friend.userId);
-      const newGroup = await api.createGroupConversation(generatedGroupName, memberIds);
+      const newGroup = await api.createGroupConversation(
+        generatedGroupName,
+        memberIds
+      );
+
+      // Nếu có chọn avatar thì gọi API đổi avatar nhóm
+      if (newGroup && groupAvatar) {
+        try {
+          const base64Image = await FileSystem.readAsStringAsync(groupAvatar, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          const imageBase64 = `data:image/jpeg;base64,${base64Image}`;
+          await api.changeGroupAvatar(newGroup.conversationId, imageBase64);
+        } catch (err) {
+          Alert.alert("Lỗi", "Không thể cập nhật ảnh đại diện nhóm.");
+        }
+      }
 
       if (newGroup) {
         Alert.alert("Thành công", "Nhóm đã được tạo!");
@@ -128,6 +159,24 @@ const CreateNewGroup = ({ route, navigation }) => {
       Alert.alert("Lỗi", "Nhóm phải có 2 thành viên trở lên.");
     } finally {
       setIsSearching(false);
+      setCreatingGroup(false); // Kết thúc loading
+    }
+  };
+
+  // Hàm chọn hình ảnh nhóm
+  const handlePickGroupAvatar = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.7,
+      });
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        setGroupAvatar(result.assets[0].uri);
+      }
+    } catch (err) {
+      Alert.alert("Lỗi", "Không thể chọn ảnh nhóm.");
     }
   };
 
@@ -149,6 +198,9 @@ const CreateNewGroup = ({ route, navigation }) => {
             width={40}
             height={40}
             avtText={16}
+            shadow={false}
+            bordered={false}
+            style={{ marginRight: 10 }}
           />
         )}
         <Text style={styles.friendName}>{item.fullname || "Người dùng"}</Text>
@@ -159,15 +211,63 @@ const CreateNewGroup = ({ route, navigation }) => {
     );
   };
 
+  // Xác nhận khi thoát màn hình nếu đã chọn bạn hoặc nhập tên nhóm hoặc chọn avatar
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBeforeRemove = (e) => {
+        if (
+          selectedFriends.length === 0 &&
+          !groupName.trim() &&
+          !groupAvatar
+        ) {
+          // Không có gì để xác nhận, cho phép thoát luôn
+          return;
+        }
+        e.preventDefault();
+        Alert.alert(
+          "Xác nhận",
+          "Bạn có chắc chắn muốn thoát? Thông tin nhóm sẽ không được lưu.",
+          [
+            { text: "Ở lại", style: "cancel", onPress: () => {} },
+            {
+              text: "Thoát",
+              style: "destructive",
+              onPress: () => navigation.dispatch(e.data.action),
+            },
+          ]
+        );
+      };
+
+      navigation.addListener("beforeRemove", onBeforeRemove);
+      return () => navigation.removeListener("beforeRemove", onBeforeRemove);
+    }, [navigation, selectedFriends.length, groupName, groupAvatar])
+  );
+
   return (
     <View style={styles.container}>
       {/* Group Name Input */}
-      <TextInput
-        style={styles.groupNameInput}
-        placeholder="Nhập tên nhóm"
-        value={groupName}
-        onChangeText={setGroupName}
-      />
+      <OptionHeader title={"Nhóm mới"} />
+      <View style={styles.groupNameRow}>
+        <TouchableOpacity onPress={handlePickGroupAvatar} activeOpacity={0.7}>
+          {groupAvatar ? (
+            <Image
+              source={{ uri: groupAvatar }}
+              style={styles.groupAvatarImage}
+            />
+          ) : (
+            <AntDesign name="camera" size={50} color={Color.gray} />
+          )}
+        </TouchableOpacity>
+        <TextInput
+          style={[
+            styles.groupNameInput,
+            { flex: 1, marginLeft: 12, marginTop: 0, marginBottom: 0 },
+          ]}
+          placeholder="Nhập tên nhóm"
+          value={groupName}
+          onChangeText={setGroupName}
+        />
+      </View>
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -186,30 +286,80 @@ const CreateNewGroup = ({ route, navigation }) => {
         />
       </View>
 
+      {/* Hiển thị số lượng đã chọn */}
+      {selectedFriends.length > 0 && (
+        <Text style={styles.selectedCountText}>
+          Đã chọn: {selectedFriends.length}
+        </Text>
+      )}
+
       {/* Friend List */}
       <FlatList
         data={searchQuery.trim() === "" ? friends : searchResults}
         keyExtractor={(item) => item._id.toString()}
         renderItem={renderFriendItem}
-        ListHeaderComponent={() => (
-          <View style={styles.headerContainer}>
-            <TouchableOpacity style={styles.headerButton}>
-              <Text style={styles.headerButtonText}>GẦN ĐÂY</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton}>
-              <Text style={styles.headerButtonText}>DANH BẠ</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        style={{ flex: 1 }}
       />
 
-      {/* Create Group Button */}
-      <TouchableOpacity
-        style={styles.createGroupButton}
-        onPress={handleCreateGroup}
-      >
-        <Text style={styles.createGroupButtonText}>Tạo Nhóm</Text>
-      </TouchableOpacity>
+      {/* Thanh thành viên đã chọn + nút thêm nhóm ở dưới cùng */}
+      {selectedFriends.length > 0 && (
+        <View style={styles.bottomBar}>
+          <FlatList
+            data={selectedFriends}
+            horizontal
+            keyExtractor={(item) => item._id.toString()}
+            contentContainerStyle={styles.selectedListBottom}
+            renderItem={({ item }) => (
+              <View style={styles.selectedUserContainerBottom}>
+                {item.urlavatar ? (
+                  <Image
+                    source={{ uri: item.urlavatar }}
+                    style={styles.selectedAvatarBottom}
+                  />
+                ) : (
+                  <AvatarUser
+                    fullName={item.fullname || "Người dùng"}
+                    width={50}
+                    height={50}
+                    avtText={14}
+                    shadow={false}
+                    bordered={false}
+                  />
+                )}
+                <TouchableOpacity
+                  style={styles.removeUserButtonBottom}
+                  onPress={() =>
+                    setSelectedFriends(
+                      selectedFriends.filter((f) => f._id !== item._id)
+                    )
+                  }
+                >
+                  <AntDesign name="closecircle" size={18} color={Color.gray} />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          <TouchableOpacity
+            style={[
+              styles.fabCreateGroupRight,
+              creatingGroup && { opacity: 0.7 },
+            ]}
+            onPress={handleCreateGroup}
+            disabled={creatingGroup} // Disable khi loading
+          >
+            {creatingGroup ? (
+              <ActivityIndicator size={24} color="#fff" />
+            ) : (
+              <AntDesign name="arrowright" size={28} color="#fff" />
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+      {creatingGroup && (
+        <View style={styles.loadingOverlay}>
+          {/* View phủ toàn màn hình để ngăn thao tác */}
+        </View>
+      )}
     </View>
   );
 };
@@ -222,14 +372,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingTop: 20,
   },
+  groupNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 10,
+    marginBottom: 10,
+    marginTop: 10,
+  },
   groupNameInput: {
     height: 40,
     borderColor: "gray",
     borderWidth: 1,
-    marginHorizontal: 10,
-    marginBottom: 10,
     paddingHorizontal: 10,
     borderRadius: 8,
+    marginTop: 10,
   },
   searchContainer: {
     flexDirection: "row",
@@ -248,19 +404,74 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
-  headerContainer: {
+  selectedCountText: {
+    marginLeft: 18,
+    marginBottom: 4,
+    color: "#666",
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  // Thanh dưới cùng chứa danh sách thành viên đã chọn và nút thêm
+  bottomBar: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    alignItems: "center",
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    paddingHorizontal: 10,
+    backgroundColor: "#f3f4f6",
+    borderTopWidth: 1,
+    borderTopColor: "#eee",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 20,
+    minHeight: 64,
+    // Bóng lớn và đậm hơn
+    shadowColor: "#000",
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 18,
   },
-  headerButton: {
-    paddingHorizontal: 20,
+  selectedListBottom: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexGrow: 1,
+    padding: 5,
   },
-  headerButtonText: {
-    fontSize: 16,
-    color: "#007bff",
+  selectedUserContainerBottom: {
+    marginRight: 12,
+    alignItems: "center",
+    position: "relative",
+  },
+  selectedAvatarBottom: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  removeUserButtonBottom: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    zIndex: 2,
+  },
+  fabCreateGroupRight: {
+    marginLeft: 10,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: Color.sophy,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
   },
   friendItem: {
     flexDirection: "row",
@@ -290,20 +501,46 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   selectedCircle: {
-    backgroundColor: "#007bff",
-    borderColor: "#007bff",
+    backgroundColor: Color.sophy,
+    borderColor: Color.sophy,
   },
-  createGroupButton: {
-    backgroundColor: "#28a745",
-    paddingVertical: 12,
-    marginHorizontal: 10,
-    borderRadius: 8,
+  fabCreateGroup: {
+    position: "absolute",
+    left: 24,
+    bottom: 32,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Color.sophy,
     alignItems: "center",
-    marginBottom: 20,
+    justifyContent: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    zIndex: 10,
   },
   createGroupButtonText: {
     color: "white",
     fontSize: 18,
+  },
+  groupAvatarImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#eee",
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.1)",
+    zIndex: 100,
   },
 });
 
