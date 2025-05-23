@@ -598,10 +598,8 @@ const MessageScreen = ({ route, navigation }) => {
         );
 
         // 3. Nếu khác biệt thì đồng bộ và cập nhật giao diện
-        if (isMessagesDifferent(cached, filtered)) {
-          await saveMessages(conversation.conversationId, filtered, "before");
-          setMessages(filtered);
-        }
+        await saveMessages(conversation.conversationId, filtered, "before");
+        setMessages(filtered);
       }
     } catch (error) {
       console.error("Lỗi khi tải tin nhắn:", error);
@@ -623,6 +621,7 @@ const MessageScreen = ({ route, navigation }) => {
       return;
     }
     fetchMessages();
+    console.log("Tin nhan81 duoc759 lay tu API:", messages);
   }, [conversation?.conversationId, fetchMessages]);
 
   const handleSendMessage = useCallback(

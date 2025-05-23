@@ -4,13 +4,14 @@ import { useNavigation } from "@react-navigation/native";
 import Inbox from "./Inbox";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { SocketContext } from "@/app/socket/SocketContext";
-import { navigateToProfile } from "@/app/utils/profileNavigation";
+import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 
 const ListInbox = () => {
   const { conversations, handlerRefresh, addConversation, userInfo } =
     useContext(AuthContext);
   const socket = useContext(SocketContext);
   const [refreshing, setRefreshing] = useState(false);
+  const navigateToProfile = useNavigateToProfile();
 
   const navigation = useNavigation();
 
@@ -87,7 +88,7 @@ const ListInbox = () => {
           : { userId: item.receiverId };
 
         if (user) {
-          await navigateToProfile(navigation, user, {
+          navigateToProfile(navigation, user, {
             showLoading: true,
             onLoadingChange: setRefreshing,
           });
