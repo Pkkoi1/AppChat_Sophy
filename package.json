@@ -67,7 +67,7 @@
     "react": "18.3.1",
     "react-async-hook": "^4.0.0",
     "react-dom": "18.3.1",
-    "react-native": "^0.76.7",
+    "react-native": "0.76.9",
     "react-native-action-sheet": "^2.2.0",
     "react-native-actionsheet": "^2.4.2",
     "react-native-bouncy-checkbox": "^4.1.2",
