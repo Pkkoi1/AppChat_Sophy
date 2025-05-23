@@ -10,6 +10,7 @@ import { api } from "@/app/api/api";
 import InboxOptions from "../../features/messagePopup/InboxOptions";
 import { Dialog } from "@rneui/themed";
 import { FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5 for the pin icon
+import Color from "@/app/components/colors/Color";
 
 const DEFAULT_AVATAR = "https://example.com/default-avatar.png"; // Replace with actual default avatar URL
 
@@ -340,6 +341,7 @@ const Inbox = ({ conversation }) => {
           onLeaveGroup={handleLeaveGroup}
           onDisbandGroup={handleDisbandGroup}
           onClose={() => setShowOptions(false)}
+          onRefresh={handlerRefresh} // Thêm dòng này
         />
       </Dialog>
     </>
@@ -353,14 +355,14 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingLeft: 20,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#ddd",
-    backgroundColor: "white",
+    borderBottomColor: Color.borderColor,
+    backgroundColor: Color.white,
   },
   pinnedContainer: {
-    backgroundColor: "#f1f1f2", // Light gray background for pinned conversations
+    backgroundColor: Color.pined, // Light gray background for pinned conversations
   },
   highlighted: {
-    backgroundColor: "#f0f8ff", // Light blue background for highlighting
+    backgroundColor: Color.highlight, // Light blue background for highlighting
   },
   avatarContainer: {
     marginRight: 20,
@@ -392,7 +394,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   time: {
-    color: "gray",
+    color: Color.grayText,
     fontSize: 12,
   },
   messageRow: {
@@ -402,7 +404,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   message: {
-    color: "gray",
+    color: Color.grayText,
     fontSize: 14,
     maxWidth: "80%",
   },
@@ -420,7 +422,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   unreadBadgeText: {
-    color: "white",
+    color: Color.white,
     fontSize: 12,
     fontWeight: "bold",
   },
