@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import Color from "@/app/components/colors/Color";
 
 const MessageItemStyle = StyleSheet.create({
   container: {
@@ -24,7 +25,7 @@ const MessageItemStyle = StyleSheet.create({
     backgroundColor: "#d4f1ff",
     alignSelf: "flex-end",
     marginRight: 10,
-    borderColor: "#007bff",
+    borderColor: Color.sophy,
     borderWidth: 0.5,
   },
   receiver: {
@@ -44,7 +45,7 @@ const MessageItemStyle = StyleSheet.create({
   },
   content: {
     fontSize: 16,
-    color: "#000",
+    color: Color.black,
   },
   avatar: {
     width: 32,
@@ -83,7 +84,7 @@ const MessageItemStyle = StyleSheet.create({
   },
   fileName: {
     fontSize: 14,
-    color: "#007bff",
+    color: Color.sophy,
     marginLeft: 10, // Add spacing between icon and text
     maxWidth: "80%", // Limit the width to prevent overflow
     overflow: "hidden", // Hide overflowing text
@@ -124,7 +125,7 @@ const MessageItemStyle = StyleSheet.create({
   downloadButton: {
     marginTop: 5,
     padding: 10,
-    backgroundColor: "#007bff",
+    backgroundColor: Color.sophy,
     borderRadius: 8,
     alignItems: "center",
   },
@@ -144,7 +145,7 @@ const MessageItemStyle = StyleSheet.create({
   },
   replyContainer: {
     borderLeftWidth: 2,
-    borderLeftColor: "#007bff",
+    borderLeftColor: Color.sophy,
     paddingLeft: 10,
     marginBottom: 5,
   },

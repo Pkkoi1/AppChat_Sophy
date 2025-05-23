@@ -15,6 +15,7 @@ import { useNavigation } from "@react-navigation/native";
 import MessagePopupStyle from "./MessagePopupStyle";
 import { SocketContext } from "@/app/socket/SocketContext";
 import { AuthContext } from "@/app/auth/AuthContext";
+import { saveMessages, editMessage } from "@/app/storage/StorageService";
 
 const popupOptions = [
   {
@@ -191,13 +192,20 @@ const MessagePopup = ({
               conversationId: selectedMessage.conversationId,
               messageId: selectedMessage.messageDetailId,
             });
-            setMessages((prevMessages) =>
-              prevMessages.map((msg) =>
+            setMessages((prevMessages) => {
+              const updated = prevMessages.map((msg) =>
                 msg.messageDetailId === selectedMessage.messageDetailId
                   ? { ...msg, isRecall: true }
                   : msg
-              )
-            );
+              );
+              // Gọi editMessage ngay sau khi cập nhật state
+              editMessage(
+                selectedMessage.conversationId,
+                selectedMessage.messageDetailId,
+                "recall"
+              );
+              return updated;
+            });
           } catch (error) {
             console.error(
               "Lỗi khi thu hồi tin nhắn:",
@@ -293,11 +301,21 @@ const MessagePopup = ({
           console.log("Tin nhắn đã được xóa:", response);
 
           // Update the UI to remove the deleted message
-          setMessages((prevMessages) =>
-            prevMessages.filter(
+          setMessages((prevMessages) => {
+            const updated = prevMessages.filter(
               (msg) => msg.messageDetailId !== selectedMessage.messageDetailId
-            )
-          );
+            );
+            // Gọi saveMessages ngay sau khi cập nhật state
+            saveMessages(selectedMessage.conversationId, updated, "before");
+            // Gọi editMessage để cập nhật trạng thái xóa trong storage
+            editMessage(
+              selectedMessage.conversationId,
+              selectedMessage.messageDetailId,
+              "delete",
+              userInfo.userId
+            );
+            return updated;
+          });
           Alert.alert("Thành công", "Tin nhắn đã được xóa.");
         } catch (error) {
           console.error(

@@ -39,7 +39,6 @@ const Conversation = ({
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  console.log("messages", messages);
   const pinnedMessages = messages.filter(
     (msg) => msg && typeof msg === "object" && msg.isPinned
   );
