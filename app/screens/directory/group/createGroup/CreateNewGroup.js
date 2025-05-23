@@ -108,11 +108,15 @@ const CreateNewGroup = ({ route, navigation }) => {
 
     if (!groupName.trim()) {
       // Lấy tên của 3 người đầu tiên (không tính người tạo)
-      const others = selectedFriends.filter(f => f.userId !== userInfo.userId).slice(0, 3);
-      generatedGroupName = others.map(friend => {
-        const parts = (friend.fullname || "").trim().split(" ");
-        return parts[parts.length - 1] || friend.fullname || "";
-      }).join(", ");
+      const others = selectedFriends
+        .filter((f) => f.userId !== userInfo.userId)
+        .slice(0, 3);
+      generatedGroupName = others
+        .map((friend) => {
+          const parts = (friend.fullname || "").trim().split(" ");
+          return parts[parts.length - 1] || friend.fullname || "";
+        })
+        .join(", ");
 
       if (!generatedGroupName) {
         Alert.alert("Lỗi", "Vui lòng chọn thành viên.");
@@ -215,11 +219,7 @@ const CreateNewGroup = ({ route, navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       const onBeforeRemove = (e) => {
-        if (
-          selectedFriends.length === 0 &&
-          !groupName.trim() &&
-          !groupAvatar
-        ) {
+        if (selectedFriends.length === 0 && !groupName.trim() && !groupAvatar) {
           // Không có gì để xác nhận, cho phép thoát luôn
           return;
         }
@@ -370,7 +370,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    paddingTop: 20,
   },
   groupNameRow: {
     flexDirection: "row",

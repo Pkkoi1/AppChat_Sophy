@@ -16,6 +16,8 @@ import AvatarUser from "@/app/components/profile/AvatarUser";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { useNavigation } from "@react-navigation/native";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
+import OptionHeader from "@/app/features/optionHeader/OptionHeader";
+import Color from "@/app/components/colors/Color";
 
 const AddFriendToGroup = ({ route }) => {
   const { conversation } = route.params;
@@ -151,7 +153,10 @@ const AddFriendToGroup = ({ route }) => {
         ]
       );
     } catch (error) {
-      Alert.alert("Lỗi", "Không được quyền thêm thành viên này vào nhóm do thành viên đã bị chặn.");
+      Alert.alert(
+        "Lỗi",
+        "Không được quyền thêm thành viên này vào nhóm do thành viên đã bị chặn."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -218,12 +223,16 @@ const AddFriendToGroup = ({ route }) => {
 
   // Render header với tùy chọn mời qua link
   const renderHeader = () => (
-    <TouchableOpacity style={styles.inviteByLinkContainer}>
-      <View style={styles.linkIconContainer}>
-        <Ionicons name="link-outline" size={24} color="#1e90ff" />
-      </View>
-      <Text style={styles.inviteByLinkText}>Mời vào nhóm bằng link</Text>
-    </TouchableOpacity>
+    <View>
+      <Text style={styles.subtitle}>Đã chọn: {selectedFriends.length}</Text>
+
+      <TouchableOpacity style={styles.inviteByLinkContainer}>
+        <View style={styles.linkIconContainer}>
+          <Ionicons name="link-outline" size={24} color={Color.sophy} />
+        </View>
+        <Text style={styles.inviteByLinkText}>Mời vào nhóm bằng link</Text>
+      </TouchableOpacity>
+    </View>
   );
 
   // Render section header (chữ cái)
@@ -235,18 +244,7 @@ const AddFriendToGroup = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Thêm vào nhóm</Text>
-          <Text style={styles.subtitle}>Đã chọn: {selectedFriends.length}</Text>
-        </View>
-      </View>
+      <OptionHeader title={"Thêm vào nhóm"} />
 
       <View style={styles.searchContainer}>
         <Ionicons
@@ -265,7 +263,7 @@ const AddFriendToGroup = ({ route }) => {
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color={Color.sophy} />
           <Text style={styles.loadingText}>Đang tải...</Text>
         </View>
       ) : (
@@ -324,6 +322,7 @@ const styles = StyleSheet.create({
   subtitle: {
     color: "#666",
     marginTop: 3,
+    marginLeft: 20,
   },
   searchContainer: {
     flexDirection: "row",
@@ -393,8 +392,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   selectedCircle: {
-    backgroundColor: "#1e90ff",
-    borderColor: "#1e90ff",
+    backgroundColor: Color.sophy,
+    borderColor: Color.sophy,
   },
   inviteByLinkContainer: {
     flexDirection: "row",
@@ -414,11 +413,11 @@ const styles = StyleSheet.create({
   inviteByLinkText: {
     marginLeft: 10,
     fontSize: 16,
-    color: "#1e90ff",
+    color: Color.sophy,
     fontWeight: "500",
   },
   addButton: {
-    backgroundColor: "#1e90ff",
+    backgroundColor: Color.sophy,
     margin: 16,
     padding: 14,
     borderRadius: 8,

@@ -13,6 +13,20 @@ const Color = {
   //Xanh dậm
   blueText2: "#0344a8",
   blueText3: "#007AFF",
+
+  //Màu chủ đạo
+  //Trắng
+  white: "#FFFFFF",
+  //Đen
+  black: "#000000",
+  //Xám
+  grayText: "#8e9195",
+  pined: "#f1f2f4",
+  borderColor: "#E1E4E8",
+  //Hightlight
+  highlight: "#E6F0FF",
+
+  //Inbox
 };
 
 export default Color;

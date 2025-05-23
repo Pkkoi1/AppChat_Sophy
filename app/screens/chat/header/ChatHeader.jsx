@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { api } from "@/app/api/api";
 import { SocketContext } from "../../../socket/SocketContext";
 import { AuthContext } from "@/app/auth/AuthContext";
+import Color from "@/app/components/colors/Color";
 
 const ChatHeader = ({
   user_id,
