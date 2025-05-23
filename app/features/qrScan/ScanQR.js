@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
-  Text,
   View,
+  Text,
   StyleSheet,
-  TouchableOpacity,
-  Linking,
   Dimensions,
   Alert,
+  TouchableOpacity,
+  Linking,
 } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
+import { Camera, useCameraPermissions, CameraView } from "expo-camera";
 import { useNavigation } from "@react-navigation/native";
 import { api } from "../../api/api";
-import { AuthContext } from "../../auth/AuthContext";
+import { AuthContext } from "@/app/auth/AuthContext";
 import { SocketContext } from "../../socket/SocketContext";
 
 const { width, height } = Dimensions.get("window");
@@ -33,12 +33,13 @@ export default function ScanQR() {
   }, [permission]);
 
   useEffect(() => {
-    if (scanned && qrData && userInfo && authToken) {
+    if (scanned && qrData) {
       const verifyQrCode = async () => {
         try {
           const qrInfo = JSON.parse(qrData);
           console.log("Scanned qrInfo.token:", qrInfo.token);
           const response = await api.verifyQrToken(qrInfo.token);
+          console.log("API verifyQrToken response:", response); // Debug log
 
           if (response.message === "QR token verified successfully") {
             console.log("QR token verified successfully:", response.data);
@@ -46,6 +47,10 @@ export default function ScanQR() {
               console.log("Socket is connected:", socket.connected);
               // Modified socket emit to match server expectations
               socket.emit("scanQrLogin", {
+                qrToken: qrInfo.token,
+                userId: userInfo.userId,
+              });
+              console.log("Emitted 'scanQrLogin' event with data:", {
                 qrToken: qrInfo.token,
                 userId: userInfo.userId,
               });
@@ -74,6 +79,7 @@ export default function ScanQR() {
   }, [scanned, qrData, navigation, socket, userInfo, authToken]);
 
   const handleBarCodeScanned = ({ type, data }) => {
+    console.log("QR code scanned:", data); // Log the scanned data
     setScanned(true);
     setQrData(data);
   };
