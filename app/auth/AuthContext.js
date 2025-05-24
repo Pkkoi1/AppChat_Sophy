@@ -15,7 +15,6 @@ import { Alert, Linking } from "react-native";
 import { fetchName } from "../components/getUserInfo/UserName";
 import { setupAuthSocketEvents } from "../socket/socketEvents/AuthSocketEvents";
 import { pickExternalDirectory } from "@/app/storage/StorageService";
-import { onUserLogin } from "../services/ZegoService";
 
 // Thêm import các hàm conversation từ file riêng, có chú thích tiếng Việt
 import {

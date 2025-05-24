@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
@@ -48,20 +48,46 @@ const ChatHeader = ({
 
   // Hàm gọi thoại
   const handleVoiceCall = () => {
-    // navigation.navigate("CallScreen", {
-    //   callType: "voice",
-    //   user: receiver,
-    //   incoming: false,
-    // });
+    if (conversation?.isGroup) {
+      Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
+      return;
+    }
+
+    if (!receiver || !receiver.userId) {
+      Alert.alert("Thông báo", "Không thể kết nối cuộc gọi lúc này");
+      return;
+    }
+
+    navigation.navigate("CallScreen", {
+      callType: "voice",
+      isVideo: false,
+      receiver: receiver,
+      conversationId: conversation.conversationId,
+      calleeId: receiver.userId,
+      incoming: false,
+    });
   };
 
   // Hàm gọi video
   const handleVideoCall = () => {
-    // navigation.navigate("CallScreen", {
-    //   callType: "video",
-    //   user: receiver,
-    //   incoming: false,
-    // });
+    if (conversation?.isGroup) {
+      Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
+      return;
+    }
+
+    if (!receiver || !receiver.userId) {
+      Alert.alert("Thông báo", "Không thể kết nối cuộc gọi lúc này");
+      return;
+    }
+
+    navigation.navigate("CallScreen", {
+      callType: "video",
+      isVideo: true,
+      receiver: receiver,
+      conversationId: conversation.conversationId,
+      calleeId: receiver.userId,
+      incoming: false,
+    });
   };
 
   return (
