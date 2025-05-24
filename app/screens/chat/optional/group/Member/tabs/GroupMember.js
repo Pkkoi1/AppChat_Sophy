@@ -14,6 +14,7 @@ import {
 import { AuthContext } from "@/app/auth/AuthContext";
 import RenderMember from "../memberItem/RenderMember";
 import { api } from "@/app/api/api";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const GroupMember = ({
   conversation: initialConversation,
@@ -25,7 +26,10 @@ const GroupMember = ({
   const [refreshing, setRefreshing] = useState(false);
   const [conversation, setConversation] = useState(initialConversation);
   const [error, setError] = useState(null);
+  const [members, setMembers] = useState([]);
 
+  console.log("GroupMember component rendered", groupMember);
+  console.log("Conversation in GroupMember:", conversation);
   // Fetch conversation data
   const fetchConversationData = useCallback(async () => {
     if (!conversation?.conversationId) return;
@@ -88,14 +92,53 @@ const GroupMember = ({
     fetchConversationData().finally(() => setRefreshing(false));
   }, [fetchConversationData]);
 
-  // Sort groupMember, prioritize owner
+  useEffect(() => {
+    // Lấy đúng data nếu conversation là response axios
+    const conv =
+      conversation && conversation.data && conversation.data.groupMembers
+        ? conversation.data
+        : conversation;
+    if (!conv?.groupMembers) {
+      setMembers([]);
+      return;
+    }
+    // Lấy rule từ conv
+    const ownerId = conv?.rules?.ownerId;
+    const coOwnerIds = conv?.rules?.coOwnerIds || [];
+    // Nếu groupMembers là mảng id, fetch info
+    if (typeof conv.groupMembers[0] === "string") {
+      Promise.all(conv.groupMembers.map((id) => fetchUserInfo(id))).then(
+        (users) => {
+          setMembers(
+            users
+              .filter(Boolean)
+              .map((u) => ({
+                id: u.userId,
+                fullName: u.fullname || "",
+                urlAvatar: u.urlavatar || "",
+                role:
+                  u.userId === ownerId
+                    ? "owner"
+                    : coOwnerIds.includes(u.userId)
+                    ? "co-owner"
+                    : "member",
+              }))
+          );
+        }
+      );
+    } else {
+      setMembers(conv.groupMembers);
+    }
+  }, [conversation]);
+
+  // Sort members, prioritize owner
   const sortedGroupMembers = useMemo(() => {
-    return groupMember.sort((a, b) => {
+    return [...members].sort((a, b) => {
       if (a.role === "owner") return -1;
       if (b.role === "owner") return 1;
       return 0;
     });
-  }, [groupMember]);
+  }, [members]);
 
   useEffect(() => {
     if (groupMember.length === 0) {
@@ -124,7 +167,7 @@ const GroupMember = ({
             item={item.id}
             userInfo={userInfo}
             navigation={navigation}
-            conversation={conversation}
+            conversation={conversation.data || conversation}
             onConversationUpdate={onConversationUpdate}
           />
         )}

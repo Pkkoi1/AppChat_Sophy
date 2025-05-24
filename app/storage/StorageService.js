@@ -84,7 +84,7 @@ const writeUserData = async (data) => {
 const writeQueue = [];
 
 const writeFile = async (fileName, data) => {
-  console.log("[StorageService] writeFile called", fileName, data);
+  // console.log("[StorageService] writeFile called", fileName, data);
   const writePromise = new Promise(async (resolve, reject) => {
     const executeWrite = async () => {
       console.log("[StorageService] executeWrite called", fileName);
@@ -384,12 +384,12 @@ export const saveMessages = async (
   newMessages,
   direction = "after"
 ) => {
-  console.log(
-    "[StorageService] saveMessages called",
-    conversationId,
-    newMessages,
-    direction
-  );
+  // console.log(
+  //   "[StorageService] saveMessages called",
+  //   conversationId,
+  //   newMessages,
+  //   direction
+  // );
   if (!conversationId || !Array.isArray(newMessages)) {
     console.error("❌ conversationId hoặc newMessages không hợp lệ");
     return [];
@@ -466,7 +466,12 @@ export const appendMessage = async (conversationId, message) => {
   return saveMessages(conversationId, [message], "before");
 };
 
-export const editMessage = async (conversationId, messageDetailId, action, userId) => {
+export const editMessage = async (
+  conversationId,
+  messageDetailId,
+  action,
+  userId
+) => {
   console.log(
     "[StorageService] editMessage called",
     conversationId,

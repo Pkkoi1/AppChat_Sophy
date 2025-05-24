@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Image,
   SafeAreaView,
@@ -59,7 +59,10 @@ const ConversationName = ({ receiver, conversation }) => {
     useState(false);
   const [isRenameModalVisible, setIsRenameModalVisible] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAvatarLoading, setIsAvatarLoading] = useState(false); // loading riêng cho avatar
+  const [isRenameLoading, setIsRenameLoading] = useState(false); // loading riêng cho đổi tên
+  const [isBackgroundLoading, setIsBackgroundLoading] = useState(false); // loading riêng cho nền
+
   const {
     handlerRefresh,
     updateBackground,
@@ -85,8 +88,15 @@ const ConversationName = ({ receiver, conversation }) => {
     ? { uri: receiver.urlavatar }
     : null;
 
+  // Khi mở modal đổi tên, set giá trị mặc định là tên hiện tại
+  useEffect(() => {
+    if (isRenameModalVisible && conversation?.groupName) {
+      setNewGroupName(conversation.groupName);
+    }
+  }, [isRenameModalVisible, conversation?.groupName]);
+
   const pickImageForAvatar = async () => {
-    setIsLoading(true);
+    setIsAvatarLoading(true);
     try {
       const permissionResult =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -95,6 +105,7 @@ const ConversationName = ({ receiver, conversation }) => {
 
       if (!permissionResult.granted || !cameraPermissionResult.granted) {
         Alert.alert("Lỗi", "Cần cấp quyền truy cập thư viện ảnh và máy ảnh!");
+        setIsAvatarLoading(false);
         return;
       }
 
@@ -114,6 +125,8 @@ const ConversationName = ({ receiver, conversation }) => {
 
               if (!result.canceled && result.assets[0].uri) {
                 await handleConfirmChangeAvatar(result.assets[0].uri);
+              } else {
+                setIsAvatarLoading(false);
               }
             },
           },
@@ -128,19 +141,25 @@ const ConversationName = ({ receiver, conversation }) => {
 
               if (!result.canceled && result.assets[0].uri) {
                 await handleConfirmChangeAvatar(result.assets[0].uri);
+              } else {
+                setIsAvatarLoading(false);
               }
             },
           },
-          { text: "Hủy", style: "cancel" },
+          {
+            text: "Hủy",
+            style: "cancel",
+            onPress: () => setIsAvatarLoading(false),
+          },
         ]
       );
-    } finally {
-      setIsLoading(false);
+    } catch {
+      setIsAvatarLoading(false);
     }
   };
 
   const handleConfirmChangeAvatar = async (imageUri) => {
-    setIsLoading(true);
+    setIsAvatarLoading(true);
     try {
       const base64Image = await FileSystem.readAsStringAsync(imageUri, {
         encoding: FileSystem.EncodingType.Base64,
@@ -166,9 +185,9 @@ const ConversationName = ({ receiver, conversation }) => {
       }
 
       Alert.alert("Thành công", "Ảnh đại diện nhóm đã được cập nhật!");
-      conversation.groupAvatarUrl = response?.conversation.groupAvatarUrl; // Cập nhật URL avatar trong conversation
-      setSelectedImage(response?.conversation.groupAvatarUrl); // Cập nhật trạng thái selectedImage
-      handlerRefresh(); // Làm mới danh sách cuộc trò chuyện
+      conversation.groupAvatarUrl = response?.conversation.groupAvatarUrl;
+      setSelectedImage(response?.conversation.groupAvatarUrl);
+      handlerRefresh();
     } catch (error) {
       console.error(
         "Lỗi khi đổi ảnh đại diện nhóm:",
@@ -179,11 +198,11 @@ const ConversationName = ({ receiver, conversation }) => {
         "Không thể cập nhật ảnh đại diện nhóm. Vui lòng thử lại."
       );
     } finally {
-      setIsLoading(false);
+      setIsAvatarLoading(false);
     }
   };
   const pickImage = async () => {
-    setIsLoading(true);
+    // Không dùng setIsLoading(true);
     try {
       const permissionResult =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -234,14 +253,14 @@ const ConversationName = ({ receiver, conversation }) => {
         ]
       );
     } finally {
-      setIsLoading(false);
+      // Không dùng setIsLoading(false);
     }
   };
 
   const handleConfirmChangeBackground = async () => {
     if (!selectedImage) return;
 
-    setIsLoading(true);
+    setIsBackgroundLoading(true);
     try {
       const base64Image = await FileSystem.readAsStringAsync(selectedImage, {
         encoding: FileSystem.EncodingType.Base64,
@@ -271,7 +290,7 @@ const ConversationName = ({ receiver, conversation }) => {
       );
       Alert.alert("Lỗi", "Không thể cập nhật ảnh nền. Vui lòng thử lại.");
     } finally {
-      setIsLoading(false);
+      setIsBackgroundLoading(false);
     }
   };
 
@@ -323,7 +342,7 @@ const ConversationName = ({ receiver, conversation }) => {
       return;
     }
 
-    setIsLoading(true);
+    setIsRenameLoading(true);
     try {
       const conversationId = conversation?.conversationId;
       if (!conversationId) {
@@ -332,7 +351,6 @@ const ConversationName = ({ receiver, conversation }) => {
 
       await api.changeGroupName(conversationId, newGroupName);
 
-      // Update the group name in the conversation object
       conversation.groupName = newGroupName;
 
       Alert.alert(
@@ -348,7 +366,7 @@ const ConversationName = ({ receiver, conversation }) => {
       );
       Alert.alert("Lỗi", "Không thể đổi tên nhóm. Vui lòng thử lại.");
     } finally {
-      setIsLoading(false);
+      setIsRenameLoading(false);
     }
   };
 
@@ -381,7 +399,7 @@ const ConversationName = ({ receiver, conversation }) => {
       {conversation?.isGroup ? (
         <>
           <View style={styles.avatarContainer}>
-            {isLoading ? (
+            {isAvatarLoading ? (
               <ActivityIndicator size="large" color="#1f7bff" />
             ) : (
               <Image
@@ -399,6 +417,7 @@ const ConversationName = ({ receiver, conversation }) => {
             <TouchableOpacity
               style={styles.cameraButton}
               onPress={pickImageForAvatar}
+              disabled={isAvatarLoading}
             >
               <AntDesign name="camerao" size={20} color="black" />
             </TouchableOpacity>
@@ -408,9 +427,17 @@ const ConversationName = ({ receiver, conversation }) => {
             <TouchableOpacity
               style={styles.pencilButton}
               onPress={() => setIsRenameModalVisible(true)}
+              disabled={isRenameLoading}
             >
               <EvilIcons name="pencil" size={20} color="black" />
             </TouchableOpacity>
+            {isRenameLoading && (
+              <ActivityIndicator
+                size="small"
+                color="#1f7bff"
+                style={{ marginLeft: 8 }}
+              />
+            )}
           </View>
         </>
       ) : (
@@ -476,19 +503,21 @@ const ConversationName = ({ receiver, conversation }) => {
         <Text style={styles.modalText}>
           Bạn có muốn sử dụng ảnh này làm hình nền?
         </Text>
-        {isLoading ? (
+        {isBackgroundLoading ? (
           <ActivityIndicator size="large" color="#1f7bff" />
         ) : (
           <View style={styles.modalButtonContainer}>
             <TouchableOpacity
               style={[styles.modalButton, styles.confirmButton]}
               onPress={handleConfirmChangeBackground}
+              disabled={isBackgroundLoading}
             >
               <Text style={styles.modalButtonText}>Đồng ý</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={handleCancelChangeBackground}
+              disabled={isBackgroundLoading}
             >
               <Text style={styles.modalButtonText}>Hủy</Text>
             </TouchableOpacity>
@@ -502,35 +531,29 @@ const ConversationName = ({ receiver, conversation }) => {
         overlayStyle={styles.overlayContent}
       >
         <Text style={styles.modalText}>Thay đổi hình nền</Text>
-        {isLoading ? (
-          <ActivityIndicator size="large" color="#1f7bff" />
-        ) : (
-          <View style={styles.modalButtonContainer}>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.confirmButton]}
-              onPress={() => {
-                if (!isLoading) {
-                  closeBackgroundOptionModal();
-                  pickImage();
-                }
-              }}
-              disabled={isLoading}
-            >
-              <Text style={styles.modalButtonText}>Chọn hình</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={() => {
-                if (!isLoading && background) {
-                  handleDeleteBackground();
-                }
-              }}
-              disabled={!background || isLoading}
-            >
-              <Text style={styles.modalButtonText}>Xóa hình</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* Không dùng isLoading ở đây */}
+        <View style={styles.modalButtonContainer}>
+          <TouchableOpacity
+            style={[styles.modalButton, styles.confirmButton]}
+            onPress={() => {
+              closeBackgroundOptionModal();
+              pickImage();
+            }}
+          >
+            <Text style={styles.modalButtonText}>Chọn hình</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modalButton, styles.cancelButton]}
+            onPress={() => {
+              if (background) {
+                handleDeleteBackground();
+              }
+            }}
+            disabled={!background}
+          >
+            <Text style={styles.modalButtonText}>Xóa hình</Text>
+          </TouchableOpacity>
+        </View>
       </Overlay>
 
       <Overlay
@@ -545,19 +568,21 @@ const ConversationName = ({ receiver, conversation }) => {
           value={newGroupName}
           onChangeText={setNewGroupName}
         />
-        {isLoading ? (
+        {isRenameLoading ? (
           <ActivityIndicator size="large" color="#1f7bff" />
         ) : (
           <View style={styles.modalButtonContainer}>
             <TouchableOpacity
               style={[styles.modalButton, styles.confirmButton]}
               onPress={handleRenameGroup}
+              disabled={isRenameLoading}
             >
               <Text style={styles.modalButtonText}>Đồng ý</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.modalButton, styles.cancelButton]}
               onPress={() => setIsRenameModalVisible(false)}
+              disabled={isRenameLoading}
             >
               <Text style={styles.modalButtonText}>Hủy</Text>
             </TouchableOpacity>

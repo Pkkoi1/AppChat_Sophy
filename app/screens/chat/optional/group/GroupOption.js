@@ -12,6 +12,8 @@ const GroupOption = ({ conversation, receiver }) => {
   const [isFriend, setIsFriend] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  console.log("Receiver in GroupOption:", receiver);
+  console.log("Conversation in GroupOption:", conversation);
   useEffect(() => {
     // Check if receiver is a friend when component mounts
     const checkIsFriend = async () => {
