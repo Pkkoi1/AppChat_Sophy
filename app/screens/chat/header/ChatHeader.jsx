@@ -53,7 +53,6 @@ const ChatHeader = ({
     //   user: receiver,
     //   incoming: false,
     // });
-    navigation.navigate("CallScreen");
   };
 
   // Hàm gọi video
@@ -63,7 +62,6 @@ const ChatHeader = ({
     //   user: receiver,
     //   incoming: false,
     // });
-    navigation.navigate("CallScreen");
   };
 
   return (

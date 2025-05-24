@@ -58,7 +58,7 @@ import SameGroups from "./screens/chat/optional/group/samegroup/SameGroups";
 import File from "./screens/chat/optional/gallery/files/File";
 import ListImageFullView from "./features/fullImages/ListImageFullView";
 import IncomingCallScreen from "./screens/call/IncomingCallScreen";
-import CallScreen from "./screens/chat/call/CallScreen";
+import CallScreen from "./screens/call/CallScreen";
 
 const Stack = createNativeStackNavigator();
 const update = (newData) => {
