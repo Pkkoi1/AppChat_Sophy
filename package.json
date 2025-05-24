@@ -40,7 +40,7 @@
     "expo-camera": "~16.1.6",
     "expo-constants": "~17.0.8",
     "expo-contacts": "^14.0.5",
-    "expo-dev-client": "~5.0.15",
+    "expo-dev-client": "~5.1.8",
     "expo-document-picker": "~13.0.3",
     "expo-file-system": "~18.0.12",
     "expo-font": "13.0.4",
