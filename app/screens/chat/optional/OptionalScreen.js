@@ -22,6 +22,8 @@ const OptionalScreen = () => {
     (member) => member.id === userInfo.userId && member.role === "owner"
   );
 
+  console.log("Receiver in OptionalScreen:", receiver);
+  console.log("Conversation in OptionalScreen:", conversation);
   return (
     <View style={styles.container}>
       <View style={styles.header}>

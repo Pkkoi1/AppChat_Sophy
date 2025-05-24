@@ -15,8 +15,13 @@ import Color from "@/app/components/colors/Color";
 const DEFAULT_AVATAR = "https://example.com/default-avatar.png"; // Replace with actual default avatar URL
 
 const Inbox = ({ conversation }) => {
-  const { userInfo, updateBackground, handlerRefresh } =
-    useContext(AuthContext);
+  const {
+    userInfo,
+    updateBackground,
+    handlerRefresh,
+    groupMember,
+    setGroupMember,
+  } = useContext(AuthContext);
 
   const {
     groupName,
@@ -239,23 +244,48 @@ const Inbox = ({ conversation }) => {
     setShowOptions(false);
   };
 
+  const handlePress = async () => {
+    readMessage(conversationId);
+    updateBackground(conversation?.background);
+
+    if (isGroup && Array.isArray(groupMembers)) {
+      // Lấy rule từ conversation
+      const ownerId = conversation?.rules?.ownerId;
+      const coOwnerIds = conversation?.rules?.coOwnerIds || [];
+      // Fetch user info cho từng thành viên
+      const users = await Promise.all(
+        groupMembers.map((id) => fetchUserInfo(id))
+      );
+      const members = users.filter(Boolean).map((u) => ({
+        id: u.userId,
+        fullName: u.fullname || "",
+        urlAvatar: u.urlavatar || "",
+        role:
+          u.userId === ownerId
+            ? "owner"
+            : coOwnerIds.includes(u.userId)
+            ? "co-owner"
+            : "member",
+      }));
+      setGroupMember(members);
+    }
+
+    navigation.navigate("Chat", {
+      conversation: conversation,
+      receiver: isGroup ? null : receiver,
+    });
+  };
+
   return (
     <>
       <TouchableOpacity
-        onPress={() => {
-          readMessage(conversationId); // Mark the message as read when pressed
-          updateBackground(conversation?.background); // Update background before navigating
-          navigation.navigate("Chat", {
-            conversation: conversation,
-            receiver: isGroup ? null : receiver,
-          });
-        }}
-        onLongPress={() => setShowOptions(true)} // Show options on long press
+        onPress={handlePress}
+        onLongPress={() => setShowOptions(true)}
         activeOpacity={0.6}
         style={[
           styles.container,
           showOptions && styles.highlighted,
-          isPinned && styles.pinnedContainer, // Apply pinned styling
+          isPinned && styles.pinnedContainer,
         ]}
       >
         <View style={styles.avatarContainer}>

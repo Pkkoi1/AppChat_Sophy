@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
   const joinedConversationIds = useRef(new Set());
   // Hàm lấy danh sách nhóm (dùng từ file groupHelpers)
   const fetchGroups = useCallback(
-    () => fetchGroupsHelper(setGroups, setGroupsLoading),
+    () => fetchGroupsHelper(setGroups, setGroupsLoading, setGroupMember),
     []
   );
 
@@ -270,9 +270,14 @@ export const AuthProvider = ({ children }) => {
 
   // Hàm lưu danh sách thành viên nhóm (dùng từ file groupHelpers)
   const saveGroupMembers = useCallback(
-    (conversationId, members) =>
-      saveGroupMembersHelper(setGroupMember, conversationId, members),
-    []
+    (...args) => {
+      console.log("saveGroupMembers called (AuthContext)");
+      console.log("Thành viên nhóm (conversations):", conversations);
+      console.log("Thành viên nhóm (groupMember):", groupMember);
+      // Gọi helper thực sự
+      return saveGroupMembersHelper(setGroupMember, ...args);
+    },
+    [conversations, groupMember]
   );
 
   // Hàm lưu tin nhắn (dùng từ file messageHelpers)
@@ -431,6 +436,7 @@ export const AuthProvider = ({ children }) => {
         getUserInfoById,
         handlerRefresh,
         updateBackground,
+        setGroupMember,
         phoneContacts,
         usersInDB,
         getPhoneContacts,

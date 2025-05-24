@@ -61,6 +61,14 @@ const MessageScreen = ({ route, navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [imageUri, setImageUri] = useState(null);
   const [sended, setSended] = useState(false);
+  const [effectiveBackground, setEffectiveBackground] = useState(
+    background || conversation?.background || null
+  );
+
+  // Theo dõi background thay đổi để cập nhật lại hiệu ứng nền
+  useEffect(() => {
+    setEffectiveBackground(background || conversation?.background || null);
+  }, [background, conversation?.background]);
 
   const calculateLastActive = (lastActive) => {
     const now = new Date();
@@ -105,10 +113,10 @@ const MessageScreen = ({ route, navigation }) => {
               const filteredMessages = response.messages.filter(
                 (m) => !m.hiddenFrom?.includes(userInfo.userId)
               );
-              console.log(
-                "Đã tải tin nhắn từ API khi thoát màn hình:",
-                filteredMessages.map((msg) => msg.content)
-              );
+              // console.log(
+              //   "Đã tải tin nhắn từ API khi thoát màn hình:",
+              //   filteredMessages.map((msg) => msg.content)
+              // );
               saveMessages(
                 conversation.conversationId,
                 filteredMessages,
@@ -908,6 +916,69 @@ const MessageScreen = ({ route, navigation }) => {
     [conversation, userInfo.userId]
   );
 
+  const handleSendAudio = useCallback(
+    async (message) => {
+      if (!conversation?.conversationId) {
+        Alert.alert("Lỗi", "Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+      console.log("Loại tin nhắn:", message.attachment);
+
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: "audio",
+        attachment: message.attachment,
+        sendStatus: "sending",
+      };
+      console.log("File âm thanh:", message.attachment);
+      setMessages((prev) => [pseudoMessage, ...prev]);
+
+      try {
+        const response = await api.sendFileVideoMessage({
+          conversationId: conversation.conversationId,
+          attachment: message.attachment,
+        });
+        console.log("Gửi audio thành công:", response);
+        if (socket && socket.connected) {
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+          setMessages((prev) => [response, ...prev]);
+        } else if (response) {
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+          setMessages((prev) => [response, ...prev]);
+        } else {
+          console.error("Lỗi: Không nhận được phản hồi từ API.");
+          alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gửi audio:", error);
+        Alert.alert(
+          "Lỗi",
+          `Không thể gửi audio: ${
+            error.response?.data?.message || error.message
+          }. Vui lòng thử lại.`
+        );
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.messageDetailId === pseudoMessage.messageDetailId
+              ? { ...msg, sendStatus: "failed" }
+              : msg
+          )
+        );
+      }
+    },
+    [conversation, userInfo.userId]
+  );
   const handleReply = (message) => {
     setReplyingTo(message);
   };
@@ -1031,59 +1102,6 @@ const MessageScreen = ({ route, navigation }) => {
     setHighlightedMessageId(null);
   };
 
-  const effectiveBackground = background || conversation?.background || null;
-
-  const MemoizedConversation = memo(Conversation, (prevProps, nextProps) => {
-    return (
-      prevProps.messages === nextProps.messages &&
-      prevProps.highlightedMessageId === nextProps.highlightedMessageId &&
-      prevProps.searchQuery === nextProps.searchQuery &&
-      prevProps.senderId === nextProps.senderId
-    );
-  });
-
-  const addGroupMember = async (conversation) => {
-    if (conversation?.isGroup && Array.isArray(conversation.groupMembers)) {
-      const membersWithRoles = await Promise.all(
-        conversation.groupMembers.map(async (memberId) => {
-          const memberInfo = await fetchUserInfo(memberId);
-          return {
-            id: memberId,
-            role:
-              memberId === conversation.rules?.ownerId
-                ? "owner"
-                : conversation.rules?.coOwnerIds?.includes(memberId)
-                ? "co-owner"
-                : "member",
-            fullName: memberInfo?.fullname || "Unknown",
-            urlAvatar: memberInfo?.urlavatar || null,
-          };
-        })
-      );
-      saveGroupMembers(conversation.conversationId, membersWithRoles);
-      console.log(
-        "Đã lưu danh sách thành viên nhóm với vai trò, tên và avatar:",
-        membersWithRoles
-      );
-    }
-  };
-
-  useEffect(() => {
-    if (conversation?.isGroup) {
-      addGroupMember(conversation);
-    }
-  }, [conversation]);
-
-  useEffect(() => {
-    // Khi vào màn hình MessageScreen, cập nhật screen context
-    setScreen("MessageScreen");
-    return () => {
-      // Khi thoát màn hình MessageScreen, cập nhật lại về Home (hoặc tên màn hình danh sách của bạn)
-      setScreen("Home");
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <View style={{ flex: 1 }}>
       <StatusBar />
@@ -1143,6 +1161,7 @@ const MessageScreen = ({ route, navigation }) => {
           onSendImage={handleSendImage}
           onSendFile={handleSendFile}
           onSendVideo={handleSendVideo}
+          onSendAudio={handleSendAudio}
           socket={socket}
           conversation={conversation}
           setIsTyping={setIsTyping}
