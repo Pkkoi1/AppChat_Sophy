@@ -1,19 +1,30 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Alert,
+  Linking,
+  Animated,
+  Easing,
+} from "react-native";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
 import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { Video } from "expo-av";
+import { Audio } from "expo-av";
 import MessageItemStyle from "./MessageItemStyle";
 import HighlightText from "../../../components/highlightText/HighlightText";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 import * as Sharing from "expo-sharing";
 import { AuthContext } from "@/app/auth/AuthContext";
-import { Linking } from "react-native";
 import { useNavigateToProfile } from "@/app/utils/profileNavigation";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Color from "@/app/components/colors/Color";
 
 const errorImage =
   "https://res.cloudinary.com/dyd5381vx/image/upload/v1744732824/z6509003496600_0f4526fe7c8ca476fea6dddff2b3bc91_d4nysj.jpg";
@@ -72,6 +83,17 @@ const getColorForInitial = (initial) => {
   return "#B0B0B0";
 };
 
+const audioExtensions = [
+  "webm",
+  "mp3",
+  "m4a",
+  "wav",
+  "ogg",
+  "aac",
+  "flac",
+  "opus",
+];
+
 const MessageItem = ({
   message,
   isSender,
@@ -82,11 +104,17 @@ const MessageItem = ({
   onScrollToMessage,
 }) => {
   const navigateToProfile = useNavigateToProfile();
-
   const { userInfo } = useContext(AuthContext);
   const navigation = useNavigation();
   const isGroup = !receiver;
   const [senders, setSenders] = useState([]);
+  const [audioPlayback, setAudioPlayback] = useState(null);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [isAudioPaused, setIsAudioPaused] = useState(false);
+  const [audioPosition, setAudioPosition] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const spinAnim = useState(new Animated.Value(0))[0];
   const formattedTime = moment(message.createdAt).format("HH:mm");
 
   useEffect(() => {
@@ -180,7 +208,7 @@ const MessageItem = ({
         }
         navigateToProfile(navigation, user, {
           showLoading: true,
-          onLoadingChange: () => {}, // Optional: Add loading state handling if needed
+          onLoadingChange: () => {},
         });
       } catch (error) {
         console.error("Error navigating to profile:", error);
@@ -256,6 +284,8 @@ const MessageItem = ({
             <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
           ) : replyType === "video" ? (
             <Text style={MessageItemStyle.replyContent}>[Video]</Text>
+          ) : replyType === "audio" ? (
+            <Text style={MessageItemStyle.replyContent}>[Ghi âm]</Text>
           ) : (
             <Text style={MessageItemStyle.replyContent}>[Không hỗ trợ]</Text>
           )}
@@ -304,6 +334,157 @@ const MessageItem = ({
     });
   };
 
+  const isAudioFile = (fileName = "") => {
+    const ext = fileName.split(".").pop()?.toLowerCase();
+    return audioExtensions.includes(ext);
+  };
+
+  const formatTime = (millis) => {
+    const totalSeconds = Math.floor((millis || 0) / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const handlePlayPauseAudio = async (audioUrl) => {
+    try {
+      if (audioPlayback && isAudioPlaying) {
+        await audioPlayback.pauseAsync();
+        setIsAudioPlaying(false);
+        setIsAudioPaused(true);
+        return;
+      }
+      if (audioPlayback && isAudioPaused) {
+        await audioPlayback.playAsync();
+        setIsAudioPlaying(true);
+        setIsAudioPaused(false);
+        return;
+      }
+      if (audioPlayback) {
+        await audioPlayback.unloadAsync();
+        setAudioPlayback(null);
+        setIsAudioPlaying(false);
+        setIsAudioPaused(false);
+        setAudioPosition(0);
+        setAudioDuration(0);
+      }
+      setIsAudioLoading(true);
+      const { sound } = await Audio.Sound.createAsync({ uri: audioUrl });
+      setAudioPlayback(sound);
+      const status = await sound.getStatusAsync();
+      setAudioDuration(status.durationMillis || 0);
+      setIsAudioPlaying(true);
+      setIsAudioPaused(false);
+      setIsAudioLoading(false);
+      await sound.playAsync();
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded) {
+          setAudioPosition(status.positionMillis || 0);
+          setAudioDuration(status.durationMillis || 0);
+          if (status.didJustFinish) {
+            setIsAudioPlaying(false);
+            setIsAudioPaused(false);
+            sound.unloadAsync();
+            setAudioPlayback(null);
+            setAudioPosition(0);
+          }
+        }
+      });
+    } catch (err) {
+      setIsAudioPlaying(false);
+      setIsAudioPaused(false);
+      setIsAudioLoading(false);
+      Alert.alert("Lỗi", "Không thể phát file âm thanh.");
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (audioPlayback) {
+        audioPlayback.unloadAsync();
+      }
+    };
+  }, [audioPlayback]);
+
+  useEffect(() => {
+    let animation;
+    if (isAudioLoading) {
+      animation = Animated.loop(
+        Animated.timing(spinAnim, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        })
+      );
+      animation.start();
+    } else {
+      spinAnim.stopAnimation();
+      spinAnim.setValue(0);
+    }
+    return () => {
+      if (animation) animation.stop();
+    };
+  }, [isAudioPlaying, isAudioLoading, spinAnim]);
+
+  const renderAudioPlayer = (
+    audioUrl,
+    isLoading,
+    isPlaying,
+    isPaused,
+    onPress,
+    position,
+    duration
+  ) => (
+    <View style={MessageItemStyle.fileContainer}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 10,
+        }}
+      >
+        <TouchableOpacity
+          onPress={onPress}
+          style={{
+            backgroundColor: "#e0e0e0",
+            borderRadius: 16,
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+          }}
+          disabled={isLoading}
+        >
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  rotate:
+                    isPlaying || isLoading
+                      ? spinAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: ["0deg", "360deg"],
+                        })
+                      : "0deg",
+                },
+              ],
+            }}
+          >
+            {isLoading ? (
+              <AntDesign name="loading1" size={24} color={Color.sophy} />
+            ) : isPlaying ? (
+              <AntDesign name="pausecircle" size={24} color={Color.sophy} />
+            ) : (
+              <AntDesign name="play" size={24} color={Color.sophy} />
+            )}
+          </Animated.View>
+        </TouchableOpacity>
+        <Text style={{ marginLeft: 8, fontSize: 13, minWidth: 48 }}>
+          {formatTime(position)} / {formatTime(duration)}
+        </Text>
+      </View>
+    </View>
+  );
+
   const renderContent = () => {
     const { type, attachment, isRecall, isReply } = message;
     const content = message.content || "";
@@ -312,12 +493,33 @@ const MessageItem = ({
       return renderNotification();
     }
 
-    // Always show recall notice if isRecall is true
     if (isRecall) {
       return (
         <Text style={MessageItemStyle.recalledMessage}>
           Tin nhắn đã được thu hồi
         </Text>
+      );
+    }
+
+    // Nếu là tin nhắn audio (type === "audio" hoặc attachment.type === "audio" hoặc file đuôi audio)
+    if (
+      (type === "audio" && attachment && attachment.url) ||
+      (type === "audio" && message.attachment && message.attachment.url) ||
+      (type === "file" && attachment && isAudioFile(attachment.name))
+    ) {
+      // Ưu tiên lấy url từ attachment, fallback sang message.attachment
+      const audioUrl =
+        (attachment && attachment.url) ||
+        (message.attachment && message.attachment.url);
+
+      return renderAudioPlayer(
+        audioUrl,
+        isAudioLoading,
+        isAudioPlaying,
+        isAudioPaused,
+        () => handlePlayPauseAudio(audioUrl),
+        audioPosition,
+        audioDuration
       );
     }
 
@@ -338,6 +540,7 @@ const MessageItem = ({
             )}
           </View>
         ) : type === "file" && attachment ? (
+          // Nếu là file không phải audio
           <View style={MessageItemStyle.fileContainer}>
             <View
               style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
@@ -360,7 +563,7 @@ const MessageItem = ({
               <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
             </TouchableOpacity>
           </View>
-        ) : (type === "image" || type === "text-with-image") && attachment ? (
+        ) : type === "image" || (type === "text-with-image" && attachment) ? (
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("FullScreenImageViewer", {

@@ -908,6 +908,69 @@ const MessageScreen = ({ route, navigation }) => {
     [conversation, userInfo.userId]
   );
 
+  const handleSendAudio = useCallback(
+    async (message) => {
+      if (!conversation?.conversationId) {
+        Alert.alert("Lỗi", "Cuộc trò chuyện không tồn tại.");
+        return;
+      }
+      console.log("Loại tin nhắn:", message.attachment);
+
+      const pseudoMessage = {
+        conversationId: conversation.conversationId,
+        messageDetailId: `msg_${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        senderId: userInfo.userId,
+        type: "audio", 
+        attachment: message.attachment,
+        sendStatus: "sending",
+      };
+      console.log("File âm thanh:", message.attachment);
+      setMessages((prev) => [pseudoMessage, ...prev]);
+
+      try {
+        const response = await api.sendFileVideoMessage({
+          conversationId: conversation.conversationId,
+          attachment: message.attachment,
+        });
+        console.log("Gửi audio thành công:", response);
+        if (socket && socket.connected) {
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+          setMessages((prev) => [response, ...prev]);
+        } else if (response) {
+          setMessages((prev) =>
+            prev.filter(
+              (msg) => msg.messageDetailId !== pseudoMessage.messageDetailId
+            )
+          );
+          setMessages((prev) => [response, ...prev]);
+        } else {
+          console.error("Lỗi: Không nhận được phản hồi từ API.");
+          alert("Không thể gửi tin nhắn. Vui lòng thử lại sau.");
+        }
+      } catch (error) {
+        console.error("Lỗi khi gửi audio:", error);
+        Alert.alert(
+          "Lỗi",
+          `Không thể gửi audio: ${
+            error.response?.data?.message || error.message
+          }. Vui lòng thử lại.`
+        );
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.messageDetailId === pseudoMessage.messageDetailId
+              ? { ...msg, sendStatus: "failed" }
+              : msg
+          )
+        );
+      }
+    },
+    [conversation, userInfo.userId]
+  );
   const handleReply = (message) => {
     setReplyingTo(message);
   };
@@ -1143,6 +1206,7 @@ const MessageScreen = ({ route, navigation }) => {
           onSendImage={handleSendImage}
           onSendFile={handleSendFile}
           onSendVideo={handleSendVideo}
+          onSendAudio={handleSendAudio}
           socket={socket}
           conversation={conversation}
           setIsTyping={setIsTyping}
