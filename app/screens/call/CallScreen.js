@@ -2,222 +2,253 @@ import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
+  TouchableOpacity,
   SafeAreaView,
+  Alert,
+  Image,
+  ActivityIndicator,
   StatusBar,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { RTCView } from 'react-native-webrtc';
 import { AuthContext } from '@/app/auth/AuthContext';
 import { SocketContext } from '@/app/socket/SocketContext';
-import CallService from '@/app/services/CallService';
 import AvatarUser from '@/app/components/profile/AvatarUser';
+import { Ionicons } from '@expo/vector-icons';
 import Color from '@/app/components/colors/Color';
 
-const CallScreen = ({ route, navigation }) => {
-  const { callType, user, incoming, callData } = route.params;
-  const [callStatus, setCallStatus] = useState(incoming ? 'incoming' : 'calling');
-  const [callService, setCallService] = useState(null);
-  const [localStream, setLocalStream] = useState(null);
-  const [remoteStream, setRemoteStream] = useState(null);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isSpeakerOn, setIsSpeakerOn] = useState(false);
+const CallScreen = ({ navigation, route }) => {
   const { userInfo } = useContext(AuthContext);
   const socket = useContext(SocketContext);
-  const [callTimer, setCallTimer] = useState(0);
+  
+  const { callType, isVideo, receiver, conversationId, calleeId, incoming = false } = route.params || {};
+  const [callStatus, setCallStatus] = useState(incoming ? 'incoming' : 'connecting');
+  const [callDuration, setCallDuration] = useState(0);
   const [timerInterval, setTimerInterval] = useState(null);
-
-  const formatTime = (seconds) => {
+  
+  // Generate a unique call ID
+  const callId = `call_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+  
+  // Format call duration as MM:SS
+  const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
-
+  
   useEffect(() => {
-    // Initialize call service
-    const service = new CallService(socket);
-    setCallService(service);
-
-    // Set call listeners
-    service.setCallListeners({
-      onCallAccepted: (data) => {
-        setCallStatus('connected');
-        // Start call timer
-        const interval = setInterval(() => {
-          setCallTimer((prev) => prev + 1);
-        }, 1000);
-        setTimerInterval(interval);
-      },
-      onCallRejected: () => {
-        navigation.goBack();
-      },
-      onCallEnded: () => {
-        navigation.goBack();
-      },
-      onStreamReceived: (stream) => {
-        setRemoteStream(stream);
-      },
-      onError: (error) => {
-        console.error('Call error:', error);
-        navigation.goBack();
-      },
-    });
-
-    // Register socket events
-    service.registerSocketEvents();
-
-    // Initialize the call
-    const setupCall = async () => {
-      const stream = await service.initializeCall();
-      setLocalStream(stream);
-
-      if (incoming) {
-        // If it's an incoming call, answer it
-        if (callData) {
-          service.answerCall(callData);
+    if (callStatus === 'connected') {
+      // Start call timer
+      const interval = setInterval(() => {
+        setCallDuration(prev => prev + 1);
+      }, 1000);
+      setTimerInterval(interval);
+      return () => clearInterval(interval);
+    }
+  }, [callStatus]);
+  
+  useEffect(() => {
+    // Emit call invitation through socket for outgoing calls
+    if (!incoming && socket) {
+      socket.emit('callInvitation', {
+        callerId: userInfo.userId,
+        callerName: userInfo.fullname,
+        calleeId: calleeId,
+        conversationId: conversationId,
+        callId: callId,
+        isVideo: isVideo,
+        timestamp: new Date().toISOString()
+      });
+      
+      console.log("Emitted call invitation", {
+        callerId: userInfo.userId,
+        calleeId: calleeId,
+        isVideo: isVideo
+      });
+      
+      // Set a timeout for unanswered calls
+      const timer = setTimeout(() => {
+        Alert.alert(
+          "Không có phản hồi", 
+          "Người nhận không trả lời cuộc gọi.",
+          [{ text: "OK", onPress: () => navigation.goBack() }]
+        );
+      }, 30000); // 30 seconds timeout
+      
+      return () => clearTimeout(timer);
+    }
+    
+    // Listen for call events
+    if (socket) {
+      socket.on('callAccepted', (data) => {
+        console.log('Call accepted:', data);
+        if ((data.callId === callId) || (incoming && data.callerId === userInfo.userId)) {
+          setCallStatus('connected');
+          // Here you would initialize ZegoCloud call
         }
-      } else {
-        // If it's an outgoing call, make the call
-        service.makeCall(user.userId);
-      }
-    };
-
-    setupCall();
-
-    // Cleanup on unmount
+      });
+      
+      socket.on('callRejected', (data) => {
+        console.log('Call rejected:', data);
+        if ((data.callId === callId) || (incoming && data.callerId === userInfo.userId)) {
+          Alert.alert("Thông báo", "Cuộc gọi đã bị từ chối");
+          navigation.goBack();
+        }
+      });
+      
+      socket.on('callEnded', (data) => {
+        console.log('Call ended:', data);
+        if ((data.callId === callId) || (data.calleeId === userInfo.userId) || (data.userId === calleeId)) {
+          Alert.alert("Thông báo", "Cuộc gọi đã kết thúc");
+          navigation.goBack();
+        }
+      });
+      
+      return () => {
+        socket.off('callAccepted');
+        socket.off('callRejected');
+        socket.off('callEnded');
+      };
+    }
+  }, []);
+  
+  // Clean up when component unmounts
+  useEffect(() => {
     return () => {
-      if (service) {
-        service.endCall();
-      }
       if (timerInterval) {
         clearInterval(timerInterval);
       }
     };
-  }, []);
-
+  }, [timerInterval]);
+  
   const handleEndCall = () => {
-    if (callService) {
-      callService.endCall();
+    if (socket) {
+      socket.emit('callEnded', {
+        callId: callId,
+        userId: userInfo.userId,
+        calleeId: calleeId,
+      });
+    }
+    
+    if (timerInterval) {
+      clearInterval(timerInterval);
+    }
+    
+    navigation.goBack();
+  };
+  
+  const handleAcceptCall = () => {
+    if (socket) {
+      socket.emit('callAccepted', {
+        callId: callId,
+        userId: userInfo.userId,
+        callerId: calleeId,
+      });
+      setCallStatus('connected');
+      // Here you would initialize ZegoCloud call
+    }
+  };
+  
+  const handleRejectCall = () => {
+    if (socket) {
+      socket.emit('callRejected', {
+        callId: callId,
+        userId: userInfo.userId,
+        callerId: calleeId,
+      });
     }
     navigation.goBack();
   };
-
-  const toggleMute = () => {
-    if (localStream) {
-      localStream.getAudioTracks().forEach(track => {
-        track.enabled = !track.enabled;
-        setIsMuted(!track.enabled);
-      });
-    }
+  
+  // Trong CallScreen.js - Thêm một nút để mô phỏng chấp nhận cuộc gọi
+  const simulateAnswerCall = () => {
+    // Giả lập sự kiện socket "callAccepted" 
+    const fakeEvent = {
+      callId: callId,
+      userId: "fake-user-id",
+      callerId: calleeId
+    };
+    
+    // Xử lý sự kiện giống như khi nhận từ socket
+    setCallStatus('connected');
+    console.log('Đã mô phỏng chấp nhận cuộc gọi:', fakeEvent);
   };
-
-  const toggleSpeaker = () => {
-    const newSpeakerState = !isSpeakerOn;
-    setIsSpeakerOn(newSpeakerState);
-    // Use InCallManager to switch between speaker and earpiece
-    if (callService) {
-      callService.setSpeakerphone(newSpeakerState);
-    }
-  };
-
-  const renderCallInfo = () => {
-    return (
-      <View style={styles.callInfoContainer}>
-        <AvatarUser
-          fullName={user?.fullname || 'User'}
-          width={100}
-          height={100}
-          avtText={40}
-          shadow={true}
-          bordered={false}
-        />
-        <Text style={styles.userName}>{user?.fullname || 'User'}</Text>
-        <Text style={styles.callStatusText}>
-          {callStatus === 'calling' 
-            ? 'Đang gọi...' 
-            : callStatus === 'incoming' 
-              ? 'Cuộc gọi đến' 
-              : formatTime(callTimer)}
-        </Text>
-      </View>
-    );
-  };
-
-  const renderCallControls = () => {
-    return (
-      <View style={styles.controlsContainer}>
-        <TouchableOpacity 
-          style={[styles.controlButton, isMuted ? styles.activeControl : null]} 
-          onPress={toggleMute}
-        >
-          <Ionicons 
-            name={isMuted ? "mic-off" : "mic"} 
-            size={30} 
-            color={isMuted ? Color.blueBackgroundButton : "white"} 
-          />
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.endCallButton} 
-          onPress={handleEndCall}
-        >
-          <Ionicons name="call" size={30} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.controlButton, isSpeakerOn ? styles.activeControl : null]} 
-          onPress={toggleSpeaker}
-        >
-          <Ionicons 
-            name={isSpeakerOn ? "volume-high" : "volume-medium"} 
-            size={30} 
-            color={isSpeakerOn ? Color.blueBackgroundButton : "white"} 
-          />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
-  const renderIncomingCallControls = () => {
-    return (
-      <View style={styles.incomingControlsContainer}>
-        <TouchableOpacity 
-          style={[styles.incomingButton, styles.rejectButton]}
-          onPress={() => {
-            if (callService && callData) {
-              callService.rejectCall(callData.callerId);
-            }
-            navigation.goBack();
-          }}
-        >
-          <Ionicons name="close" size={30} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.incomingButton, styles.acceptButton]}
-          onPress={() => {
-            if (callService && callData) {
-              callService.answerCall(callData);
-              setCallStatus('connected');
-            }
-          }}
-        >
-          <Ionicons name="call" size={30} color="white" />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
+  
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" />
       
-      {renderCallInfo()}
+      <View style={styles.callerInfo}>
+        {receiver?.urlavatar ? (
+          <Image source={{ uri: receiver.urlavatar }} style={styles.avatar} />
+        ) : (
+          <AvatarUser
+            fullName={receiver?.fullname || "Unknown"}
+            width={100}
+            height={100}
+            avtText={40}
+          />
+        )}
+        <Text style={styles.callerName}>{receiver?.fullname || "Unknown"}</Text>
+        <Text style={styles.callStatus}>
+          {callStatus === 'connecting' ? 'Đang gọi...' : 
+           callStatus === 'incoming' ? 'Cuộc gọi đến' : 
+           formatDuration(callDuration)}
+        </Text>
+      </View>
       
-      {callStatus === 'incoming' 
-        ? renderIncomingCallControls() 
-        : renderCallControls()}
+      {callStatus === 'connecting' && (
+        <ActivityIndicator size="large" color={Color.sophy} style={styles.loader} />
+      )}
+      
+      <View style={styles.callControls}>
+        {callStatus === 'connected' && (
+          <>
+            <TouchableOpacity style={styles.controlButton}>
+              <Ionicons name="mic-off" size={24} color="#fff" />
+              <Text style={styles.controlText}>Tắt tiếng</Text>
+            </TouchableOpacity>
+            
+            {isVideo && (
+              <TouchableOpacity style={styles.controlButton}>
+                <Ionicons name="camera-reverse" size={24} color="#fff" />
+                <Text style={styles.controlText}>Đổi cam</Text>
+              </TouchableOpacity>
+            )}
+            
+            <TouchableOpacity style={styles.controlButton}>
+              <Ionicons name="volume-high" size={24} color="#fff" />
+              <Text style={styles.controlText}>Loa</Text>
+            </TouchableOpacity>
+          </>
+        )}
+      </View>
+      
+      <View style={styles.callActions}>
+        {callStatus === 'incoming' ? (
+          <>
+            <TouchableOpacity style={[styles.callButton, styles.rejectButton]} onPress={handleRejectCall}>
+              <Ionicons name="call" size={30} color="#fff" style={{transform: [{rotate: '135deg'}]}} />
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.callButton, styles.acceptButton]} onPress={handleAcceptCall}>
+              <Ionicons name="call" size={30} color="#fff" />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity style={[styles.callButton, styles.rejectButton]} onPress={handleEndCall}>
+            <Ionicons name="call" size={30} color="#fff" style={{transform: [{rotate: '135deg'}]}} />
+          </TouchableOpacity>
+        )}
+      </View>
+      
+      {/* Thêm nút giả lập chấp nhận cuộc gọi cho mục đích kiểm tra */}
+      {callStatus === 'connecting' && (
+        <TouchableOpacity 
+          style={styles.debugButton} 
+          onPress={simulateAnswerCall}
+        >
+          <Text style={styles.debugText}>DEBUG: Giả lập chấp nhận cuộc gọi</Text>
+        </TouchableOpacity>
+      )}
     </SafeAreaView>
   );
 };
@@ -225,69 +256,75 @@ const CallScreen = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2c3e50',
+    backgroundColor: '#1a1a1a',
     justifyContent: 'space-between',
-    padding: 20,
   },
-  callInfoContainer: {
+  callerInfo: {
     alignItems: 'center',
-    marginTop: 60,
+    marginTop: 80,
   },
-  userName: {
-    color: 'white',
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 20,
+  },
+  callerName: {
+    color: '#fff',
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 20,
+    marginBottom: 10,
   },
-  callStatusText: {
-    color: '#e0e0e0',
+  callStatus: {
+    color: '#aaa',
     fontSize: 16,
-    marginTop: 10,
   },
-  controlsContainer: {
+  loader: {
+    marginTop: 40,
+  },
+  callControls: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  incomingControlsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 30,
+    paddingHorizontal: 40,
   },
   controlButton: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+  },
+  controlText: {
+    color: '#fff',
+    marginTop: 5,
+    fontSize: 12,
+  },
+  callActions: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 50,
+    gap: 30,
+  },
+  callButton: {
     width: 60,
     height: 60,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  activeControl: {
-    backgroundColor: 'white',
-  },
-  endCallButton: {
-    backgroundColor: 'red',
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    transform: [{ rotate: '135deg' }],
-  },
-  incomingButton: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
+  acceptButton: {
+    backgroundColor: '#4CAF50',
   },
   rejectButton: {
-    backgroundColor: 'red',
+    backgroundColor: '#F44336',
   },
-  acceptButton: {
-    backgroundColor: 'green',
-    transform: [{ rotate: '0deg' }],
+  debugButton: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  debugText: {
+    color: '#fff',
+    fontSize: 14,
+    textAlign: 'center',
   },
 });
 
