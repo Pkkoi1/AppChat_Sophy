@@ -70,7 +70,8 @@
             "useFrameworks": "static"
           }
         }
-      ]
+      ],
+      "expo-barcode-scanner"
     ],
     "experiments": {
       "typedRoutes": true
