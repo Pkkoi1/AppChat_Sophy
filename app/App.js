@@ -66,7 +66,6 @@ const update = (newData) => {
   setMyState(newData);
 };
 
-
 // Navigation Stack component
 function AppNavigator() {
   return (
