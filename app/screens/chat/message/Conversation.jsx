@@ -158,21 +158,25 @@ const Conversation = ({
           </Text>
         </View>
       )}
-      <MessagePopup
-        popupVisible={popupVisible}
-        setPopupVisible={setPopupVisible}
-        selectedMessage={selectedMessage}
-        setSelectedMessage={setSelectedMessage}
-        messageReactions={messageReactions}
-        setMessageReactions={setMessageReactions}
-        senderId={senderId}
-        setMessages={setMessages}
-        messages={messages}
-        onReply={onReply}
-        onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessagePopup
-        conversationId={conversationId} // Truyền conversationId
-        fetchMessages={fetchMessages} // Truyền fetchMessages
-      />
+      {/* Thay FlatList bọc MessagePopup bằng View để tránh lỗi và cho phép scroll tự động */}
+      <View>
+        <MessagePopup
+          popupVisible={popupVisible}
+          setPopupVisible={setPopupVisible}
+          selectedMessage={selectedMessage}
+          setSelectedMessage={setSelectedMessage}
+          messageReactions={messageReactions}
+          setMessageReactions={setMessageReactions}
+          senderId={senderId}
+          setMessages={setMessages}
+          messages={messages}
+          onReply={onReply}
+          onScrollToMessage={onScrollToMessage}
+          conversationId={conversationId}
+          fetchMessages={fetchMessages}
+        />
+      </View>
+
       <Modal
         visible={pinnedModalVisible}
         transparent={true}

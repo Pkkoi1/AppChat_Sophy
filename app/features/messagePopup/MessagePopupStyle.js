@@ -12,22 +12,17 @@ const MessagePopupStyle = StyleSheet.create({
   popupContainer: {
     width: SCREEN_WIDTH * 0.8,
     maxHeight: SCREEN_HEIGHT * 0.7,
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    marginBottom: -50,
   },
   messageSection: {
-    backgroundColor: "white",
-    borderRadius: 10,
-    marginBottom: 10,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
     alignSelf: "center",
+    marginBottom: -20,
   },
   selectedMessageContainer: {
     padding: 10,
     flexShrink: 1,
+    backgroundColor: "transparent", // Không nền
   },
   selectedMessageText: {
     fontSize: 14,

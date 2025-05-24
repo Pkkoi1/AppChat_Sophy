@@ -8,6 +8,7 @@ import {
   Alert,
   Text,
   Platform,
+  Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Audio } from "expo-av";
@@ -22,6 +23,7 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import * as FileSystem from "expo-file-system";
 import { CLOUDINARY_PRESET, CLOUDINARY_CLOUD_NAME, CLOUDINARY_URL } from "@env";
 import { Dialog } from "@rneui/themed";
+import { api } from "@/app/api/api";
 
 const ChatFooter = ({
   onSendMessage,
@@ -34,6 +36,7 @@ const ChatFooter = ({
   setIsTyping,
   replyingTo,
   setReplyingTo,
+  receiver, // thêm receiver vào props
 }) => {
   const [message, setMessage] = useState("");
   const [recording, setRecording] = useState(null);
@@ -44,6 +47,29 @@ const ChatFooter = ({
   const userTypingTimeoutRef = useRef(null);
   const recordTimerRef = useRef(null);
   const { userInfo } = useContext(AuthContext);
+  const [otherSenderName, setOtherSenderName] = useState("");
+
+  // Lấy tên người gửi khi trả lời mà không phải userInfo
+  useEffect(() => {
+    const fetchOtherSender = async () => {
+      if (
+        replyingTo &&
+        replyingTo.senderId &&
+        userInfo?.userId &&
+        replyingTo.senderId !== userInfo.userId
+      ) {
+        try {
+          const res = await api.getUserById(replyingTo.senderId);
+          setOtherSenderName(res?.data?.fullname || replyingTo.senderId);
+        } catch {
+          setOtherSenderName(replyingTo.senderId);
+        }
+      } else {
+        setOtherSenderName("");
+      }
+    };
+    fetchOtherSender();
+  }, [replyingTo, userInfo?.userId]);
 
   useEffect(() => {
     if (socket && conversation?.conversationId) {
@@ -570,19 +596,128 @@ const ChatFooter = ({
           </TouchableOpacity>
         )}
       </Dialog>
-      {replyingTo && (
-        <View style={ChatFooterStyle.replyContainer}>
-          <View style={ChatFooterStyle.replyContent}>
-            <Text style={ChatFooterStyle.replyLabel}>Đang trả lời:</Text>
-            <Text style={ChatFooterStyle.replyText} numberOfLines={1}>
-              {replyingTo.content}
-            </Text>
+      {replyingTo &&
+        (console.log("Đang trả lời tin nhắn:", receiver),
+        (
+          <View style={[ChatFooterStyle.replyContainer, { minHeight: 70 }]}>
+            <View
+              style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
+            >
+              {/* Icon hoặc hình ảnh bên trái */}
+              {(() => {
+                const type =
+                  replyingTo.type ||
+                  (replyingTo.attachment && replyingTo.attachment.type);
+                const attachment = replyingTo.attachment;
+                if (type === "image" || type === "text-with-image") {
+                  return (
+                    <Image
+                      source={{
+                        uri: (attachment && attachment.url) || attachment || "",
+                      }}
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 6,
+                        marginRight: 10,
+                        backgroundColor: "#eee",
+                      }}
+                    />
+                  );
+                }
+                if (type === "audio") {
+                  return (
+                    <Feather
+                      name="mic"
+                      size={28}
+                      color={Color.sophy}
+                      style={{ marginRight: 10 }}
+                    />
+                  );
+                }
+                if (type === "file") {
+                  return (
+                    <AntDesign
+                      name="file1"
+                      size={28}
+                      color={Color.sophy}
+                      style={{ marginRight: 10 }}
+                    />
+                  );
+                }
+                return null;
+              })()}
+              {/* Nội dung trả lời */}
+              <View style={{ flex: 1 }}>
+                {/* Tên người gửi và loại tin nhắn */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    marginBottom: 2,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: 14,
+                      color: "#333",
+                      flex: 1,
+                    }}
+                  >
+                    {replyingTo.senderId === userInfo?.userId
+                      ? userInfo?.fullname
+                      : otherSenderName ||
+                        receiver?.fullname ||
+                        replyingTo.senderName ||
+                        replyingTo.fullname ||
+                        replyingTo.senderId ||
+                        "Người gửi"}
+                  </Text>
+                </View>
+                {/* Nội dung hoặc tên file/audio */}
+                <Text
+                  style={{
+                    fontSize: 13,
+                    color: "#444",
+                    marginBottom: 2,
+                    maxHeight: 36,
+                    overflow: "hidden",
+                  }}
+                  numberOfLines={2}
+                >
+                  {(() => {
+                    const type =
+                      replyingTo.type ||
+                      (replyingTo.attachment && replyingTo.attachment.type);
+                    if (type === "text" || type === "text-with-image") {
+                      return replyingTo.content;
+                    }
+                    if (type === "image") {
+                      return "[Hình ảnh]";
+                    }
+                    if (type === "audio") {
+                      return replyingTo.attachment?.name || "[Ghi âm]";
+                    }
+                    if (type === "file") {
+                      return replyingTo.attachment?.name || "[Tệp tin]";
+                    }
+                    if (type === "video") {
+                      return "[Video]";
+                    }
+                    return replyingTo.content || "";
+                  })()}
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={handleCancelReply}
+              style={{ marginLeft: 8, alignSelf: "flex-start" }}
+            >
+              <Ionicons name="close" size={20} color="#8f8f8f" />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={handleCancelReply}>
-            <Ionicons name="close" size={20} color="#8f8f8f" />
-          </TouchableOpacity>
-        </View>
-      )}
+        ))}
       <View style={ChatFooterStyle.inputContainer}>
         <TouchableOpacity>
           <MaterialCommunityIcons

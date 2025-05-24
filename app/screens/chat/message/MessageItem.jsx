@@ -523,6 +523,38 @@ const MessageItem = ({
       );
     }
 
+    // Hiển thị text-with-image: nội dung phía trên hình ảnh
+    if (
+      (type === "text-with-image" && attachment && attachment.url) ||
+      (type === "text-with-image" && message.attachment && message.attachment.url)
+    ) {
+      const imageUrl =
+        (attachment && attachment.url) ||
+        (message.attachment && message.attachment.url) ||
+        errorImage;
+      return (
+        <View>
+          {content ? (
+            <View style={MessageItemStyle.textContainer}>
+              <Text style={MessageItemStyle.content}>{content}</Text>
+            </View>
+          ) : null}
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: imageUrl,
+              })
+            }
+          >
+            <Image
+              source={{ uri: imageUrl }}
+              style={MessageItemStyle.image}
+            />
+          </TouchableOpacity>
+        </View>
+      );
+    }
+
     return (
       <>
         {isReply && renderReplyContent()}
@@ -563,7 +595,7 @@ const MessageItem = ({
               <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
             </TouchableOpacity>
           </View>
-        ) : type === "image" || (type === "text-with-image" && attachment) ? (
+        ) : type === "image" && attachment ? (
           <TouchableOpacity
             onPress={() =>
               navigation.navigate("FullScreenImageViewer", {

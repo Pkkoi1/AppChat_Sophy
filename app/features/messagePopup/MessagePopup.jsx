@@ -16,6 +16,8 @@ import MessagePopupStyle from "./MessagePopupStyle";
 import { SocketContext } from "@/app/socket/SocketContext";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { saveMessages, editMessage } from "@/app/storage/StorageService";
+import Color from "@/app/components/colors/Color";
+import MessageItem from "@/app/screens/chat/message/MessageItem";
 
 const popupOptions = [
   {
@@ -28,20 +30,20 @@ const popupOptions = [
     label: "Chuyển tiếp",
     icon: "share-outline",
     action: "forward",
-    iconColor: "#3B82F6",
+    iconColor: `${Color.sophy}`,
   },
   {
     label: "Lưu Cloud",
     icon: "cloud-upload-outline",
     action: "saveToCloud",
-    iconColor: "#3B82F6",
+    iconColor: `${Color.sophy}`,
   },
   { label: "Thu hồi", icon: "undo", action: "recall", iconColor: "#F97316" },
   {
     label: "Sao chép",
     icon: "content-copy",
     action: "copy",
-    iconColor: "#3B82F6",
+    iconColor: `${Color.sophy}`,
   },
   { label: "Ghim", icon: "pin-outline", action: "pin", iconColor: "#F97316" },
 
@@ -55,13 +57,13 @@ const popupOptions = [
     label: "Chọn nhiều",
     icon: "checkbox-multiple-marked-outline",
     action: "selectMultiple",
-    iconColor: "#3B82F6",
+    iconColor: `${Color.sophy}`,
   },
   {
     label: "Tạo tin nhắn nhanh",
     icon: "lightning-bolt",
     action: "createQuickMessage",
-    iconColor: "#3B82F6",
+    iconColor: `${Color.sophy}`,
   },
   {
     label: "Dịch",
@@ -380,11 +382,19 @@ const MessagePopup = ({
           <View style={MessagePopupStyle.messageSection}>
             {selectedMessage && (
               <View style={MessagePopupStyle.selectedMessageContainer}>
-                <Text style={MessagePopupStyle.selectedMessageText}>
-                  {selectedMessage.isRecall
-                    ? "Tin nhắn đã được thu hồi"
-                    : selectedMessage.content}
-                </Text>
+                {/* Hiển thị định dạng MessageItem thay vì chỉ text */}
+                <MessageItem
+                  message={selectedMessage}
+                  isSender={
+                    selectedMessage.senderId ===
+                    (typeof userInfo === "object" ? userInfo.userId : undefined)
+                  }
+                  searchQuery={null}
+                  isHighlighted={false}
+                  receiver={null}
+                  isFirstMessageFromSender={true}
+                  onScrollToMessage={() => {}}
+                />
               </View>
             )}
           </View>
