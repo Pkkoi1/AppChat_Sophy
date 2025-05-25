@@ -25,6 +25,7 @@ const MessageItemStyle = StyleSheet.create({
     backgroundColor: "#d4f1ff",
     alignSelf: "flex-end",
     marginRight: 10,
+    marginLeft: 100, // Để hộp tin nhắn không quá sát avatar
     borderColor: Color.sophy,
     borderWidth: 0.5,
   },
@@ -33,6 +34,7 @@ const MessageItemStyle = StyleSheet.create({
     alignSelf: "flex-start",
     borderColor: "#f0f0f0",
     borderWidth: 0.5,
+    marginRight: 100,
   },
   receiverWithAvatar: {
     // marginLeft: 45, // Để hộp tin nhắn không quá sát avatar
@@ -53,6 +55,8 @@ const MessageItemStyle = StyleSheet.create({
   content: {
     fontSize: 16,
     color: Color.black,
+    padding: 0,
+    margin: 0,
   },
   avatar: {
     width: 32,

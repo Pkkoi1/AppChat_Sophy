@@ -388,7 +388,12 @@ const MessageItem = ({
       if (isLink(part)) {
         return (
           <TouchableOpacity key={index} onPress={() => handleLinkPress(part)}>
-            <Text style={[MessageItemStyle.content, { color: "#3f88f2" }]}>
+            <Text
+              style={[
+                MessageItemStyle.content,
+                { color: "#3f88f2", padding: 0, margin: 0 },
+              ]}
+            >
               {part}
             </Text>
           </TouchableOpacity>
