@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Modal,
   Animated,
+  Alert,
+  Clipboard,
 } from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
@@ -49,6 +51,16 @@ const Conversation = ({
       setSelectedMessage(message);
       setPopupVisible(true);
     }
+  };
+
+  // Hàm xử lý sự kiện copy tin nhắn
+  const handleCopyMessage = (content, message) => {
+    if (!content) {
+      Alert.alert("Thông báo", "Tin nhắn trống, không thể sao chép.");
+      return;
+    }
+    Clipboard.setString(content);
+    Alert.alert("Thành công", "Đã sao chép tin nhắn!");
   };
 
   const handleScroll = (event) => {
@@ -118,7 +130,7 @@ const Conversation = ({
                   message={item}
                   receiver={receiver}
                   isSender={item.senderId === senderId}
-                  isHighlighted={item.messageDetailId === highlightedMessageId} // Highlight the message
+                  isHighlighted={item.messageDetailId === highlightedMessageId}
                   searchQuery={
                     highlightedMessageIds.includes(item.messageDetailId)
                       ? searchQuery
@@ -128,7 +140,10 @@ const Conversation = ({
                     index === 0 ||
                     messages[index - 1].senderId !== item.senderId
                   }
-                  onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessageItem
+                  onScrollToMessage={onScrollToMessage}
+                  // Truyền onLongPress cho hình/video
+                  onLongPress={() => handleLongPress(item)}
+                  onCopy={handleCopyMessage} // truyền hàm copy vào MessageItem
                 />
               </Pressable>
             </View>
@@ -158,21 +173,25 @@ const Conversation = ({
           </Text>
         </View>
       )}
-      <MessagePopup
-        popupVisible={popupVisible}
-        setPopupVisible={setPopupVisible}
-        selectedMessage={selectedMessage}
-        setSelectedMessage={setSelectedMessage}
-        messageReactions={messageReactions}
-        setMessageReactions={setMessageReactions}
-        senderId={senderId}
-        setMessages={setMessages}
-        messages={messages}
-        onReply={onReply}
-        onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessagePopup
-        conversationId={conversationId} // Truyền conversationId
-        fetchMessages={fetchMessages} // Truyền fetchMessages
-      />
+      {/* Thay FlatList bọc MessagePopup bằng View để tránh lỗi và cho phép scroll tự động */}
+      <View>
+        <MessagePopup
+          popupVisible={popupVisible}
+          setPopupVisible={setPopupVisible}
+          selectedMessage={selectedMessage}
+          setSelectedMessage={setSelectedMessage}
+          messageReactions={messageReactions}
+          setMessageReactions={setMessageReactions}
+          senderId={senderId}
+          setMessages={setMessages}
+          messages={messages}
+          onReply={onReply}
+          onScrollToMessage={onScrollToMessage}
+          conversationId={conversationId}
+          fetchMessages={fetchMessages}
+        />
+      </View>
+
       <Modal
         visible={pinnedModalVisible}
         transparent={true}

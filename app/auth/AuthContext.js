@@ -15,7 +15,6 @@ import { Alert, Linking } from "react-native";
 import { fetchName } from "../components/getUserInfo/UserName";
 import { setupAuthSocketEvents } from "../socket/socketEvents/AuthSocketEvents";
 import { pickExternalDirectory } from "@/app/storage/StorageService";
-import { onUserLogin } from "../services/ZegoService";
 
 // Thêm import các hàm conversation từ file riêng, có chú thích tiếng Việt
 import {
@@ -89,7 +88,7 @@ export const AuthProvider = ({ children }) => {
   const joinedConversationIds = useRef(new Set());
   // Hàm lấy danh sách nhóm (dùng từ file groupHelpers)
   const fetchGroups = useCallback(
-    () => fetchGroupsHelper(setGroups, setGroupsLoading),
+    () => fetchGroupsHelper(setGroups, setGroupsLoading, setGroupMember),
     []
   );
 
@@ -178,6 +177,14 @@ export const AuthProvider = ({ children }) => {
 
     loadStorage();
   }, []);
+
+  useEffect(() => {
+    if (socket && conversations.length > 0 && userInfo?.userId) {
+      const allIds = conversations.map((conv) => conv.conversationId);
+      socket.emit("joinUserConversations", allIds);
+      console.log("📡 Đã join tất cả conversations:", allIds);
+    }
+  }, [socket, conversations, userInfo?.userId]);
 
   useEffect(() => {
     if (userInfo?.userId) {
@@ -271,9 +278,14 @@ export const AuthProvider = ({ children }) => {
 
   // Hàm lưu danh sách thành viên nhóm (dùng từ file groupHelpers)
   const saveGroupMembers = useCallback(
-    (conversationId, members) =>
-      saveGroupMembersHelper(setGroupMember, conversationId, members),
-    []
+    (...args) => {
+      console.log("saveGroupMembers called (AuthContext)");
+      console.log("Thành viên nhóm (conversations):", conversations);
+      console.log("Thành viên nhóm (groupMember):", groupMember);
+      // Gọi helper thực sự
+      return saveGroupMembersHelper(setGroupMember, ...args);
+    },
+    [conversations, groupMember]
   );
 
   // Hàm lưu tin nhắn (dùng từ file messageHelpers)
@@ -425,6 +437,7 @@ export const AuthProvider = ({ children }) => {
         conversations,
         background,
         groupMember,
+        setBackground,
         register,
         login,
         logout,
@@ -432,6 +445,7 @@ export const AuthProvider = ({ children }) => {
         getUserInfoById,
         handlerRefresh,
         updateBackground,
+        setGroupMember,
         phoneContacts,
         usersInDB,
         getPhoneContacts,

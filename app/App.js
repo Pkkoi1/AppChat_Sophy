@@ -52,13 +52,11 @@ import CreateNewGroup from "./screens/directory/group/createGroup/CreateNewGroup
 import IncomingCallHandler from "./components/call/IncomingCallHandler";
 import AddFriendToGroup from "./screens/directory/group/createGroup/AddFriendToGroup";
 import AddFriendToGroups from "./screens/directory/group/createGroup/AddFriendToGroups";
-
 import SameGroups from "./screens/chat/optional/group/samegroup/SameGroups";
 
 import File from "./screens/chat/optional/gallery/files/File";
 import ListImageFullView from "./features/fullImages/ListImageFullView";
-import IncomingCallScreen from "./screens/call/IncomingCallScreen";
-import CallScreen from "./screens/call/CallScreen";
+import CallScreen from "@/app/screens/call/CallScreen";
 
 const Stack = createNativeStackNavigator();
 const update = (newData) => {
@@ -138,18 +136,7 @@ function AppNavigator() {
       {/* File */}
       <Stack.Screen name="File" component={File} />
       <Stack.Screen name="ListImageFullView" component={ListImageFullView} />
-      {/* Add CallScreen to the navigator */}
-      <Stack.Screen
-        name="CallScreen"
-        component={CallScreen}
-        options={{ headerShown: false }}
-      />
 
-      <Stack.Screen
-        name="IncomingCallScreen"
-        component={IncomingCallScreen}
-        options={{ headerShown: false }}
-      />
       <Stack.Screen
         name="AddFriendToGroup"
         component={AddFriendToGroup}
@@ -170,6 +157,13 @@ function AppNavigator() {
         options={{
           headerShown: false,
         }}
+      />
+    
+
+      <Stack.Screen
+        name="CallScreen"
+        component={CallScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

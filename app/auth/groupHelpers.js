@@ -125,6 +125,13 @@ export const saveGroupMembers = async (
   conversationId,
   members
 ) => {
+  // Log để kiểm tra giá trị members truyền vào
+  console.log(
+    "[saveGroupMembers] conversationId:",
+    conversationId,
+    "members:",
+    members
+  );
   try {
     if (!conversationId || !Array.isArray(members)) {
       throw new Error(

@@ -12,6 +12,7 @@ import HomeStyle from "./HomeStyle";
 import Loading from "@/app/components/loading/Loading";
 import { SocketContext } from "@/app/socket/SocketContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import RaiAssistantFloatingChat from "@/app/features/aiAssistant/AiAssistantFloatingChat";
 
 const Home = ({ route, navigation }) => {
   const socket = useContext(SocketContext);
@@ -173,6 +174,8 @@ const Home = ({ route, navigation }) => {
         ))}
       </TabView>
       <Footer setCurrentScreen={setCurrentScreen} />
+      {/* Hiển thị bong bóng chat AI ở mọi màn hình */}
+      <RaiAssistantFloatingChat />
     </View>
   );
 };

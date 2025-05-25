@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
@@ -7,6 +7,7 @@ import { api } from "@/app/api/api";
 import { SocketContext } from "../../../socket/SocketContext";
 import { AuthContext } from "@/app/auth/AuthContext";
 import Color from "@/app/components/colors/Color";
+import { fetchUserInfo } from "@/app/components/getUserInfo/UserInfo";
 
 const ChatHeader = ({
   user_id,
@@ -17,8 +18,10 @@ const ChatHeader = ({
 }) => {
   const [receiverName, setReceiverName] = useState("");
   const socket = useContext(SocketContext);
-  const { groupMember } = useContext(AuthContext);
+  const { groupMember, setGroupMember } = useContext(AuthContext);
 
+  const [groupMem, setGroupMem] = useState([]);
+  // console.log("Danh sách thành viên nhóm:", groupMember);
   const handlerBack = () => {
     navigation.goBack();
     socket.on("newMessage");
@@ -38,6 +41,35 @@ const ChatHeader = ({
     api.readMessage(conversation.conversationId);
   };
 
+  useEffect(() => {
+    const updateGroupMem = async () => {
+      if (conversation?.isGroup && Array.isArray(conversation.groupMembers)) {
+        // Nếu groupMembers là mảng id, fetch thông tin user
+        const users = await Promise.all(
+          conversation.groupMembers.map((id) => fetchUserInfo(id))
+        );
+        const members = users.filter(Boolean).map((u) => ({
+          id: u.userId,
+          fullName: u.fullname || "",
+          urlAvatar: u.urlavatar || "",
+          role:
+            u.userId === ownerId
+              ? "owner"
+              : coOwnerIds.includes(u.userId)
+              ? "co-owner"
+              : "member",
+        }));
+        setGroupMem(members);
+        setGroupMember(members);
+      } else {
+        setReceiverName(receiver?.fullname || "Đang tải...");
+      }
+    };
+    updateGroupMem();
+    console.log("Cập nhật danh sách thành viên nhóm:", groupMember);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversation, receiver]);
+
   const handlerOptionScreen = () => {
     navigation.navigate("Options", {
       ...(conversation?.isGroup
@@ -48,20 +80,46 @@ const ChatHeader = ({
 
   // Hàm gọi thoại
   const handleVoiceCall = () => {
-    // navigation.navigate("CallScreen", {
-    //   callType: "voice",
-    //   user: receiver,
-    //   incoming: false,
-    // });
+    if (conversation?.isGroup) {
+      Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
+      return;
+    }
+
+    if (!receiver || !receiver.userId) {
+      Alert.alert("Thông báo", "Không thể kết nối cuộc gọi lúc này");
+      return;
+    }
+
+    navigation.navigate("CallScreen", {
+      callType: "voice",
+      isVideo: false,
+      receiver: receiver,
+      conversationId: conversation.conversationId,
+      calleeId: receiver.userId,
+      incoming: false,
+    });
   };
 
   // Hàm gọi video
   const handleVideoCall = () => {
-    // navigation.navigate("CallScreen", {
-    //   callType: "video",
-    //   user: receiver,
-    //   incoming: false,
-    // });
+    if (conversation?.isGroup) {
+      Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
+      return;
+    }
+
+    if (!receiver || !receiver.userId) {
+      Alert.alert("Thông báo", "Không thể kết nối cuộc gọi lúc này");
+      return;
+    }
+
+    navigation.navigate("CallScreen", {
+      callType: "video",
+      isVideo: true,
+      receiver: receiver,
+      conversationId: conversation.conversationId,
+      calleeId: receiver.userId,
+      incoming: false,
+    });
   };
 
   return (
