@@ -12,7 +12,7 @@ import MessageItem from "./MessageItem";
 import moment from "moment";
 import ConversationStyle from "./ConversationStyle";
 import MessagePopup from "../../../features/messagePopup/MessagePopup";
-import PinnedMessage from "../../../components/message/PinnedMessage";
+import PinnedMessage from "./PinnedMessage";
 import { AuthContext } from "@/app/auth/AuthContext";
 import { Feather } from "@expo/vector-icons";
 
