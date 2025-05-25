@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Image,
+  TextInput,
 } from "react-native";
 import OptionHeader from "@/app/features/optionHeader/OptionHeader";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -14,6 +15,7 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import { api } from "@/app/api/api"; // Import the API module
 import { useNavigation } from "@react-navigation/native";
 import { SocketContext } from "@/app/socket/SocketContext"; // Import SocketContext
+import Color from "@/app/components/colors/Color";
 
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import RenderGroupAvatar from "@/app/components/group/RenderGroupAvatar";
@@ -26,6 +28,7 @@ const ShareMessage = ({ route }) => {
   const [selectedConversations, setSelectedConversations] = useState([]);
   const { message } = route.params;
   const [userDetails, setUserDetails] = useState({});
+  const [search, setSearch] = useState(""); // Thêm state cho ô tìm kiếm
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -96,7 +99,7 @@ const ShareMessage = ({ route }) => {
       case "file":
         return (
           <View style={styles.fileContainer}>
-            <Icon name="file-outline" size={24} color="#007bff" />
+            <Icon name="file-outline" size={24} color={Color.sophy} />
             <Text style={styles.fileName}>{attachment?.name || "Tệp tin"}</Text>
           </View>
         );
@@ -108,6 +111,25 @@ const ShareMessage = ({ route }) => {
               style={styles.video}
               resizeMode="contain"
               useNativeControls
+            />
+          </View>
+        );
+      case "audio":
+        return (
+          <View style={styles.fileContainer}>
+            <Icon name="microphone-outline" size={24} color={Color.sophy} />
+            <Text style={styles.fileName}>{attachment?.name || "Ghi âm"}</Text>
+          </View>
+        );
+      case "text-with-image":
+        return (
+          <View>
+            <Text style={styles.messageContent}>{content}</Text>
+            <Image
+              source={{
+                uri: attachment?.url || "https://example.com/default-image.png",
+              }}
+              style={styles.messageImage}
             />
           </View>
         );
@@ -167,7 +189,18 @@ const ShareMessage = ({ route }) => {
               attachment: message.attachment,
             });
             break;
-
+          case "audio":
+            response = await api.sendFileVideoMessage({
+              conversationId: conversation.conversationId,
+              attachment: message.attachment,
+            });
+            break;
+          case "text-with-image":
+            response = await api.forwardImageMessage(
+              message.messageDetailId,
+              conversation.conversationId
+            );
+            break;
           default:
             Alert.alert("Lỗi", "Loại tin nhắn không được hỗ trợ.");
             return;
@@ -209,15 +242,40 @@ const ShareMessage = ({ route }) => {
   // Chỉ còn conversations, không còn pinnedConversations
   const allConversations = conversations;
 
+  // Lọc conversations theo tên nhóm hoặc tên người nhận
+  const filteredConversations = conversations.filter((conversation) => {
+    const { name } = getConversationDetails(conversation);
+    return (
+      !search ||
+      name?.toLowerCase().includes(search.trim().toLowerCase())
+    );
+  });
+
   return (
     <View style={styles.container}>
       <OptionHeader title={"Chia sẻ"} />
+      {/* Thêm ô tìm kiếm */}
+      <View style={{ paddingHorizontal: 16, marginBottom: 8 }}>
+        <TextInput
+          placeholder="Tìm kiếm theo tên nhóm hoặc tên người nhận"
+          value={search}
+          onChangeText={setSearch}
+          style={{
+            backgroundColor: "#f0f0f0",
+            borderRadius: 8,
+            padding: 10,
+            fontSize: 15,
+            marginTop: 8,
+            marginBottom: 8,
+          }}
+        />
+      </View>
       <View style={styles.messagePreview}>
         <Text style={styles.previewTitle}>Tin nhắn được chia sẻ:</Text>
         {renderMessageContent(message)}
       </View>
       <FlatList
-        data={allConversations}
+        data={filteredConversations}
         keyExtractor={(item) => item.conversationId.toString()}
         renderItem={({ item }) => {
           const { name, avatar, isGroup, groupMembers, receiver } =
@@ -263,7 +321,7 @@ const ShareMessage = ({ route }) => {
                     isSelected ? "checkbox-marked" : "checkbox-blank-outline"
                   }
                   size={24}
-                  color={isSelected ? "#007bff" : "#ccc"}
+                  color={isSelected ? `${Color.sophy}` : "#ccc"}
                 />
               </View>
             </TouchableOpacity>
@@ -326,7 +384,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   shareButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: Color.sophy,
     padding: 15,
     margin: 20,
     borderRadius: 8,
@@ -369,7 +427,7 @@ const styles = StyleSheet.create({
   fileName: {
     marginLeft: 10,
     fontSize: 14,
-    color: "#007bff",
+    color: Color.sophy,
   },
   unsupportedMessage: {
     fontSize: 14,

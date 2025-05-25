@@ -118,7 +118,7 @@ const Conversation = ({
                   message={item}
                   receiver={receiver}
                   isSender={item.senderId === senderId}
-                  isHighlighted={item.messageDetailId === highlightedMessageId} // Highlight the message
+                  isHighlighted={item.messageDetailId === highlightedMessageId}
                   searchQuery={
                     highlightedMessageIds.includes(item.messageDetailId)
                       ? searchQuery
@@ -128,7 +128,9 @@ const Conversation = ({
                     index === 0 ||
                     messages[index - 1].senderId !== item.senderId
                   }
-                  onScrollToMessage={onScrollToMessage} // Pass scrollToMessage to MessageItem
+                  onScrollToMessage={onScrollToMessage}
+                  // Truyền onLongPress cho hình/video
+                  onLongPress={() => handleLongPress(item)}
                 />
               </Pressable>
             </View>
