@@ -25,6 +25,7 @@ const Color = {
   borderColor: "#E1E4E8",
   //Hightlight
   highlight: "#E6F0FF",
+  time: "#d3d3d3"
 
   //Inbox
 };
