@@ -811,7 +811,7 @@ const MessageScreen = ({ route, navigation }) => {
             conversationId: pseudoMessage.conversationId,
             fileBase64: fileBase64,
             fileName: message.fileName,
-            fileType: message.mimeType,
+            fileType: message.type,
           });
           if (socket && socket.connected) {
             setMessages((prev) =>

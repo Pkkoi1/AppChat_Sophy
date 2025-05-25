@@ -429,6 +429,7 @@ export const AuthProvider = ({ children }) => {
         conversations,
         background,
         groupMember,
+        setBackground,
         register,
         login,
         logout,

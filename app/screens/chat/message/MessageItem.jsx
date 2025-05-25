@@ -25,11 +25,11 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Color from "@/app/components/colors/Color";
-import { RenderImageMessage } from "./messageType/RenderImageMessage";
-import { RenderVideoMessage } from "./messageType/RenderVideoMessage";
-import { RenderAudioMessage } from "./messageType/RenderAudioMessage";
-import { RenderFileMessage } from "./messageType/RenderFileMessage";
-import { RenderTextWithImageMessage } from "./messageType/RenderTextWithImageMessage";
+import { RenderImageMessage } from "../../../components/message/RenderImageMessage";
+import { RenderVideoMessage } from "../../../components/message/RenderVideoMessage";
+import { RenderAudioMessage } from "../../../components/message/RenderAudioMessage";
+import { RenderFileMessage } from "../../../components/message/RenderFileMessage";
+import { RenderTextWithImageMessage } from "../../../components/message/RenderTextWithImageMessage";
 
 const errorImage =
   "https://res.cloudinary.com/dyd5381vx/image/upload/v1744732824/z6509003496600_0f4526fe7c8ca476fea6dddff2b3bc91_d4nysj.jpg";
@@ -249,10 +249,19 @@ const MessageItem = ({
 
     const replyType = replyData.type;
     const replyContent = replyData.content || "Tin nhắn không hỗ trợ";
-    const replySender =
-      replyData.senderId === userInfo.userId
-        ? userInfo?.fullname
-        : receiver?.fullname;
+    // Sửa lại lấy đúng tên người gửi của tin nhắn được trả lời
+    let replySender = "";
+    if (replyData.senderId === userInfo.userId) {
+      replySender = userInfo?.fullname;
+    } else if (receiver && replyData.senderId === receiver.userId) {
+      replySender = receiver?.fullname;
+    } else if (replyData.fullname) {
+      replySender = replyData.fullname;
+    } else if (replyData.senderName) {
+      replySender = replyData.senderName;
+    } else {
+      replySender = replyData.senderId || "Người gửi";
+    }
 
     if (replyData.isRecall || messageReplyId?.isRecall) {
       return (
@@ -267,23 +276,87 @@ const MessageItem = ({
       );
     }
 
+    // Hiển thị dạng đẹp cho các loại tin nhắn trả lời
     return (
       <TouchableOpacity onPress={() => onScrollToMessage(messageReplyId)}>
-        <View style={MessageItemStyle.replyContainer}>
-          <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
-          {replyType === "text" ? (
-            <Text style={MessageItemStyle.replyContent}>{replyContent}</Text>
-          ) : replyType === "image" || "text-with-image" ? (
-            <Text style={MessageItemStyle.replyContent}>[Hình ảnh]</Text>
-          ) : replyType === "file" ? (
-            <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
-          ) : replyType === "video" ? (
-            <Text style={MessageItemStyle.replyContent}>[Video]</Text>
-          ) : replyType === "audio" ? (
-            <Text style={MessageItemStyle.replyContent}>[Ghi âm]</Text>
-          ) : (
-            <Text style={MessageItemStyle.replyContent}>[Không hỗ trợ]</Text>
-          )}
+        <View
+          style={[
+            MessageItemStyle.replyContainer,
+            { flexDirection: "row", alignItems: "center", minHeight: 44 },
+          ]}
+        >
+          {/* Icon hoặc hình ảnh bên trái */}
+          {(() => {
+            const attachment = replyData.attachment;
+            if (replyType === "image" || replyType === "text-with-image") {
+              return (
+                <Image
+                  source={{
+                    uri: (attachment && attachment.url) || attachment || "",
+                  }}
+                  style={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: 6,
+                    marginRight: 8,
+                    backgroundColor: "#eee",
+                  }}
+                />
+              );
+            }
+            if (replyType === "audio") {
+              return (
+                <AntDesign
+                  name="sound"
+                  size={28}
+                  color={Color.sophy}
+                  style={{ marginRight: 8 }}
+                />
+              );
+            }
+            if (replyType === "file") {
+              return (
+                <AntDesign
+                  name="file1"
+                  size={28}
+                  color={Color.sophy}
+                  style={{ marginRight: 8 }}
+                />
+              );
+            }
+            if (replyType === "video") {
+              return (
+                <AntDesign
+                  name="videocamera"
+                  size={28}
+                  color={Color.sophy}
+                  style={{ marginRight: 8 }}
+                />
+              );
+            }
+            return null;
+          })()}
+          {/* Nội dung trả lời */}
+          <View style={{ flex: 1 }}>
+            <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
+            <Text
+              style={MessageItemStyle.replyContent}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {replyType === "text" || replyType === "text-with-image"
+                ? replyContent
+                : replyType === "image"
+                ? "[Hình ảnh]"
+                : replyType === "audio"
+                ? replyData.attachment?.name || "[Ghi âm]"
+                : replyType === "file"
+                ? replyData.attachment?.name || "[Tệp tin]"
+                : replyType === "video"
+                ? "[Video]"
+                : replyContent}
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     );

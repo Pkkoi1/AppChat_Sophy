@@ -67,6 +67,7 @@ const ConversationName = ({ receiver, conversation }) => {
     handlerRefresh,
     updateBackground,
     background,
+    setBackground,
     userInfo,
     groupMember,
   } = useContext(AuthContext);
@@ -300,7 +301,8 @@ const ConversationName = ({ receiver, conversation }) => {
   };
 
   const handleDeleteBackground = async () => {
-    setIsLoading(true);
+    console.log("Xóa ảnh nền cuộc trò chuyện");
+    setIsBackgroundLoading(true);
     try {
       const conversationId = conversation?.conversationId;
       if (!conversationId) {
@@ -310,8 +312,10 @@ const ConversationName = ({ receiver, conversation }) => {
       }
 
       updateBackground(null);
+      console.log("Đang xóa ảnh nền cuộc trò chuyện:", conversationId);
 
       await api.removeBackGround(conversationId);
+      setBackground(null);
       await handlerRefresh();
       updateBackground(null);
 
@@ -324,7 +328,7 @@ const ConversationName = ({ receiver, conversation }) => {
       );
       Alert.alert("Lỗi", "Không thể xóa ảnh nền. Vui lòng thử lại.");
     } finally {
-      setIsLoading(false);
+      setIsBackgroundLoading(false);
     }
   };
 
