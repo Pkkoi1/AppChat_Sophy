@@ -8,6 +8,7 @@ import {
   Linking,
   Animated,
   Easing,
+  Clipboard,
 } from "react-native";
 import moment from "moment";
 import { useNavigation } from "@react-navigation/native";
@@ -25,11 +26,6 @@ import { AuthContext } from "@/app/auth/AuthContext";
 import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Color from "@/app/components/colors/Color";
-import { RenderImageMessage } from "../../../components/message/RenderImageMessage";
-import { RenderVideoMessage } from "../../../components/message/RenderVideoMessage";
-import { RenderAudioMessage } from "../../../components/message/RenderAudioMessage";
-import { RenderFileMessage } from "../../../components/message/RenderFileMessage";
-import { RenderTextWithImageMessage } from "../../../components/message/RenderTextWithImageMessage";
 
 const errorImage =
   "https://res.cloudinary.com/dyd5381vx/image/upload/v1744732824/z6509003496600_0f4526fe7c8ca476fea6dddff2b3bc91_d4nysj.jpg";
@@ -107,7 +103,8 @@ const MessageItem = ({
   receiver,
   isFirstMessageFromSender,
   onScrollToMessage,
-  onLongPress, // Thêm prop này để nhận sự kiện nhấn giữ
+  onLongPress,
+  onCopy, // thêm prop này để nhận sự kiện copy
 }) => {
   const navigateToProfile = useNavigateToProfile();
   const { userInfo } = useContext(AuthContext);
@@ -155,7 +152,6 @@ const MessageItem = ({
 
   const handleDownload = async (fileUrl, fileName, downloadUrl) => {
     try {
-      console.log("Downloading file:", fileUrl, fileName, downloadUrl);
       const path = FileSystem.cacheDirectory + fileName;
       const res = FileSystem.createDownloadResumable(
         downloadUrl || fileUrl,
@@ -188,6 +184,18 @@ const MessageItem = ({
       console.error("Download error:", err);
       Alert.alert("Lỗi", "Tải file thất bại.");
     }
+  };
+
+  const renderFileIcon = (type) => {
+    if (type.includes("pdf"))
+      return <FontAwesome5 name="file-pdf" size={24} color="#d9534f" />;
+    if (type.includes("word"))
+      return <FontAwesome5 name="file-word" size={24} color="#007bff" />;
+    if (type.includes("excel"))
+      return <FontAwesome5 name="file-excel" size={24} color="#28a745" />;
+    if (type.includes("zip"))
+      return <FontAwesome5 name="file-archive" size={24} color="#f0ad4e" />;
+    return <MaterialIcons name="insert-drive-file" size={24} color="#6c757d" />;
   };
 
   const renderAvatar = () => {
@@ -249,19 +257,10 @@ const MessageItem = ({
 
     const replyType = replyData.type;
     const replyContent = replyData.content || "Tin nhắn không hỗ trợ";
-    // Sửa lại lấy đúng tên người gửi của tin nhắn được trả lời
-    let replySender = "";
-    if (replyData.senderId === userInfo.userId) {
-      replySender = userInfo?.fullname;
-    } else if (receiver && replyData.senderId === receiver.userId) {
-      replySender = receiver?.fullname;
-    } else if (replyData.fullname) {
-      replySender = replyData.fullname;
-    } else if (replyData.senderName) {
-      replySender = replyData.senderName;
-    } else {
-      replySender = replyData.senderId || "Người gửi";
-    }
+    const replySender =
+      replyData.senderId === userInfo.userId
+        ? userInfo?.fullname
+        : receiver?.fullname;
 
     if (replyData.isRecall || messageReplyId?.isRecall) {
       return (
@@ -276,87 +275,23 @@ const MessageItem = ({
       );
     }
 
-    // Hiển thị dạng đẹp cho các loại tin nhắn trả lời
     return (
       <TouchableOpacity onPress={() => onScrollToMessage(messageReplyId)}>
-        <View
-          style={[
-            MessageItemStyle.replyContainer,
-            { flexDirection: "row", alignItems: "center", minHeight: 44 },
-          ]}
-        >
-          {/* Icon hoặc hình ảnh bên trái */}
-          {(() => {
-            const attachment = replyData.attachment;
-            if (replyType === "image" || replyType === "text-with-image") {
-              return (
-                <Image
-                  source={{
-                    uri: (attachment && attachment.url) || attachment || "",
-                  }}
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 6,
-                    marginRight: 8,
-                    backgroundColor: "#eee",
-                  }}
-                />
-              );
-            }
-            if (replyType === "audio") {
-              return (
-                <AntDesign
-                  name="sound"
-                  size={28}
-                  color={Color.sophy}
-                  style={{ marginRight: 8 }}
-                />
-              );
-            }
-            if (replyType === "file") {
-              return (
-                <AntDesign
-                  name="file1"
-                  size={28}
-                  color={Color.sophy}
-                  style={{ marginRight: 8 }}
-                />
-              );
-            }
-            if (replyType === "video") {
-              return (
-                <AntDesign
-                  name="videocamera"
-                  size={28}
-                  color={Color.sophy}
-                  style={{ marginRight: 8 }}
-                />
-              );
-            }
-            return null;
-          })()}
-          {/* Nội dung trả lời */}
-          <View style={{ flex: 1 }}>
-            <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
-            <Text
-              style={MessageItemStyle.replyContent}
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {replyType === "text" || replyType === "text-with-image"
-                ? replyContent
-                : replyType === "image"
-                ? "[Hình ảnh]"
-                : replyType === "audio"
-                ? replyData.attachment?.name || "[Ghi âm]"
-                : replyType === "file"
-                ? replyData.attachment?.name || "[Tệp tin]"
-                : replyType === "video"
-                ? "[Video]"
-                : replyContent}
-            </Text>
-          </View>
+        <View style={MessageItemStyle.replyContainer}>
+          <Text style={MessageItemStyle.replySender}>{replySender}:</Text>
+          {replyType === "text" ? (
+            <Text style={MessageItemStyle.replyContent}>{replyContent}</Text>
+          ) : replyType === "image" || "text-with-image" ? (
+            <Text style={MessageItemStyle.replyContent}>[Hình ảnh]</Text>
+          ) : replyType === "file" ? (
+            <Text style={MessageItemStyle.replyContent}>[Tệp tin]</Text>
+          ) : replyType === "video" ? (
+            <Text style={MessageItemStyle.replyContent}>[Video]</Text>
+          ) : replyType === "audio" ? (
+            <Text style={MessageItemStyle.replyContent}>[Ghi âm]</Text>
+          ) : (
+            <Text style={MessageItemStyle.replyContent}>[Không hỗ trợ]</Text>
+          )}
         </View>
       </TouchableOpacity>
     );
@@ -388,12 +323,7 @@ const MessageItem = ({
       if (isLink(part)) {
         return (
           <TouchableOpacity key={index} onPress={() => handleLinkPress(part)}>
-            <Text
-              style={[
-                MessageItemStyle.content,
-                { color: "#3f88f2", padding: 0, margin: 0 },
-              ]}
-            >
+            <Text style={[MessageItemStyle.content, { color: "#3f88f2" }]}>
               {part}
             </Text>
           </TouchableOpacity>
@@ -574,98 +504,65 @@ const MessageItem = ({
       );
     }
 
-    // Audio
+    // Nếu là tin nhắn audio (type === "audio" hoặc attachment.type === "audio" hoặc file đuôi audio)
     if (
       (type === "audio" && attachment && attachment.url) ||
       (type === "audio" && message.attachment && message.attachment.url) ||
       (type === "file" && attachment && isAudioFile(attachment.name))
     ) {
+      // Ưu tiên lấy url từ attachment, fallback sang message.attachment
       const audioUrl =
         (attachment && attachment.url) ||
         (message.attachment && message.attachment.url);
 
-      return RenderAudioMessage({
+      return renderAudioPlayer(
         audioUrl,
         isAudioLoading,
         isAudioPlaying,
         isAudioPaused,
-        onPress: () => handlePlayPauseAudio(audioUrl),
-        position: audioPosition,
-        duration: audioDuration,
-        spinAnim,
-      });
+        () => handlePlayPauseAudio(audioUrl),
+        audioPosition,
+        audioDuration
+      );
     }
 
-    // Text with image
+    // Hiển thị text-with-image: nội dung phía trên hình ảnh
     if (
       (type === "text-with-image" && attachment && attachment.url) ||
-      (type === "text-with-image" &&
-        message.attachment &&
-        message.attachment.url)
+      (type === "text-with-image" && message.attachment && message.attachment.url)
     ) {
       const imageUrl =
         (attachment && attachment.url) ||
         (message.attachment && message.attachment.url) ||
         errorImage;
-      return RenderTextWithImageMessage({
-        content,
-        imageUrl,
-        navigation,
-        MessageItemStyle,
-      });
-    }
-
-    // Image
-    if (type === "image" && attachment) {
-      return RenderImageMessage({
-        attachment,
-        isSender,
-        navigation,
-        errorImage,
-        MessageItemStyle,
-        onLongPress,
-      });
-    }
-
-    // Video
-    if (type === "video" && attachment) {
       return (
-        <View
-          style={[
-            MessageItemStyle.mediaOuter,
-            isSender
-              ? MessageItemStyle.mediaSender
-              : MessageItemStyle.mediaReceiver,
-            MessageItemStyle.mediaBorder, // Thêm viền xanh
-          ]}
-        >
-          <TouchableOpacity onLongPress={onLongPress} delayLongPress={200}>
-            <Video
-              source={{ uri: attachment.url }}
-              style={MessageItemStyle.video}
-              resizeMode="contain"
-              useNativeControls
+        <View>
+          {content ? (
+            <View style={MessageItemStyle.textContainer}>
+              <Text style={MessageItemStyle.content}>{content}</Text>
+            </View>
+          ) : null}
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: imageUrl,
+              })
+            }
+          >
+            <Image
+              source={{ uri: imageUrl }}
+              style={MessageItemStyle.image}
             />
           </TouchableOpacity>
         </View>
       );
     }
 
-    // File
-    if (type === "file" && attachment) {
-      return RenderFileMessage({
-        attachment,
-        handleDownload,
-        MessageItemStyle,
-      });
-    }
-
-    // Text
     return (
       <>
         {isReply && renderReplyContent()}
         {type === "text" ? (
-          <View>
+          <View style={MessageItemStyle.textContainer}>
             {searchQuery ? (
               <HighlightText
                 text={content}
@@ -676,6 +573,52 @@ const MessageItem = ({
             ) : (
               renderTextWithLinks(content)
             )}
+          </View>
+        ) : type === "file" && attachment ? (
+          // Nếu là file không phải audio
+          <View style={MessageItemStyle.fileContainer}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+            >
+              {renderFileIcon(attachment.type || "unknown")}
+              <Text style={MessageItemStyle.fileName}>
+                {attachment.name || "Tệp tin"}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() =>
+                handleDownload(
+                  attachment.url,
+                  attachment.name || "Tệp tin",
+                  attachment.downloadUrl
+                )
+              }
+              style={MessageItemStyle.downloadButton}
+            >
+              <Text style={MessageItemStyle.downloadButtonText}>Tải xuống</Text>
+            </TouchableOpacity>
+          </View>
+        ) : type === "image" && attachment ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("FullScreenImageViewer", {
+                imageUrl: attachment.url || errorImage,
+              })
+            }
+          >
+            <Image
+              source={{ uri: attachment.url || errorImage }}
+              style={MessageItemStyle.image}
+            />
+          </TouchableOpacity>
+        ) : type === "video" && attachment ? (
+          <View>
+            <Video
+              source={{ uri: attachment.url }}
+              style={MessageItemStyle.video}
+              resizeMode="contain"
+              useNativeControls
+            />
           </View>
         ) : (
           <Text style={MessageItemStyle.unsupported}>
@@ -701,6 +644,29 @@ const MessageItem = ({
     return <Text style={MessageItemStyle.statusText}>{text}</Text>;
   };
 
+  // Hàm xử lý copy tin nhắn
+  const handleCopy = () => {
+    if (message.isRecall) return;
+    let contentToCopy = "";
+    if (message.type === "text" || message.type === "notification") {
+      contentToCopy = message.content;
+    } else if (
+      message.type === "image" ||
+      message.type === "video" ||
+      message.type === "file"
+    ) {
+      contentToCopy = message.attachment?.url || message.attachment?.name || "";
+    }
+    if (contentToCopy) {
+      if (onCopy) {
+        onCopy(contentToCopy, message);
+      } else {
+        Clipboard.setString(contentToCopy);
+        Alert.alert("Thành công", "Đã sao chép tin nhắn!");
+      }
+    }
+  };
+
   if (message.type === "notification") {
     return (
       <View style={MessageItemStyle.notificationContainer}>
@@ -723,32 +689,17 @@ const MessageItem = ({
         <View style={MessageItemStyle.avatarContainer}>{renderAvatar()}</View>
       )}
       <View>
-        {/* Nếu là hình/video thì renderContent đã nằm ngoài messageBox, thời gian nằm ngoài. 
-            Nếu là text thì thời gian nằm trong messageBox và không có nền */}
-        {message.type === "image" || message.type === "video" ? (
-          <>
-            {renderContent()}
-            <Text style={MessageItemStyle.timestamp}>{formattedTime}</Text>
-            <View style={MessageItemStyle.newText}>{renderStatus()}</View>
-          </>
-        ) : (
-          <>
-            <View
-              style={[
-                MessageItemStyle.messageBox,
-                isSender ? MessageItemStyle.sender : MessageItemStyle.receiver,
-              ]}
-            >
-              {renderSenderName()}
-              {renderContent()}
-              {/* Thời gian nằm trong messageBox cho text, KHÔNG nền */}
-              <Text style={MessageItemStyle.timestampText}>
-                {formattedTime}
-              </Text>
-            </View>
-            <View style={MessageItemStyle.newText}>{renderStatus()}</View>
-          </>
-        )}
+        <View
+          style={[
+            MessageItemStyle.messageBox,
+            isSender ? MessageItemStyle.sender : MessageItemStyle.receiver,
+          ]}
+        >
+          {renderSenderName()}
+          {renderContent()}
+          <Text style={MessageItemStyle.timestamp}>{formattedTime}</Text>
+        </View>
+        <View style={MessageItemStyle.newText}>{renderStatus()}</View>
       </View>
     </View>
   );

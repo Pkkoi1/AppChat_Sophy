@@ -179,6 +179,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    if (socket && conversations.length > 0 && userInfo?.userId) {
+      const allIds = conversations.map((conv) => conv.conversationId);
+      socket.emit("joinUserConversations", allIds);
+      console.log("📡 Đã join tất cả conversations:", allIds);
+    }
+  }, [socket, conversations, userInfo?.userId]);
+
+  useEffect(() => {
     if (userInfo?.userId) {
       fetchAllFriendData();
     }

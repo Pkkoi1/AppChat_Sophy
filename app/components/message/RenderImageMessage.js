@@ -10,6 +10,8 @@ export function RenderImageMessage({
   MessageItemStyle: _,
   onLongPress,
 }) {
+  // Nếu có nội dung thì KHÔNG border, chỉ border nếu không có nội dung
+  const hasContent = !!attachment.content;
   return (
     <View
       style={[
@@ -17,7 +19,7 @@ export function RenderImageMessage({
         isSender
           ? MessageItemStyle.mediaSender
           : MessageItemStyle.mediaReceiver,
-        MessageItemStyle.mediaBorder,
+        !hasContent && MessageItemStyle.mediaBorder, // chỉ border nếu không có nội dung
       ]}
     >
       <TouchableOpacity

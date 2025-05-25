@@ -11,7 +11,7 @@ export function RenderTextWithImageMessage({
   return (
     <>
       {content ? (
-        <View style={MessageItemStyle.textContainer}>
+        <View>
           <Text style={MessageItemStyle.content}>{content}</Text>
         </View>
       ) : null}

@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Modal,
   Animated,
+  Alert,
+  Clipboard,
 } from "react-native";
 import MessageItem from "./MessageItem";
 import moment from "moment";
@@ -49,6 +51,16 @@ const Conversation = ({
       setSelectedMessage(message);
       setPopupVisible(true);
     }
+  };
+
+  // Hàm xử lý sự kiện copy tin nhắn
+  const handleCopyMessage = (content, message) => {
+    if (!content) {
+      Alert.alert("Thông báo", "Tin nhắn trống, không thể sao chép.");
+      return;
+    }
+    Clipboard.setString(content);
+    Alert.alert("Thành công", "Đã sao chép tin nhắn!");
   };
 
   const handleScroll = (event) => {
@@ -131,6 +143,7 @@ const Conversation = ({
                   onScrollToMessage={onScrollToMessage}
                   // Truyền onLongPress cho hình/video
                   onLongPress={() => handleLongPress(item)}
+                  onCopy={handleCopyMessage} // truyền hàm copy vào MessageItem
                 />
               </Pressable>
             </View>

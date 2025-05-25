@@ -1065,4 +1065,62 @@ export const api = {
       throw error;
     }
   },
+  // AI APIs
+  getAllAIConversations: async () => {
+    try {
+      const response = await http.get("/ai");
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi lấy danh sách cuộc trò chuyện AI:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  processAIRequest: async ({ message, conversationId }) => {
+    try {
+      const response = await http.post("/ai/ai-assistant", {
+        message,
+        conversationId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi gửi yêu cầu đến trợ lý AI:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  translateText: async ({ text, targetLanguage, messageId }) => {
+    try {
+      const response = await http.post("/ai/translate", {
+        text,
+        targetLanguage,
+        messageId,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi dịch văn bản:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+  detectLanguage: async ({ text }) => {
+    try {
+      const response = await http.post("/ai/detect-language", {
+        text,
+      });
+      return response.data;
+    } catch (error) {
+      console.error(
+        "Lỗi khi phát hiện ngôn ngữ:",
+        error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
 };

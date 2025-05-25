@@ -9,6 +9,7 @@ export function RenderVideoMessage({
   MessageItemStyle: _,
   onLongPress,
 }) {
+  // Luôn border cho video
   return (
     <View
       style={[
