@@ -29,12 +29,20 @@ const MessageItemStyle = StyleSheet.create({
     borderColor: Color.sophy,
     borderWidth: 0.5,
   },
+  mediaOuter: {
+    borderRadius: 8,
+    overflow: "hidden", // Để bo góc các media
+    marginLeft: 10, // Để hộp tin nhắn không quá sát avatar
+    marginRight: 10, // Để hộp tin nhắn không quá sát avatar
+  },
   receiver: {
     backgroundColor: "#FFF",
     alignSelf: "flex-start",
     borderColor: "#f0f0f0",
     borderWidth: 0.5,
     marginRight: 100,
+    borderColor: Color.sophy,
+    borderWidth: 0.5,
   },
   receiverWithAvatar: {
     // marginLeft: 45, // Để hộp tin nhắn không quá sát avatar
@@ -80,33 +88,29 @@ const MessageItemStyle = StyleSheet.create({
     width: "100%", // Ensure the sender's name does not overflow
   },
   image: {
-    width: "200", // Make the image width relative to the chat box
-    height: "300", // Allow proportional scaling
-    // aspectRatio: 16 / 9, // Maintain a 4:3 aspect ratio
+    width: 200,
+    height: 300,
+    resizeMode: "contain",
     borderRadius: 8,
     marginVertical: 10,
-    alignSelf: "flex-start", // Align the image within the bubble
+    alignSelf: "flex-start",
+    marginRight: 10,
+    marginLeft: 10,
+    // Không border ở đây, border sẽ được thêm ở mediaBorder nếu cần
   },
-  fileContainer: {
-    padding: 10,
-    backgroundColor: "#f0f0f0",
+  mediaBorder: {
+    borderColor: Color.sophy,
+    borderWidth: 0.5,
     borderRadius: 8,
-    marginTop: 5,
-  },
-  fileName: {
-    fontSize: 14,
-    color: Color.sophy,
-    marginLeft: 10, // Add spacing between icon and text
-    maxWidth: "80%", // Limit the width to prevent overflow
-    overflow: "hidden", // Hide overflowing text
-    textOverflow: "ellipsis", // Add ellipsis for long text
-    whiteSpace: "nowrap", // Prevent text wrapping
   },
   video: {
     width: 200,
     height: 300,
     borderRadius: 8,
     marginTop: 5,
+    marginRight: 10,
+    marginLeft: 10,
+    // Không border ở đây, border sẽ được thêm ở mediaBorder nếu cần
   },
   videoLabel: {
     fontSize: 14,
@@ -179,9 +183,7 @@ const MessageItemStyle = StyleSheet.create({
   notificationContainer: {
     alignSelf: "center", // Center the notification horizontally
     backgroundColor: "#ffffff",
-    // padding: 10,
     paddingHorizontal: 5,
-
     borderRadius: 50,
     marginVertical: 10,
   },
