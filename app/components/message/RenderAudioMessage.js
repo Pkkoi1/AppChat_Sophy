@@ -3,7 +3,7 @@ import React from "react";
 import { View, TouchableOpacity, Text, Animated } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Color from "@/app/components/colors/Color";
-import MessageItemStyle from "../MessageItemStyle";
+import MessageItemStyle from "../../screens/chat/message/MessageItemStyle";
 
 export function RenderAudioMessage({
   audioUrl,

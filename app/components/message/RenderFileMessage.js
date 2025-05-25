@@ -7,7 +7,7 @@ import {
   FontAwesome6,
   Feather,
 } from "@expo/vector-icons";
-import MessageItemStyle from "../MessageItemStyle";
+import MessageItemStyle from "../../screens/chat/message/MessageItemStyle";
 
 const renderFileIcon = (type = "") => {
   if (type.includes("pdf"))

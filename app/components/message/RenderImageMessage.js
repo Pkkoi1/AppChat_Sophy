@@ -1,6 +1,6 @@
 import React from "react";
 import { View, TouchableOpacity, Image } from "react-native";
-import MessageItemStyle from "../MessageItemStyle";
+import MessageItemStyle from "../../screens/chat/message/MessageItemStyle";
 
 export function RenderImageMessage({
   attachment,

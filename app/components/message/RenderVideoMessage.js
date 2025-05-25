@@ -1,7 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity } from "react-native";
 import { Video } from "expo-av";
-import MessageItemStyle from "../MessageItemStyle";
+import MessageItemStyle from "../../screens/chat/message/MessageItemStyle";
 
 export function RenderVideoMessage({
   attachment,

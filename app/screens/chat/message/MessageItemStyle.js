@@ -20,12 +20,12 @@ const MessageItemStyle = StyleSheet.create({
     marginVertical: 2,
     marginHorizontal: 10,
     position: "relative", // Để avatar có thể nằm trên
-    // Loại bỏ nền cho hình ảnh/video
   },
   sender: {
     backgroundColor: "#d4f1ff",
     alignSelf: "flex-end",
     marginRight: 10,
+    marginLeft: 100, // Để hộp tin nhắn không quá sát avatar
     borderColor: Color.sophy,
     borderWidth: 0.5,
   },
@@ -34,39 +34,16 @@ const MessageItemStyle = StyleSheet.create({
     alignSelf: "flex-start",
     borderColor: "#f0f0f0",
     borderWidth: 0.5,
+    marginRight: 100,
   },
-  // Thêm style cho hình/video nằm ngoài messageBox nhưng vẫn căn theo người gửi/nhận
-  mediaOuter: {
-    marginHorizontal: 10,
-    marginVertical: 2,
-    alignSelf: "flex-start",
-  },
-  mediaSender: {
-    alignSelf: "flex-end",
-    marginRight: 10,
-  },
-  mediaReceiver: {
-    alignSelf: "flex-start",
-    marginLeft: 10,
-  },
-  mediaBorder: {
-    borderWidth: 0.5,
-    borderColor: Color.sophy,
-    borderRadius: 10,
-    // padding: 2, // XÓA padding để viền sát hình/video
+  receiverWithAvatar: {
+    // marginLeft: 45, // Để hộp tin nhắn không quá sát avatar
   },
   timestamp: {
     fontSize: 12,
-    color: Color.white,
+    color: "#999",
     marginTop: 5, // Add spacing above the timestamp
     alignSelf: "flex-start", // Align timestamp to the left
-    backgroundColor: Color.time, // Nền xám lấy từ Color
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    overflow: "hidden",
-    marginLeft: 10,
-    marginBottom: 2,
   },
   timestampText: {
     color: Color.grayText,
@@ -78,6 +55,8 @@ const MessageItemStyle = StyleSheet.create({
   content: {
     fontSize: 16,
     color: Color.black,
+    padding: 0,
+    margin: 0,
   },
   avatar: {
     width: 32,
@@ -101,20 +80,12 @@ const MessageItemStyle = StyleSheet.create({
     width: "100%", // Ensure the sender's name does not overflow
   },
   image: {
-    width: 200,
-    height: 300,
+    width: "200", // Make the image width relative to the chat box
+    height: "300", // Allow proportional scaling
+    // aspectRatio: 16 / 9, // Maintain a 4:3 aspect ratio
     borderRadius: 8,
     marginVertical: 10,
-    backgroundColor: "transparent",
-    // Không padding, viền sát hình
-  },
-  video: {
-    width: 200,
-    height: 300,
-    borderRadius: 8,
-    marginTop: 5,
-    backgroundColor: "transparent",
-    // Không padding, viền sát video
+    alignSelf: "flex-start", // Align the image within the bubble
   },
   fileContainer: {
     padding: 10,
@@ -124,11 +95,23 @@ const MessageItemStyle = StyleSheet.create({
   },
   fileName: {
     fontSize: 14,
-    color: Color.black,
+    color: Color.sophy,
+    marginLeft: 10, // Add spacing between icon and text
     maxWidth: "80%", // Limit the width to prevent overflow
     overflow: "hidden", // Hide overflowing text
     textOverflow: "ellipsis", // Add ellipsis for long text
     whiteSpace: "nowrap", // Prevent text wrapping
+  },
+  video: {
+    width: 200,
+    height: 300,
+    borderRadius: 8,
+    marginTop: 5,
+  },
+  videoLabel: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 5,
   },
   unsupported: {
     fontSize: 14,
@@ -176,6 +159,9 @@ const MessageItemStyle = StyleSheet.create({
     borderLeftColor: Color.sophy,
     paddingLeft: 10,
     marginBottom: 5,
+    maxWidth: 220, // Giới hạn tối đa chiều rộng
+    width: 220, // Để kích thước phụ thuộc vào nội dung
+    alignSelf: "flex-start",
   },
   replySender: {
     fontSize: 12,
@@ -185,6 +171,10 @@ const MessageItemStyle = StyleSheet.create({
   replyContent: {
     fontSize: 12,
     color: "#555",
+    flexShrink: 1,
+    flexWrap: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   notificationContainer: {
     alignSelf: "center", // Center the notification horizontally
