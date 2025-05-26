@@ -42,12 +42,11 @@ const MessageScreen = ({ route, navigation }) => {
     groupMember,
     saveGroupMembers,
     changeRole,
-    setScreen, // lấy setScreen từ context
+    conversations,
   } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
-
   const [messages, setMessages] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(startSearch || false);
@@ -113,17 +112,23 @@ const MessageScreen = ({ route, navigation }) => {
               const filteredMessages = response.messages.filter(
                 (m) => !m.hiddenFrom?.includes(userInfo.userId)
               );
-
+              // console.log(
+              //   "Đã tải tin nhắn từ API khi thoát màn hình:",
+              //   filteredMessages.map((msg) => msg.content)
+              // );
               saveMessages(
                 conversation.conversationId,
                 filteredMessages,
                 "before"
               ).then((savedMessages) => {
+                console.log(
+                  "Đã lưu tin nhắn từ API vào StorageService:",
+                  savedMessages.map((msg) => msg.content)
+                );
                 handlerRefresh();
               });
             }
           })
-
           .catch((error) => {
             console.error(
               "Lỗi khi tải tin nhắn từ API khi thoát màn hình:",
@@ -134,7 +139,16 @@ const MessageScreen = ({ route, navigation }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversation?.conversationId, userInfo?.userId]);
+  useEffect(() => {
+    // Tìm conversation hiện tại trong conversations từ AuthContext
+    const currentConversation = conversations.find(
+      (conv) => conv.conversationId === conversation?.conversationId
+    );
 
+    if (currentConversation) {
+      setMessages(currentConversation.messages);
+    }
+  }, [conversations, conversation?.conversationId]);
   useEffect(() => {
     console.log(
       "🧭 Navigation listener registered for conversation:",
@@ -161,14 +175,15 @@ const MessageScreen = ({ route, navigation }) => {
     );
     if (socket && conversation?.conversationId) {
       socket.emit("joinUserConversations", [conversation.conversationId]);
-
+      socket.off("newMessage");
       socket.on("newMessage", async ({ conversationId, message, sender }) => {
         if (conversationId === conversation.conversationId) {
           console.log(
-            "Đã nhận tin nhắn mới trong cuộc trò chuyện 1:",
+            "Đã nhận tin nhắn mới trong cuộc trò chuyện:",
             conversationId,
             message.content
           );
+
           // Mark the message as read
           api.readMessage(conversationId);
           if (
@@ -180,11 +195,12 @@ const MessageScreen = ({ route, navigation }) => {
           }
         }
       });
-
+      socket.off("newConversation");
       socket.on("newConversation", async () => {
         console.log("New conversation received. Refreshing conversations...");
         await handlerRefresh();
       });
+      socket.off("messageRecalled");
 
       socket.on("messageRecalled", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
@@ -206,7 +222,7 @@ const MessageScreen = ({ route, navigation }) => {
           messageId
         );
       });
-
+      socket.off("messagePinned");
       socket.on("messagePinned", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
@@ -224,6 +240,7 @@ const MessageScreen = ({ route, navigation }) => {
         );
       });
 
+      socket.off("messageUnpinned");
       socket.on("messageUnpinned", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
@@ -241,6 +258,7 @@ const MessageScreen = ({ route, navigation }) => {
         );
       });
 
+      socket.off("groupAvatarChanged");
       socket.on("groupAvatarChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -265,6 +283,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("groupNameChanged");
       socket.on("groupNameChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -288,6 +307,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("userAddedToGroup");
       socket.on("userAddedToGroup", async (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -325,6 +345,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("userLeftGroup");
       socket.on("userLeftGroup", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -354,6 +375,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("userRemovedFromGroup");
       socket.on("userRemovedFromGroup", (data) => {
         if (data.conversationId === conversation.conversationId) {
           if (data.kickedUser.userId === userInfo.userId) {
@@ -392,6 +414,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("groupOwnerChanged");
       socket.on("groupOwnerChanged", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -418,6 +441,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("groupCoOwnerAdded");
       socket.on("groupCoOwnerAdded", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -450,6 +474,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("userUnblocked");
       socket.on("userUnblocked", async (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -482,6 +507,7 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("groupCoOwnerRemoved");
       socket.on("groupCoOwnerRemoved", (data) => {
         if (data.conversationId === conversation.conversationId) {
           const pseudoMessage = {
@@ -514,12 +540,14 @@ const MessageScreen = ({ route, navigation }) => {
         }
       });
 
+      socket.off("groupDeleted");
       socket.on("groupDeleted", () => {
         handlerRefresh();
         Alert.alert("Nhóm đã bị xóa. Đang điều hướng về trang chính...");
         navigation.navigate("Home");
       });
 
+      socket.off("userBlocked");
       socket.on("userBlocked", (data) => {
         if (data.conversationId === conversation.conversationId) {
           if (data.blockedUserId === userInfo.userId) {
@@ -577,7 +605,7 @@ const MessageScreen = ({ route, navigation }) => {
         socket.off("userUnblocked");
       };
     }
-  }, [conversation]);
+  }, [socket, conversation?.conversationId, userInfo]);
 
   // Hàm so sánh tin nhắn storage và API
   const isMessagesDifferent = (storageMsgs, apiMsgs) => {
