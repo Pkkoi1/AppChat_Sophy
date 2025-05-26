@@ -26,7 +26,7 @@ import { api } from "../../../api/api"; // Import API
 const UserProfile = ({ route }) => {
   const navigation = useNavigation();
   const { userInfo } = useContext(AuthContext);
-  const socket = useContext(SocketContext); // Access socket instance
+  const { socket } = useContext(SocketContext); // Access socket instance
   const [refreshing, setRefreshing] = useState(false);
   const [scrollY] = useState(new Animated.Value(0));
   const [posts, setPosts] = useState(postsData);

@@ -117,6 +117,7 @@ const MessageItem = ({
   const [audioPosition, setAudioPosition] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
   const [isAudioLoading, setIsAudioLoading] = useState(false);
+  const [audioLocalUri, setAudioLocalUri] = useState(null);
   const spinAnim = useState(new Animated.Value(0))[0];
   const formattedTime = moment(message.createdAt).format("HH:mm");
 
@@ -349,8 +350,52 @@ const MessageItem = ({
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  // Khi message/attachment thay đổi, nếu là link mạng thì tải về local cache
+  useEffect(() => {
+    let isMounted = true;
+    const prepareAudio = async () => {
+      const audioUrl =
+        (message.attachment && message.attachment.url) ||
+        (message.attachment && message.attachment.downloadUrl) ||
+        (message.attachment && message.attachment.uri);
+      if (!audioUrl) return;
+      if (audioUrl.startsWith("file://")) {
+        setAudioLocalUri(audioUrl);
+        return;
+      }
+      try {
+        const fileName = audioUrl.split("/").pop().split("?")[0];
+        const localPath = FileSystem.cacheDirectory + fileName;
+        const fileInfo = await FileSystem.getInfoAsync(localPath);
+        if (fileInfo.exists) {
+          setAudioLocalUri(localPath);
+        } else {
+          const downloadResumable = FileSystem.createDownloadResumable(
+            audioUrl,
+            localPath
+          );
+          const { uri } = await downloadResumable.downloadAsync();
+          if (isMounted) setAudioLocalUri(uri);
+        }
+      } catch (err) {
+        setAudioLocalUri(null);
+      }
+    };
+    if (
+      message.type === "audio" ||
+      (message.type === "file" && isAudioFile(message.attachment?.name))
+    ) {
+      prepareAudio();
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [message]);
+
   const handlePlayPauseAudio = async (audioUrl) => {
     try {
+      const playUrl = audioLocalUri || audioUrl;
+      if (!playUrl) return;
       if (audioPlayback && isAudioPlaying) {
         await audioPlayback.pauseAsync();
         setIsAudioPlaying(false);
@@ -372,7 +417,7 @@ const MessageItem = ({
         setAudioDuration(0);
       }
       setIsAudioLoading(true);
-      const { sound } = await Audio.Sound.createAsync({ uri: audioUrl });
+      const { sound } = await Audio.Sound.createAsync({ uri: playUrl });
       setAudioPlayback(sound);
       const status = await sound.getStatusAsync();
       setAudioDuration(status.durationMillis || 0);
@@ -510,13 +555,11 @@ const MessageItem = ({
       (type === "audio" && message.attachment && message.attachment.url) ||
       (type === "file" && attachment && isAudioFile(attachment.name))
     ) {
-      // Ưu tiên lấy url từ attachment, fallback sang message.attachment
       const audioUrl =
         (attachment && attachment.url) ||
         (message.attachment && message.attachment.url);
-
       return renderAudioPlayer(
-        audioUrl,
+        audioLocalUri || audioUrl,
         isAudioLoading,
         isAudioPlaying,
         isAudioPaused,

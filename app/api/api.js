@@ -2,8 +2,8 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 
-const API = `https://sophy-chatapp-be.onrender.com/api`;
-// const API = `http://${MY_IP}:3000/api` || DATABASE_API;
+// Ưu tiên local nếu có MY_IP, nếu không thì fallback render
+const API = DATABASE_API;
 
 let isRefreshing = false;
 let failedQueue = [];
@@ -1119,6 +1119,25 @@ export const api = {
       console.error(
         "Lỗi khi phát hiện ngôn ngữ:",
         error.response?.data || error.message
+      );
+      throw error;
+    }
+  },
+
+  /**
+   * Khởi tạo cuộc gọi WebRTC (audio/video)
+   * @param {Object} params - { receiverId, type }
+   * @returns {Promise<{callId: string}>}
+   */
+  initiateCall: async ({ receiverId, type }) => {
+    try {
+      const response = await http.post("/call/initiate", { receiverId, type });
+      return response;
+    } catch (error) {
+      console.error(
+        "[api.initiateCall] Lỗi khi gọi /call/initiate:",
+        error,
+        error?.response?.data
       );
       throw error;
     }

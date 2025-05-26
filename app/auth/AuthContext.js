@@ -79,11 +79,13 @@ export const AuthProvider = ({ children }) => {
   const [receivedFriendRequests, setReceivedFriendRequests] = useState([]);
   const [friendRequestsLoading, setFriendRequestsLoading] = useState(false);
   const [friendRequestsError, setFriendRequestsError] = useState(null);
+  const [isMessageScreenActive, setIsMessageScreenActive] = useState(false); // Thêm trạng thái mới
 
   // Thêm state cho screen
   const [screen, setScreen] = useState("Home");
+  const [unreadConversation, setUnreadConversation] = useState(0);
 
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const flatListRef = useRef(null);
   const joinedConversationIds = useRef(new Set());
   // Hàm lấy danh sách nhóm (dùng từ file groupHelpers)
@@ -194,17 +196,30 @@ export const AuthProvider = ({ children }) => {
 
   // Đăng ký socket events từ file ngoài
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      console.log("⚠️ Không có socket hoặc conversations đã được đăng ký");
+      return;
+    }
+    console.log("📡 Đăng ký socket events cho AuthContext");
     // Đăng ký các sự kiện socket bằng hàm setupAuthSocketEvents
     const cleanup = setupAuthSocketEvents(
       socket,
       userInfo,
       setConversations,
       saveMessages,
-      addConversation
+      addConversation,
+      setUnreadConversation, // truyền thêm hàm này
+      isMessageScreenActive
     );
     return cleanup;
-  }, [socket, userInfo, setConversations, saveMessages, addConversation]);
+  }, [
+    userInfo,
+    setConversations,
+    saveMessages,
+    addConversation,
+    conversations,
+    socket,
+  ]);
 
   const clearStorage = useCallback(async () => {
     try {
@@ -427,6 +442,24 @@ export const AuthProvider = ({ children }) => {
     []
   );
 
+  // Đếm số cuộc trò chuyện có tin nhắn chưa đọc cho user hiện tại
+  useEffect(() => {
+    if (!userInfo?.userId || !conversations?.length) {
+      setUnreadConversation(0);
+      return;
+    }
+    let count = 0;
+    conversations.forEach((conv) => {
+      if (Array.isArray(conv.unreadCount)) {
+        const found = conv.unreadCount.find(
+          (u) => u.userId === userInfo.userId && u.count > 0
+        );
+        if (found) count++;
+      }
+    });
+    setUnreadConversation(count);
+  }, [conversations, userInfo?.userId]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -477,6 +510,9 @@ export const AuthProvider = ({ children }) => {
         fetchAllFriendData,
         screen,
         setScreen,
+        unreadConversation,
+        setUnreadConversation,
+        setIsMessageScreenActive,
       }}
     >
       {children}

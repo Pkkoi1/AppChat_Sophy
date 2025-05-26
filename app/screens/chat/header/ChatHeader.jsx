@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
-import { api } from "@/app/api/api";
+import { api, initiateCall } from "@/app/api/api";
 import { SocketContext } from "../../../socket/SocketContext";
 import { AuthContext } from "@/app/auth/AuthContext";
 import Color from "@/app/components/colors/Color";
@@ -17,28 +17,14 @@ const ChatHeader = ({
   lastActiveStatus,
 }) => {
   const [receiverName, setReceiverName] = useState("");
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const { groupMember, setGroupMember } = useContext(AuthContext);
 
   const [groupMem, setGroupMem] = useState([]);
   // console.log("Danh sách thành viên nhóm:", groupMember);
   const handlerBack = () => {
-    navigation.goBack();
-    socket.on("newMessage");
-    socket.on("groupAvatarChanged");
-    socket.on("newConversation");
-    socket.on("groupNameChanged");
-    socket.on("userJoinedGroup");
-    socket.on("userAddedToGroup");
-    socket.on("userLeftGroup");
-    socket.on("userRemovedFromGroup");
-    socket.on("groupOwnerChanged");
-    socket.on("groupCoOwnerAdded");
-    socket.on("groupCoOwnerRemoved");
-    socket.on("groupDeleted");
-    socket.on("userBlocked");
-    socket.on("userUnblocked");
     api.readMessage(conversation.conversationId);
+    navigation.goBack();
   };
 
   useEffect(() => {
@@ -79,47 +65,145 @@ const ChatHeader = ({
   };
 
   // Hàm gọi thoại
-  const handleVoiceCall = () => {
+  const handleVoiceCall = async () => {
+    console.log("[handleVoiceCall] Bắt đầu gọi thoại");
+    
+    // Check if socket is available and connected
+    if (!socket || !socket.connected) {
+      console.log("[handleVoiceCall] Socket chưa kết nối");
+      Alert.alert("Thông báo", "Đang kết nối... Vui lòng thử lại sau");
+      return;
+    }
+    
     if (conversation?.isGroup) {
+      console.log("[handleVoiceCall] Cuộc gọi nhóm chưa hỗ trợ");
       Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
       return;
     }
 
     if (!receiver || !receiver.userId) {
+      console.log("[handleVoiceCall] Không có receiver hợp lệ", receiver);
       Alert.alert("Thông báo", "Không thể kết nối cuộc gọi lúc này");
       return;
     }
 
-    navigation.navigate("CallScreen", {
-      callType: "voice",
-      isVideo: false,
-      receiver: receiver,
-      conversationId: conversation.conversationId,
-      calleeId: receiver.userId,
-      incoming: false,
-    });
+    try {
+      console.log("[handleVoiceCall] Gọi initiateCall với:", {
+        receiverId: receiver.userId,
+        type: "audio",
+      });
+      
+      const res = await api.initiateCall({
+        receiverId: receiver.userId,
+        type: "audio",
+      });
+
+      if (!res || !res.data) {
+        throw new Error("Không nhận được phản hồi từ server");
+      }
+
+      const callId = res.data.callId;
+      if (!callId) {
+        console.log("[handleVoiceCall] Không nhận được callId từ backend", res.data);
+        Alert.alert("Lỗi", "Không nhận được callId từ server.");
+        return;
+      }
+
+      // Thêm log để debug
+      console.log("[handleVoiceCall] Điều hướng sang CallScreen với:", {
+        callType: "voice",
+        isVideo: false,
+        receiver: receiver,
+        conversationId: conversation.conversationId,
+        calleeId: receiver.userId,
+        callId,
+        incoming: false,
+      });
+
+      navigation.navigate("CallScreen", {
+        callType: "voice",
+        isVideo: false,
+        receiver: receiver,
+        conversationId: conversation.conversationId,
+        calleeId: receiver.userId,
+        callId,
+        incoming: false,
+      });
+    } catch (err) {
+      console.log("[handleVoiceCall] Lỗi khi gọi initiateCall:", err, err?.response?.data);
+      Alert.alert("Lỗi", "Không thể bắt đầu cuộc gọi. Vui lòng thử lại.");
+    }
   };
 
   // Hàm gọi video
-  const handleVideoCall = () => {
+  const handleVideoCall = async () => {
+    console.log("[handleVideoCall] Bắt đầu gọi video");
+    
+    // Check if socket is available and connected
+    if (!socket || !socket.connected) {
+      console.log("[handleVideoCall] Socket chưa kết nối");
+      Alert.alert("Thông báo", "Đang kết nối... Vui lòng thử lại sau");
+      return;
+    }
+    
     if (conversation?.isGroup) {
+      console.log("[handleVideoCall] Cuộc gọi nhóm chưa hỗ trợ");
       Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
       return;
     }
 
     if (!receiver || !receiver.userId) {
+      console.log("[handleVideoCall] Không có receiver hợp lệ", receiver);
       Alert.alert("Thông báo", "Không thể kết nối cuộc gọi lúc này");
       return;
     }
 
-    navigation.navigate("CallScreen", {
-      callType: "video",
-      isVideo: true,
-      receiver: receiver,
-      conversationId: conversation.conversationId,
-      calleeId: receiver.userId,
-      incoming: false,
-    });
+    try {
+      console.log("[handleVideoCall] Gọi initiateCall với:", {
+        receiverId: receiver.userId,
+        type: "video",
+      });
+      
+      const res = await api.initiateCall({
+        receiverId: receiver.userId,
+        type: "video",
+      });
+
+      if (!res || !res.data) {
+        throw new Error("Không nhận được phản hồi từ server");
+      }
+
+      const callId = res.data.callId;
+      if (!callId) {
+        console.log("[handleVideoCall] Không nhận được callId từ backend", res.data);
+        Alert.alert("Lỗi", "Không nhận được callId từ server.");
+        return;
+      }
+
+      // Thêm log để debug
+      console.log("[handleVideoCall] Điều hướng sang CallScreen với:", {
+        callType: "video",
+        isVideo: true,
+        receiver: receiver,
+        conversationId: conversation.conversationId,
+        calleeId: receiver.userId,
+        callId,
+        incoming: false,
+      });
+
+      navigation.navigate("CallScreen", {
+        callType: "video",
+        isVideo: true,
+        receiver: receiver,
+        conversationId: conversation.conversationId,
+        calleeId: receiver.userId,
+        callId,
+        incoming: false,
+      });
+    } catch (err) {
+      console.log("[handleVideoCall] Lỗi khi gọi initiateCall:", err, err?.response?.data);
+      Alert.alert("Lỗi", "Không thể bắt đầu cuộc gọi video. Vui lòng thử lại.");
+    }
   };
 
   return (
@@ -150,22 +234,22 @@ const ChatHeader = ({
       </View>
       <TouchableOpacity
         onPress={handleVoiceCall}
-        disabled={conversation?.isGroup}
+        disabled={conversation?.isGroup || !receiver || !receiver.userId}
       >
         <Feather
           name="phone"
           size={24}
-          color={conversation?.isGroup ? "#ffffff" : "#ffffff"}
+          color={conversation?.isGroup || !receiver || !receiver.userId ? "#cccccc" : "#ffffff"}
         />
       </TouchableOpacity>
       <TouchableOpacity
         onPress={handleVideoCall}
-        disabled={conversation?.isGroup}
+        disabled={conversation?.isGroup || !receiver || !receiver.userId}
       >
         <Ionicons
           name="videocam-outline"
           size={24}
-          color={conversation?.isGroup ? "#ffffff" : "#ffffff"}
+          color={conversation?.isGroup || !receiver || !receiver.userId ? "#cccccc" : "#ffffff"}
         />
       </TouchableOpacity>
       <TouchableOpacity onPress={handlerOptionScreen}>

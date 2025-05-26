@@ -24,7 +24,8 @@ import * as FileSystem from "expo-file-system";
 import { CLOUDINARY_PRESET, CLOUDINARY_CLOUD_NAME, CLOUDINARY_URL } from "@env";
 import { Dialog } from "@rneui/themed";
 import { api } from "@/app/api/api";
-
+import Ailogo from "../../../../assets/images/AI.png";
+import AiAssistantChatList from "@/app/features/aiAssistant/AiAssistantChatList";
 const ChatFooter = ({
   onSendMessage,
   onSendImage,
@@ -43,6 +44,7 @@ const ChatFooter = ({
   const [isRecording, setIsRecording] = useState(false);
   const [showRecordModal, setShowRecordModal] = useState(false);
   const [recordSeconds, setRecordSeconds] = useState(0);
+  const [showAIDialog, setShowAIDialog] = useState(false);
   const typingTimeoutRef = useRef(null);
   const userTypingTimeoutRef = useRef(null);
   const recordTimerRef = useRef(null);
@@ -596,6 +598,27 @@ const ChatFooter = ({
           </TouchableOpacity>
         )}
       </Dialog>
+      {/* Modal AI chat */}
+      {showAIDialog && (
+        <Dialog
+          isVisible={showAIDialog}
+          onBackdropPress={() => setShowAIDialog(false)}
+          overlayStyle={{
+            backgroundColor: "#fff",
+            borderRadius: 16,
+            padding: 0,
+            width: "95%",
+            maxWidth: 400,
+            minHeight: 500,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <View style={{ width: "100%", height: 500 }}>
+            <AiAssistantChatList />
+          </View>
+        </Dialog>
+      )}
       {replyingTo &&
         (console.log("Đang trả lời tin nhắn:", receiver),
         (
@@ -719,11 +742,12 @@ const ChatFooter = ({
           </View>
         ))}
       <View style={ChatFooterStyle.inputContainer}>
-        <TouchableOpacity>
-          <MaterialCommunityIcons
-            name="sticker-emoji"
-            size={24}
-            color="#8f8f8f"
+        {/* Đổi nút sticker thành AI */}
+        <TouchableOpacity onPress={() => setShowAIDialog(true)}>
+          <Image
+            source={Ailogo}
+            style={{ width: 28, height: 28, borderRadius: 6 }}
+            resizeMode="contain"
           />
         </TouchableOpacity>
         <TextInput

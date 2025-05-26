@@ -32,13 +32,8 @@ const ImageTab = ({ conversation }) => {
     return <Text style={styles.noDataText}>Không có hình ảnh</Text>;
   }
 
-  // Sort images by date (newest to oldest)
-  const sortedImages = images.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-
-  // Group images by date
-  const groupedImages = sortedImages.reduce((groups, image) => {
+  // Group images by date (YYYY-MM-DD)
+  const groupedImages = images.reduce((groups, image) => {
     const date = moment(image.createdAt).format("YYYY-MM-DD");
     if (!groups[date]) {
       groups[date] = [];
@@ -47,15 +42,33 @@ const ImageTab = ({ conversation }) => {
     return groups;
   }, {});
 
-  const groupedData = Object.entries(groupedImages).map(([date, images]) => ({
-    date,
-    images,
-  }));
+  // Tạo mảng các nhóm, mỗi nhóm gồm ngày và danh sách ảnh đã được sort đúng thứ tự mới nhất lên đầu
+  const groupedData = Object.entries(groupedImages)
+    .map(([date, imgs]) => ({
+      date,
+      images: imgs.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ),
+    }))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-  const handleImagePress = (index) => {
+  // Tạo mảng ảnh đã sort toàn cục để truyền vào full view
+  const allSortedImages = images
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+  const handleImagePress = (image) => {
+    // Tìm index của ảnh trong mảng đã sort toàn cục
+    const index = allSortedImages.findIndex(
+      (img) => img.url === image.url && img.createdAt === image.createdAt
+    );
     navigation.navigate("ListImageFullView", {
-      images: sortedImages, // Pass the sorted list of images
-      initialIndex: index, // Pass the correct index
+      images: allSortedImages,
+      initialIndex: index,
     });
   };
 
@@ -69,13 +82,13 @@ const ImageTab = ({ conversation }) => {
             {moment(item.date).format("DD/MM/YYYY")}
           </Text>
           <FlatList
-            data={item.images} // No need to reverse, already sorted
+            data={item.images}
             keyExtractor={(image, index) => index.toString()}
             numColumns={3}
-            renderItem={({ item: image, index }) => (
+            renderItem={({ item: image }) => (
               <TouchableOpacity
                 style={styles.imageWrapper}
-                onPress={() => handleImagePress(index)}
+                onPress={() => handleImagePress(image)}
               >
                 <Image source={{ uri: image.url }} style={styles.image} />
               </TouchableOpacity>
