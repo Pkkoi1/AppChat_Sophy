@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-import { PinchGestureHandler, State } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -29,14 +28,6 @@ const FullScreenImageViewer = ({ route, navigation }) => {
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-
-  const handlePinch = (event) => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      scale.value = withTiming(event.nativeEvent.scale, { duration: 200 });
-    } else if (event.nativeEvent.state === State.END) {
-      scale.value = withTiming(1, { duration: 200 }); // Reset scale after pinch ends
-    }
-  };
 
   const handleImageLoad = (event) => {
     const { width, height } = event.nativeEvent.source;
@@ -82,20 +73,18 @@ const FullScreenImageViewer = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       {imageUrl ? (
-        <PinchGestureHandler onGestureEvent={handlePinch}>
-          <Animated.Image
-            source={{ uri: imageUrl }}
-            style={[
-              styles.image,
-              animatedStyle,
-              {
-                width: imageSize.width,
-                height: imageSize.height,
-              },
-            ]}
-            onLoad={handleImageLoad}
-          />
-        </PinchGestureHandler>
+        <Animated.Image
+          source={{ uri: imageUrl }}
+          style={[
+            styles.image,
+            animatedStyle,
+            {
+              width: imageSize.width,
+              height: imageSize.height,
+            },
+          ]}
+          onLoad={handleImageLoad}
+        />
       ) : (
         <AvatarUser
           fullName={fallbackText}

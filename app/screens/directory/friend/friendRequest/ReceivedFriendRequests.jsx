@@ -80,7 +80,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
     { key: "sent", title: "Đã gửi 0" },
   ]);
 
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const navigateToProfile = useNavigateToProfile();
 
   // Hàm cập nhật routes với số lượng chính xác

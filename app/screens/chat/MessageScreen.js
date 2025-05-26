@@ -44,7 +44,7 @@ const MessageScreen = ({ route, navigation }) => {
     changeRole,
     setScreen, // lấy setScreen từ context
   } = useContext(AuthContext);
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
 
@@ -113,23 +113,17 @@ const MessageScreen = ({ route, navigation }) => {
               const filteredMessages = response.messages.filter(
                 (m) => !m.hiddenFrom?.includes(userInfo.userId)
               );
-              // console.log(
-              //   "Đã tải tin nhắn từ API khi thoát màn hình:",
-              //   filteredMessages.map((msg) => msg.content)
-              // );
+
               saveMessages(
                 conversation.conversationId,
                 filteredMessages,
                 "before"
               ).then((savedMessages) => {
-                console.log(
-                  "Đã lưu tin nhắn từ API vào StorageService:",
-                  savedMessages.map((msg) => msg.content)
-                );
                 handlerRefresh();
               });
             }
           })
+
           .catch((error) => {
             console.error(
               "Lỗi khi tải tin nhắn từ API khi thoát màn hình:",
@@ -161,17 +155,20 @@ const MessageScreen = ({ route, navigation }) => {
   }, [navigation, conversation?.conversationId]);
 
   useEffect(() => {
+    console.log(
+      "🧩 Socket listener registered for conversation:",
+      conversation?.conversationId
+    );
     if (socket && conversation?.conversationId) {
       socket.emit("joinUserConversations", [conversation.conversationId]);
 
       socket.on("newMessage", async ({ conversationId, message, sender }) => {
         if (conversationId === conversation.conversationId) {
           console.log(
-            "Đã nhận tin nhắn mới trong cuộc trò chuyện:",
+            "Đã nhận tin nhắn mới trong cuộc trò chuyện 1:",
             conversationId,
             message.content
           );
-
           // Mark the message as read
           api.readMessage(conversationId);
           if (
@@ -573,14 +570,14 @@ const MessageScreen = ({ route, navigation }) => {
         socket.off("userLeftGroup");
         socket.off("userRemovedFromGroup");
         socket.off("groupOwnerChanged");
-        socket.on("groupCoOwnerAdded");
+        socket.off("groupCoOwnerAdded");
         socket.off("groupCoOwnerRemoved");
         socket.off("groupDeleted");
         socket.off("userBlocked");
         socket.off("userUnblocked");
       };
     }
-  }, [socket, conversation, handlerRefresh, userInfo]);
+  }, [conversation]);
 
   // Hàm so sánh tin nhắn storage và API
   const isMessagesDifferent = (storageMsgs, apiMsgs) => {

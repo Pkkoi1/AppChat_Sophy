@@ -17,7 +17,7 @@ const LoginByQR = ({ route, navigation }) => {
   const [isChecked, setIsChecked] = useState(false);
   const { qrData } = route.params || {};
   const { login } = useContext(AuthContext); // Get login function from context
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   const handleLogin = async () => {
     if (!isChecked) {

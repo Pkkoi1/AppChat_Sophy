@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RaiAssistantFloatingChat from "@/app/features/aiAssistant/AiAssistantFloatingChat";
 
 const Home = ({ route, navigation }) => {
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
@@ -29,25 +29,25 @@ const Home = ({ route, navigation }) => {
     },
     {
       name: "Directory",
-      component: <Directory userId={userInfo?.userId} />,
+      component: <Directory />,
       icon: "contacts",
       title: "Danh bạ",
     },
     {
       name: "Discover",
-      component: <Discover userId={userInfo?.userId} />,
+      component: <Discover />,
       icon: "find",
       title: "Khám phá",
     },
     {
       name: "Diary",
-      component: <Diary userId={userInfo?.userId} />,
+      component: <Diary />,
       icon: "clockcircleo",
       title: "Nhật ký",
     },
     {
       name: "Profile",
-      component: <Profile userInfo={userInfo} />,
+      component: <Profile />,
       icon: "user",
       title: "Cá nhân",
     },
@@ -98,36 +98,48 @@ const Home = ({ route, navigation }) => {
     fetchUserInfo();
   }, [navigation]);
 
-  // Xử lý sự kiện socket
+  // Home.js
   useEffect(() => {
-    if (socket) {
-      const handleNewMessage = async () => {
-        console.log(
-          "New message received. Refreshing conversations at Home..."
-        );
-      };
+    if (!socket || !userInfo?.userId) return () => {};
 
-      const handleGroupDeleted = async () => {
-        console.log("Group deleted. Refreshing conversations...");
-      };
+    // Optional: Add specific UI-related socket handlers if needed
+    const handleNewMessage = () => {
+      console.log(
+        "New message received in Home. Conversations updated via AuthContext."
+      );
+      // Example: Trigger UI-specific action, e.g., show notification
+    };
 
-      const handleAvatarChange = async ({ conversationId, newAvatar }) => {
-        console.log(
-          `Avatar changed for conversation ${conversationId}. Refreshing...`
-        );
-      };
+    const handleGroupDeleted = ({ conversationId }) => {
+      console.log(
+        `Group ${conversationId} deleted. Conversations updated via AuthContext.`
+      );
+      // Example: Navigate away if viewing deleted group
+      const currentRoute =
+        navigation.getState().routes[navigation.getState().index];
+      if (
+        currentRoute.name === "Conversation" &&
+        currentRoute.params?.conversationId === conversationId
+      ) {
+        navigation.navigate("Home");
+      }
+    };
 
-      socket.on("newMessage", handleNewMessage);
-      socket.on("groupDeleted", handleGroupDeleted);
-      socket.on("groupAvatarChanged", handleAvatarChange);
+    const handleAvatarChange = ({ conversationId, newAvatar }) => {
+      console.log(`Avatar changed for conversation ${conversationId} in Home.`);
+      // UI-specific action if needed
+    };
 
-      return () => {
-        socket.off("newMessage", handleNewMessage);
-        socket.off("groupDeleted", handleGroupDeleted);
-        socket.off("groupAvatarChanged", handleAvatarChange);
-      };
-    }
-  }, [socket]);
+    socket.on("newMessage", handleNewMessage);
+    socket.on("groupDeleted", handleGroupDeleted);
+    socket.on("groupAvatarChanged", handleAvatarChange);
+
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+      socket.off("groupDeleted", handleGroupDeleted);
+      socket.off("groupAvatarChanged", handleAvatarChange);
+    };
+  }, [socket, navigation, userInfo?.userId]);
 
   // Xử lý nút quay lại trên Android
   useEffect(() => {

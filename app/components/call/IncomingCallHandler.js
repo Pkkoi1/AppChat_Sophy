@@ -1,11 +1,11 @@
-import React, { useContext, useEffect } from 'react';
-import { SocketContext } from '@/app/socket/SocketContext';
-import { AuthContext } from '@/app/auth/AuthContext';
-import { useNavigation } from '@react-navigation/native';
-import { api } from '@/app/api/api';
+import React, { useContext, useEffect } from "react";
+import { SocketContext } from "@/app/socket/SocketContext";
+import { AuthContext } from "@/app/auth/AuthContext";
+import { useNavigation } from "@react-navigation/native";
+import { api } from "@/app/api/api";
 
 const IncomingCallHandler = () => {
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const { userInfo } = useContext(AuthContext);
   const navigation = useNavigation();
 
@@ -20,6 +20,7 @@ const IncomingCallHandler = () => {
           caller = userResponse.data;
         }
 
+
         navigation.navigate('CallScreen', {
           callType: data.isVideo ? 'video' : 'voice',
           isVideo: !!data.isVideo,
@@ -30,14 +31,16 @@ const IncomingCallHandler = () => {
           incoming: true,
         });
       } catch (error) {
-        console.error('Error handling incoming call:', error);
+        console.error("Error handling incoming call:", error);
       }
     };
+
 
     socket.on('startCall', handleIncomingCall);
 
     return () => {
       socket.off('startCall', handleIncomingCall);
+
     };
   }, [socket, navigation, userInfo]);
 

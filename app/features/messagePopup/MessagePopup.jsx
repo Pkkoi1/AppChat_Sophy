@@ -107,7 +107,7 @@ const MessagePopup = ({
   fetchMessages,
 }) => {
   const navigation = useNavigation();
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const { handlerRefresh, userInfo } = useContext(AuthContext);
 
   const handleCopyMessage = (message) => {

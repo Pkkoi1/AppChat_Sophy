@@ -22,7 +22,7 @@ function LoginScreen({ navigation }) {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [isLoading, setIsLoading] = useState(false); // Thêm state để quản lý trạng thái loading
-  const socket = useContext(SocketContext); // Get socket from context
+  const { socket } = useContext(SocketContext); // Get socket from context
 
   useEffect(() => {
     setIsButtonEnabled(phone.length > 0 && password.length > 0);

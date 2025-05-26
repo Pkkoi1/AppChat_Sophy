@@ -1,4 +1,10 @@
-import React, { useState, useCallback, useEffect, useContext, useMemo } from "react";
+import React, {
+  useState,
+  useCallback,
+  useEffect,
+  useContext,
+  useMemo,
+} from "react";
 import {
   FlatList,
   Text,
@@ -36,7 +42,7 @@ const ListFriends = () => {
     fetchFriends,
     updateFriendsList,
   } = useContext(AuthContext);
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const navigateToProfile = useNavigateToProfile();
 
   useEffect(() => {

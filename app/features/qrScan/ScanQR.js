@@ -24,7 +24,7 @@ export default function ScanQR() {
 
   // Kiểm tra context trước khi sử dụng
   const { userInfo, authToken } = useContext(AuthContext) || {};
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   useEffect(() => {
     if (!permission?.granted) {

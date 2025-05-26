@@ -7,6 +7,9 @@ export const handleNewMessage = (
 ) => {
   if (!socket) return;
 
+  // Cleanup trước khi đăng ký mới để tránh double listener
+  socket.off("newMessage");
+
   socket.on("newMessage", (newMessage) => {
     console.log("Nhận tin nhắn mới qua socket:", newMessage.message);
     if (
