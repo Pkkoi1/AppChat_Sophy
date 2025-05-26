@@ -104,7 +104,7 @@ const BanAndRemoveOption = ({ conversation, receiver }) => {
     setIsOwner(conversation.rules?.ownerId === userInfo.userId);
   }, [conversation.rules?.ownerId, userInfo.userId]); // Recalculate when conversation rules or user info changes
 
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   const isGroup = conversation.isGroup; // Check if the conversation is a group
 

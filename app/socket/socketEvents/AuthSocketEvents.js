@@ -6,17 +6,18 @@ export const setupAuthSocketEvents = (
   userInfo,
   setConversations,
   saveMessages,
-  addConversation
+  addConversation,
+  setUnreadConversation // thêm tham số này
 ) => {
   if (!socket) return () => {};
 
+  console.log("🟢 Đã thiết lập các sự kiện socket cho AuthSocketEvents");
   const handleNewMessage = async ({
     conversationId: incomingConversationId,
     message,
   }) => {
     console.log("🟢 Nhận tin nhắn mới:", message);
 
-    // Gọi API để lấy toàn bộ danh sách tin nhắn mới nhất
     try {
       const response = await api.getAllMessages(incomingConversationId);
       if (response && response.messages) {
@@ -34,17 +35,55 @@ export const setupAuthSocketEvents = (
           filteredMessages,
           "before",
           (updatedMessages) => {
-            setConversations((prevConversations) =>
-              prevConversations.map((conv) =>
-                conv.conversationId === incomingConversationId
-                  ? {
-                      ...conv,
-                      lastMessage: updatedMessages[0] || conv.lastMessage,
-                      messages: updatedMessages,
-                    }
-                  : conv
-              )
-            );
+            setConversations((prevConversations) => {
+              const updated = prevConversations.map((conv) => {
+                if (conv.conversationId !== incomingConversationId) return conv;
+
+                // Cập nhật unreadCount cho user hiện tại nếu không phải là người gửi
+                let newUnreadCount = Array.isArray(conv.unreadCount)
+                  ? [...conv.unreadCount]
+                  : [];
+                if (message.senderId !== userInfo?.userId && userInfo?.userId) {
+                  const idx = newUnreadCount.findIndex(
+                    (u) => u.userId === userInfo.userId
+                  );
+                  if (idx !== -1) {
+                    // Tăng số lượng chưa đọc
+                    newUnreadCount[idx] = {
+                      ...newUnreadCount[idx],
+                      count: (newUnreadCount[idx].count || 0) + 1,
+                      lastReadMessageId: newUnreadCount[idx].lastReadMessageId,
+                    };
+                  } else {
+                    // Thêm mới nếu chưa có
+                    newUnreadCount.push({
+                      userId: userInfo.userId,
+                      count: 1,
+                      lastReadMessageId: null,
+                    });
+                  }
+                }
+
+                return {
+                  ...conv,
+                  lastMessage: updatedMessages[0] || conv.lastMessage,
+                  messages: updatedMessages,
+                  unreadCount: newUnreadCount,
+                };
+              });
+              // Cập nhật tổng số cuộc trò chuyện chưa đọc
+              if (setUnreadConversation && userInfo?.userId) {
+                const unread = updated.filter(
+                  (conv) =>
+                    Array.isArray(conv.unreadCount) &&
+                    conv.unreadCount.some(
+                      (u) => u.userId === userInfo.userId && u.count > 0
+                    )
+                ).length;
+                setUnreadConversation(unread);
+              }
+              return updated;
+            });
             console.log(
               "Đã cập nhật conversations với tin nhắn mới từ API:",
               updatedMessages.map((msg) => msg.content)
@@ -358,6 +397,22 @@ export const setupAuthSocketEvents = (
       `User ${userName} đã được bỏ chặn trong nhóm ${conversationId}`
     );
   };
+
+  // Cleanup tất cả event trước khi đăng ký mới
+  socket.off("newMessage");
+  socket.off("newConversation");
+  socket.off("groupAvatarChanged");
+  socket.off("groupNameChanged");
+  socket.off("userJoinedGroup");
+  socket.off("userAddedToGroup");
+  socket.off("userLeftGroup");
+  socket.off("userRemovedFromGroup");
+  socket.off("groupOwnerChanged");
+  socket.off("groupCoOwnerAdded");
+  socket.off("groupCoOwnerRemoved");
+  socket.off("groupDeleted");
+  socket.off("userBlocked");
+  socket.off("userUnblocked");
 
   // Đăng ký các sự kiện socket
   socket.on("newMessage", handleNewMessage);

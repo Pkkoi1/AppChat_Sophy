@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RaiAssistantFloatingChat from "@/app/features/aiAssistant/AiAssistantFloatingChat";
 
 const Home = ({ route, navigation }) => {
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const [index, setIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [userInfo, setUserInfo] = useState(null);
@@ -29,25 +29,25 @@ const Home = ({ route, navigation }) => {
     },
     {
       name: "Directory",
-      component: <Directory userId={userInfo?.userId} />,
+      component: <Directory />,
       icon: "contacts",
       title: "Danh bạ",
     },
     {
       name: "Discover",
-      component: <Discover userId={userInfo?.userId} />,
+      component: <Discover />,
       icon: "find",
       title: "Khám phá",
     },
     {
       name: "Diary",
-      component: <Diary userId={userInfo?.userId} />,
+      component: <Diary />,
       icon: "clockcircleo",
       title: "Nhật ký",
     },
     {
       name: "Profile",
-      component: <Profile userInfo={userInfo} />,
+      component: <Profile />,
       icon: "user",
       title: "Cá nhân",
     },

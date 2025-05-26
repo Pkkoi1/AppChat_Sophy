@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import {
   Text,
   View,
@@ -38,7 +38,7 @@ const Footer = ({ setCurrentScreen }) => {
   const initialScreen = footerItem[0].screen;
   const [selectedIcon, setSelectedIcon] = useState(initialScreen);
   const [unreadMessages, setUnreadMessages] = useState(0); // Số lượng tin nhắn chưa đọc
-  const socket = useContext(SocketContext); // Use SocketContext
+  const { socket } = useContext(SocketContext); // Use SocketContext
   const { userInfo, conversations, unreadConversation } =
     useContext(AuthContext); // Lấy conversations từ AuthContext
   const [animations, setAnimations] = useState(
@@ -51,6 +51,24 @@ const Footer = ({ setCurrentScreen }) => {
   useEffect(() => {
     setCurrentScreen(initialScreen); // Cập nhật màn hình cha ngay từ đầu
   }, []);
+
+  useEffect(() => {
+    // Lắng nghe sự kiện từ socket
+    const handleNewMessage = (data) => {
+      if (data && data.conversationId) {
+        // Cập nhật số lượng tin nhắn chưa đọc
+        setUnreadMessages((prevCount) => prevCount + 1);
+      }
+      console.log("New message received at footer:", data);
+    };
+
+    socket.on("newMessage", handleNewMessage);
+
+    // Dọn dẹp khi component unmount
+    return () => {
+      socket.off("newMessage", handleNewMessage);
+    };
+  }, [socket]);
 
   useEffect(() => {
     // Tính số lượng cuộc trò chuyện chưa đọc

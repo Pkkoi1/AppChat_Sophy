@@ -44,7 +44,7 @@ const MessageScreen = ({ route, navigation }) => {
     changeRole,
     setScreen, // lấy setScreen từ context
   } = useContext(AuthContext);
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   const { conversation, startSearch, receiver } = route.params;
 
@@ -113,19 +113,12 @@ const MessageScreen = ({ route, navigation }) => {
               const filteredMessages = response.messages.filter(
                 (m) => !m.hiddenFrom?.includes(userInfo.userId)
               );
-              // console.log(
-              //   "Đã tải tin nhắn từ API khi thoát màn hình:",
-              //   filteredMessages.map((msg) => msg.content)
-              // );
+
               saveMessages(
                 conversation.conversationId,
                 filteredMessages,
                 "before"
               ).then((savedMessages) => {
-                console.log(
-                  "Đã lưu tin nhắn từ API vào StorageService:",
-                  savedMessages.map((msg) => msg.content)
-                );
                 handlerRefresh();
               });
             }

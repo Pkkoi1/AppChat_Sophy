@@ -7,7 +7,7 @@ import { SocketContext } from "@/app/socket/SocketContext";
 
 const OptionHeader = ({ title, previousScreen }) => {
   const navigation = useNavigation();
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
 
   const handleGoBack = () => {
     if (previousScreen) {

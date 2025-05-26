@@ -9,7 +9,7 @@ import { useNavigateToProfile } from "@/app/utils/profileNavigation";
 const ListInbox = () => {
   const { conversations, handlerRefresh, addConversation, userInfo } =
     useContext(AuthContext);
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const [refreshing, setRefreshing] = useState(false);
   const navigateToProfile = useNavigateToProfile();
   const flatListRef = useRef(null); // Add ref for FlatList scrolling

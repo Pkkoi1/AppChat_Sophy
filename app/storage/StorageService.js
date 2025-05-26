@@ -72,7 +72,7 @@ const readUserData = async () => {
 };
 
 const writeUserData = async (data) => {
-  console.log("[StorageService] writeUserData called", data);
+  // console.log("[StorageService] writeUserData called", data);
   const fileName = await getUserFileName();
   if (!fileName) {
     console.warn("⛔ Không thể ghi file vì chưa có userId.");

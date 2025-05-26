@@ -24,7 +24,7 @@ import { Video } from "expo-av";
 
 const ShareMessage = ({ route }) => {
   const { conversations, userInfo, handlerRefresh } = useContext(AuthContext);
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const [selectedConversations, setSelectedConversations] = useState([]);
   const { message } = route.params;
   const [userDetails, setUserDetails] = useState({});
@@ -245,10 +245,7 @@ const ShareMessage = ({ route }) => {
   // Lọc conversations theo tên nhóm hoặc tên người nhận
   const filteredConversations = conversations.filter((conversation) => {
     const { name } = getConversationDetails(conversation);
-    return (
-      !search ||
-      name?.toLowerCase().includes(search.trim().toLowerCase())
-    );
+    return !search || name?.toLowerCase().includes(search.trim().toLowerCase());
   });
 
   return (

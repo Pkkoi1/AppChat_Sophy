@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
   const [screen, setScreen] = useState("Home");
   const [unreadConversation, setUnreadConversation] = useState(0);
 
-  const socket = useContext(SocketContext);
+  const { socket } = useContext(SocketContext);
   const flatListRef = useRef(null);
   const joinedConversationIds = useRef(new Set());
   // Hàm lấy danh sách nhóm (dùng từ file groupHelpers)
@@ -195,17 +195,29 @@ export const AuthProvider = ({ children }) => {
 
   // Đăng ký socket events từ file ngoài
   useEffect(() => {
-    if (!socket) return;
+    if (!socket) {
+      console.log("⚠️ Không có socket hoặc conversations đã được đăng ký");
+      return;
+    }
+    console.log("📡 Đăng ký socket events cho AuthContext");
     // Đăng ký các sự kiện socket bằng hàm setupAuthSocketEvents
     const cleanup = setupAuthSocketEvents(
       socket,
       userInfo,
       setConversations,
       saveMessages,
-      addConversation
+      addConversation,
+      setUnreadConversation // truyền thêm hàm này
     );
     return cleanup;
-  }, [userInfo, setConversations, saveMessages, addConversation]);
+  }, [
+    userInfo,
+    setConversations,
+    saveMessages,
+    addConversation,
+    conversations,
+    socket,
+  ]);
 
   const clearStorage = useCallback(async () => {
     try {
