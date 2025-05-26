@@ -9,7 +9,8 @@ import io from "socket.io-client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { DATABASE_API, MY_IP } from "@env";
 
-const SOCKET_SERVER_URL = `http://${MY_IP}:3000` || DATABASE_API;
+// const SOCKET_SERVER_URL = `http://${MY_IP}:3000` || DATABASE_API;
+const SOCKET_SERVER_URL = `https://sophy-chatapp-be.onrender.com`;
 
 export const SocketContext = createContext(null);
 

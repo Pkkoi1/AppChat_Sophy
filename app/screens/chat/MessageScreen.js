@@ -223,7 +223,6 @@ const MessageScreen = ({ route, navigation }) => {
         );
       });
       socket.off("messagePinned");
-
       socket.on("messagePinned", ({ conversationId, messageId }) => {
         if (conversationId === conversation.conversationId) {
           setMessages((prev) =>
