@@ -24,10 +24,10 @@ export const setupAuthSocketEvents = (
         const filteredMessages = response.messages.filter(
           (m) => !m.hiddenFrom?.includes(userInfo?.userId)
         );
-        console.log(
-          "Đã tải tin nhắn từ API khi nhận tin nhắn mới:",
-          filteredMessages.map((msg) => msg.content)
-        );
+        // console.log(
+        //   "Đã tải tin nhắn từ API khi nhận tin nhắn mới:",
+        //   filteredMessages.map((msg) => msg.content)
+        // );
 
         // Lưu tin nhắn vào AsyncStorage và cập nhật conversations
         await saveMessages(
@@ -84,10 +84,10 @@ export const setupAuthSocketEvents = (
               }
               return updated;
             });
-            console.log(
-              "Đã cập nhật conversations với tin nhắn mới từ API:",
-              updatedMessages.map((msg) => msg.content)
-            );
+            // console.log(
+            //   "Đã cập nhật conversations với tin nhắn mới từ API:",
+            //   updatedMessages.map((msg) => msg.content)
+            // );
           }
         );
       }
