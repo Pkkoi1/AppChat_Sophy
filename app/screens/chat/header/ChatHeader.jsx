@@ -67,6 +67,14 @@ const ChatHeader = ({
   // Hàm gọi thoại
   const handleVoiceCall = async () => {
     console.log("[handleVoiceCall] Bắt đầu gọi thoại");
+    
+    // Check if socket is available and connected
+    if (!socket || !socket.connected) {
+      console.log("[handleVoiceCall] Socket chưa kết nối");
+      Alert.alert("Thông báo", "Đang kết nối... Vui lòng thử lại sau");
+      return;
+    }
+    
     if (conversation?.isGroup) {
       console.log("[handleVoiceCall] Cuộc gọi nhóm chưa hỗ trợ");
       Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
@@ -84,11 +92,15 @@ const ChatHeader = ({
         receiverId: receiver.userId,
         type: "audio",
       });
+      
       const res = await api.initiateCall({
         receiverId: receiver.userId,
         type: "audio",
       });
-      // console.log("[handleVoiceCall] Kết quả initiateCall:", res);
+
+      if (!res || !res.data) {
+        throw new Error("Không nhận được phản hồi từ server");
+      }
 
       const callId = res.data.callId;
       if (!callId) {
