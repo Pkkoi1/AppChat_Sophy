@@ -13,19 +13,6 @@ const OptionHeader = ({ title, previousScreen }) => {
     if (previousScreen) {
       navigation.navigate(previousScreen); // Quay lại màn hình trước với dữ liệu
     } else {
-      socket.on("newMessage");
-      socket.on("groupAvatarChanged");
-      socket.on("groupNameChanged");
-      socket.on("userJoinedGroup");
-      socket.on("userAddedToGroup");
-      socket.on("userLeftGroup");
-      socket.on("userRemovedFromGroup");
-      socket.on("groupOwnerChanged");
-      socket.on("groupCoOwnerAdded");
-      socket.on("groupCoOwnerRemoved");
-      socket.on("groupDeleted");
-      socket.on("userBlocked");
-      socket.on("userUnblocked");
       navigation.goBack(); // Quay lại màn hình trước mặc định
     }
   };

@@ -7,7 +7,8 @@ export const setupAuthSocketEvents = (
   setConversations,
   saveMessages,
   addConversation,
-  setUnreadConversation // thêm tham số này
+  setUnreadConversation,
+  isMessageScreenActive = false
 ) => {
   if (!socket) return () => {};
 
@@ -398,6 +399,8 @@ export const setupAuthSocketEvents = (
     );
   };
 
+  if (!isMessageScreenActive) {
+
   // Cleanup tất cả event trước khi đăng ký mới
   socket.off("newMessage");
   socket.off("newConversation");
@@ -415,20 +418,21 @@ export const setupAuthSocketEvents = (
   socket.off("userUnblocked");
 
   // Đăng ký các sự kiện socket
-  socket.on("newMessage", handleNewMessage);
-  socket.on("newConversation", handleNewConversation);
-  socket.on("groupAvatarChanged", handleAvatarChange);
-  socket.on("groupNameChanged", handleNewGroupName);
-  socket.on("userJoinedGroup", handleNewMemberJoined);
-  socket.on("userAddedToGroup", handleUserAdded);
-  socket.on("userLeftGroup", handleMemberLeft);
-  socket.on("userRemovedFromGroup", handleMemberRemoved);
-  socket.on("groupOwnerChanged", handleOwnerChange);
-  socket.on("groupCoOwnerAdded", handleAddCoOwner);
-  socket.on("groupCoOwnerRemoved", handleRemoveCoOwner);
-  socket.on("groupDeleted", handleGroupDeleted);
-  socket.on("userBlocked", handleUserBlocked);
-  socket.on("userUnblocked", handleUserUnblocked);
+    socket.on("newMessage", handleNewMessage);
+    socket.on("newConversation", handleNewConversation);
+    socket.on("groupAvatarChanged", handleAvatarChange);
+    socket.on("groupNameChanged", handleNewGroupName);
+    socket.on("userJoinedGroup", handleNewMemberJoined);
+    socket.on("userAddedToGroup", handleUserAdded);
+    socket.on("userLeftGroup", handleMemberLeft);
+    socket.on("userRemovedFromGroup", handleMemberRemoved);
+    socket.on("groupOwnerChanged", handleOwnerChange);
+    socket.on("groupCoOwnerAdded", handleAddCoOwner);
+    socket.on("groupCoOwnerRemoved", handleRemoveCoOwner);
+    socket.on("groupDeleted", handleGroupDeleted);
+    socket.on("userBlocked", handleUserBlocked);
+    socket.on("userUnblocked", handleUserUnblocked);
+  }
 
   // Hàm cleanup
   return () => {
