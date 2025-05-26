@@ -7,10 +7,47 @@ import React, {
 } from "react";
 import io from "socket.io-client";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { DATABASE_API, MY_IP } from "@env";
+import { DATABASE_API, MY_IP, SOCKET_SERVER_URL } from "@env";
 
-// const SOCKET_SERVER_URL = `http://${MY_IP}:3000` || DATABASE_API;
-const SOCKET_SERVER_URL = `https://sophy-chatapp-be.onrender.com`;
+// Ưu tiên local nếu có MY_IP, nếu không thì fallback render
+const SOCKET_URL = SOCKET_SERVER_URL;
+
+// Hàm kiểm tra socket local có kết nối được không
+const checkLocalSocketAvailable = async () => {
+  return new Promise((resolve) => {
+    try {
+      const testSocket = io(SOCKET_SERVER_URL, {
+        transports: ["websocket"],
+        timeout: 2000,
+        reconnection: false,
+      });
+      testSocket.on("connect", () => {
+        testSocket.disconnect();
+        resolve(true);
+      });
+      testSocket.on("connect_error", () => {
+        testSocket.disconnect();
+        resolve(false);
+      });
+      setTimeout(() => {
+        testSocket.disconnect();
+        resolve(false);
+      }, 2000);
+    } catch {
+      resolve(false);
+    }
+  });
+};
+
+(async () => {
+  if (await checkLocalSocketAvailable()) {
+    SOCKET_URL = SOCKET_SERVER_URL;
+    console.log("Sử dụng socket local:", SOCKET_URL);
+  } else {
+    SOCKET_URL = "https://sophy-chatapp-be.onrender.com";
+    console.log("Sử dụng socket render:", SOCKET_URL);
+  }
+})();
 
 export const SocketContext = createContext(null);
 
@@ -36,7 +73,7 @@ export const SocketProvider = React.memo(({ children }) => {
   }, []);
 
   const initializeSocket = useCallback(() => {
-    const newSocket = io(SOCKET_SERVER_URL, {
+    const newSocket = io(SOCKET_URL, {
       transports: ["websocket"],
       reconnection: true,
       reconnectionAttempts: 10,

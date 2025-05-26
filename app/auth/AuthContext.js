@@ -79,6 +79,7 @@ export const AuthProvider = ({ children }) => {
   const [receivedFriendRequests, setReceivedFriendRequests] = useState([]);
   const [friendRequestsLoading, setFriendRequestsLoading] = useState(false);
   const [friendRequestsError, setFriendRequestsError] = useState(null);
+  const [isMessageScreenActive, setIsMessageScreenActive] = useState(false); // Thêm trạng thái mới
 
   // Thêm state cho screen
   const [screen, setScreen] = useState("Home");
@@ -207,7 +208,8 @@ export const AuthProvider = ({ children }) => {
       setConversations,
       saveMessages,
       addConversation,
-      setUnreadConversation // truyền thêm hàm này
+      setUnreadConversation, // truyền thêm hàm này
+      isMessageScreenActive
     );
     return cleanup;
   }, [
@@ -510,6 +512,7 @@ export const AuthProvider = ({ children }) => {
         setScreen,
         unreadConversation,
         setUnreadConversation,
+        setIsMessageScreenActive,
       }}
     >
       {children}
