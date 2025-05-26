@@ -69,15 +69,17 @@ const CallScreen = ({ navigation, route }) => {
     console.log('[DEBUG] toggleSpeaker called - Current speaker state:', isSpeakerOn);
     try {
       await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
+        allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
-        playThroughEarpieceAndroid: isSpeakerOn,
-        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: !isSpeakerOn, // Fixed: should be opposite of isSpeakerOn
         staysActiveInBackground: true,
+        shouldDuckAndroid: true,
+        playThroughEarpieceAndroid: false, // Always use speaker by default
       });
       setIsSpeakerOn(!isSpeakerOn);
     } catch (error) {
       console.error('[ERROR] Error toggling speaker:', error);
+      Alert.alert('Lỗi', 'Không thể thay đổi chế độ loa');
     }
   };
 
@@ -161,8 +163,22 @@ const CallScreen = ({ navigation, route }) => {
     }
 
     try {
+      // Set audio mode before getting media
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+        playThroughEarpieceAndroid: false,
+        staysActiveInBackground: true,
+        shouldDuckAndroid: true,
+      });
+
       const stream = await mediaDevices.getUserMedia({
-        audio: true,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 44100
+        },
         video: isVideo
           ? {
               facingMode: isFrontCamera ? 'user' : 'environment',
@@ -173,6 +189,12 @@ const CallScreen = ({ navigation, route }) => {
           : false,
       });
 
+      // Set initial audio track state
+      const audioTrack = stream.getAudioTracks()[0];
+      if (audioTrack) {
+        audioTrack.enabled = !isMuted;
+      }
+
       setLocalStream(stream);
 
       if (peerConnection.current) {
@@ -182,7 +204,13 @@ const CallScreen = ({ navigation, route }) => {
       }
     } catch (error) {
       console.error('[ERROR] Error initializing local stream:', error);
-      Alert.alert('Lỗi', 'Không thể khởi tạo luồng video');
+      Alert.alert('Lỗi', 'Không thể khởi tạo luồng video', [
+        { text: 'OK', style: 'cancel' },
+        { 
+          text: 'Thử lại', 
+          onPress: () => initializeLocalStream() 
+        }
+      ]);
     }
   };
 
@@ -561,9 +589,9 @@ const CallScreen = ({ navigation, route }) => {
               <Ionicons
                 name={isMuted ? 'mic-off' : 'mic'}
                 size={24}
-                style={[styles.controlIcon, isMuted && styles.controlIconMuted]}
+                style={[styles.controlIcon, isMuted]}
               />
-              <Text style={[styles.controlText, isMuted && styles.controlTextMuted]}>
+              <Text style={[styles.controlText, isMuted ]}>
                 {isMuted ? 'Đã tắt mic' : 'Mở mic'}
               </Text>
             </TouchableOpacity>
@@ -580,9 +608,9 @@ const CallScreen = ({ navigation, route }) => {
               <Ionicons
                 name={isSpeakerOn ? 'volume-high' : 'volume-mute'}
                 size={24}
-                style={[styles.speakerIcon, !isSpeakerOn && styles.speakerIconMuted]}
+                style={[styles.speakerIcon, !isSpeakerOn ]}
               />
-              <Text style={[styles.speakerText, !isSpeakerOn && styles.speakerTextMuted]}>
+              <Text style={[styles.speakerText, !isSpeakerOn ]}>
                 {isSpeakerOn ? 'Loa ngoài' : 'Tai nghe'}
               </Text>
             </TouchableOpacity>
