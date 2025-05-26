@@ -62,6 +62,7 @@ const ConversationName = ({ receiver, conversation }) => {
   const [isAvatarLoading, setIsAvatarLoading] = useState(false); // loading riêng cho avatar
   const [isRenameLoading, setIsRenameLoading] = useState(false); // loading riêng cho đổi tên
   const [isBackgroundLoading, setIsBackgroundLoading] = useState(false); // loading riêng cho nền
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     handlerRefresh,
@@ -385,6 +386,7 @@ const ConversationName = ({ receiver, conversation }) => {
       handleBackgroundOption();
     } else if (option.name === "Trang\n cá nhân") {
       try {
+        setIsLoading(true);
         navigateToProfile(navigation, receiver, {
           showLoading: true,
           onLoadingChange: setIsLoading,
@@ -392,6 +394,8 @@ const ConversationName = ({ receiver, conversation }) => {
       } catch (error) {
         console.error("Error navigating to profile:", error);
         Alert.alert("Lỗi", "Không thể mở trang cá nhân.");
+      } finally {
+        setIsLoading(false);
       }
     } else if (option.action === "addMember") {
       navigation.navigate("AddFriendToGroup", { conversation });
