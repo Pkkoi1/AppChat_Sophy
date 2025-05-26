@@ -615,6 +615,21 @@ const ChatFooter = ({
           }}
         >
           <View style={{ width: "100%", height: 500 }}>
+            {/* Nút đóng Dialog AI */}
+            <TouchableOpacity
+              style={{
+                position: "absolute",
+                top:20,
+                right: 15,
+                zIndex: 10,
+                backgroundColor: "#f2f2f2",
+                borderRadius: 18,
+                padding: 4,
+              }}
+              onPress={() => setShowAIDialog(false)}
+            >
+              <Ionicons name="close" size={28} color="#333" />
+            </TouchableOpacity>
             <AiAssistantChatList />
           </View>
         </Dialog>
