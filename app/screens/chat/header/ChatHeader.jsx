@@ -23,7 +23,6 @@ const ChatHeader = ({
   const [groupMem, setGroupMem] = useState([]);
   // console.log("Danh sách thành viên nhóm:", groupMember);
   const handlerBack = () => {
-    navigation.goBack();
     socket.on("newMessage");
     socket.on("groupAvatarChanged");
     socket.on("newConversation");
@@ -39,6 +38,7 @@ const ChatHeader = ({
     socket.on("userBlocked");
     socket.on("userUnblocked");
     api.readMessage(conversation.conversationId);
+    navigation.goBack();
   };
 
   useEffect(() => {

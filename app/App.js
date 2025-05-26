@@ -57,6 +57,8 @@ import SameGroups from "./screens/chat/optional/group/samegroup/SameGroups";
 import File from "./screens/chat/optional/gallery/files/File";
 import ListImageFullView from "./features/fullImages/ListImageFullView";
 import CallScreen from "@/app/screens/call/CallScreen";
+import AiAssistantHistory from "./features/aiAssistant/AiAssistantHistory";
+import AiAssistantChatList from "./features/aiAssistant/AiAssistantChatList";
 
 const Stack = createNativeStackNavigator();
 const update = (newData) => {
@@ -158,11 +160,20 @@ function AppNavigator() {
           headerShown: false,
         }}
       />
-    
 
       <Stack.Screen
         name="CallScreen"
         component={CallScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AiAssistantHistory"
+        component={AiAssistantHistory}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AiAssistantChatList"
+        component={AiAssistantChatList}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

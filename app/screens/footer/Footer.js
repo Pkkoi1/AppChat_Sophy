@@ -39,7 +39,8 @@ const Footer = ({ setCurrentScreen }) => {
   const [selectedIcon, setSelectedIcon] = useState(initialScreen);
   const [unreadMessages, setUnreadMessages] = useState(0); // Số lượng tin nhắn chưa đọc
   const socket = useContext(SocketContext); // Use SocketContext
-  const { userInfo, conversations } = useContext(AuthContext); // Lấy conversations từ AuthContext
+  const { userInfo, conversations, unreadConversation } =
+    useContext(AuthContext); // Lấy conversations từ AuthContext
   const [animations, setAnimations] = useState(
     footerItem.reduce((acc, item) => {
       acc[item.name] = new Animated.Value(1);

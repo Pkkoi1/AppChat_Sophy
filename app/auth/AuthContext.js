@@ -82,6 +82,7 @@ export const AuthProvider = ({ children }) => {
 
   // Thêm state cho screen
   const [screen, setScreen] = useState("Home");
+  const [unreadConversation, setUnreadConversation] = useState(0);
 
   const socket = useContext(SocketContext);
   const flatListRef = useRef(null);
@@ -204,7 +205,7 @@ export const AuthProvider = ({ children }) => {
       addConversation
     );
     return cleanup;
-  }, [socket, userInfo, setConversations, saveMessages, addConversation]);
+  }, [userInfo, setConversations, saveMessages, addConversation]);
 
   const clearStorage = useCallback(async () => {
     try {
@@ -427,6 +428,24 @@ export const AuthProvider = ({ children }) => {
     []
   );
 
+  // Đếm số cuộc trò chuyện có tin nhắn chưa đọc cho user hiện tại
+  useEffect(() => {
+    if (!userInfo?.userId || !conversations?.length) {
+      setUnreadConversation(0);
+      return;
+    }
+    let count = 0;
+    conversations.forEach((conv) => {
+      if (Array.isArray(conv.unreadCount)) {
+        const found = conv.unreadCount.find(
+          (u) => u.userId === userInfo.userId && u.count > 0
+        );
+        if (found) count++;
+      }
+    });
+    setUnreadConversation(count);
+  }, [conversations, userInfo?.userId]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -477,6 +496,8 @@ export const AuthProvider = ({ children }) => {
         fetchAllFriendData,
         screen,
         setScreen,
+        unreadConversation,
+        setUnreadConversation,
       }}
     >
       {children}

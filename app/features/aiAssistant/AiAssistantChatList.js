@@ -7,8 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
-  Modal,
-  Alert,
 } from "react-native";
 import { Clipboard } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -16,11 +14,11 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import aiLogo from "../../../assets/images/AI.png";
 import { api } from "../../api/api";
 import Color from "../../components/colors/Color";
+import { useNavigation } from "@react-navigation/native";
 
 const AI_LOGO = aiLogo;
 const AI_ASSISTANT_ID = "rai-assistant";
 
-// Sample questions related to messaging
 const SAMPLE_QUESTIONS = [
   "Gợi ý cách bắt đầu cuộc trò chuyện qua tin nhắn",
   "Làm sao để trả lời tin nhắn từ crush thật tự nhiên?",
@@ -33,8 +31,9 @@ const AiAssistantChatList = () => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const [conversationId, setConversationId] = useState(null);
-  const [historyModalVisible, setHistoryModalVisible] = useState(false);
   const [conversationHistory, setConversationHistory] = useState([]);
+  const [isAITyping, setIsAITyping] = useState(false);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -82,11 +81,9 @@ const AiAssistantChatList = () => {
 
   const handleCopyMessage = (content) => {
     if (!content) {
-      Alert.alert("Thông báo", "Tin nhắn trống, không thể sao chép.");
       return;
     }
     Clipboard.setString(content);
-    Alert.alert("Thành công", "Đã sao chép tin nhắn!");
   };
 
   const handleSendMessage = async () => {
@@ -99,6 +96,7 @@ const AiAssistantChatList = () => {
     };
     setMessages([userMessage, ...messages]);
     setInputText("");
+    setIsAITyping(true);
 
     try {
       const response = await api.processAIRequest({
@@ -128,6 +126,8 @@ const AiAssistantChatList = () => {
         timestamp: new Date().toISOString(),
       };
       setMessages([errorMessage, userMessage, ...messages]);
+    } finally {
+      setIsAITyping(false);
     }
   };
 
@@ -142,7 +142,6 @@ const AiAssistantChatList = () => {
       }))
       .reverse();
     setMessages(formattedMessages);
-    setHistoryModalVisible(false);
   };
 
   const handleCreateNewConversation = () => {
@@ -155,12 +154,11 @@ const AiAssistantChatList = () => {
         timestamp: new Date().toISOString(),
       },
     ]);
-    setHistoryModalVisible(false);
   };
 
   const handleSampleQuestion = (question) => {
     setInputText(question);
-    setTimeout(handleSendMessage, 0); // Trigger send immediately
+    setTimeout(handleSendMessage, 0);
   };
 
   const formatTime = (timestamp) => {
@@ -169,18 +167,6 @@ const AiAssistantChatList = () => {
       .getMinutes()
       .toString()
       .padStart(2, "0")}`;
-  };
-
-  const formatConversationTime = (timestamp) => {
-    const date = new Date(timestamp);
-    return `${date.getDate().toString().padStart(2, "0")}/${(
-      date.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}/${date.getFullYear()} ${date
-      .getHours()
-      .toString()
-      .padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
   };
 
   const renderMessage = ({ item }) => (
@@ -208,33 +194,12 @@ const AiAssistantChatList = () => {
             onPress={() => handleCopyMessage(item.content)}
             activeOpacity={0.7}
           >
-            <Ionicons name="copy-outline" size={18} color={Color.sophy} />
+            <Ionicons name="copy-outline" size={18} color={Color.grayText} />
           </TouchableOpacity>
         </View>
         <Text style={styles.timestamp}>{formatTime(item.timestamp)}</Text>
       </View>
     </View>
-  );
-
-  const renderConversationItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.conversationItem}
-      onPress={() => handleSelectConversation(item)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.conversationContent}>
-        <Text style={styles.conversationTitle}>
-          Cuộc trò chuyện {item.conversationId.slice(0, 8)}
-        </Text>
-        <Text style={styles.conversationPreview} numberOfLines={1}>
-          {item.messages[item.messages.length - 1]?.content ||
-            "Không có tin nhắn"}
-        </Text>
-        <Text style={styles.conversationTime}>
-          {formatConversationTime(item.updatedAt)}
-        </Text>
-      </View>
-    </TouchableOpacity>
   );
 
   const renderSampleQuestion = ({ item }) => (
@@ -247,33 +212,76 @@ const AiAssistantChatList = () => {
     </TouchableOpacity>
   );
 
+  // Hiệu ứng bong bóng AI typing
+  const renderAITypingBubble = () => (
+    <View style={[styles.messageContainer, styles.assistantMessage]}>
+      <Image source={AI_LOGO} style={styles.avatar} />
+      <View
+        style={[
+          styles.messageBox,
+          styles.assistantBox,
+          { flexDirection: "row", alignItems: "center" },
+        ]}
+      >
+        <View style={styles.typingBubble}>
+          <View style={styles.dot} />
+          <View style={styles.dot} />
+          <View style={styles.dot} />
+        </View>
+      </View>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Image source={AI_LOGO} style={styles.headerAvatar} />
         <Text style={styles.headerTitle}>Trợ lý Sophy</Text>
-        <TouchableOpacity
-          style={styles.historyButton}
-          onPress={() => {
-            console.log("History button pressed");
-            setHistoryModalVisible(true);
-          }}
-        >
-          <MaterialIcons name="history" size={24} color="#fff" />
-        </TouchableOpacity>
+        <View style={styles.headerButtons}>
+          <TouchableOpacity
+            style={styles.createNewButton}
+            onPress={handleCreateNewConversation}
+          >
+            <Ionicons name="add-circle-outline" size={28} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.historyButton}
+            onPress={() =>
+              navigation.navigate("AiAssistantHistory", {
+                conversationHistory,
+                handleSelectConversation,
+                handleCreateNewConversation,
+              })
+            }
+          >
+            <MaterialIcons name="history" size={28} color="#fff" />
+          </TouchableOpacity>
+          {/* Nút đóng ở cùng hàng với 2 nút trên */}
+          <TouchableOpacity
+            style={[styles.createNewButton, { marginLeft: 4 }]}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="close" size={28} color="#fff" />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Message List */}
       <FlatList
-        data={messages}
-        renderItem={renderMessage}
+        data={
+          isAITyping
+            ? [{ _id: "ai_typing", role: "ai_typing" }, ...messages]
+            : messages
+        }
+        renderItem={({ item }) =>
+          item.role === "ai_typing"
+            ? renderAITypingBubble()
+            : renderMessage({ item })
+        }
         keyExtractor={(item) => item._id}
         inverted={true}
         contentContainerStyle={styles.messageList}
       />
 
-      {/* Sample Questions */}
       <FlatList
         horizontal
         data={SAMPLE_QUESTIONS}
@@ -283,7 +291,6 @@ const AiAssistantChatList = () => {
         showsHorizontalScrollIndicator={false}
       />
 
-      {/* Input Area */}
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -300,51 +307,6 @@ const AiAssistantChatList = () => {
           <Ionicons name="send" size={24} color={Color.white} />
         </TouchableOpacity>
       </View>
-
-      {/* History Modal */}
-      <Modal
-        visible={historyModalVisible}
-        animationType="slide"
-        transparent={true}
-        onRequestClose={() => setHistoryModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Lịch sử trò chuyện</Text>
-              <View style={styles.modalHeaderButtons}>
-                <TouchableOpacity
-                  style={styles.createNewButton}
-                  onPress={handleCreateNewConversation}
-                >
-                  <Ionicons
-                    name="add-circle-outline"
-                    size={24}
-                    color={Color.sophy}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setHistoryModalVisible(false)}
-                >
-                  <Ionicons name="close" size={24} color="#555" />
-                </TouchableOpacity>
-              </View>
-            </View>
-            <FlatList
-              data={conversationHistory}
-              renderItem={renderConversationItem}
-              keyExtractor={(item) => item.conversationId}
-              contentContainerStyle={styles.historyList}
-              ListEmptyComponent={
-                <Text style={styles.emptyText}>
-                  Không có lịch sử trò chuyện
-                </Text>
-              }
-            />
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -371,11 +333,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
     flex: 1,
-    marginRight: 40,
+    marginRight: 10,
+  },
+  headerButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  createNewButton: {
+    padding: 8,
+    borderRadius: 20,
   },
   historyButton: {
-    padding: 12,
-    marginRight: 50,
+    padding: 8,
+    borderRadius: 20,
+    // marginRight: 50, // Adjusted to fit the layout
   },
   messageList: {
     padding: 10,
@@ -465,74 +436,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    width: "90%",
-    maxHeight: "80%",
-    overflow: "hidden",
-  },
-  modalHeader: {
+  typingBubble: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#e6f0ff",
+    borderRadius: 16,
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#222",
-  },
-  modalHeaderButtons: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  createNewButton: {
-    padding: 5,
-    marginRight: 10,
-  },
-  closeButton: {
-    padding: 5,
-  },
-  historyList: {
-    padding: 10,
-  },
-  conversationItem: {
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  conversationContent: {
-    flex: 1,
-  },
-  conversationTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#222",
-    marginBottom: 4,
-  },
-  conversationPreview: {
-    fontSize: 14,
-    color: "#666",
-    marginBottom: 4,
-  },
-  conversationTime: {
-    fontSize: 12,
-    color: "#aaa",
-  },
-  emptyText: {
-    fontSize: 14,
-    color: "#666",
-    textAlign: "center",
-    padding: 20,
+  dot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: "#8bb6f7",
+    marginHorizontal: 2,
+    opacity: 0.8,
+    // Có thể thêm hiệu ứng động nếu muốn
   },
 });
 
