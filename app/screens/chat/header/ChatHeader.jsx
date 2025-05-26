@@ -137,23 +137,48 @@ const ChatHeader = ({
 
   // Hàm gọi video
   const handleVideoCall = async () => {
+    console.log("[handleVideoCall] Bắt đầu gọi video");
+    
+    // Check if socket is available and connected
+    if (!socket || !socket.connected) {
+      console.log("[handleVideoCall] Socket chưa kết nối");
+      Alert.alert("Thông báo", "Đang kết nối... Vui lòng thử lại sau");
+      return;
+    }
+    
     if (conversation?.isGroup) {
+      console.log("[handleVideoCall] Cuộc gọi nhóm chưa hỗ trợ");
       Alert.alert("Thông báo", "Tính năng gọi nhóm đang được phát triển");
       return;
     }
 
     if (!receiver || !receiver.userId) {
+      console.log("[handleVideoCall] Không có receiver hợp lệ", receiver);
       Alert.alert("Thông báo", "Không thể kết nối cuộc gọi lúc này");
       return;
     }
 
     try {
-      // Gọi API backend để lấy callId
-      const res = await initiateCall({
+      console.log("[handleVideoCall] Gọi initiateCall với:", {
         receiverId: receiver.userId,
         type: "video",
       });
+      
+      const res = await api.initiateCall({
+        receiverId: receiver.userId,
+        type: "video",
+      });
+
+      if (!res || !res.data) {
+        throw new Error("Không nhận được phản hồi từ server");
+      }
+
       const callId = res.data.callId;
+      if (!callId) {
+        console.log("[handleVideoCall] Không nhận được callId từ backend", res.data);
+        Alert.alert("Lỗi", "Không nhận được callId từ server.");
+        return;
+      }
 
       // Thêm log để debug
       console.log("[handleVideoCall] Điều hướng sang CallScreen với:", {
@@ -176,7 +201,8 @@ const ChatHeader = ({
         incoming: false,
       });
     } catch (err) {
-      Alert.alert("Lỗi", "Không thể bắt đầu cuộc gọi. Vui lòng thử lại.");
+      console.log("[handleVideoCall] Lỗi khi gọi initiateCall:", err, err?.response?.data);
+      Alert.alert("Lỗi", "Không thể bắt đầu cuộc gọi video. Vui lòng thử lại.");
     }
   };
 

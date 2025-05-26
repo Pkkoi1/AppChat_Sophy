@@ -55,6 +55,8 @@ const CallScreen = ({ navigation, route }) => {
   const [timerInterval, setTimerInterval] = useState(null);
   const [hasMicPermission, setHasMicPermission] = useState(false);
   const [micPermissionRequesting, setMicPermissionRequesting] = useState(false);
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
+  const [cameraPermissionRequesting, setCameraPermissionRequesting] = useState(false);
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
@@ -62,6 +64,7 @@ const CallScreen = ({ navigation, route }) => {
   const [isFrontCamera, setIsFrontCamera] = useState(true);
   const [videoTracks, setVideoTracks] = useState([]);
   const [audioTracks, setAudioTracks] = useState([]);
+  const [showCamera, setShowCamera] = useState(false);
 
   const peerConnection = useRef(null);
   const localVideoRef = useRef(null);
@@ -159,23 +162,43 @@ const CallScreen = ({ navigation, route }) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Request microphone permission when component mounts
+  // Request permissions when component mounts
   useEffect(() => {
-    const requestMicPermission = async () => {
+    const requestPermissions = async () => {
       try {
+        // Request microphone permission
         setMicPermissionRequesting(true);
         const { status } = await Audio.requestPermissionsAsync();
         setHasMicPermission(status === 'granted');
         setMicPermissionRequesting(false);
+
+        // Request camera permission if video call
+        if (isVideo) {
+          setCameraPermissionRequesting(true);
+          try {
+            const cameraStatus = await mediaDevices.getUserMedia({
+              video: true,
+              audio: false
+            }).then(() => 'granted')
+              .catch(() => 'denied');
+            setHasCameraPermission(cameraStatus === 'granted');
+            setCameraPermissionRequesting(false);
+          } catch (error) {
+            console.error('Error requesting camera permission:', error);
+            Alert.alert('Lỗi', 'Không thể yêu cầu quyền truy cập camera');
+            setCameraPermissionRequesting(false);
+          }
+        }
       } catch (error) {
-        console.error('Error requesting mic permission:', error);
-        Alert.alert('Lỗi', 'Không thể yêu cầu quyền truy cập micro');
+        console.error('Error requesting permissions:', error);
+        Alert.alert('Lỗi', 'Không thể yêu cầu quyền truy cập thiết bị');
         setMicPermissionRequesting(false);
+        setCameraPermissionRequesting(false);
       }
     };
 
-    requestMicPermission();
-  }, []);
+    requestPermissions();
+  }, [isVideo]);
 
   // Start timer when connected
   useEffect(() => {
@@ -189,6 +212,45 @@ const CallScreen = ({ navigation, route }) => {
       setTimerInterval(null);
     }
   }, [callStatus]);
+
+  // Initialize local stream when permissions are granted
+  useEffect(() => {
+    const initializeLocalStream = async () => {
+      if (!hasMicPermission || (isVideo && !hasCameraPermission)) {
+        return;
+      }
+
+      try {
+        const constraints = {
+          audio: true,
+          video: isVideo ? {
+            facingMode: isFrontCamera ? 'user' : 'environment',
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 30 }
+          } : false
+        };
+
+        const stream = await mediaDevices.getUserMedia(constraints);
+        setLocalStream(stream);
+
+        // Add video tracks to peer connection
+        if (peerConnection.current && stream.getVideoTracks().length > 0) {
+          stream.getVideoTracks().forEach(track => {
+            peerConnection.current.addTrack(track, stream);
+          });
+        }
+      } catch (error) {
+        console.error('Error initializing local stream:', error);
+        Alert.alert('Lỗi', 'Không thể khởi tạo luồng video');
+      }
+    };
+
+    if (callStatus === 'connected') {
+      initializeLocalStream();
+      setShowCamera(true);
+    }
+  }, [hasMicPermission, hasCameraPermission, isVideo, isFrontCamera, callStatus]);
 
   // Khi là người gọi, gửi startCall lên server
   useEffect(() => {
@@ -292,6 +354,7 @@ const CallScreen = ({ navigation, route }) => {
         type: 'answer'
       });
       setCallStatus('connected');
+      setShowCamera(true);
       console.log('[DEBUG] Callee setCallStatus connected');
     });
 
@@ -333,6 +396,7 @@ const CallScreen = ({ navigation, route }) => {
           });
           
           setCallStatus('connected');
+          setShowCamera(true);
           console.log('[DEBUG] Đã gửi answer và kết nối thành công');
         }
       } catch (error) {
@@ -502,6 +566,46 @@ const CallScreen = ({ navigation, route }) => {
     }
   };
 
+  // Switch camera
+  const switchCamera = () => {
+    console.log('[DEBUG] switchCamera called - Current front camera:', isFrontCamera);
+    setIsFrontCamera(!isFrontCamera);
+  };
+
+  // Update video tracks when camera direction changes
+  useEffect(() => {
+    if (localStream) {
+      const videoTracks = localStream.getVideoTracks();
+      if (videoTracks.length > 0) {
+        videoTracks.forEach(track => {
+          track.stop();
+        });
+        localStream.removeTrack(videoTracks[0]);
+      }
+
+      // Get new video track with updated camera direction
+      mediaDevices.getUserMedia({
+        video: {
+          facingMode: isFrontCamera ? 'user' : 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        }
+      }).then(newStream => {
+        const newTrack = newStream.getVideoTracks()[0];
+        localStream.addTrack(newTrack);
+        
+        // Update peer connection if connected
+        if (peerConnection.current) {
+          peerConnection.current.removeTrack(videoTracks[0]);
+          peerConnection.current.addTrack(newTrack, localStream);
+        }
+      }).catch(error => {
+        console.error('[ERROR] Error updating camera:', error);
+        Alert.alert('Lỗi', 'Không thể cập nhật camera');
+      });
+    }
+  }, [isFrontCamera]);
+
   // Debug log các params khi render
   useEffect(() => {
     // console.log("[DEBUG] CallScreen params:", {
@@ -533,6 +637,19 @@ const CallScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {isVideo && showCamera && localStream && (
+        <RTCView
+          streamURL={localStream.toURL()}
+          style={styles.localVideo}
+          mirror={isFrontCamera}
+        />
+      )}
+      {showCamera && remoteStream && (
+        <RTCView
+          streamURL={remoteStream.toURL()}
+          style={styles.remoteVideo}
+        />
+      )}
       <StatusBar barStyle="light-content" backgroundColor="#1a1a1a" />
 
       <View style={styles.callerInfo}>
@@ -561,7 +678,7 @@ const CallScreen = ({ navigation, route }) => {
       )}
 
       {/* Hiển thị video local và remote */}
-      {isVideo && (
+      {isVideo && showCamera && (
         <View style={styles.videoContainer}>
           {remoteStream && (
             <RTCView
@@ -661,6 +778,39 @@ const CallScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+  videoContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  localVideoContainer: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    width: 120,
+    height: 120,
+    backgroundColor: '#000',
+    borderRadius: 10,
+    overflow: 'hidden',
+    zIndex: 100,
+  },
+  localVideo: {
+    width: '100%',
+    height: '100%',
+  },
+  remoteVideo: {
+    width: '100%',
+    height: '100%',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   centerContent: {
     justifyContent: 'center',
     alignItems: 'center',
