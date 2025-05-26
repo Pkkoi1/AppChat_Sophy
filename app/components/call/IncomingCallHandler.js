@@ -14,33 +14,72 @@ const IncomingCallHandler = () => {
 
     const handleIncomingCall = async (data) => {
       try {
+        console.log('[IncomingCall] Nhận cuộc gọi đến:', data);
+        
+        // Kiểm tra nếu đang trong một cuộc gọi khác
+        if (navigation.getState().routes.some(route => route.name === 'CallScreen')) {
+          console.log('[IncomingCall] Đang trong cuộc gọi khác, từ chối cuộc gọi mới');
+          socket.emit('rejectCall', {
+            callerId: data.callerId,
+            reason: 'user_busy'
+          });
+          return;
+        }
+
         let caller = data.caller;
         if (!caller && data.callerId) {
           const userResponse = await api.getUserById(data.callerId);
           caller = userResponse.data;
         }
 
-
+        // Điều hướng đến màn hình cuộc gọi
         navigation.navigate('CallScreen', {
           callType: data.isVideo ? 'video' : 'voice',
           isVideo: !!data.isVideo,
           receiver: caller,
           conversationId: data.conversationId,
           calleeId: userInfo.userId,
-          callId: data.conversationId, // hoặc data.callId nếu backend trả về
+          callId: data.callId || data.conversationId,
           incoming: true,
         });
+        
+        // Gửi sự kiện đã nhận cuộc gọi
+        socket.emit('callReceived', {
+          callerId: data.callerId,
+          callId: data.callId || data.conversationId,
+          receiverId: userInfo.userId
+        });
+        
       } catch (error) {
         console.error("Error handling incoming call:", error);
+        // Gửi thông báo lỗi nếu cần
+        if (socket && data?.callerId) {
+          socket.emit('callError', {
+            callerId: data.callerId,
+            callId: data.callId,
+            error: 'internal_error'
+          });
+        }
       }
     };
 
-
+    // Lắng nghe sự kiện cuộc gọi đến
     socket.on('startCall', handleIncomingCall);
+
+    // Lắng nghe sự kiện kết thúc cuộc gọi từ xa
+    const handleCallEnded = (data) => {
+      console.log('[IncomingCall] Cuộc gọi đã kết thúc:', data);
+      // Điều hướng về màn hình trước nếu đang ở màn hình cuộc gọi
+      if (navigation.getState().routes.some(route => route.name === 'CallScreen')) {
+        navigation.goBack();
+      }
+    };
+    
+    socket.on('callEnded', handleCallEnded);
 
     return () => {
       socket.off('startCall', handleIncomingCall);
-
+      socket.off('callEnded', handleCallEnded);
     };
   }, [socket, navigation, userInfo]);
 
