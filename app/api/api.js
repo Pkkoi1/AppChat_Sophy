@@ -1123,4 +1123,19 @@ export const api = {
       throw error;
     }
   },
+
+  /**
+   * Khởi tạo cuộc gọi WebRTC (audio/video)
+   * @param {Object} params - { receiverId, type }
+   * @returns {Promise<{callId: string}>}
+   */
+  initiateCall: async ({ receiverId, type }) => {
+    try {
+      const response = await http.post('/call/initiate', { receiverId, type });
+      return response;
+    } catch (error) {
+      console.error("[api.initiateCall] Lỗi khi gọi /call/initiate:", error, error?.response?.data);
+      throw error;
+    }
+  },
 };
