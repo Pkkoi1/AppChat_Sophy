@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native"; // Thêm useNavigation
 import SubMenuStyle from "./SubMenuStyle";
 
 const subMenuItem = [
-  { name: "Lời mời kết bạn", icon: "user-friends", quantity: 3 },
+  { name: "Lời mời kết bạn", icon: "user-friends" },
   {
     name: "Danh bạ máy",
     icon: "address-book",

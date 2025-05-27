@@ -31,11 +31,6 @@ const UpdatePassword = ({ navigation }) => {
       return;
     }
 
-    if (!authToken) {
-      setErrorMessage("Không tìm thấy token. Vui lòng đăng nhập lại.");
-      return;
-    }
-
     if (newPassword !== confirmPassword) {
       setErrorMessage("Mật khẩu mới không khớp.");
       return;
@@ -61,7 +56,6 @@ const UpdatePassword = ({ navigation }) => {
           //   phone: userInfo.phone,
           //   password: newPassword,
           // });
-          
 
           Alert.alert("Thành công", "Mật khẩu đã được cập nhật thành công!");
           navigation.navigate("AccountAndSecurity");

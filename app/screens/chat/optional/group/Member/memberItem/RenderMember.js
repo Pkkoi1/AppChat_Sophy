@@ -336,7 +336,7 @@ const RenderMember = ({
       } else if (role === "Thành viên") {
         actions.push("promote", "block", "remove");
       }
-    } else if (currentUserRole === "rored coowner") {
+    } else if (currentUserRole === "co-owner") {
       if (role === "Thành viên") {
         actions.push("block", "remove");
       }
