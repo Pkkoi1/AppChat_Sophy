@@ -17,6 +17,7 @@ import { api } from "../../../../api/api";
 import { SocketContext } from "../../../../socket/SocketContext";
 import AvatarUser from "@/app/components/profile/AvatarUser";
 import { useNavigateToProfile } from "@/app/utils/profileNavigation";
+import { AuthContext } from "@/app/auth/AuthContext";
 
 const groupByTime = (data) => {
   if (!data || data.length === 0) return [];
@@ -81,6 +82,7 @@ const ReceivedFriendRequests = ({ navigation }) => {
   ]);
 
   const { socket } = useContext(SocketContext);
+  const { updateFriendsList } = useContext(AuthContext);
   const navigateToProfile = useNavigateToProfile();
 
   // Hàm cập nhật routes với số lượng chính xác
@@ -224,6 +226,9 @@ const ReceivedFriendRequests = ({ navigation }) => {
         );
         return updated;
       });
+
+      // Cập nhật lại danh sách bạn bè sau khi chấp nhận
+      updateFriendsList();
 
       Alert.alert(
         "Thành công",

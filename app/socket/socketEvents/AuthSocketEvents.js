@@ -450,5 +450,6 @@ export const setupAuthSocketEvents = (
     socket.off("groupDeleted", handleGroupDeleted);
     socket.off("userBlocked", handleUserBlocked);
     socket.off("userUnblocked", handleUserUnblocked);
+    
   };
 };

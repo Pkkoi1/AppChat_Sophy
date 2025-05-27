@@ -72,7 +72,7 @@ const Register = () => {
         Alert.alert("Lỗi", "Phản hồi từ API không hợp lệ.");
       }
     } catch (error) {
-      console.error("Lỗi khi kiểm tra số điện thoại:", error);
+      // console.error("Lỗi khi kiểm tra số điện thoại:", error);
 
       if (
         error.response?.status === 400 &&

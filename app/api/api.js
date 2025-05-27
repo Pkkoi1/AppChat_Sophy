@@ -248,7 +248,7 @@ export const api = {
   changePassword: async (userId, oldPassword, newPassword) => {
     // Đổi mật khẩu người dùng
     try {
-      const token = await AsyncStorage.getItem("acc");
+      const token = await AsyncStorage.getItem("accessToken");
       if (!token) {
         throw new Error("Không tìm thấy acc. Yêu cầu đăng nhập lại.");
       }
@@ -809,8 +809,8 @@ export const api = {
       throw new Error("Phản hồi từ API không hợp lệ.");
     } catch (error) {
       // Ghi log chi tiết
-      console.error("Lỗi khi kiểm tra số điện thoại:", error?.message);
-      console.error("Chi tiết lỗi:", error?.response?.data || error);
+      // console.error("Lỗi khi kiểm tra số điện thoại:", error?.message);
+      // console.error("Chi tiết lỗi:", error?.response?.data || error);
 
       // Nếu là lỗi từ Axios, giữ nguyên để xử lý ở ngoài
       if (error.response) {
